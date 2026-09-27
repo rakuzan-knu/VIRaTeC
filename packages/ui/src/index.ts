@@ -1,4 +1,2 @@
-export * from './button.js';
-export * from './card.js';
-export * from './badge.js';
-export * from './input.js';
+// Shared UI primitives library - ready for custom components from frontend developers
+export {};
