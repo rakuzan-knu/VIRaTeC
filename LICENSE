@@ -1,21 +1,75 @@
-MIT License
+VIRaTeC PROPRIETARY SOURCE-AVAILABLE LICENSE
+ALL RIGHTS RESERVED
 
-Copyright (c) 2026 VIRaTeC - Taras Shevchenko National University of Kyiv
+Copyright (c) 2026 VIRaTeC — Virtual Innovating Research & Technology Community
+Taras Shevchenko National University of Kyiv (KNU).
+Faculty of Information Technologies (FIT) & Educational and Scientific Institute of Philology (NNIF).
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+================================================================================
+IMPORTANT NOTICE: THIS SOFTWARE AND ITS SOURCE CODE ARE NOT OPEN SOURCE.
+PUBLIC VISIBILITY DOES NOT CONSTITUTE A LICENSE TO USE, COPY, MODIFY, OR DEPLOY.
+================================================================================
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. GRANT OF VIEWING RIGHTS ONLY
+This repository, source code, system architecture, database schemas, interfaces, 
+documentation, and associated assets (hereinafter referred to as the "Software") 
+are made publicly accessible strictly for direct human reading, academic peer 
+review, and audit purposes on official authorized platforms.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. ABSOLUTE PROHIBITION ON COPYING, REPRODUCTION, AND DERIVATIVE WORKS
+Except with the express, prior, written permission granted and signed by the 
+authorized representatives of VIRaTeC and Taras Shevchenko National University 
+of Kyiv, NO PERSON OR ENTITY (whether commercial, non-profit, academic, 
+governmental, or individual) SHALL HAVE ANY RIGHT TO:
+   a) Copy, duplicate, reproduce, or replicate any portion of this codebase, 
+      system design, architecture, schemas, or documentation.
+   b) Modify, alter, adapt, translate, disassemble, decompile, or create derivative 
+      works based upon this Software, its modular backend design, or its FSD frontend.
+   c) Distribute, publish, broadcast, sublicense, sell, rent, lease, convey, or 
+      transfer the Software or any excerpt thereof to any third party.
+   d) Deploy, host, run, or execute the Software or any modified version thereof 
+      in any production, staging, testing, private, or public environment.
+
+3. STRICT PROHIBITION ON ARTIFICIAL INTELLIGENCE (AI) & MACHINE LEARNING (ML) USE
+Under NO circumstances may any part of this repository, source code, comments, 
+architecture, schemas, data, or documentation be accessed, collected, scraped, 
+crawled, mined, ingested, processed, or utilized, directly or indirectly, by 
+any automated tool, entity, bot, or organization for:
+   a) Training, pre-training, fine-tuning, aligning, evaluating, or benchmarking 
+      any Artificial Intelligence (AI) model, Machine Learning (ML) algorithm, 
+      Large Language Model (LLM), deep learning system, or neural network.
+   b) Providing input to code completion, code synthesis, generative AI, or 
+      synthetic dataset generators.
+   c) Automated repository indexing for generative or retrieval systems beyond 
+      standard search engine navigation indexing.
+
+4. OWNERSHIP & INTELLECTUAL PROPERTY
+All copyrights, trade secrets, patents, moral rights, and intellectual property 
+rights in and to the Software, its source code, architecture, design concepts, 
+and documentation remain the sole, exclusive, and unencumbered property of 
+VIRaTeC and Taras Shevchenko National University of Kyiv. No title or property 
+interest is transferred under any circumstances.
+
+5. VIOLATIONS AND ENFORCEMENT
+Any unauthorized copying, reuse of architecture, unauthorized reproduction, 
+or AI ingestion of this codebase constitutes a direct violation of copyright 
+law and international intellectual property treaties, and will be subject to 
+immediate legal prosecution and claims for statutory damages.
+
+6. DISCLAIMER OF WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+================================================================================
+ОФІЦІЙНЕ РОЗ'ЯСНЕННЯ УКРАЇНСЬКОЮ МОВОЮ:
+Даний програмний код, архітектура (модульний бекенд, FSD фронтенд), схеми баз 
+даних та документація є виключною інтелектуальною власністю спільноти VIRaTeC 
+та Київського національного університету імені Тараса Шевченка.
+Публічний доступ до репозиторію надається ВИКЛЮЧНО для ознайомлення.
+Категорично ЗАБОРОНЕНО:
+- Копіювати, змінювати або повторно використовувати будь-яку частину коду чи архітектури;
+- Використовувати будь-які файли проєкту для навчання, тестування чи налаштування 
+  систем Штучного Інтелекту (ШІ), мовних моделей (LLM) або систем генерації коду;
+- Розгортати або поширювати цей проєкт без офіційного письмового дозволу КНУ.
+================================================================================

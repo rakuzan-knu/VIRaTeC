@@ -1,7 +1,8 @@
 # VIRaTeC — Virtual Innovating Research & Technology Community
 
 [![CI/CD Pipeline](https://github.com/viratec-knu/viratec/actions/workflows/ci.yml/badge.svg)](https://github.com/viratec-knu/viratec/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary%20%2F%20All%20Rights%20Reserved-red.svg)](./LICENSE)
+[![AI Training: Prohibited](https://img.shields.io/badge/AI%20Training-Strictly%20Prohibited-black.svg)](#-ліцензія-та-авторські-права)
 [![Turborepo](https://img.shields.io/badge/monorepo-Turborepo-ef4444.svg)](https://turbo.build/)
 [![pnpm](https://img.shields.io/badge/package__manager-pnpm-orange.svg)](https://pnpm.io/)
 [![Oxlint](https://img.shields.io/badge/linter-Oxlint-blue.svg)](https://oxc.rs/)
@@ -142,7 +143,13 @@ pnpm dev:web       # React 19 Frontend (http://localhost:5173)
 
 Будь ласка, ознайомтеся з [CONTRIBUTING.md](./CONTRIBUTING.md) для деталей щодо робочого процесу, створення гілок, конвенцій комітів та стандартів розробки.
 
-## 📜 Ліцензія
+## 📜 Ліцензія та авторські права
 
-Проєкт розповсюджується під ліцензією [MIT](./LICENSE).
-VIRaTeC © 2026, Київський національний університет імені Тараса Шевченка.
+**Усі права захищено (All Rights Reserved).** Даний репозиторій є відкритим **виключно для перегляду та ознайомлення** (Source-Available).
+
+- 🚫 **Повна заборона використання коду та архітектури**: Жодна особа чи організація не має права копіювати, дублювати, модифікувати, створювати похідні роботи, розповсюджувати, публікувати або розгортати будь-яку частину цього коду, схем даних або архітектурних рішень (модульний бекенд, FSD фронтенд) без попередньої офіційної письмової згоди правовласників.
+- 🚫 **Категорична заборона для Штучного Інтелекту (ШІ / AI Prohibition)**: Категорично заборонено парсинг, скрейпінг, збір або використання будь-яких файлів, коду, структури чи документації цього репозиторію для навчання, донавчання (fine-tuning), тестування або валідації моделей Штучного Інтелекту (ШІ), нейромереж, великих мовних моделей (LLM) або систем автогенерації коду.
+
+Повний юридичний текст ліцензії наведено у файлі [LICENSE](./LICENSE).
+
+© 2026 VIRaTeC, Київський національний університет імені Тараса Шевченка.
