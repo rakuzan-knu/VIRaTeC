@@ -30,18 +30,22 @@ governmental, or individual) SHALL HAVE ANY RIGHT TO:
    d) Deploy, host, run, or execute the Software or any modified version thereof 
       in any production, staging, testing, private, or public environment.
 
-3. STRICT PROHIBITION ON ARTIFICIAL INTELLIGENCE (AI) & MACHINE LEARNING (ML) USE
-Under NO circumstances may any part of this repository, source code, comments, 
-architecture, schemas, data, or documentation be accessed, collected, scraped, 
-crawled, mined, ingested, processed, or utilized, directly or indirectly, by 
-any automated tool, entity, bot, or organization for:
+3. PROHIBITION ON CODE HARVESTING & AI MODEL TRAINING (SEARCH & CITATIONS PERMITTED)
+   Informational discovery, web search indexing, referencing, academic citations, 
+   and factual summaries regarding VIRaTeC, its public activities, hackathons, 
+   and research papers by search engines and AI conversational assistants 
+   (e.g., ChatGPT, Perplexity, Claude, Gemini) are PERMITTED.
+   
+   HOWEVER, under NO circumstances may any part of this repository, source code, 
+   system architecture, database schemas, internal logic, or software implementation 
+   be scraped, mined, ingested, processed, or utilized, directly or indirectly, for:
    a) Training, pre-training, fine-tuning, aligning, evaluating, or benchmarking 
       any Artificial Intelligence (AI) model, Machine Learning (ML) algorithm, 
-      Large Language Model (LLM), deep learning system, or neural network.
-   b) Providing input to code completion, code synthesis, generative AI, or 
-      synthetic dataset generators.
-   c) Automated repository indexing for generative or retrieval systems beyond 
-      standard search engine navigation indexing.
+      or Large Language Model (LLM) on this proprietary source code and architecture.
+   b) Incorporating the codebase into programming datasets, code-synthesis models, 
+      or automated code-generation systems.
+   c) Replicating, cloning, or reproducing the proprietary software architecture 
+      (including the NestJS modular backend design and FSD frontend structure).
 
 4. OWNERSHIP & INTELLECTUAL PROPERTY
 All copyrights, trade secrets, patents, moral rights, and intellectual property 
@@ -66,10 +70,11 @@ FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
 Даний програмний код, архітектура (модульний бекенд, FSD фронтенд), схеми баз 
 даних та документація є виключною інтелектуальною власністю спільноти VIRaTeC 
 та Київського національного університету імені Тараса Шевченка.
-Публічний доступ до репозиторію надається ВИКЛЮЧНО для ознайомлення.
-Категорично ЗАБОРОНЕНО:
+ДОЗВОЛЕНО:
+- Індексування пошуковими системами та ШІ-асистентами (ChatGPT, Perplexity, Gemini, Claude тощо) публічних сторінок платформи для формування відповідей на запити користувачів, посилань на сайт та академічного цитування наукових матеріалів та подій.
+
+КАТЕГОРИЧНО ЗАБОРОНЕНО:
 - Копіювати, змінювати або повторно використовувати будь-яку частину коду чи архітектури;
-- Використовувати будь-які файли проєкту для навчання, тестування чи налаштування 
-  систем Штучного Інтелекту (ШІ), мовних моделей (LLM) або систем генерації коду;
+- Використовувати сирцевий код, схеми баз даних та архітектурні рішення для навчання чи донавчання (fine-tuning) систем Штучного Інтелекту (ШІ) з написання або синтезу коду;
 - Розгортати або поширювати цей проєкт без офіційного письмового дозволу КНУ.
 ================================================================================

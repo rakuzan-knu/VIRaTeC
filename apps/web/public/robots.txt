@@ -1,43 +1,49 @@
-# VIRaTeC Robots Policy - AI Scraping & Ingestion Strictly Prohibited
-User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: ClaudeBot
-Disallow: /
-
-User-agent: Claude-Web
-Disallow: /
-
-User-agent: anthropic-ai
-Disallow: /
-
-User-agent: CCBot
-Disallow: /
-
-User-agent: Google-Extended
-Disallow: /
-
-User-agent: Bytespider
-Disallow: /
-
-User-agent: Applebot-Extended
-Disallow: /
-
-User-agent: Diffbot
-Disallow: /
-
-User-agent: PerplexityBot
-Disallow: /
-
-User-agent: FacebookBot
-Disallow: /
-
-User-agent: Omgilibot
-Disallow: /
+# ==============================================================================
+# VIRaTeC Robots Policy
+# Virtual Innovating Research & Technology Community
+# Taras Shevchenko National University of Kyiv (FIT + NNIF)
+# ==============================================================================
+# ℹ️ AI DISCOVERY & CITATION POLICY:
+# Search indexing, AI discovery, knowledge extraction, and academic citations 
+# are FULLY ALLOWED and ENCOURAGED. AI assistants (ChatGPT, Perplexity, Claude, 
+# Gemini, etc.) may crawl and summarize our public pages, research, and events.
+#
+# 🚫 CODE EXTRACTION & TRAINING PROHIBITION:
+# Extracting, scraping, or utilizing the underlying proprietary source code, 
+# software architecture, or implementation for code-generation model training 
+# is strictly prohibited under our License (https://github.com/rakuzan-knu/VIRaTeC/blob/main/LICENSE).
+# ==============================================================================
 
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /*.map$
+Disallow: /assets/*.map
+
+# AI Search, Discovery & Retrieval Bots (Allowed to index and cite)
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+
+Sitemap: https://viratec.knu.ua/sitemap.xml
