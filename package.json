@@ -17,6 +17,7 @@
     "typecheck": "turbo run typecheck",
     "clean": "node scripts/utils/clean.js",
     "prepare": "node -e \"process.env.CI || require('child_process').execSync('husky', { stdio: 'inherit' })\"",
+    "postinstall": "pnpm --filter @viratec/backend db:generate",
     "docker:dev": "docker compose -f docker-compose.dev.yml",
     "docker:dev:up": "docker compose -f docker-compose.dev.yml up -d",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
