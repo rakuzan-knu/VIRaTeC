@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.5.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate line endings (EOL)
+        run: pnpm validate:eol
+
+      - name: Validate environment variables template
+        run: pnpm validate:env
+
+      - name: Check code formatting (Prettier)
+        run: pnpm format:check
+
+      - name: Fast Lint (Oxlint)
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Audit unused code (Knip)
+        run: pnpm knip
+
+  build:
+    name: Build Packages & Apps
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.5.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm --filter @viratec/backend db:generate
+
+      - name: Turbo Build
+        run: pnpm build
+
+      - name: Lighthouse CI Audit (Non-blocking)
+        continue-on-error: true
+        run: pnpm lhci
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  docker-verify:
+    name: Verify Docker Builds
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Verify Backend Dockerfile
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/backend/Dockerfile
+          push: false
+          tags: viratec-backend:test
+          outputs: type=cacheonly
+
+      - name: Verify Frontend Dockerfile
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: false
+          tags: viratec-web:test
+          outputs: type=cacheonly

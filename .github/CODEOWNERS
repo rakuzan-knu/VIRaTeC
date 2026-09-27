@@ -1,0 +1,19 @@
+# Default owners for everything
+
+-                           @subvincdebian
+
+/backend/ @subvincdebian @chupikx228
+/backend/prisma/ @subvincdebian @chupikx228
+/frontend/ @subvincdebian @AyateAgh
+/.github/ @subvincdebian
+/docker-compose.prod.yml @subvincdebian
+/docker-compose.dev.yml @subvincdebian
+/vercel.json @subvincdebian
+/render.yaml @subvincdebian
+/package.json @subvincdebian
+/pnpm-lock.yaml @subvincdebian
+/pnpm-workspace.yaml @subvincdebian
+/scripts/ @subvincdebian
+/packages/ @subvincdebian
+/.npmrc @subvincdebian
+/SECURITY.md @subvincdebian

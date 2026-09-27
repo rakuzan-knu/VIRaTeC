@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+.turbo
+.next
+coverage
+*.tsbuildinfo
+pnpm-lock.yaml
+.git
+.husky
+apps/backend/prisma/migrations
+infrastructure/kubernetes/*.yaml

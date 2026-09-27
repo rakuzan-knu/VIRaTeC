@@ -1,0 +1,57 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+build
+out
+.turbo
+.next
+*.tsbuildinfo
+*.build.log
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE & OS
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+coverage
+.nyc_output
+playwright-report
+test-results
+
+# Docker & local data
+postgres_data
+redis_data
+minio_data
+*.local
+
+# Cache
+.eslintcache
+.cache

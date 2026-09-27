@@ -1,0 +1,115 @@
+# Dependencies
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build outputs
+dist
+build
+coverage
+.next
+out
+
+# Development
+.env
+.env.local
+.env.*.local
+.vscode
+.idea
+*.swp
+*.swo
+*.swn
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.log.*
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+.coverage
+.nyc_output
+
+# VCS
+.git
+.gitignore
+.gitlab-ci.yml
+.github
+
+# Build tools cache
+.eslintcache
+.webpack
+.turbo
+tsconfig.tsbuildinfo
+tsconfig.*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDE
+*.sublime-workspace
+*.sublime-project
+.vscode-settings.json
+
+# Misc & Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+SECURITY.md
+SUPPORT.md
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+.husky
+docs/
+
+# Infrastructure & Benchmarks (Blackbox testing / GitOps)
+infrastructure/
+benchmarks/
+
+# Agents & AI Tooling
+.agents/
+.antigravityignore
+GEMINI.md
+graphify-out/
+
+# Monorepo & Static Analysis Caches
+.nx/
+.clinic/
+*.clinic-*/
+*.clinic-*
+codeql-alerts.json
+.gitleaks.toml
+.lighthouserc.json
+knip.json
+.lintstagedrc*
+commitlint.config.*
+.prettier*
+.eslint*
+playwright-report/
+test-results/
+.stryker-tmp/
+**/.stryker-tmp/
+storybook-static/
+.storybook/
+e2e/
+test-results/
+playwright-report/
+vitest.config.ts
+vitest.workspace.ts
+**/vitest.config.*
+.vercel/
+.netlify/
+*.sarif
+sbom-*.json
+*.bundle
+temp_*

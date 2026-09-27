@@ -1,0 +1,9 @@
+{
+  "extends": "@viratec/tsconfig/react.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "noEmit": false
+  },
+  "include": ["src/**/*"]
+}

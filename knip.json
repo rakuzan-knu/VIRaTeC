@@ -1,0 +1,36 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "rules": {
+    "files": "off",
+    "dependencies": "off",
+    "unlisted": "off",
+    "binaries": "off",
+    "unresolved": "error",
+    "exports": "off",
+    "types": "off",
+    "nsExports": "off",
+    "duplicates": "off"
+  },
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/**/*.js"]
+    },
+    "apps/backend": {
+      "entry": ["src/main.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "apps/web": {
+      "entry": ["index.html"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/contracts": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/ui": {
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/utils": {
+      "project": ["src/**/*.ts"]
+    }
+  }
+}

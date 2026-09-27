@@ -1,0 +1,34 @@
+name: 💡 Пропозиція нового функціоналу (Feature Request)
+description: Запропонувати нову ідею або покращення для платформи VIRaTeC
+labels: ['enhancement', 'triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Дякуємо за вашу ініціативу та ідеї для розвитку спільноти VIRaTeC!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Яку проблему це вирішує?
+      description: Опишіть контекст або поточне обмеження.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Запропоноване рішення
+      description: Як саме, на вашу думку, це має працювати.
+    validations:
+      required: true
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Для кого це покращення?
+      options:
+        - Студенти
+        - Науковці / Дослідники
+        - Викладачі КНУ
+        - Адміністрація / Партнери
+        - Розробники платформи
+    validations:
+      required: true

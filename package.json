@@ -1,0 +1,53 @@
+{
+  "name": "viratec-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.5.2",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:backend": "pnpm --filter @viratec/backend start:dev",
+    "dev:web": "pnpm --filter @viratec/web dev",
+    "build": "turbo run build",
+    "lint": "oxlint --deny-warnings",
+    "lint:fix": "oxlint --fix",
+    "format": "prettier --write . --ignore-unknown --no-error-on-unmatched-pattern",
+    "format:check": "prettier --check . --ignore-unknown --no-error-on-unmatched-pattern",
+    "typecheck": "turbo run typecheck",
+    "clean": "node scripts/utils/clean.js",
+    "prepare": "node -e \"process.env.CI || require('child_process').execSync('husky', { stdio: 'inherit' })\"",
+    "docker:dev": "docker compose -f docker-compose.dev.yml",
+    "docker:dev:up": "docker compose -f docker-compose.dev.yml up -d",
+    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:dev:logs": "docker compose -f docker-compose.dev.yml logs -f",
+    "docker:dev:build": "docker compose -f docker-compose.dev.yml build",
+    "docker:prod": "docker compose -f docker-compose.prod.yml",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    "docker:prod:monitoring": "docker compose --profile monitoring -f docker-compose.prod.yml up -d",
+    "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
+    "docker:clean": "docker compose -f docker-compose.dev.yml down -v --remove-orphans && docker compose -f docker-compose.prod.yml down -v --remove-orphans",
+    "lhci": "lhci autorun",
+    "knip": "knip",
+    "validate:eol": "node scripts/ci/validate-eol.js",
+    "validate:env": "node scripts/utils/check-env.js",
+    "validate": "pnpm validate:eol && pnpm validate:env && pnpm typecheck && pnpm lint && pnpm knip"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@lhci/cli": "^0.15.1",
+    "husky": "^9.1.7",
+    "knip": "^6.34.0",
+    "lint-staged": "^17.3.0",
+    "oxlint": "^0.15.11",
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  }
+}

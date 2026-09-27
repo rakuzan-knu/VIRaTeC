@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  RESEARCHER
+  PROFESSOR
+  ADMIN
+  PARTNER
+}
+
+enum FacultyDivision {
+  FIT
+  NNIF
+  OTHER
+}
+
+enum ProjectStatus {
+  IDEA
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum EventType {
+  HACKATHON
+  CONFERENCE
+  WORKSHOP
+  SEMINAR
+  MEETUP
+}
+
+model User {
+  id           String          @id @default(uuid())
+  email        String          @unique
+  passwordHash String
+  name         String
+  role         UserRole        @default(STUDENT)
+  faculty      FacultyDivision @default(FIT)
+  department   String?
+  bio          String?
+  avatarUrl    String?
+  skills       String[]        @default([])
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  papers        ResearchPaper[]
+  projects      Project[]
+  posts         CommunityPost[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model ResearchPaper {
+  id             String          @id @default(uuid())
+  title          String
+  abstract       String
+  authors        String[]
+  primaryFaculty FacultyDivision @default(FIT)
+  keywords       String[]        @default([])
+  doi            String?
+  fileUrl        String?
+  authorId       String
+  author         User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("research_papers")
+}
+
+model Project {
+  id            String            @id @default(uuid())
+  title         String
+  description   String
+  status        ProjectStatus     @default(IDEA)
+  faculties     FacultyDivision[] @default([FIT])
+  tags          String[]          @default([])
+  repositoryUrl String?
+  demoUrl       String?
+  leadId        String
+  lead          User              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("projects")
+}
+
+model Event {
+  id               String          @id @default(uuid())
+  title            String
+  description      String
+  type             EventType       @default(WORKSHOP)
+  faculty          FacultyDivision @default(FIT)
+  location         String
+  isOnline         Boolean         @default(false)
+  startDate        DateTime
+  endDate          DateTime
+  capacity         Int?
+  registrationLink String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@map("events")
+}
+
+model CommunityPost {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  tags       String[] @default([])
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likesCount Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("community_posts")
+}
