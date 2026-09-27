@@ -8,9 +8,10 @@ export function slugify(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
+    .replace(/[\s_]+/g, '-')
+    .split('-')
+    .filter(Boolean)
+    .join('-');
 }
 
 export function getInitials(name: string): string {

@@ -45,6 +45,7 @@ jobs:
             backend
             web
             contracts
+            utils
             deps
             docs
             ci
