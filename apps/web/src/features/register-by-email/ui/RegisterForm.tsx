@@ -35,10 +35,11 @@ export function RegisterForm() {
   // Вилучення повідомлень про помилки сервера (400, 409 або мережа)
   const serverErrorMessage = (() => {
     if (!error) return null;
-    const status = (error as any)?.response?.status;
+    const status = (error as any)?.status || (error as any)?.response?.status;
     if (status === 409) return 'An account with this email address already exists.';
-    if (status === 400) return 'Invalid registration data. Please check your inputs.';
-    return 'An unexpected error occurred. Please try again later.';
+    if (status === 400)
+      return (error as any)?.message || 'Invalid registration data. Please check your inputs.';
+    return (error as any)?.message || 'An unexpected error occurred. Please try again later.';
   })();
 
   return (
