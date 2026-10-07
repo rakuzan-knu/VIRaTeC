@@ -1,3 +1,4 @@
+import { cn } from '../../lib';
 import type { TagColor, TagProps } from './Tag.types';
 
 const colorClasses: Record<TagColor, string> = {
@@ -5,14 +6,16 @@ const colorClasses: Record<TagColor, string> = {
   cyan: 'bg-bg-tag-cyan text-brand-cyan',
 };
 
-export function Tag({ color = 'lime', label, className = '', ...rest }: TagProps) {
-  const baseClasses =
-    'inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-medium tracking-wider whitespace-nowrap uppercase';
-
-  const combinedClasses = `${baseClasses} ${colorClasses[color]} ${className}`.trim();
-
+export function Tag({ color = 'lime', label, className, ...rest }: TagProps) {
   return (
-    <span className={combinedClasses} {...rest}>
+    <span
+      {...rest}
+      className={cn(
+        'inline-flex w-fit max-w-full items-center rounded-full px-2.5 py-1 text-caption font-medium tracking-tag wrap-anywhere uppercase',
+        colorClasses[color],
+        className,
+      )}
+    >
       {label}
     </span>
   );

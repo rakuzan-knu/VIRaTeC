@@ -1,34 +1,49 @@
 import { useId } from 'react';
+import { cn } from '../../lib';
 import type { InputProps } from './Input.types';
 
-export function Input({ label, error, id, className = '', ...rest }: InputProps) {
+export function Input({
+  label,
+  error,
+  helperText,
+  id,
+  className,
+  'aria-describedby': describedBy,
+  'aria-invalid': invalid,
+  ...rest
+}: InputProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const errorId = `${inputId}-error`;
-
-  const baseClasses =
-    'w-full rounded-control border-[1.5px] bg-bg-input px-4 py-3.5 text-base text-text-primary outline-none transition-colors placeholder:text-text-subtle disabled:opacity-50';
-
-  const borderClasses = error
-    ? 'border-state-error'
-    : 'border-border-default focus:border-border-focus';
-
-  const combinedClasses = `${baseClasses} ${borderClasses} ${className}`.trim();
+  const helperId = `${inputId}-helper`;
+  const descriptionIds =
+    [describedBy, helperText && helperId, error && errorId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="flex w-full flex-col items-start gap-2">
-      <label htmlFor={inputId} className="text-sm font-medium text-text-muted">
+    <div className="flex w-full min-w-0 flex-col items-start gap-2">
+      <label htmlFor={inputId} className="text-label font-medium text-text-muted">
         {label}
       </label>
       <input
-        id={inputId}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
-        className={combinedClasses}
         {...rest}
+        id={inputId}
+        aria-invalid={error ? true : invalid}
+        aria-describedby={descriptionIds}
+        className={cn(
+          'w-full min-w-0 rounded-control bg-bg-input px-4 py-3.5 text-control-md leading-input text-text-primary outline-none transition-colors motion-reduce:transition-none placeholder:text-text-subtle disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus',
+          error
+            ? 'border-control border-state-error'
+            : 'border border-border-default focus:border-border-focus',
+          className,
+        )}
       />
+      {helperText && (
+        <p id={helperId} className="text-caption text-text-muted">
+          {helperText}
+        </p>
+      )}
       {error && (
-        <p id={errorId} role="alert" className="text-xs text-state-error">
+        <p id={errorId} role="alert" className="text-caption text-state-error">
           {error}
         </p>
       )}

@@ -53,6 +53,12 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Install UI test browser
+        run: pnpm --filter @viratec/web exec playwright install --with-deps chromium
+
+      - name: Verify UI kit interactions and accessibility
+        run: pnpm --filter @viratec/web test:ui
+
       - name: Audit unused code (Knip)
         run: pnpm knip
 

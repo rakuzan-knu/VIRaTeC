@@ -7,10 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b && tsc --noEmit -p tsconfig.tests.json",
+    "test:ui": "playwright test",
     "lint": "oxlint"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.20",
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
     "@tailwindcss/vite": "^4.0.9",
     "@tanstack/react-query": "^5.66.9",
     "@viratec/contracts": "workspace:*",
@@ -26,10 +30,13 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react-swc": "^3.8.0",
     "@viratec/tsconfig": "workspace:*",
+    "@vitejs/plugin-react-swc": "^3.8.0",
     "typescript": "^5.9.3",
     "vite": "^6.2.0"
   }

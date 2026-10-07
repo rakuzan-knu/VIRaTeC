@@ -1,7 +1,16 @@
-import type { AnchorHTMLAttributes } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, MouseEventHandler } from 'react';
 
-export interface NavItemProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
+interface NavItemBase {
   label: string;
   active?: boolean;
-  dropdown?: boolean;
 }
+
+export type NavItemProps = NavItemBase &
+  (
+    | (AnchorHTMLAttributes<HTMLAnchorElement> & { dropdown?: false; href: string })
+    | (ButtonHTMLAttributes<HTMLButtonElement> & {
+        dropdown: true;
+        expanded?: boolean;
+        onClick: MouseEventHandler<HTMLButtonElement>;
+      })
+  );
