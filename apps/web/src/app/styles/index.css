@@ -1,8 +1,126 @@
 @import 'tailwindcss';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/dm-sans/700.css';
+@import '@fontsource/inter/cyrillic-400.css';
+@import '@fontsource/inter/cyrillic-500.css';
+@import '@fontsource/inter/cyrillic-600.css';
+@import '@fontsource/inter/cyrillic-700.css';
+
+@theme {
+  /* Font */
+  --font-sans: 'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Backgrounds */
+  --color-bg-page: #03122e;
+  --color-bg-surface: #061a39;
+  --color-bg-panel: #1f2937;
+  --color-bg-input: rgba(255, 255, 255, 0.06);
+  --color-bg-card: rgba(255, 255, 255, 0.05);
+  --color-bg-tooltip: #ffffff;
+  --color-bg-tag-lime: rgba(183, 249, 108, 0.14);
+  --color-bg-tag-cyan: rgba(3, 197, 234, 0.14);
+
+  /* Brand */
+  --color-brand-lime: #b5fa67;
+  --color-brand-lime-text: #b7f96c;
+  --color-brand-cyan: #03c5ea;
+
+  /* Text */
+  --color-text-primary: #ffffff;
+  --color-text-muted: #b8becf;
+  --color-text-subtle: #8b97a6;
+  --color-text-on-lime: #101721;
+  --color-text-on-light: #101721;
+
+  /* Borders & State */
+  --color-border-default: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.35);
+  --color-border-focus: #03c5ea;
+  --color-state-error: #ff6b6b;
+
+  /* Radius */
+  --radius-tooltip: 10px;
+  --radius-control: 14px;
+  --radius-control-lg: 18px;
+  --radius-card: 22px;
+
+  /* Figma UI Kit typography and geometry */
+  --text-card-title: 22px;
+  --text-card-title--line-height: 29px;
+  --text-control-lg: 18px;
+  --text-control-lg--line-height: 26px;
+  --text-control-md: 16px;
+  --text-control-md--line-height: 23px;
+  --text-label: 14px;
+  --text-label--line-height: 18px;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --leading-input: 21px;
+  --spacing-button-lg-x: 26px;
+  --spacing-nav: 5px;
+  --tracking-tag: 0.08em;
+  --z-index-tooltip: 50;
+  --container-tooltip: 20rem;
+}
+
+@utility border-control {
+  border-width: 1.5px;
+}
+
+@utility max-w-tooltip {
+  max-width: min(var(--container-tooltip), calc(100vw - 16px));
+}
+
+@utility z-tooltip {
+  z-index: var(--z-index-tooltip);
+}
 
 @layer base {
   body {
-    @apply antialiased text-gray-900 bg-gray-50;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  html {
+    scrollbar-color: var(--color-border-strong) var(--color-bg-page);
+    scrollbar-width: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-page);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border: 3px solid var(--color-bg-page);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-subtle);
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--color-text-muted);
+  }
+
+  @media (forced-colors: active) {
+    html {
+      scrollbar-color: auto;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: ButtonText;
+      border-color: Canvas;
+    }
+    ::-webkit-scrollbar-track {
+      background: Canvas;
+    }
   }
 }
