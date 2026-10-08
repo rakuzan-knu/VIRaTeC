@@ -1,0 +1,17 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["apps/web/src"],
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Form", "Scrollbar"],
+  "requiredCommands": ["typecheck", "lint", "build", "ui"],
+  "commands": {
+    "typecheck": "pnpm --filter @viratec/web typecheck",
+    "lint": "pnpm lint",
+    "build": "pnpm --filter @viratec/web build",
+    "ui": "pnpm --filter @viratec/web test:ui"
+  },
+  "evidence": {
+    "componentStates": "apps/web/tests/ui-kit.spec.ts",
+    "accessibility": "apps/web/tests/ui-kit.spec.ts"
+  }
+}
