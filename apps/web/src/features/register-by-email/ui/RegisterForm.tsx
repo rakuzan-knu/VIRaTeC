@@ -45,21 +45,35 @@ export function RegisterForm() {
   return (
     <div className="w-full space-y-6">
       {/* Header Logo & Titles */}
-      <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-            V
-          </div>
-          <span className="font-semibold text-slate-800 tracking-wide text-lg">VIRaTeC</span>
+      <div className="flex flex-col items-start text-left">
+        {/* Логотип по центру над формою */}
+        <div className="mb-6 flex justify-center w-full">
+          <img
+            src="/logo-full.png"
+            alt="VIRaTeC Global Network"
+            className="w-auto h-auto max-w-[260px] max-h-[90px] object-contain"
+          />
         </div>
-        <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Get started</h2>
-        <p className="mt-2 text-sm text-slate-500">
+
+        {/* Заголовок з потрібним шрифтом, жирністю 500 та вирівнюванням по лівому краю */}
+        <h2
+          className="text-[36px] font-medium text-slate-900 tracking-[-0.03em] leading-tight"
+          style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+        >
+          Get started
+        </h2>
+
+        <p className="mt-1.5 text-sm text-slate-500 font-normal">
           Create your profile to join the VIRaTeC research community.
         </p>
       </div>
 
       {/* Google OAuth Button */}
-      <Button variant="outline" type="button" className="font-normal text-slate-700 h-11">
+      <Button
+        variant="outline"
+        type="button"
+        className="w-full justify-center font-normal text-slate-700 h-11 border-slate-200 hover:bg-slate-50"
+      >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
           <path
             fill="#4285F4"
@@ -99,38 +113,40 @@ export function RegisterForm() {
       {/* Main Registration Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {/* Full Name */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-700">Full name</label>
+        <div className="space-y-1 mb-4">
+          <label className="text-xs font-semibold text-slate-700 block mb-6">Full name</label>
           <Input
             {...registerField('name')}
             placeholder="Enter your full name"
             error={!!errors.name}
+            className="h-8 text-sm"
           />
           {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
         </div>
 
         {/* Email Address */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-700">Email address</label>
+        <div className="space-y-1 mb-4">
+          <label className="text-xs font-semibold text-slate-700 block mb-6">Email address</label>
           <Input
             {...registerField('email')}
             type="email"
             placeholder="name@knu.ua"
             error={!!errors.email}
+            className="h-8 text-sm"
           />
           {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
         </div>
 
         {/* Password */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-700">Password</label>
+        <div className="space-y-1 mb-4">
+          <label className="text-xs font-semibold text-slate-700 block mb-6">Password</label>
           <div className="relative">
             <Input
               {...registerField('password')}
               type={showPassword ? 'text' : 'password'}
               placeholder="At least 8 characters"
               error={!!errors.password}
-              className="pr-10"
+              className="pr-10 h-8 text-sm"
             />
             <button
               type="button"
@@ -145,7 +161,7 @@ export function RegisterForm() {
         </div>
 
         {/* Terms Checkbox */}
-        <div className="pt-1">
+        <div className="py-6">
           <label className="flex items-start gap-2.5 cursor-pointer">
             <Checkbox {...registerField('terms')} className="mt-0.5" />
             <span className="text-xs text-slate-500 leading-tight">
@@ -164,14 +180,21 @@ export function RegisterForm() {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" isLoading={isPending} disabled={isPending} className="mt-2">
-          Create new account
-          <ArrowRight className="w-4 h-4 ml-1" />
+        <Button
+          type="submit"
+          isLoading={isPending}
+          disabled={isPending}
+          className="w-full h-[66px] bg-[#082455] hover:bg-[#061c44] text-white font-medium rounded-[9px] px-[20px] flex items-center justify-between transition-colors mt-2"
+        >
+          <span className="text-base" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+            Create new account
+          </span>
+          <ArrowRight className="w-5 h-5" />
         </Button>
       </form>
 
       {/* Redirect to Login */}
-      <p className="text-center text-xs text-slate-500">
+      <p className=" text-center text-xs text-slate-500">
         Already have an account?{' '}
         <Link to={ROUTES.LOGIN} className="font-semibold text-slate-900 hover:underline">
           Log in
