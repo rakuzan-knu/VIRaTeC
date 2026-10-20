@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Check, Eye, EyeOff } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/lib';
-import { Input } from '@/shared/ui/input';
-import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/auth-input';
+import { Button } from '@/shared/ui/auth-button';
 import {
   PASSWORD_RULES,
   newPasswordSchema,
