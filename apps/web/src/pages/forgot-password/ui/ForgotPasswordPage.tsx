@@ -8,7 +8,7 @@ export function ForgotPasswordPage() {
       accent="Keep your research moving."
       description="Secure account recovery for the international research and education community at Taras Shevchenko National University of Kyiv."
       badgeTitle="Protected account recovery"
-      badgeSubtitle="VIRaTeC · KNU identity"
+      badgeSubtitle="VIRATEC · KNU IDENTITY"
     >
       <ResetPasswordFlow />
     </AuthLayout>
