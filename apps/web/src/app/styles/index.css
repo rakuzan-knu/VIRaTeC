@@ -1,8 +1,32 @@
 @import 'tailwindcss';
 
+@theme {
+  --font-dm-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-viratec-bg: #03122e;
+  --color-viratec-surface: #061a39;
+  --color-viratec-lime: #b5fa67;
+  --color-viratec-lime-hover: #c7fb8c;
+  --color-viratec-accent: #b7f96c;
+  --color-viratec-rule: #aff56c;
+  --color-viratec-cyan: #03c5ea;
+  --color-viratec-light: #f8f8fc;
+  --color-viratec-muted: #b8becf;
+  --color-viratec-subtle: #8b97a6;
+  --color-viratec-soft: #dbe4f0;
+  --color-viratec-ink: #101721;
+  --color-viratec-dropdown: rgba(10, 33, 72, 0.96);
+}
+
 @layer base {
   body {
     @apply antialiased text-gray-900 bg-gray-50;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
+}
+
+@utility font-viratec {
+  font-family: var(--font-dm-sans);
+  font-feature-settings: normal;
+  font-variation-settings: 'opsz' 14;
 }
