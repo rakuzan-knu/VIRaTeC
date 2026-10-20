@@ -1,5 +1,19 @@
 import { ENV } from '../config/env';
 
+export class ApiError extends Error {
+  public status: number;
+  public response?: { status: number; data?: unknown };
+  public data?: unknown;
+
+  constructor(status: number, message: string, data?: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
+    this.response = { status, data };
+  }
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -20,7 +34,14 @@ class ApiClient {
       headers: this.getHeaders(),
     });
     if (!res.ok) {
-      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+      let errData: any = null;
+      try {
+        errData = await res.json();
+      } catch {
+        // ignore
+      }
+      const message = errData?.message || `API Error: ${res.status} ${res.statusText}`;
+      throw new ApiError(res.status, message, errData);
     }
     const json = await res.json();
     return json.data !== undefined ? json.data : json;
@@ -33,7 +54,14 @@ class ApiClient {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+      let errData: any = null;
+      try {
+        errData = await res.json();
+      } catch {
+        // ignore
+      }
+      const message = errData?.message || `API Error: ${res.status} ${res.statusText}`;
+      throw new ApiError(res.status, message, errData);
     }
     const json = await res.json();
     return json.data !== undefined ? json.data : json;
