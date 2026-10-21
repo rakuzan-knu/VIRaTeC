@@ -35,8 +35,11 @@ and allowed origins in Google Cloud. Password-based registration and login work 
 pnpm --filter @viratec/backend test
 pnpm lint
 pnpm typecheck
-vercel build --prod
 ```
+
+Vercel runs the full deployment build remotely with the sensitive environment variables.
+`vercel pull` replaces sensitive values with placeholders, so a local deployment build requires
+separately supplied local database credentials and secrets.
 
 After a deployment, verify `/api/v1/health/ready` reports `data.status: ready`,
 the frontend loads, and direct links to content and auth pages resolve.
