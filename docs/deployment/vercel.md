@@ -3,13 +3,14 @@
 The `viratec` project in `magchannel228-1236` deploys both services from the repository root:
 
 - `web`: React/Vite in `apps/web`, served at `/`.
-- `api`: NestJS/Fastify in `apps/backend`, served at `/api/v1` and `/docs`.
+- `api`: NestJS/Fastify in `apps/backend`, built from the repository root and served at `/api/v1` and `/docs`.
 
 Pushes to `main` create production deployments. Other branches create previews.
 Keep the project root at the repository root; `vercel.json` defines each service's root and build command.
 The API and Neon Postgres use the Frankfurt region.
-The service install commands use pnpm's hoisted linker so Vercel can package the API's runtime dependencies.
-Dependency versions remain controlled by `pnpm-lock.yaml`.
+The root package's `main` identifies the NestJS entrypoint. Building the API from the repository root
+keeps its workspace dependencies in the function's packaging scope.
+Both service installs use the frozen `pnpm-lock.yaml`.
 
 ## Environment
 

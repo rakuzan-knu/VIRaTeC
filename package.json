@@ -4,6 +4,7 @@
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
+  "main": "apps/backend/src/main.ts",
   "packageManager": "pnpm@10.5.2",
   "scripts": {
     "dev": "turbo run dev",
