@@ -9,12 +9,12 @@ import { ApiError } from '@/shared/api/apiClient';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
 import { Checkbox } from '@/shared/ui/checkbox';
+import { BrandLogo } from '@/shared/ui/brand-logo';
 import { createRegisterFormSchema, type RegisterFormValues } from '../model/schema';
 import { useRegister } from '../model/useRegister';
 
 const REGISTER_MESSAGES = defineMessages({
   en: {
-    logoAlt: 'VIRaTeC Global Network',
     title: 'Get started',
     subtitle: 'Create your profile to join the VIRaTeC research community.',
     fullName: 'Full name',
@@ -37,7 +37,6 @@ const REGISTER_MESSAGES = defineMessages({
     },
   },
   uk: {
-    logoAlt: 'Глобальна мережа VIRaTeC',
     title: 'Почнімо',
     subtitle: 'Створіть профіль, щоб долучитися до дослідницької спільноти VIRaTeC.',
     fullName: 'Повне ім’я',
@@ -102,13 +101,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(8px,1.4svh,20px)]">
-      <div className="flex justify-center">
-        <img
-          src="/logo-full.png"
-          alt={t.logoAlt}
-          className="h-auto max-h-[90px] lg:max-h-[clamp(36px,5.5svh,90px)] w-auto max-w-[260px] object-contain"
-        />
-      </div>
+      <BrandLogo className="mx-auto h-[66px] w-[260px] lg:h-[clamp(36px,5.5svh,66px)] lg:w-[clamp(142px,21.7svh,260px)]" />
 
       <div className="space-y-2">
         <h2 className="font-auth text-[34px] lg:text-[clamp(30px,4.8svh,44px)] font-medium leading-[1.05] tracking-[-0.045em] text-auth-heading">

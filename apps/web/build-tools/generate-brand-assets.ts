@@ -2,16 +2,16 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, type Page } from '@playwright/test';
+import { BRAND_COLORS, BRAND_MARK, BRAND_WORDMARK } from '../src/shared/config/brand.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC_DIR = path.join(ROOT, 'public');
-const LOGO_DIR = path.join(ROOT, 'src/shared/assets/logo');
 const FONT_DIR = path.join(ROOT, 'node_modules/@fontsource');
 
 const BRAND = {
-  bg: '#03122e',
-  lime: '#b5fa67',
-  cyan: '#03c5ea',
+  bg: BRAND_COLORS.bg,
+  lime: BRAND_COLORS.lime,
+  cyan: BRAND_COLORS.cyan,
   muted: '#b8becf',
 } as const;
 
@@ -62,13 +62,6 @@ const FONTS: FontFace[] = [
 const dataUri = async (file: string, mime: string) =>
   `data:${mime};base64,${(await readFile(file)).toString('base64')}`;
 
-const readVectorInsets = async () => {
-  const source = await readFile(path.join(ROOT, 'src/shared/ui/logo.tsx'), 'utf8');
-  const block = /VECTOR_INSETS = \[([\s\S]*?)\] as const/.exec(source)?.[1];
-  if (!block) throw new Error('VECTOR_INSETS not found in logo.tsx');
-  return [...block.matchAll(/'([^']+)'/g)].map((match) => match[1]);
-};
-
 const buildFontCss = async () => {
   const faces = await Promise.all(
     FONTS.map(
@@ -79,83 +72,29 @@ const buildFontCss = async () => {
   return faces.join('');
 };
 
-const buildLogoHtml = async () => {
-  const insets = await readVectorInsets();
-  const globe = await dataUri(path.join(LOGO_DIR, 'globe.webp'), 'image/webp');
-  const vectors = await Promise.all(
-    insets.map(async (inset, index) => {
-      const src = await dataUri(path.join(LOGO_DIR, `vector-${index}.svg`), 'image/svg+xml');
-      return `<span style="position:absolute;inset:${inset}"><img src="${src}" style="position:absolute;inset:0;width:100%;height:100%"></span>`;
-    }),
-  );
+const buildMarkShapes = () => {
+  const { orbit, node, gradient } = BRAND_MARK;
+  const tilt = `rotate(${orbit.rotate} ${orbit.cx} ${orbit.cy})`;
+  const ellipse = `cx="${orbit.cx}" cy="${orbit.cy}" rx="${orbit.rx}" ry="${orbit.ry}" fill="none" stroke="#ffffff"`;
 
-  return `<span class="logo">
-    <span style="position:absolute;top:-17.65%;left:1.98%;height:96.47%;width:32.14%;overflow:hidden">
-      <img src="${globe}" style="position:absolute;top:-5%;left:-5%;height:125%;width:250%;max-width:none">
-    </span>
-    ${vectors.join('')}
-  </span>`;
+  return `<defs>
+      <linearGradient id="mark-v" x1="${gradient.x1}" y1="0" x2="${gradient.x2}" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${BRAND.cyan}"/><stop offset="1" stop-color="${BRAND.lime}"/></linearGradient>
+      <clipPath id="mark-front"><rect x="0" y="${orbit.cy}" width="${BRAND_MARK.size}" height="${orbit.ry + orbit.frontStroke * 2}"/></clipPath>
+    </defs>
+    <ellipse ${ellipse} transform="${tilt}" stroke-opacity="${orbit.backOpacity}" stroke-width="${orbit.backStroke}"/>
+    <path d="${BRAND_MARK.vPath}" fill="none" stroke="url(#mark-v)" stroke-width="${BRAND_MARK.vStroke}" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="${tilt}">
+      <ellipse ${ellipse} stroke-width="${orbit.frontStroke}" clip-path="url(#mark-front)"/>
+      <circle cx="${node.cx}" cy="${node.cy}" r="${node.r}" fill="${BRAND.lime}"/>
+    </g>`;
 };
 
-interface Box {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  naturalWidth: number;
-  naturalHeight: number;
-}
-
-const GLOBE_SCAN_WIDTH = 250;
-
-const measureGlobe = async (page: Page, src: string): Promise<Box> => {
-  await page.setContent('<!doctype html><html><body></body></html>');
-  return page.evaluate(
-    async ({ src, scanWidth }) => {
-      const image = new Image();
-      image.src = src;
-      await image.decode();
-      const canvas = document.createElement('canvas');
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      const context = canvas.getContext('2d');
-      if (!context) throw new Error('Canvas 2D context is unavailable');
-      context.drawImage(image, 0, 0);
-      const { data } = context.getImageData(0, 0, scanWidth, image.naturalHeight);
-
-      let minX = scanWidth;
-      let minY = image.naturalHeight;
-      let maxX = 0;
-      let maxY = 0;
-      for (let y = 0; y < image.naturalHeight; y += 1) {
-        for (let x = 0; x < scanWidth; x += 1) {
-          if (data[(y * scanWidth + x) * 4 + 3] > 24) {
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x);
-            maxY = Math.max(maxY, y);
-          }
-        }
-      }
-
-      return {
-        x: minX,
-        y: minY,
-        width: maxX - minX + 1,
-        height: maxY - minY + 1,
-        naturalWidth: image.naturalWidth,
-        naturalHeight: image.naturalHeight,
-      };
-    },
-    { src, scanWidth: GLOBE_SCAN_WIDTH },
-  );
-};
-
-const buildGlobeHtml = (src: string, box: Box, size: number) => {
-  const scale = size / Math.max(box.width, box.height);
-  const left = -box.x * scale + (size - box.width * scale) / 2;
-  const top = -box.y * scale + (size - box.height * scale) / 2;
-  return `<span class="globe"><img src="${src}" style="left:${left}px;top:${top}px;width:${box.naturalWidth * scale}px;height:${box.naturalHeight * scale}px"></span>`;
+const buildLogoHtml = () => {
+  const [before, accent, after] = BRAND_WORDMARK.parts;
+  return `<svg class="logo" viewBox="0 0 ${BRAND_WORDMARK.width} ${BRAND_WORDMARK.height}">
+    ${buildMarkShapes()}
+    <text x="${BRAND_WORDMARK.textX}" y="${BRAND_WORDMARK.baseline}" textLength="${BRAND_WORDMARK.textLength}" lengthAdjust="spacingAndGlyphs" font-family="${BRAND_WORDMARK.fontFamily}" font-weight="${BRAND_WORDMARK.fontWeight}" font-size="${BRAND_WORDMARK.fontSize}" fill="#ffffff">${before}<tspan fill="${BRAND.lime}">${accent}</tspan>${after}</text>
+  </svg>`;
 };
 
 const buildOgHtml = async () => {
@@ -171,8 +110,7 @@ const buildOgHtml = async () => {
     .bg{position:absolute;inset:0;background:url(${background}) center/cover no-repeat;filter:saturate(1.25) brightness(1.35)}
     .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,18,46,.94) 0%,rgba(3,18,46,.8) 42%,rgba(3,18,46,.25) 75%,rgba(3,18,46,0) 100%),linear-gradient(0deg,rgba(3,18,46,.75) 0%,rgba(3,18,46,0) 38%)}
     .content{position:absolute;inset:0;padding:60px 72px 64px;display:flex;flex-direction:column}
-    .logo{position:relative;display:block;width:312px;aspect-ratio:252/85}
-    .logo img{display:block;max-width:none}
+    .logo{display:block;width:300px;height:auto;aspect-ratio:${BRAND_WORDMARK.width}/${BRAND_WORDMARK.height}}
     .eyebrow{margin-top:auto;display:flex;align-items:center;gap:16px;color:${BRAND.lime};font-size:22px;font-weight:600;letter-spacing:.01em}
     .eyebrow::before{content:'';width:40px;height:2px;background:${BRAND.lime}}
     h1{margin-top:22px;font-family:'Instrument Sans','DM Sans',sans-serif;font-weight:600;font-size:76px;line-height:1.02;letter-spacing:-.03em;max-width:860px}
@@ -184,7 +122,7 @@ const buildOgHtml = async () => {
   </style></head><body>
     <div class="bg"></div><div class="shade"></div>
     <div class="content">
-      ${await buildLogoHtml()}
+      ${buildLogoHtml()}
       <p class="eyebrow">Virtual Innovative Research &amp; Technology Community</p>
       <h1>Where ambitious minds <span>move research forward.</span></h1>
       <div class="footer">
@@ -195,19 +133,13 @@ const buildOgHtml = async () => {
   </body></html>`;
 };
 
-interface GlobeSource {
-  src: string;
-  box: Box;
-}
-
-const buildIconHtml = ({ src, box }: GlobeSource, size: number, padding: number, radius: number) =>
+const buildIconHtml = (size: number, padding: number, radius: number) =>
   `<!doctype html><html><head><style>
     *{margin:0;padding:0}
     html,body{width:${size}px;height:${size}px;background:transparent;overflow:hidden}
     .tile{width:${size}px;height:${size}px;border-radius:${radius}px;background:radial-gradient(circle at 30% 25%,#0b2a5c 0%,${BRAND.bg} 70%);display:flex;align-items:center;justify-content:center}
-    .globe{position:relative;display:block;width:${size - padding * 2}px;height:${size - padding * 2}px;overflow:hidden}
-    .globe img{position:absolute;max-width:none}
-  </style></head><body><div class="tile">${buildGlobeHtml(src, box, size - padding * 2)}</div></body></html>`;
+    .mark{display:block;width:${size - padding * 2}px;height:${size - padding * 2}px}
+  </style></head><body><div class="tile"><svg class="mark" viewBox="0 0 ${BRAND_MARK.size} ${BRAND_MARK.size}">${buildMarkShapes()}</svg></div></body></html>`;
 
 const render = async (page: Page, html: string, width: number, height: number) => {
   await page.setViewportSize({ width, height });
@@ -260,13 +192,10 @@ const main = async () => {
       await render(page, await buildOgHtml(), 1200, 630),
     );
 
-    const src = await dataUri(path.join(LOGO_DIR, 'globe.webp'), 'image/webp');
-    const globe: GlobeSource = { src, box: await measureGlobe(page, src) };
-
     for (const { file, size, padding, radius } of ICONS) {
       await writeFile(
         path.join(PUBLIC_DIR, file),
-        await render(page, buildIconHtml(globe, size, padding, radius), size, size),
+        await render(page, buildIconHtml(size, padding, radius), size, size),
       );
     }
 
@@ -276,7 +205,7 @@ const main = async () => {
       const radius = Math.round(size * 0.22);
       icoImages.push({
         size,
-        png: await render(page, buildIconHtml(globe, size, padding, radius), size, size),
+        png: await render(page, buildIconHtml(size, padding, radius), size, size),
       });
     }
     await writeFile(path.join(PUBLIC_DIR, 'favicon.ico'), buildIco(icoImages));

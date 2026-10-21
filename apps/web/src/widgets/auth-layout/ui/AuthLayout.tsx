@@ -2,7 +2,8 @@ import { Fragment, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
-import authBackground from '@/shared/assets/auth/sidebar.webp';
+import { LogoMark } from '@/shared/ui/logo';
+import { AuthBannerArt } from './AuthBannerArt';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -65,15 +66,7 @@ export function AuthLayout({
       <div className="w-full lg:h-full bg-white rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 shadow-2xl p-2 sm:p-8 lg:p-[clamp(12px,2.5svh,32px)]">
         {/* Left Side Visual Banner */}
         <div className="hidden lg:col-span-6 relative bg-auth-banner p-14 lg:p-[clamp(32px,6svh,56px)] lg:flex flex-col justify-between overflow-hidden rounded-2xl">
-          {/* Background Image from Figma */}
-          <img
-            src={authBackground}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"
-          />
-
-          {/* Темний градієнтний оверлей як у Figma */}
-          <div className="absolute inset-0 bg-gradient-to-b from-auth-overlay/70 via-auth-overlay/30 to-auth-overlay/80 pointer-events-none z-0" />
+          <AuthBannerArt />
 
           <div className="relative z-10">
             <span className="font-auth text-[11px] font-medium leading-[16.5px] tracking-[1.76px] text-auth-accent uppercase">
@@ -90,13 +83,8 @@ export function AuthLayout({
 
           {/* Bottom Badge */}
           <div className="relative z-10 mt-12 bg-auth-overlay/40 backdrop-blur-md rounded-[14px] p-[10px] pr-[18px] border border-white/20 flex items-center gap-[14px] w-fit shadow-lg">
-            {/* Маленька біла картка з експортованою іконкою */}
-            <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center p-1 shrink-0 overflow-hidden">
-              <img
-                src="/community-logo.svg"
-                alt="VIRaTeC"
-                className="w-full h-full object-contain"
-              />
+            <div className="w-12 h-12 rounded-[10px] bg-auth-banner border border-white/10 flex items-center justify-center p-1.5 shrink-0">
+              <LogoMark className="size-full" />
             </div>
 
             <div>
