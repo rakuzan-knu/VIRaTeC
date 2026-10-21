@@ -4,7 +4,7 @@ import posterSrc from '../assets/hero-background.webp';
 import webmSrc from '../assets/hero-background.webm';
 import mp4Src from '../assets/hero-background.mp4';
 
-const VIDEO_MEDIA_QUERY = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)';
+const VIDEO_MEDIA_QUERY = '(min-width: 1024px)';
 
 type NavigatorWithConnection = Navigator & { connection?: { saveData?: boolean } };
 
