@@ -42,6 +42,18 @@ interface PublicationEntry {
   text: Localized<PublicationText>;
 }
 
+const COVER_MODULES = import.meta.glob<string>('../assets/*.webp', {
+  eager: true,
+  import: 'default',
+});
+
+const COVERS = Object.fromEntries(
+  Object.entries(COVER_MODULES).map(([path, src]) => [
+    path.slice(path.lastIndexOf('/') + 1, -'.webp'.length),
+    src,
+  ]),
+);
+
 const LINKEDIN_POST = 'https://www.linkedin.com/feed/update/urn:li:activity:';
 
 const GRAIL_ISSUE_BLOCKS = defineMessages<PublicationBlock[]>({
@@ -185,6 +197,26 @@ const ENTRIES: PublicationEntry[] = [
     },
   },
   {
+    slug: 'human-ai-interaction-multilingual-teams-2026',
+    type: 'paper',
+    year: 2026,
+    sourceUrl: 'https://doi.org/10.17721/StudLing2026.28.68-82',
+    text: {
+      en: {
+        title: 'Human-AI interaction in multilingual professional teams: a pragmatic analysis',
+        source: 'K. Matukh, K. Liashenko, L. Liashenko, L. Budanova · Studia Linguistica, Vol. 28',
+        excerpt:
+          'A pragmatic analysis of AI-mediated communication in multilingual remote teams, based on 240 anonymised interaction logs. Studia Linguistica, 2026, pp. 68–82.',
+      },
+      uk: {
+        title: 'Human-AI interaction in multilingual professional teams: a pragmatic analysis',
+        source: 'К. Матух, К. Ляшенко, Л. Ляшенко, Л. Буданова · Studia Linguistica, т. 28',
+        excerpt:
+          'Прагматичний аналіз комунікації за участі ШІ в багатомовних дистанційних командах на основі 240 анонімізованих журналів взаємодії. Studia Linguistica, 2026, с. 68–82.',
+      },
+    },
+  },
+  {
     slug: 'integrating-rbl-into-coil-acit-2026',
     type: 'paper',
     year: 2026,
@@ -227,6 +259,50 @@ const ENTRIES: PublicationEntry[] = [
         source: 'ІІ Міжнародна наукова конференція · КНУ, 14–15 жовтня 2026',
         excerpt:
           'Д-р Лариса Ляшенко виступила з пленарною доповіддю про глобальну мережу студентської співпраці; Ольга Єзерська та Лариса Ляшенко представили спільну доповідь.',
+      },
+    },
+  },
+  {
+    slug: 'cross-cultural-communication-coil-2026',
+    type: 'paper',
+    year: 2026,
+    linkKind: 'more',
+    text: {
+      en: {
+        title:
+          'Cross-cultural communication strategies in virtual international collaboration: language, participation, asynchronous support and gamification in a COIL setting',
+        source: 'O. Yezerska, L. Liashenko · Tyshchenko Legacy Conference, Section 7',
+        excerpt:
+          'Communication strategies from an introductory NLP workshop with participants from Ukraine, the USA, Algeria and India; post-workshop survey N = 50, mean satisfaction 4.38/5.',
+      },
+      uk: {
+        title:
+          'Cross-cultural communication strategies in virtual international collaboration: language, participation, asynchronous support and gamification in a COIL setting',
+        source: 'О. Єзерська, Л. Ляшенко · конференція пам’яті К. Тищенка, секція 7',
+        excerpt:
+          'Комунікаційні стратегії вступного NLP-воркшопу з учасниками з України, США, Алжиру та Індії; опитування після воркшопу N = 50, середня оцінка 4,38/5.',
+      },
+    },
+  },
+  {
+    slug: 'nlp-gis-spatial-analysis-2026',
+    type: 'paper',
+    year: 2026,
+    linkKind: 'more',
+    text: {
+      en: {
+        title:
+          'Integration of Natural Language Processing and Geographic Information Systems for data-driven spatial analysis',
+        source: 'M. Aksom, L. Liashenko · Tyshchenko Legacy Conference, Section 7',
+        excerpt:
+          'Turning unstructured text into spatial decisions: ML predictions combined with spatial data and visualised as an interactive heatmap.',
+      },
+      uk: {
+        title:
+          'Integration of Natural Language Processing and Geographic Information Systems for data-driven spatial analysis',
+        source: 'М. Аксьом, Л. Ляшенко · конференція пам’яті К. Тищенка, секція 7',
+        excerpt:
+          'Перетворення неструктурованого тексту на просторові рішення: прогнози ML поєднано з просторовими даними та візуалізовано як інтерактивну теплову карту.',
       },
     },
   },
@@ -559,22 +635,158 @@ const ENTRIES: PublicationEntry[] = [
     },
   },
   {
+    slug: 'embedding-rbl-virtual-international-education-2025',
+    type: 'paper',
+    year: 2025,
+    sourceUrl: 'https://drive.google.com/file/d/1yxwGMSE4b7l0B3YjlQHmvOkWM_3gvjK9/view',
+    text: {
+      en: {
+        title:
+          'Embedding Research-Based Learning in virtual international education: enhancing students’ academic engagement and intercultural intelligence',
+        source:
+          'L. Liashenko, T. Andriichuk, O. Stepanenko, O. Krasnenko · XII IT&I satellite conference, Kyiv, 25 November 2025',
+        excerpt: 'Conference abstract, pp. 234–236.',
+      },
+      uk: {
+        title:
+          'Embedding Research-Based Learning in virtual international education: enhancing students’ academic engagement and intercultural intelligence',
+        source:
+          'Л. Ляшенко, Т. Андрійчук, О. Степаненко, О. Красненко · XII сателітна конференція IT&I, Київ, 25 листопада 2025',
+        excerpt: 'Тези доповіді, с. 234–236.',
+      },
+    },
+  },
+  {
+    slug: 'advancing-cyber-hygiene-education-coil-2025',
+    type: 'paper',
+    year: 2025,
+    sourceUrl: 'https://drive.google.com/file/d/1xJuRxj-RbKQ9k4fPuh57dyxMoDhMihUV/view',
+    text: {
+      en: {
+        title:
+          'Advancing cyber hygiene education through COIL: interactive student-led workshop on digital security',
+        source:
+          'Y. Novichkova, I. Parkhomenko, L. Liashenko · VII All-Ukrainian Conference of Young Scientists, PSTU, Dnipro, 19 November 2025',
+        excerpt:
+          'The international COIL workshop “Fundamentals of Cyber Hygiene 2.0: Advanced” on privacy protection, data collection practices and ethical hacking. Pp. 182–183.',
+      },
+      uk: {
+        title:
+          'Advancing cyber hygiene education through COIL: interactive student-led workshop on digital security',
+        source:
+          'Ю. Новічкова, І. Пархоменко, Л. Ляшенко · VII Всеукраїнська конференція молодих учених, ПДТУ, Дніпро, 19 листопада 2025',
+        excerpt:
+          'Міжнародний COIL-воркшоп «Fundamentals of Cyber Hygiene 2.0: Advanced» про захист приватності, збирання даних і етичний хакінг. С. 182–183.',
+      },
+    },
+  },
+  {
+    slug: 'vocabulary-expansion-oed-2025',
+    type: 'paper',
+    year: 2025,
+    sourceUrl:
+      'https://archives.mcnd.org.ua/index.php/conference-proceeding/issue/view/21.11.2025/70',
+    text: {
+      en: {
+        title: 'Sources and mechanisms of vocabulary expansion in the Oxford English Dictionary',
+        source:
+          'N. Havrysh, L. Liashenko, L. Budanova · V International Scientific Conference “Innovative Science”, 21 November 2025',
+        excerpt: 'Student research supervised by Dr. Larysa Liashenko. Pp. 393–402.',
+      },
+      uk: {
+        title: 'Sources and mechanisms of vocabulary expansion in the Oxford English Dictionary',
+        source:
+          'Н. Гавриш, Л. Ляшенко, Л. Буданова · V Міжнародна наукова конференція «Інноваційна наука», 21 листопада 2025',
+        excerpt: 'Студентське дослідження під керівництвом д-ра Лариси Ляшенко. С. 393–402.',
+      },
+    },
+  },
+  {
+    slug: 'language-of-youth-slang-2025',
+    type: 'paper',
+    year: 2025,
+    sourceUrl:
+      'https://archives.mcnd.org.ua/index.php/conference-proceeding/issue/view/21.11.2025/70',
+    text: {
+      en: {
+        title: 'Language of youth: English and Ukrainian slang',
+        source:
+          'K. Samoilenko, L. Liashenko, L. Budanova · V International Scientific Conference “Innovative Science”, 21 November 2025',
+        excerpt: 'Student research supervised by Dr. Larysa Liashenko. Pp. 384–392.',
+      },
+      uk: {
+        title: 'Language of youth: English and Ukrainian slang',
+        source:
+          'К. Самойленко, Л. Ляшенко, Л. Буданова · V Міжнародна наукова конференція «Інноваційна наука», 21 листопада 2025',
+        excerpt: 'Студентське дослідження під керівництвом д-ра Лариси Ляшенко. С. 384–392.',
+      },
+    },
+  },
+  {
+    slug: 'dialect-vocabulary-tom-sawyer-2025',
+    type: 'paper',
+    year: 2025,
+    sourceUrl:
+      'https://archives.mcnd.org.ua/index.php/conference-proceeding/issue/view/21.11.2025/70',
+    text: {
+      en: {
+        title:
+          'Dialect vocabulary in translation: a practical aspect based on Mark Twain’s The Adventures of Tom Sawyer',
+        source:
+          'A. Chornoivanenko, L. Liashenko, L. Budanova · V International Scientific Conference “Innovative Science”, 21 November 2025',
+        excerpt: 'Student research supervised by Dr. Larysa Liashenko. Pp. 375–383.',
+      },
+      uk: {
+        title:
+          'Dialect vocabulary in translation: a practical aspect based on Mark Twain’s The Adventures of Tom Sawyer',
+        source:
+          'А. Чорноіваненко, Л. Ляшенко, Л. Буданова · V Міжнародна наукова конференція «Інноваційна наука», 21 листопада 2025',
+        excerpt: 'Студентське дослідження під керівництвом д-ра Лариси Ляшенко. С. 375–383.',
+      },
+    },
+  },
+  {
+    slug: 'implicit-information-literary-translation-2025',
+    type: 'paper',
+    year: 2025,
+    sourceUrl:
+      'https://archives.mcnd.org.ua/index.php/conference-proceeding/issue/view/05.12.2025/72',
+    text: {
+      en: {
+        title:
+          'Translation strategies and approaches to conveying implicit information in literary texts',
+        source:
+          'D. Homeniuk, L. Liashenko, L. Budanova · X International Scientific Conference, Chernihiv, 5 December 2025',
+        excerpt: 'Student research supervised by Dr. Larysa Liashenko. Pp. 378–385.',
+      },
+      uk: {
+        title:
+          'Перекладацькі стратегії та підходи до передачі імпліцитної інформації у художньому тексті',
+        source:
+          'Д. Гоменюк, Л. Ляшенко, Л. Буданова · Х Міжнародна наукова конференція, Чернігів, 5 грудня 2025',
+        excerpt: 'Студентське дослідження під керівництвом д-ра Лариси Ляшенко. С. 378–385.',
+      },
+    },
+  },
+  {
     slug: 'cybersecurity-in-action-pcsics-2025',
     type: 'paper',
     year: 2025,
-    linkKind: 'more',
-    sourceUrl:
-      'https://pcsits.knu.ua/wp-content/uploads/2025/04/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%B0-2025.pdf',
+    sourceUrl: 'https://drive.google.com/file/d/1R1ywVEyM1XpghS4_6EA_b414LsMbjzHY/view',
     text: {
       en: {
-        title: 'Cybersecurity in Action: an international COIL project with interactive workshops',
-        source: 'L. Liashenko, T. Andriichuk · VIII International PCSICS Conference, 11 April 2025',
+        title:
+          'Cybersecurity in Action: the experience of an international COIL project with interactive workshops and a poster session',
+        source:
+          'A. Dmytrenko, A. Loban, L. Liashenko, T. Andriichuk · VIII International Conference CPICS, Kyiv, 11 April 2025, pp. 173–175',
         excerpt:
           'A Cybersecurity Essentials COIL pilot with partners in Ukraine, Colombia and Chile, presented with a student poster session.',
       },
       uk: {
-        title: 'Cybersecurity in Action: an international COIL project with interactive workshops',
-        source: 'Л. Ляшенко, Т. Андрійчук · VIII Міжнародна конференція PCSICS, 11 квітня 2025',
+        title:
+          'Кібербезпека в дії: досвід міжнародного COIL-проєкту з інтерактивними воркшопами та постерною сесією',
+        source:
+          'А. Дмитренко, А. Лобан, Л. Ляшенко, Т. Андрійчук · VIII Міжнародна конференція CPICS, Київ, 11 квітня 2025, с. 173–175',
         excerpt:
           'Пілотний COIL Cybersecurity Essentials з партнерами з України, Колумбії та Чилі, представлений разом зі студентською постерною сесією.',
       },
@@ -606,18 +818,19 @@ const ENTRIES: PublicationEntry[] = [
     slug: 'professional-english-digital-portfolios-2024',
     type: 'paper',
     year: 2024,
-    sourceUrl: 'https://doi.org/10.17721/studling2024.25.89-98',
+    sourceUrl:
+      'https://studia-linguistica.knu.ua/wp-content/uploads/2025/02/89_98_Lyashenko_25.pdf',
     text: {
       en: {
         title:
           'Reevaluating assessment practices in higher education: professional English digital portfolios for first-year data analysis students',
-        source: 'Studia Linguistica',
+        source: 'L. V. Liashenko, K. A. Liashenko · Studia Linguistica, No. 25',
         excerpt: ORCID_JOURNAL.en,
       },
       uk: {
         title:
           'Reevaluating assessment practices in higher education: professional English digital portfolios for first-year data analysis students',
-        source: 'Studia Linguistica',
+        source: 'Л. В. Ляшенко, К. А. Ляшенко · Studia Linguistica, № 25',
         excerpt: ORCID_JOURNAL.uk,
       },
     },
@@ -682,7 +895,7 @@ const ENTRIES: PublicationEntry[] = [
   },
 ];
 
-const PUBLICATIONS = mapLocalized(PUBLICATION_LABELS, (labels, locale) =>
+export const PUBLICATIONS = mapLocalized(PUBLICATION_LABELS, (labels, locale) =>
   ENTRIES.map(({ text, linkKind, detailLinks, ...entry }): Publication => {
     const { detail, ...localizedText } = text[locale];
     const kind = linkKind ?? (entry.type === 'paper' ? 'paper' : 'more');
@@ -691,6 +904,7 @@ const PUBLICATIONS = mapLocalized(PUBLICATION_LABELS, (labels, locale) =>
       ...entry,
       ...localizedText,
       linkLabel: kind === 'paper' ? labels.readPaper : labels.readMore,
+      image: COVERS[entry.slug],
       detail: detail && { ...detail, ...detailLinks },
     };
   }),

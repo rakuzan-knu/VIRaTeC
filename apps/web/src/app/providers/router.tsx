@@ -1,4 +1,9 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  type RouterNavigateOptions,
+  type To,
+} from 'react-router-dom';
 import { HomePage } from '@/pages/home';
 import { RegisterPage } from '@/pages/register';
 import { GuestRoute } from './GuestRoute';
@@ -147,6 +152,13 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+const baseNavigate = router.navigate.bind(router);
+
+router.navigate = ((to: To | number | null, opts?: RouterNavigateOptions) =>
+  typeof to === 'number'
+    ? baseNavigate(to)
+    : baseNavigate(to, { viewTransition: true, ...opts })) as typeof router.navigate;
 
 export function AppRouter() {
   return <RouterProvider router={router} />;

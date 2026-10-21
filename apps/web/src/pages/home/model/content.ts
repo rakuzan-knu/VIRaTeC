@@ -87,8 +87,6 @@ export interface HomeContent {
     researchAction: string;
     collaborateAction: string;
     partnersCaption: string;
-    knu: string;
-    kyiv: string;
   };
   about: {
     eyebrow: string;
@@ -136,8 +134,6 @@ export const HOME_CONTENT = defineMessages<HomeContent>({
       researchAction: 'Our Research',
       collaborateAction: 'Collaborate',
       partnersCaption: 'In collaboration with',
-      knu: 'KNU',
-      kyiv: 'Kyiv',
     },
     about: {
       eyebrow: 'About VIRaTeC',
@@ -166,9 +162,9 @@ export const HOME_CONTENT = defineMessages<HomeContent>({
         },
       ],
       stats: [
-        { value: '14', label: 'partner universities named in projects' },
-        { value: '8', label: 'countries in the network' },
-        { value: '206', label: 'students in the 2026 Foundations of NLP module' },
+        { value: '500+', label: 'students from the Americas, Europe, Africa and Asia' },
+        { value: '15+', label: 'partner universities worldwide' },
+        { value: '10', label: 'partner countries' },
       ],
     },
     research: {
@@ -186,7 +182,7 @@ export const HOME_CONTENT = defineMessages<HomeContent>({
         {
           title: 'Foundations of NLP',
           description:
-            'An 8-week certified module led by a Master’s student: 31 international teams, 206 students from 7 universities and Chartbeat.',
+            'An 8-week certified module led by a Master’s student: 31 international teams, 206 students from 8 universities.',
           to: ROUTES.PROJECTS,
         },
         {
@@ -264,8 +260,6 @@ export const HOME_CONTENT = defineMessages<HomeContent>({
       researchAction: 'Наші дослідження',
       collaborateAction: 'Співпрацювати',
       partnersCaption: 'У співпраці з',
-      knu: 'КНУ',
-      kyiv: 'Київ',
     },
     about: {
       eyebrow: 'Про VIRaTeC',
@@ -295,9 +289,9 @@ export const HOME_CONTENT = defineMessages<HomeContent>({
         },
       ],
       stats: [
-        { value: '14', label: 'університетів-партнерів, залучених до проєктів' },
-        { value: '8', label: 'країн у мережі' },
-        { value: '206', label: 'студентів у модулі Foundations of NLP 2026 року' },
+        { value: '500+', label: 'студентів з Америки, Європи, Африки та Азії' },
+        { value: '15+', label: 'університетів-партнерів у світі' },
+        { value: '10', label: 'країн-партнерів' },
       ],
     },
     research: {
@@ -315,7 +309,7 @@ export const HOME_CONTENT = defineMessages<HomeContent>({
         {
           title: 'Основи NLP',
           description:
-            '8-тижневий сертифікований модуль під керівництвом магістранта: 31 міжнародна команда, 206 студентів із 7 університетів і компанії Chartbeat.',
+            '8-тижневий сертифікований модуль під керівництвом магістранта: 31 міжнародна команда, 206 студентів із 8 університетів.',
           to: ROUTES.PROJECTS,
         },
         {

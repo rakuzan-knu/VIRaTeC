@@ -1,4 +1,7 @@
 import { ROUTES } from '@/shared/config/routes';
+import ideaPhoto from '@/shared/assets/photos/student-podium.webp';
+import collaborationPhoto from '@/shared/assets/photos/global-coil-meeting.webp';
+import implementationPhoto from '@/shared/assets/photos/workshop-drawing.webp';
 import { useCommonMessages, useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -13,12 +16,15 @@ import introVideoWebm from '../assets/what-is-viratec.webm';
 import introVideoMp4 from '../assets/what-is-viratec.mp4';
 import introVideoPoster from '../assets/what-is-viratec-poster.webp';
 import { JourneyTimeline } from './JourneyTimeline';
-import { useDocumentTitle } from '@/shared/lib';
+import { MomentsGallery } from './MomentsGallery';
+import { useSeo } from '@/shared/lib';
+
+const PRINCIPLE_PHOTOS = [ideaPhoto, collaborationPhoto, implementationPhoto];
 
 export function ViratecPage() {
   const content = useLocalized(VIRATEC_CONTENT);
   const common = useCommonMessages();
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -78,10 +84,9 @@ export function ViratecPage() {
           title={content.participantsTitle}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {content.participants.map((participant, index) => (
+          {content.participants.map((participant) => (
             <li key={participant.title}>
               <InfoCard
-                index={String(index + 1).padStart(2, '0')}
                 title={participant.title}
                 description={participant.description}
                 className="lg:min-h-[204px]"
@@ -99,10 +104,10 @@ export function ViratecPage() {
           description={content.coilDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {content.principles.map((principle) => (
+          {content.principles.map((principle, index) => (
             <li key={principle.title}>
               <InfoCard
-                withImage
+                image={PRINCIPLE_PHOTOS[index]}
                 title={principle.title}
                 description={principle.description}
                 linkLabel={common.learnMore}
@@ -124,8 +129,18 @@ export function ViratecPage() {
         <StepsList steps={content.joinSteps} />
       </PageSection>
 
+      <PageSection tone="surface" aria-labelledby="moments-title">
+        <SectionHeader
+          id="moments-title"
+          eyebrow={content.momentsEyebrow}
+          title={content.momentsTitle}
+          accent={content.momentsAccent}
+        />
+        <MomentsGallery moments={content.moments} />
+      </PageSection>
+
       <CtaSection
-        tone="surface"
+        tone="base"
         title={content.ctaTitle}
         description={content.ctaDescription}
         action={{ label: common.seeOpportunities, to: ROUTES.OPPORTUNITIES }}

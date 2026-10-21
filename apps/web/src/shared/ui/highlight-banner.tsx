@@ -1,3 +1,4 @@
+import { CountUp } from './count-up';
 import { ExpandableText } from './expandable-text';
 
 export interface HighlightStat {
@@ -13,7 +14,7 @@ interface HighlightBannerProps {
 
 export function HighlightBanner({ title, description, stats }: HighlightBannerProps) {
   return (
-    <div className="flex flex-col gap-6 rounded-[28px] border border-white/10 bg-viratec-deep px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:rounded-[36px] lg:px-14 lg:py-14">
+    <div className="flex flex-col gap-6 atlas-card rounded-[28px] border border-transparent bg-viratec-deep/70 px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:rounded-[36px] lg:px-14 lg:py-14">
       <div className="flex flex-col gap-3.5 lg:max-w-[680px]">
         <h2 className="font-display text-[28px] leading-[34px] font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]">
           {title}
@@ -26,7 +27,7 @@ export function HighlightBanner({ title, description, stats }: HighlightBannerPr
         {stats.map((stat) => (
           <li key={stat.label} className="flex flex-col gap-0.5">
             <span className="font-display text-[40px] leading-[44px] font-medium tracking-[-0.03em] text-viratec-accent tabular-nums lg:text-[56px] lg:leading-[60px]">
-              {stat.value}
+              <CountUp value={stat.value} />
             </span>
             <span className="text-[13px] text-viratec-muted lg:text-[15px]">{stat.label}</span>
           </li>

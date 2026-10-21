@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { ROUTES } from '@/shared/config/routes';
-import { cn, useDocumentTitle } from '@/shared/lib';
+import { cn, useSeo } from '@/shared/lib';
 import { countUk, defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { ChipGroup } from '@/shared/ui/chip';
 import { SelectMenu } from '@/shared/ui/select-menu';
@@ -63,7 +63,7 @@ export function ProjectsPage() {
   const t = useLocalized(PROJECTS_MESSAGES);
   const common = useCommonMessages();
   const options = useFilterOptions();
-  useDocumentTitle(t.documentTitle);
+  useSeo(t.documentTitle);
 
   const listing = useProjectListing();
   const [isSheetOpen, setIsSheetOpen] = useState(false);

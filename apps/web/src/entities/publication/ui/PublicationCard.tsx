@@ -32,12 +32,18 @@ export function PublicationCard({ publication }: PublicationCardProps) {
 }
 
 export function FeaturedPublicationCard({ publication }: PublicationCardProps) {
+  const labels = usePublicationLabels();
+
   return (
     <Link
       to={buildPublicationPath(publication.slug)}
       className={`flex flex-col gap-6 rounded-[28px] border border-white/10 bg-white/[0.035] p-5 lg:flex-row lg:items-center lg:gap-12 lg:rounded-[36px] lg:py-6 lg:pr-12 lg:pl-6 ${CARD_LINK_CLASS}`}
     >
-      <MediaPlaceholder className="h-[190px] rounded-[14px] lg:h-80 lg:w-[560px] lg:rounded-[18px]" />
+      <MediaPlaceholder
+        src={publication.image}
+        label={labels.type[publication.type]}
+        className="h-[190px] rounded-[14px] lg:h-80 lg:w-[560px] lg:rounded-[18px]"
+      />
       <div className="flex flex-col gap-3.5">
         <span className="text-[13px] text-viratec-subtle lg:text-sm">{publication.year}</span>
         <h2 className="font-display text-2xl leading-[30px] font-medium tracking-[-0.025em] text-white lg:text-[38px] lg:leading-[44px]">
@@ -68,7 +74,11 @@ export function RelatedPublicationCard({ publication }: RelatedPublicationCardPr
       to={buildPublicationPath(publication.slug)}
       className={`flex h-full flex-col gap-4 rounded-[28px] border border-white/10 bg-white/[0.035] p-6 lg:min-h-[409px] lg:p-8 ${CARD_LINK_CLASS}`}
     >
-      <MediaPlaceholder className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]" />
+      <MediaPlaceholder
+        src={publication.image}
+        label={labels.type[publication.type]}
+        className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]"
+      />
       <h3 className="font-display text-xl leading-[26px] font-medium tracking-[-0.02em] text-white lg:text-[22px] lg:leading-7">
         {publication.title}
       </h3>

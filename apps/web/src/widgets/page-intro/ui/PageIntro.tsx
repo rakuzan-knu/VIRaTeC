@@ -2,9 +2,11 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/shared/lib';
 import { Eyebrow } from '@/shared/ui/eyebrow';
+import { SplitWords, countWords } from '@/shared/ui/split-words';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import { SiteHeader } from '@/widgets/site-header';
 import contactGlow from '@/shared/assets/icons/contact-glow.svg';
+import { IntroGlobe } from './IntroGlobe';
 
 export type PageIntroTone = 'blue' | 'teal' | 'glow';
 
@@ -27,12 +29,6 @@ const PAGE_INTRO_MESSAGES = defineMessages({
   uk: { breadcrumb: 'Навігаційний ланцюжок' },
 });
 
-const TONE_CLASS: Record<PageIntroTone, string> = {
-  blue: 'bg-viratec-bg bg-[radial-gradient(120%_90%_at_100%_100%,rgba(11,90,168,0.55)_0%,rgba(5,27,64,0.4)_45%,transparent_75%)]',
-  teal: 'bg-viratec-bg bg-[radial-gradient(120%_90%_at_100%_100%,rgba(19,138,138,0.5)_0%,rgba(5,27,64,0.4)_45%,transparent_75%)]',
-  glow: 'bg-viratec-bg',
-};
-
 export function PageIntro({
   breadcrumb,
   eyebrow,
@@ -47,7 +43,8 @@ export function PageIntro({
   const t = useLocalized(PAGE_INTRO_MESSAGES);
 
   return (
-    <div className={cn('relative overflow-hidden', TONE_CLASS[tone])}>
+    <div data-tone={tone} className="relative">
+      {tone !== 'glow' && <IntroGlobe />}
       {tone === 'glow' && (
         <div
           aria-hidden="true"
@@ -63,7 +60,7 @@ export function PageIntro({
 
       <div
         className={cn(
-          'relative z-10 mx-auto flex max-w-[1440px] flex-col items-start gap-5 px-5 pt-12 pb-14 lg:gap-7 lg:px-[85px] lg:pt-[120px] lg:pb-[112px]',
+          'intro-cascade relative z-10 mx-auto flex max-w-[1440px] flex-col items-start gap-5 px-5 pt-12 pb-14 lg:gap-7 lg:px-[85px] lg:pt-[120px] lg:pb-[112px]',
           className,
         )}
       >
@@ -96,11 +93,13 @@ export function PageIntro({
         )}
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
         <h1 className="max-w-[1080px] font-display text-[44px] leading-[46px] font-medium tracking-[-0.035em] text-white lg:text-[88px] lg:leading-[88px]">
-          {title}
+          <SplitWords text={title} />
           {accent && (
             <>
               <br />
-              <span className="text-white/50">{accent}</span>
+              <span className="text-white/50">
+                <SplitWords text={accent} offset={countWords(title)} />
+              </span>
             </>
           )}
         </h1>

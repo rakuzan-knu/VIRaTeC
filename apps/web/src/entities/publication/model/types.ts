@@ -29,6 +29,7 @@ export interface Publication {
   excerpt: string;
   linkLabel: string;
   isFeatured?: boolean;
+  image?: string;
   sourceUrl?: string;
   detail?: PublicationDetail;
 }

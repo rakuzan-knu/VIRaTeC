@@ -190,7 +190,7 @@ export function SiteFooter() {
   const toggleSection = (id: string) => setOpenSection((current) => (current === id ? null : id));
 
   return (
-    <footer className="border-t border-white/8 bg-viratec-night font-viratec">
+    <footer className="overflow-hidden border-t border-white/8 bg-viratec-night font-viratec">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-5 pt-14 pb-8 min-[800px]:gap-16 min-[800px]:px-[85px] min-[800px]:pt-24 min-[800px]:pb-10">
         <div className="flex flex-col gap-8 min-[800px]:gap-14 lg:flex-row lg:justify-between">
           <div className="flex flex-col gap-5 min-[800px]:gap-6">
@@ -221,12 +221,12 @@ export function SiteFooter() {
                   iD
                 </OptionalLink>
                 <OptionalLink
-                  href={SOCIAL_LINKS.researchGate}
-                  label="ResearchGate"
+                  href={SOCIAL_LINKS.scopus}
+                  label="Scopus"
                   className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
                   unavailableClassName="hover:bg-white/6"
                 >
-                  RG
+                  Sc
                 </OptionalLink>
                 <OptionalLink
                   href={SOCIAL_LINKS.googleScholar}
@@ -237,7 +237,6 @@ export function SiteFooter() {
                   <img src={scholarIcon} alt="" />
                 </OptionalLink>
               </div>
-              <p className="text-xs text-viratec-subtle">{common.unavailable('ResearchGate')}</p>
             </div>
           </div>
 
@@ -296,6 +295,13 @@ export function SiteFooter() {
             ))}
           </ul>
         </div>
+
+        <p
+          aria-hidden="true"
+          className="atlas-wordmark -mb-[0.32em] text-center font-display text-[calc((100vw-40px)/3.6)] leading-[0.8] font-medium tracking-[-0.06em] min-[800px]:text-[calc((100vw-170px)/3.6)] min-[1440px]:text-[352px]"
+        >
+          VIRaTeC
+        </p>
       </div>
     </footer>
   );

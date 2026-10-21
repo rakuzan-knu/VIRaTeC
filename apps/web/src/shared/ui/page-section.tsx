@@ -9,8 +9,8 @@ interface PageSectionProps extends ComponentProps<'section'> {
 }
 
 const TONE_CLASS: Record<SectionTone, string> = {
-  base: 'bg-viratec-bg',
-  surface: 'bg-viratec-surface',
+  base: '',
+  surface: 'field-divider',
   none: '',
 };
 

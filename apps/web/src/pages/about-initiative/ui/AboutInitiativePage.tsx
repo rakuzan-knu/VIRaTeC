@@ -9,12 +9,12 @@ import { CtaSection } from '@/shared/ui/cta-section';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { ABOUT_INITIATIVE_CONTENT } from '../model/content';
-import { useDocumentTitle } from '@/shared/lib';
+import { ABOUT_INITIATIVE_CONTENT, FOUNDER_PHOTO } from '../model/content';
+import { useSeo } from '@/shared/lib';
 
 export function AboutInitiativePage() {
   const content = useLocalized(ABOUT_INITIATIVE_CONTENT);
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -54,10 +54,9 @@ export function AboutInitiativePage() {
           title={content.valuesTitle}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {content.values.map((value, index) => (
+          {content.values.map((value) => (
             <li key={value.title}>
               <InfoCard
-                index={String(index + 1).padStart(2, '0')}
                 title={value.title}
                 description={value.description}
                 className="lg:min-h-[180px]"
@@ -76,7 +75,38 @@ export function AboutInitiativePage() {
         <StepsList steps={content.philosophy} />
       </PageSection>
 
-      <PageSection tone="surface" aria-labelledby="team-title">
+      <PageSection tone="surface" aria-labelledby="founder-title">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-16">
+          <img
+            src={FOUNDER_PHOTO}
+            alt={content.founderName}
+            width={320}
+            height={320}
+            loading="lazy"
+            className="size-40 shrink-0 rounded-[28px] object-cover lg:size-80 lg:rounded-[36px]"
+          />
+          <div className="flex flex-col gap-5">
+            <SectionHeader
+              id="founder-title"
+              eyebrow={content.founderEyebrow}
+              title={content.founderName}
+            />
+            <p className="text-[15px] leading-[22px] font-medium text-viratec-accent lg:text-[17px] lg:leading-6">
+              {content.founderRole}
+            </p>
+            {content.founderBio.map((paragraph) => (
+              <p
+                key={paragraph}
+                className="text-base leading-[26px] text-viratec-muted lg:text-lg lg:leading-7"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
+      </PageSection>
+
+      <PageSection aria-labelledby="team-title">
         <SectionHeader
           id="team-title"
           eyebrow={content.teamEyebrow}

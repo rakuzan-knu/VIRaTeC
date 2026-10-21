@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/shared/lib';
+import { cn, trackSpotlight } from '@/shared/lib';
 import { CardLinkLabel } from './card-link-label';
 import { MediaPlaceholder } from './media-placeholder';
 
@@ -12,6 +12,8 @@ export interface InfoCardProps {
   description: string;
   meta?: string;
   withImage?: boolean;
+  image?: string;
+  logo?: string;
   linkLabel?: string;
   to?: string;
   variant?: InfoCardVariant;
@@ -20,7 +22,7 @@ export interface InfoCardProps {
 }
 
 const VARIANT_CLASS: Record<InfoCardVariant, string> = {
-  default: 'border-white/10 bg-white/[0.035]',
+  default: 'atlas-card border-transparent',
   muted: 'border-dashed border-white/18 bg-transparent',
   invite: 'border-dashed border-viratec-lime/45 bg-viratec-lime/[0.03]',
 };
@@ -31,6 +33,8 @@ export function InfoCard({
   description,
   meta,
   withImage,
+  image,
+  logo,
   linkLabel,
   to,
   variant = 'default',
@@ -42,14 +46,26 @@ export function InfoCard({
     'group/card flex h-full flex-col gap-3.5 rounded-[28px] border p-6 lg:gap-4 lg:p-8',
     VARIANT_CLASS[variant],
     to &&
-      'transition-colors duration-200 hover:border-white/22 hover:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime',
+      'atlas-spotlight relative isolate transition-colors duration-200 hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime',
+    to && variant !== 'default' && 'hover:border-white/30',
     className,
   );
 
   const content = (
     <>
-      {withImage && (
-        <MediaPlaceholder className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]" />
+      {(withImage || image) && (
+        <MediaPlaceholder
+          src={image}
+          className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]"
+        />
+      )}
+      {logo && (
+        <img
+          src={logo}
+          alt=""
+          loading="lazy"
+          className="mb-2 h-11 w-auto max-w-full self-start object-contain object-left opacity-90 lg:h-12"
+        />
       )}
       {meta && <span className="text-[13px] text-viratec-subtle">{meta}</span>}
       {index && (
@@ -81,7 +97,7 @@ export function InfoCard({
 
   if (to) {
     return (
-      <Link to={to} className={classes}>
+      <Link to={to} className={classes} onPointerMove={trackSpotlight}>
         {content}
       </Link>
     );

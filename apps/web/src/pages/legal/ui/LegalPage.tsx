@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_EMAIL } from '@/shared/config/navigation';
-import { cn, useDocumentTitle } from '@/shared/lib';
+import { cn, useSeo } from '@/shared/lib';
 import { defineMessages, INTL_LOCALE, useLocale, useLocalized } from '@/shared/i18n';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageSection } from '@/shared/ui/page-section';
@@ -59,7 +59,7 @@ export function LegalPage({ kind }: LegalPageProps) {
   const updatedAt = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long' }).format(
     LEGAL_UPDATED_AT,
   );
-  useDocumentTitle(content.title);
+  useSeo(content.title);
 
   return (
     <PageLayout

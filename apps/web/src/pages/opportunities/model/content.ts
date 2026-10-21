@@ -7,7 +7,8 @@ export interface Opportunity {
   title: string;
   description: string;
   actionLabel: string;
-  to: string;
+  to?: string;
+  href?: string;
 }
 
 export const AUDIENCE_SECTION_IDS = ['for-students', 'for-researchers', 'for-partners'] as const;
@@ -29,6 +30,9 @@ export interface OpportunitiesContent {
   accent: string;
   description: string;
   tabsLabel: string;
+  eventsTitle: string;
+  eventsDescription: string;
+  events: Opportunity[];
   audienceGroups: AudienceGroup[];
   howItWorksTitle: string;
   howItWorks: StepItem[];
@@ -45,6 +49,34 @@ export const OPPORTUNITIES_CONTENT = defineMessages<OpportunitiesContent>({
     description:
       'Projects, workshops and partnerships for students, researchers and universities. Pick your role to see what is open right now.',
     tabsLabel: 'Opportunities by role',
+    eventsTitle: 'Upcoming events',
+    eventsDescription:
+      'Conferences, symposia and courses where VIRaTeC students and partners take part this season.',
+    events: [
+      {
+        meta: '19 November 2026 · Online · PSTU, Dnipro',
+        title: 'CIITD-2026: VIII International Conference of Young Scientists',
+        description:
+          '“Current Issues of Information Technology Development”, hosted by Pryazovskyi State Technical University with KNU and Karunya Institute as partners. Abstracts of 2–6 pages are due by 15 November 2026; participation and the ISBN book of abstracts are free.',
+        actionLabel: 'Submit an abstract',
+        href: 'mailto:sergienko_a_v@pstu.edu?subject=CIITD-2026',
+      },
+      {
+        meta: '19 November 2026 · International symposium',
+        title: 'Space Analytics for Global Challenges',
+        description:
+          'International Scientific and Practical Symposium on student research, innovation and international collaboration: research outcomes of the VIRaTeC International COIL Module.',
+        actionLabel: 'Ask to join',
+        to: ROUTES.CONTACT,
+      },
+      {
+        meta: 'December 2026 · Johns Hopkins University',
+        title: 'Environmental Decision-Making: Foundations and Applied Approaches from the Field',
+        description: 'An AI-based digital simulation course by Johns Hopkins University.',
+        actionLabel: 'Ask to join',
+        to: ROUTES.CONTACT,
+      },
+    ],
     audienceGroups: [
       {
         id: 'for-students',
@@ -162,6 +194,34 @@ export const OPPORTUNITIES_CONTENT = defineMessages<OpportunitiesContent>({
     description:
       'Проєкти, воркшопи та партнерства для студентів, дослідників і університетів. Оберіть свою роль, щоб побачити, що відкрито зараз.',
     tabsLabel: 'Можливості за роллю',
+    eventsTitle: 'Найближчі події',
+    eventsDescription:
+      'Конференції, симпозіуми та курси, у яких цього сезону беруть участь студенти й партнери VIRaTeC.',
+    events: [
+      {
+        meta: '19 листопада 2026 · Онлайн · ПДТУ, Дніпро',
+        title: 'CIITD-2026: VIII Міжнародна конференція молодих учених',
+        description:
+          '«Актуальні питання розвитку інформаційних технологій» від Приазовського державного технічного університету за участі КНУ та Karunya Institute. Тези обсягом 2–6 сторінок — до 15 листопада 2026 року; участь і збірник тез з ISBN безкоштовні.',
+        actionLabel: 'Надіслати тези',
+        href: 'mailto:sergienko_a_v@pstu.edu?subject=CIITD-2026',
+      },
+      {
+        meta: '19 листопада 2026 · Міжнародний симпозіум',
+        title: 'Space Analytics for Global Challenges',
+        description:
+          'Міжнародний науково-практичний симпозіум про студентські дослідження, інновації та міжнародну співпрацю: результати досліджень міжнародного COIL-модуля VIRaTeC.',
+        actionLabel: 'Долучитися',
+        to: ROUTES.CONTACT,
+      },
+      {
+        meta: 'Грудень 2026 · Університет Джонса Гопкінса',
+        title: 'Environmental Decision-Making: Foundations and Applied Approaches from the Field',
+        description: 'Курс цифрового моделювання на основі ШІ від Університету Джонса Гопкінса.',
+        actionLabel: 'Долучитися',
+        to: ROUTES.CONTACT,
+      },
+    ],
     audienceGroups: [
       {
         id: 'for-students',

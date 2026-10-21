@@ -7,7 +7,7 @@ import { StepsList, type StepItem } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 
 interface LearningFormat {
   title: string;
@@ -192,7 +192,7 @@ const EXPERIENTIAL_LEARNING_CONTENT = defineMessages<ExperientialLearningContent
 export function ExperientialLearningPage() {
   const content = useLocalized(EXPERIENTIAL_LEARNING_CONTENT);
   const common = useCommonMessages();
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -243,10 +243,9 @@ export function ExperientialLearningPage() {
           title={content.outcomesTitle}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {content.outcomes.map((outcome, index) => (
+          {content.outcomes.map((outcome) => (
             <li key={outcome.title}>
               <InfoCard
-                index={String(index + 1).padStart(2, '0')}
                 title={outcome.title}
                 description={outcome.description}
                 className="lg:min-h-[232px]"

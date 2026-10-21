@@ -9,20 +9,21 @@ import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import larysaPhoto from '@/shared/assets/people/larysa-liashenko.webp';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 
 const CARD_CLASS =
-  'flex flex-col gap-4 rounded-[24px] border border-white/10 bg-white/[0.035] p-6 lg:min-h-[266px] lg:rounded-[28px] lg:p-8';
+  'flex flex-col gap-4 atlas-card rounded-[24px] border border-transparent p-6 lg:min-h-[266px] lg:rounded-[28px] lg:p-8';
 
 const COLUMN_TITLE_CLASS =
   'font-display text-[30px] leading-[36px] font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]';
 
-type SocialKey = 'group' | 'chair' | 'orcid' | 'facebook' | 'scholar';
+type SocialKey = 'group' | 'chair' | 'orcid' | 'scopus' | 'facebook' | 'scholar';
 
 const SOCIALS: { key: SocialKey; href: string | null; badge: string | null }[] = [
   { key: 'group', href: SOCIAL_LINKS.linkedinGroup, badge: null },
   { key: 'chair', href: SOCIAL_LINKS.linkedinChair, badge: null },
   { key: 'orcid', href: SOCIAL_LINKS.orcid, badge: 'iD' },
+  { key: 'scopus', href: SOCIAL_LINKS.scopus, badge: 'Sc' },
   { key: 'facebook', href: SOCIAL_LINKS.facebookGroup, badge: 'f' },
   { key: 'scholar', href: SOCIAL_LINKS.googleScholar, badge: 'GS' },
 ];
@@ -70,12 +71,13 @@ const CONTACT_CONTENT = defineMessages<ContactContent>({
     chairTitle: 'Project Chair',
     chairName: 'Larysa Liashenko',
     chairRole:
-      'Associate Professor, Department of Foreign Languages for Mathematical Faculties, Educational and Scientific Institute of Philology, KNU',
+      'PhD in Psychology, Associate Professor, Department of Foreign Languages for Mathematical Faculties, Educational and Scientific Institute of Philology, KNU · Honoured Educator of Ukraine',
     locationTitle: 'Location',
     socialLabels: {
       group: 'VIRaTeC group',
       chair: 'Dr. Larysa Liashenko',
       orcid: 'ORCID',
+      scopus: 'Scopus',
       facebook: 'Facebook group',
       scholar: 'Google Scholar',
     },
@@ -122,12 +124,13 @@ const CONTACT_CONTENT = defineMessages<ContactContent>({
     chairTitle: 'Керівниця проєкту',
     chairName: 'Лариса Ляшенко',
     chairRole:
-      'Доцентка кафедри іноземних мов математичних факультетів Навчально-наукового інституту філології, КНУ',
+      'Кандидатка психологічних наук, доцентка кафедри іноземних мов математичних факультетів Навчально-наукового інституту філології, КНУ · Заслужена працівниця освіти України',
     locationTitle: 'Розташування',
     socialLabels: {
       group: 'Група VIRaTeC',
       chair: 'Д-р Лариса Ляшенко',
       orcid: 'ORCID',
+      scopus: 'Scopus',
       facebook: 'Група у Facebook',
       scholar: 'Google Scholar',
     },
@@ -168,7 +171,7 @@ const mailtoWithSubject = (subject: string) =>
 export function ContactPage() {
   const content = useLocalized(CONTACT_CONTENT);
   const common = useCommonMessages();
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -260,7 +263,6 @@ export function ContactPage() {
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-viratec-subtle">{common.unavailable('ResearchGate')}</p>
           </article>
         </section>
 

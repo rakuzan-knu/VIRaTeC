@@ -1,11 +1,30 @@
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages } from '@/shared/i18n';
 import type { StepItem } from '@/shared/ui/steps-list';
+import oxfordLogo from '../assets/oxford.webp';
+import lancasterLogo from '../assets/lancaster.webp';
+import coventryLogo from '../assets/coventry.png';
+import mmuLogo from '../assets/mmu.webp';
+import johnsHopkinsLogo from '../assets/johns-hopkins.png';
+import indianaLogo from '../assets/indiana.webp';
+import fiuLogo from '../assets/fiu.webp';
+import fsuLogo from '../assets/fsu.webp';
+import ucaLogo from '../assets/uca.webp';
+import georgiaStateLogo from '../assets/georgia-state.png';
+import campbellsvilleLogo from '../assets/campbellsville.webp';
+import catolicaLogo from '../assets/catolica.webp';
+import santoTomasLogo from '../assets/santo-tomas.webp';
+import ecoleLogo from '../assets/ecole-polytechnique.png';
+import aueLogo from '../assets/aue.webp';
+import karunyaLogo from '../assets/karunya.png';
+import lntuLogo from '../assets/lntu.webp';
+import pdtuLogo from '../assets/pdtu.webp';
 
 interface PartnerUniversity {
   code: string;
   name: string;
   location: string;
+  logo?: string;
 }
 
 interface Stat {
@@ -57,20 +76,59 @@ export const GLOBAL_COLLABORATION_CONTENT = defineMessages<GlobalCollaborationCo
     partnersEyebrow: 'Partner universities',
     partnersTitle: 'Our global network',
     partners: [
-      { code: 'UK', name: 'Coventry University', location: 'United Kingdom' },
-      { code: 'US', name: 'Johns Hopkins University', location: 'USA' },
-      { code: 'US', name: 'Georgia State University', location: 'USA · Perimeter College' },
-      { code: 'US', name: 'University of Florida', location: 'USA' },
-      { code: 'US', name: 'University of Central Arkansas', location: 'USA' },
-      { code: 'US', name: 'Campbellsville University', location: 'USA' },
-      { code: 'IN', name: 'Karunya Institute of Technology and Sciences', location: 'India' },
-      { code: 'DZ', name: 'École Nationale Polytechnique', location: 'Algeria · Algiers' },
-      { code: 'CO', name: 'Universidad Católica de Colombia', location: 'Colombia' },
-      { code: 'CL', name: 'Instituto Profesional Santo Tomás', location: 'Chile' },
-      { code: 'AE', name: 'American University in the Emirates', location: 'UAE' },
-      { code: 'UA', name: 'Pryazovskyi State Technical University', location: 'Ukraine' },
-      { code: 'UA', name: 'Lutsk National Technical University', location: 'Ukraine' },
-      { code: 'UA', name: 'Kyiv Aviation Institute', location: 'Ukraine' },
+      { code: 'UK', name: 'University of Oxford', location: 'United Kingdom', logo: oxfordLogo },
+      { code: 'UK', name: 'Lancaster University', location: 'United Kingdom', logo: lancasterLogo },
+      { code: 'UK', name: 'Coventry University', location: 'United Kingdom', logo: coventryLogo },
+      {
+        code: 'UK',
+        name: 'Manchester Metropolitan University',
+        location: 'United Kingdom',
+        logo: mmuLogo,
+      },
+      { code: 'US', name: 'Johns Hopkins University', location: 'USA', logo: johnsHopkinsLogo },
+      { code: 'US', name: 'Indiana University', location: 'USA', logo: indianaLogo },
+      { code: 'US', name: 'Florida International University', location: 'USA', logo: fiuLogo },
+      { code: 'US', name: 'Florida State University', location: 'USA', logo: fsuLogo },
+      { code: 'US', name: 'University of Central Arkansas', location: 'USA', logo: ucaLogo },
+      {
+        code: 'US',
+        name: 'Georgia State University',
+        location: 'USA · Perimeter College',
+        logo: georgiaStateLogo,
+      },
+      { code: 'US', name: 'Campbellsville University', location: 'USA', logo: campbellsvilleLogo },
+      {
+        code: 'CO',
+        name: 'Universidad Católica de Colombia',
+        location: 'Colombia',
+        logo: catolicaLogo,
+      },
+      { code: 'CL', name: 'Universidad Santo Tomás', location: 'Chile', logo: santoTomasLogo },
+      {
+        code: 'DZ',
+        name: 'École Nationale Polytechnique',
+        location: 'Algeria · Algiers',
+        logo: ecoleLogo,
+      },
+      { code: 'AE', name: 'American University in the Emirates', location: 'UAE', logo: aueLogo },
+      {
+        code: 'IN',
+        name: 'Karunya Institute of Technology and Sciences',
+        location: 'India',
+        logo: karunyaLogo,
+      },
+      {
+        code: 'UA',
+        name: 'Lutsk National Technical University',
+        location: 'Ukraine',
+        logo: lntuLogo,
+      },
+      {
+        code: 'UA',
+        name: 'Pryazovskyi State Technical University',
+        location: 'Ukraine',
+        logo: pdtuLogo,
+      },
     ],
     inviteTitle: 'Your university',
     inviteDescription: 'Join the network and co-create international programs.',
@@ -78,8 +136,8 @@ export const GLOBAL_COLLABORATION_CONTENT = defineMessages<GlobalCollaborationCo
     bannerDescription:
       'Partners agree on shared goals, co-design modules and form mixed student teams. KNU coordinates the network, partners bring their expertise and students.',
     stats: [
-      { value: '14', label: 'partner universities' },
-      { value: '8', label: 'countries' },
+      { value: '15+', label: 'partner universities' },
+      { value: '10', label: 'partner countries' },
     ],
     formatsEyebrow: 'Formats',
     formatsTitle: 'Ways to collaborate',
@@ -128,24 +186,69 @@ export const GLOBAL_COLLABORATION_CONTENT = defineMessages<GlobalCollaborationCo
     partnersEyebrow: 'Університети-партнери',
     partnersTitle: 'Наша глобальна мережа',
     partners: [
-      { code: 'UK', name: 'Університет Ковентрі', location: 'Велика Британія' },
-      { code: 'US', name: 'Університет Джонса Гопкінса', location: 'США' },
-      { code: 'US', name: 'Університет штату Джорджія', location: 'США · Perimeter College' },
-      { code: 'US', name: 'Університет Флориди', location: 'США' },
-      { code: 'US', name: 'Університет Центрального Арканзасу', location: 'США' },
-      { code: 'US', name: 'Університет Кемпбеллсвілла', location: 'США' },
+      {
+        code: 'UK',
+        name: 'Оксфордський університет',
+        location: 'Велика Британія',
+        logo: oxfordLogo,
+      },
+      {
+        code: 'UK',
+        name: 'Ланкастерський університет',
+        location: 'Велика Британія',
+        logo: lancasterLogo,
+      },
+      { code: 'UK', name: 'Університет Ковентрі', location: 'Велика Британія', logo: coventryLogo },
+      {
+        code: 'UK',
+        name: 'Манчестерський столичний університет',
+        location: 'Велика Британія',
+        logo: mmuLogo,
+      },
+      { code: 'US', name: 'Університет Джонса Гопкінса', location: 'США', logo: johnsHopkinsLogo },
+      { code: 'US', name: 'Університет Індіани', location: 'США', logo: indianaLogo },
+      { code: 'US', name: 'Міжнародний університет Флориди', location: 'США', logo: fiuLogo },
+      { code: 'US', name: 'Університет штату Флорида', location: 'США', logo: fsuLogo },
+      { code: 'US', name: 'Університет Центрального Арканзасу', location: 'США', logo: ucaLogo },
+      {
+        code: 'US',
+        name: 'Університет штату Джорджія',
+        location: 'США · Perimeter College',
+        logo: georgiaStateLogo,
+      },
+      { code: 'US', name: 'Університет Кемпбеллсвілла', location: 'США', logo: campbellsvilleLogo },
+      {
+        code: 'CO',
+        name: 'Universidad Católica de Colombia',
+        location: 'Колумбія',
+        logo: catolicaLogo,
+      },
+      { code: 'CL', name: 'Universidad Santo Tomás', location: 'Чилі', logo: santoTomasLogo },
+      {
+        code: 'DZ',
+        name: 'École Nationale Polytechnique',
+        location: 'Алжир · м. Алжир',
+        logo: ecoleLogo,
+      },
+      { code: 'AE', name: 'Американський університет в Еміратах', location: 'ОАЕ', logo: aueLogo },
       {
         code: 'IN',
         name: 'Karunya Institute of Technology and Sciences',
         location: 'Індія',
+        logo: karunyaLogo,
       },
-      { code: 'DZ', name: 'École Nationale Polytechnique', location: 'Алжир · м. Алжир' },
-      { code: 'CO', name: 'Universidad Católica de Colombia', location: 'Колумбія' },
-      { code: 'CL', name: 'Instituto Profesional Santo Tomás', location: 'Чилі' },
-      { code: 'AE', name: 'Американський університет в Еміратах', location: 'ОАЕ' },
-      { code: 'UA', name: 'Приазовський державний технічний університет', location: 'Україна' },
-      { code: 'UA', name: 'Луцький національний технічний університет', location: 'Україна' },
-      { code: 'UA', name: 'Київський авіаційний інститут', location: 'Україна' },
+      {
+        code: 'UA',
+        name: 'Луцький національний технічний університет',
+        location: 'Україна',
+        logo: lntuLogo,
+      },
+      {
+        code: 'UA',
+        name: 'Приазовський державний технічний університет',
+        location: 'Україна',
+        logo: pdtuLogo,
+      },
     ],
     inviteTitle: 'Ваш університет',
     inviteDescription: 'Долучайтеся до мережі та створюйте міжнародні програми разом із нами.',
@@ -153,8 +256,8 @@ export const GLOBAL_COLLABORATION_CONTENT = defineMessages<GlobalCollaborationCo
     bannerDescription:
       'Партнери узгоджують спільні цілі, разом розробляють модулі та формують змішані студентські команди. КНУ координує мережу, а партнери долучають свою експертизу та студентів.',
     stats: [
-      { value: '14', label: 'університетів-партнерів' },
-      { value: '8', label: 'країн' },
+      { value: '15+', label: 'університетів-партнерів' },
+      { value: '10', label: 'країн-партнерів' },
     ],
     formatsEyebrow: 'Формати',
     formatsTitle: 'Як співпрацювати',

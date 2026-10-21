@@ -35,6 +35,7 @@ const detectLocale = (): Locale => {
 };
 
 const applyDocumentLocale = (locale: Locale) => {
+  if (typeof document === 'undefined') return;
   document.documentElement.lang = locale;
 };
 
