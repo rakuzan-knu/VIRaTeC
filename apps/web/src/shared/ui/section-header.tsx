@@ -30,7 +30,7 @@ export function SectionHeader({
             <Eyebrow>{eyebrow}</Eyebrow>
           </div>
         )}
-        <div className="flex max-w-[920px] flex-col items-start gap-5 @4xl:col-start-2 lg:gap-6">
+        <div className="flex max-w-[920px] min-w-0 flex-col gap-5 @4xl:col-start-2 lg:gap-6">
           <h2
             id={id}
             className="font-display text-[36px] leading-[40px] font-medium tracking-[-0.035em] text-white lg:text-[64px] lg:leading-[66px]"
@@ -50,7 +50,7 @@ export function SectionHeader({
               {description}
             </p>
           )}
-          {action}
+          {action && <div className="flex">{action}</div>}
         </div>
       </div>
     </div>
