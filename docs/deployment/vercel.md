@@ -10,7 +10,8 @@ Keep the project root at the repository root; `vercel.json` defines each service
 The API and Neon Postgres use the Frankfurt region.
 The root package's `main` identifies the NestJS entrypoint. Building the API from the repository root
 keeps its workspace dependencies in the function's packaging scope.
-Both service installs use the frozen `pnpm-lock.yaml`.
+Both service installs use the frozen `pnpm-lock.yaml` and the hoisted node linker, so
+clean production builds resolve the same runtime dependencies as preview builds.
 
 ## Environment
 

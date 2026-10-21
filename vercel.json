@@ -5,7 +5,7 @@
     "web": {
       "root": "apps/web",
       "framework": "vite",
-      "installCommand": "pnpm install --frozen-lockfile",
+      "installCommand": "pnpm install --frozen-lockfile --node-linker=hoisted",
       "buildCommand": "pnpm --filter @viratec/contracts build && pnpm build",
       "outputDirectory": "dist",
       "routes": [
@@ -23,7 +23,7 @@
     "api": {
       "root": ".",
       "framework": "nestjs",
-      "installCommand": "pnpm install --frozen-lockfile",
+      "installCommand": "pnpm install --frozen-lockfile --node-linker=hoisted",
       "buildCommand": "pnpm --filter @viratec/backend build && pnpm --filter @viratec/backend db:migrate"
     }
   },
