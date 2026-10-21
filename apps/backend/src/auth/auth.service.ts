@@ -1,13 +1,22 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
+import { OAuth2Client, type TokenPayload } from 'google-auth-library';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 
 @Injectable()
 export class AuthService {
+  private googleClient = new OAuth2Client();
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -52,6 +61,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('This account uses Google sign-in');
+    }
+
     const isValid = await argon2.verify(user.passwordHash, dto.password);
     if (!isValid) {
       throw new UnauthorizedException('Invalid email or password');
@@ -62,6 +75,63 @@ export class AuthService {
       user: this.sanitizeUser(user),
       ...tokens,
     };
+  }
+
+  async googleAuth(dto: GoogleAuthDto) {
+    const payload = await this.verifyGoogleCredential(dto.credential);
+    const email = payload.email.toLowerCase();
+
+    const existing = await this.prisma.user.findFirst({
+      where: { OR: [{ googleId: payload.sub }, { email }] },
+    });
+
+    const user = existing
+      ? existing.googleId
+        ? existing
+        : await this.prisma.user.update({
+            where: { id: existing.id },
+            data: { googleId: payload.sub, avatarUrl: existing.avatarUrl ?? payload.picture },
+          })
+      : await this.prisma.user.create({
+          data: {
+            email,
+            googleId: payload.sub,
+            name: payload.name || email.split('@')[0],
+            avatarUrl: payload.picture,
+          },
+        });
+
+    const tokens = await this.generateTokens(user.id, user.email, user.role, user.faculty);
+    return {
+      user: this.sanitizeUser(user),
+      ...tokens,
+    };
+  }
+
+  private async verifyGoogleCredential(
+    credential: string,
+  ): Promise<TokenPayload & { email: string }> {
+    const clientId = this.configService.get<string>('google.clientId');
+    if (!clientId) {
+      throw new ServiceUnavailableException('Google sign-in is not configured');
+    }
+
+    let payload: TokenPayload | undefined;
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: credential,
+        audience: clientId,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Invalid Google credential');
+    }
+
+    if (!payload?.email || !payload.email_verified) {
+      throw new UnauthorizedException('Google account email is not verified');
+    }
+
+    return { ...payload, email: payload.email };
   }
 
   async refreshToken(refreshToken: string) {
@@ -128,7 +198,7 @@ export class AuthService {
     createdAt: Date;
     updatedAt: Date;
   }) {
-    const { passwordHash: _, ...safeUser } = user as any;
+    const { passwordHash: _, googleId: __, ...safeUser } = user as any;
     return safeUser;
   }
 }

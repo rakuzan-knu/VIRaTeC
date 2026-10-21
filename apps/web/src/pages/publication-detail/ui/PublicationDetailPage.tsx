@@ -6,21 +6,48 @@ import { FactsCard } from '@/shared/ui/facts-card';
 import { MediaPlaceholder } from '@/shared/ui/media-placeholder';
 import { ButtonArrow, LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import {
-  PUBLICATIONS,
-  PUBLICATION_TYPE_LABEL,
   RelatedPublicationCard,
   findPublication,
+  usePublicationLabels,
+  usePublications,
   type Publication,
   type PublicationBlock,
 } from '@/entities/publication';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { useDocumentTitle } from '@/shared/lib';
+import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
-const BREADCRUMB_ROOT: BreadcrumbItem[] = [
-  'Publications & Media',
-  { label: 'Publications', to: ROUTES.PUBLICATIONS },
-];
+const PUBLICATION_DETAIL_MESSAGES = defineMessages({
+  en: {
+    publicationsAndMedia: 'Publications & Media',
+    publications: 'Publications',
+    published: 'Published',
+    authors: 'Authors',
+    aboutPublication: 'About this publication',
+    downloadPdf: 'Download PDF',
+    openSource: 'Open source',
+    notFoundTitle: 'Publication not found',
+    notFoundDescription: 'The publication may have been moved or is no longer available.',
+    allPublications: 'All publications',
+    relatedEyebrow: 'Related',
+    relatedTitle: 'More publications',
+  },
+  uk: {
+    publicationsAndMedia: 'Публікації та медіа',
+    publications: 'Публікації',
+    published: 'Опубліковано',
+    authors: 'Автори',
+    aboutPublication: 'Про публікацію',
+    downloadPdf: 'Завантажити PDF',
+    openSource: 'Відкрити джерело',
+    notFoundTitle: 'Публікацію не знайдено',
+    notFoundDescription: 'Можливо, публікацію перемістили або вона більше не доступна.',
+    allPublications: 'Усі публікації',
+    relatedEyebrow: 'Схожі матеріали',
+    relatedTitle: 'Більше публікацій',
+  },
+});
 
 function ArticleBlock({ block }: { block: PublicationBlock }) {
   if (block.kind === 'heading') {
@@ -49,22 +76,25 @@ function ArticleBlock({ block }: { block: PublicationBlock }) {
 
 function PublicationBody({ publication }: { publication: Publication }) {
   const { detail } = publication;
-  const typeLabel = PUBLICATION_TYPE_LABEL[publication.type];
+  const t = useLocalized(PUBLICATION_DETAIL_MESSAGES);
+  const common = useCommonMessages();
+  const labels = usePublicationLabels();
+  const typeLabel = labels.type[publication.type];
   const meta = detail
     ? [detail.formatLabel, detail.publishedOn, detail.readTime]
     : [typeLabel, String(publication.year)];
 
   const facts = detail
     ? [
-        { label: 'Type', value: detail.kindLabel },
-        { label: 'Published', value: detail.publishedOn },
-        { label: 'Authors', value: detail.authors },
-        { label: 'Source', value: detail.sourceLabel },
+        { label: common.type, value: detail.kindLabel },
+        { label: t.published, value: detail.publishedOn },
+        { label: t.authors, value: detail.authors },
+        { label: common.source, value: detail.sourceLabel },
       ]
     : [
-        { label: 'Type', value: typeLabel },
-        { label: 'Year', value: String(publication.year) },
-        { label: 'Source', value: publication.source },
+        { label: common.type, value: typeLabel },
+        { label: common.year, value: String(publication.year) },
+        { label: common.source, value: publication.source },
       ];
 
   return (
@@ -88,7 +118,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
         )}
       </article>
       <FactsCard
-        title="About this publication"
+        title={t.aboutPublication}
         facts={facts}
         actions={
           detail && (detail.pdfUrl || detail.sourceUrl) ? (
@@ -100,7 +130,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
                   rel="noreferrer"
                   className={linkButtonClassName({ className: 'w-full' })}
                 >
-                  Download PDF
+                  {t.downloadPdf}
                   <ButtonArrow />
                 </a>
               )}
@@ -111,7 +141,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
                   rel="noreferrer"
                   className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
                 >
-                  Open source
+                  {t.openSource}
                   <ButtonArrow />
                 </a>
               )}
@@ -123,7 +153,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
               rel="noreferrer"
               className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
             >
-              Open source
+              {t.openSource}
               <ButtonArrow />
             </a>
           ) : undefined
@@ -135,17 +165,25 @@ function PublicationBody({ publication }: { publication: Publication }) {
 
 export function PublicationDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const publication = findPublication(slug);
-  useDocumentTitle(publication?.title ?? 'Publication not found');
+  const publications = usePublications();
+  const publication = findPublication(publications, slug);
+  const t = useLocalized(PUBLICATION_DETAIL_MESSAGES);
+  const labels = usePublicationLabels();
+  useDocumentTitle(publication?.title ?? t.notFoundTitle);
+
+  const breadcrumbRoot: BreadcrumbItem[] = [
+    t.publicationsAndMedia,
+    { label: t.publications, to: ROUTES.PUBLICATIONS },
+  ];
 
   if (!publication) {
     return (
       <PageLayout
         intro={
           <PageIntro
-            breadcrumb={BREADCRUMB_ROOT}
-            title="Publication not found"
-            description="The publication may have been moved or is no longer available."
+            breadcrumb={breadcrumbRoot}
+            title={t.notFoundTitle}
+            description={t.notFoundDescription}
             className="lg:pb-16"
           >
             <LinkButton
@@ -153,7 +191,7 @@ export function PublicationDetailPage() {
               variant="secondary"
               className="mt-2 w-full sm:w-auto"
             >
-              All publications
+              {t.allPublications}
             </LinkButton>
           </PageIntro>
         }
@@ -163,13 +201,13 @@ export function PublicationDetailPage() {
     );
   }
 
-  const related = PUBLICATIONS.filter((item) => item.slug !== publication.slug).slice(0, 3);
+  const related = publications.filter((item) => item.slug !== publication.slug).slice(0, 3);
 
   return (
     <PageLayout
       intro={
         <PageIntro
-          breadcrumb={[...BREADCRUMB_ROOT, PUBLICATION_TYPE_LABEL[publication.type]]}
+          breadcrumb={[...breadcrumbRoot, labels.type[publication.type]]}
           title={publication.detail?.heroTitle ?? publication.title}
           accent={publication.detail?.heroAccent}
           description={publication.detail?.lead ?? publication.source}
@@ -180,7 +218,7 @@ export function PublicationDetailPage() {
     >
       <PublicationBody publication={publication} />
       <PageSection tone="surface" aria-labelledby="related-title">
-        <SectionHeader id="related-title" eyebrow="Related" title="More publications" />
+        <SectionHeader id="related-title" eyebrow={t.relatedEyebrow} title={t.relatedTitle} />
         <ul className="grid gap-6 lg:grid-cols-3">
           {related.map((item) => (
             <li key={item.slug}>

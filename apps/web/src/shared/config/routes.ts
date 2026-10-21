@@ -6,6 +6,7 @@ export const ROUTES = {
   TERMS: '/terms',
   PRIVACY: '/privacy',
   COOKIES: '/cookies',
+  GUIDELINES: '/community-guidelines',
   ABOUT_INITIATIVE: '/about',
   VIRATEC: '/about/viratec',
   GLOBAL_COLLABORATION: '/about/global-collaboration-framework',

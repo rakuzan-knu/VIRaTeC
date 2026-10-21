@@ -3,7 +3,8 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { PUBLICATIONS } from '../model/content';
+import { useLocalized } from '@/shared/i18n';
+import { HOME_CONTENT } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
 
@@ -11,24 +12,26 @@ const PAPER_CARD_CLASS =
   'group/card flex h-full flex-col gap-4 rounded-[24px] border bg-white p-6 transition-colors duration-200 hover:border-viratec-paper-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-ink lg:min-h-[300px] lg:gap-5 lg:rounded-[28px] lg:p-8';
 
 export function PublicationsSection() {
+  const { publications } = useLocalized(HOME_CONTENT);
+
   return (
     <section aria-labelledby="publications-title" className="bg-viratec-paper text-viratec-ink">
       <div className={SECTION_CONTAINER_CLASS}>
         <div className="flex items-end justify-between gap-10">
           <div className="flex flex-col gap-4 lg:gap-5">
-            <Eyebrow className="text-auth-success">Publications &amp; Media</Eyebrow>
+            <Eyebrow className="text-auth-success">{publications.eyebrow}</Eyebrow>
             <h2 id="publications-title" className={cn(SECTION_TITLE_CLASS, 'text-viratec-ink')}>
-              Latest from VIRaTeC
+              {publications.title}
             </h2>
           </div>
           <LinkButton to={ROUTES.PUBLICATIONS} variant="ink" className="hidden lg:inline-flex">
-            All Publications
+            {publications.action}
           </LinkButton>
         </div>
 
         <ul className="grid gap-4 lg:grid-cols-3 lg:gap-5">
-          {PUBLICATIONS.map((publication) => (
-            <li key={publication.title}>
+          {publications.items.map((publication) => (
+            <li key={publication.to}>
               <Link
                 to={publication.to}
                 className={cn(
@@ -53,7 +56,7 @@ export function PublicationsSection() {
                   {publication.source}
                 </p>
                 <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-[15px] font-medium text-auth-navy lg:text-base">
-                  Read more
+                  {publications.cardAction}
                   <ArrowRight
                     aria-hidden="true"
                     className="size-4 transition-transform duration-200 group-hover/card:translate-x-0.5 motion-reduce:transition-none"
@@ -65,7 +68,7 @@ export function PublicationsSection() {
         </ul>
 
         <LinkButton to={ROUTES.PUBLICATIONS} variant="ink" className="w-full lg:hidden">
-          All Publications
+          {publications.action}
         </LinkButton>
       </div>
     </section>

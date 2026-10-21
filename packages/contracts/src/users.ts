@@ -24,6 +24,12 @@ export const LoginRequestSchema = z.object({
 
 export type LoginRequestDto = z.infer<typeof LoginRequestSchema>;
 
+export const GoogleAuthRequestSchema = z.object({
+  credential: z.string().min(1),
+});
+
+export type GoogleAuthRequestDto = z.infer<typeof GoogleAuthRequestSchema>;
+
 export const RegisterRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),

@@ -36,7 +36,7 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    const { passwordHash: _, ...safeUser } = user;
+    const { passwordHash: _, googleId: __, ...safeUser } = user;
     return safeUser;
   }
 }

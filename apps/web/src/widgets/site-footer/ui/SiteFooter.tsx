@@ -3,14 +3,19 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import {
-  ABOUT_NAV,
   CONTACT_EMAIL,
-  EXPLORE_NAV,
-  RESEARCH_NAV,
-  NOT_AVAILABLE_YET,
   SOCIAL_LINKS,
+  useNavigation,
   type NavGroup,
 } from '@/shared/config/navigation';
+import {
+  defineMessages,
+  isLocale,
+  useCommonMessages,
+  useLocaleStore,
+  useLocalized,
+  type Locale,
+} from '@/shared/i18n';
 import { Logo } from '@/shared/ui/logo';
 import { OptionalLink } from '@/shared/ui/optional-link';
 import languageGlobe from '@/shared/assets/icons/language-globe.svg';
@@ -18,18 +23,31 @@ import chevronDown from '@/shared/assets/icons/chevron-down.svg';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
 import scholarIcon from '@/shared/assets/icons/google-scholar.svg';
 
-const LINK_GROUPS: NavGroup[] = [ABOUT_NAV, RESEARCH_NAV, EXPLORE_NAV];
+const LANGUAGES: { value: Locale; label: string }[] = [
+  { value: 'en', label: 'English' },
+  { value: 'uk', label: 'Українська' },
+];
 
-const LEGAL_LINKS = [
-  { label: 'Terms of Service', to: ROUTES.TERMS },
-  { label: 'Privacy Policy', to: ROUTES.PRIVACY },
-  { label: 'Cookie Settings', to: ROUTES.COOKIES },
-] as const;
+const FOOTER_MESSAGES = defineMessages({
+  en: {
+    tagline:
+      'Virtual Innovative Research & Technology (VIRaTeC) Global Community at Taras Shevchenko National University of Kyiv.',
+    language: 'Language',
+    followUs: 'Follow us',
+    contact: 'Contact',
+    copyright: '© 2026 VIRaTeC KNU. All rights reserved.',
+  },
+  uk: {
+    tagline:
+      'Глобальна спільнота Virtual Innovative Research & Technology (VIRaTeC) при Київському національному університеті імені Тараса Шевченка.',
+    language: 'Мова',
+    followUs: 'Ми в соцмережах',
+    contact: 'Контакти',
+    copyright: '© 2026 VIRaTeC КНУ. Усі права захищено.',
+  },
+});
 
-const LANGUAGES = [
-  { value: 'en', label: 'English', isAvailable: true },
-  { value: 'uk', label: 'Українська', isAvailable: false },
-] as const;
+const CONTACT_SECTION_ID = 'contact';
 
 const LABEL_CLASS = 'text-[13px] font-medium leading-[18px] text-white';
 const LINK_CLASS =
@@ -38,6 +56,8 @@ const ICON_LINK_CLASS =
   'flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition-colors hover:border-white/22 hover:bg-white/10';
 
 function ContactLinks() {
+  const common = useCommonMessages();
+
   return (
     <>
       <li>
@@ -49,7 +69,7 @@ function ContactLinks() {
         </a>
       </li>
       <li className="w-[200px] text-sm leading-5 text-viratec-soft">
-        Taras Shevchenko National University of Kyiv, Kyiv, Ukraine
+        {common.university}, {common.kyivUkraine}
       </li>
     </>
   );
@@ -66,6 +86,7 @@ function GroupLinks({ group }: { group: NavGroup }) {
 }
 
 interface AccordionSectionProps {
+  id: string;
   title: string;
   isOpen: boolean;
   onToggle: () => void;
@@ -73,8 +94,15 @@ interface AccordionSectionProps {
   isLast?: boolean;
 }
 
-function AccordionSection({ title, isOpen, onToggle, children, isLast }: AccordionSectionProps) {
-  const panelId = `footer-${title.toLowerCase().replace(/[^a-z]+/g, '-')}`;
+function AccordionSection({
+  id,
+  title,
+  isOpen,
+  onToggle,
+  children,
+  isLast,
+}: AccordionSectionProps) {
+  const panelId = `footer-${id}`;
 
   return (
     <div className={cn('border-t border-white/8', isLast && 'border-b')}>
@@ -101,61 +129,80 @@ function AccordionSection({ title, isOpen, onToggle, children, isLast }: Accordi
   );
 }
 
+function LanguageSelect({ label }: { label: string }) {
+  const locale = useLocaleStore((state) => state.locale);
+  const setLocale = useLocaleStore((state) => state.setLocale);
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <label htmlFor="footer-language" className={LABEL_CLASS}>
+        {label}
+      </label>
+      <div className="relative w-full min-[800px]:w-60">
+        <img
+          src={languageGlobe}
+          alt=""
+          className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2"
+        />
+        <select
+          id="footer-language"
+          value={locale}
+          onChange={(event) => {
+            if (isLocale(event.target.value)) setLocale(event.target.value);
+          }}
+          className="w-full cursor-pointer appearance-none rounded-full border border-white/10 bg-white/4 py-[11px] pr-10 pl-10 text-sm leading-5 text-white transition-colors outline-none hover:border-white/22 focus-visible:border-viratec-lime"
+        >
+          {LANGUAGES.map((option) => (
+            <option
+              key={option.value}
+              value={option.value}
+              lang={option.value}
+              className="bg-viratec-bg"
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <img
+          src={chevronDown}
+          alt=""
+          className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function SiteFooter() {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const t = useLocalized(FOOTER_MESSAGES);
+  const common = useCommonMessages();
+  const navigation = useNavigation();
 
-  const toggleSection = (title: string) =>
-    setOpenSection((current) => (current === title ? null : title));
+  const linkGroups = [navigation.about, navigation.research, navigation.explore];
+  const legalLinks = [
+    { label: common.termsOfService, to: ROUTES.TERMS },
+    { label: common.privacyPolicy, to: ROUTES.PRIVACY },
+    { label: common.cookiePolicy, to: ROUTES.COOKIES },
+    { label: common.communityGuidelines, to: ROUTES.GUIDELINES },
+  ];
+
+  const toggleSection = (id: string) => setOpenSection((current) => (current === id ? null : id));
 
   return (
     <footer className="border-t border-white/8 bg-viratec-night font-viratec">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-5 pt-14 pb-8 min-[800px]:gap-16 min-[800px]:px-[85px] min-[800px]:pt-24 min-[800px]:pb-10">
         <div className="flex flex-col gap-8 min-[800px]:gap-14 lg:flex-row lg:justify-between">
           <div className="flex flex-col gap-5 min-[800px]:gap-6">
-            <Link to={ROUTES.HOME} aria-label="VIRaTeC home" className="w-fit">
+            <Link to={ROUTES.HOME} aria-label={common.homeAriaLabel} className="w-fit">
               <Logo className="w-[180px]" />
             </Link>
-            <p className="max-w-80 text-sm leading-[22px] text-viratec-subtle">
-              Virtual Innovative Research &amp; Technology (VIRaTeC) Global Community at Taras
-              Shevchenko National University of Kyiv.
-            </p>
+            <p className="max-w-80 text-sm leading-[22px] text-viratec-subtle">{t.tagline}</p>
+
+            <LanguageSelect label={t.language} />
 
             <div className="flex flex-col gap-2.5">
-              <label htmlFor="footer-language" className={LABEL_CLASS}>
-                Language
-              </label>
-              <div className="relative w-full min-[800px]:w-60">
-                <img
-                  src={languageGlobe}
-                  alt=""
-                  className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2"
-                />
-                <select
-                  id="footer-language"
-                  defaultValue="en"
-                  className="w-full cursor-pointer appearance-none rounded-full border border-white/10 bg-white/4 py-[11px] pr-10 pl-10 text-sm leading-5 text-white transition-colors outline-none hover:border-white/22 focus-visible:border-viratec-lime"
-                >
-                  {LANGUAGES.map((option) => (
-                    <option
-                      key={option.value}
-                      value={option.value}
-                      disabled={!option.isAvailable}
-                      className="bg-viratec-bg"
-                    >
-                      {option.isAvailable ? option.label : `${option.label} — ${NOT_AVAILABLE_YET}`}
-                    </option>
-                  ))}
-                </select>
-                <img
-                  src={chevronDown}
-                  alt=""
-                  className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2.5">
-              <p className={LABEL_CLASS}>Follow us</p>
+              <p className={LABEL_CLASS}>{t.followUs}</p>
               <div className="flex gap-2.5">
                 <OptionalLink
                   href={SOCIAL_LINKS.linkedinGroup}
@@ -190,13 +237,13 @@ export function SiteFooter() {
                   <img src={scholarIcon} alt="" />
                 </OptionalLink>
               </div>
-              <p className="text-xs text-viratec-subtle">ResearchGate: {NOT_AVAILABLE_YET}</p>
+              <p className="text-xs text-viratec-subtle">{common.unavailable('ResearchGate')}</p>
             </div>
           </div>
 
           <div className="hidden grid-cols-2 gap-x-16 gap-y-10 min-[800px]:grid min-[1400px]:flex min-[1400px]:gap-16">
-            {LINK_GROUPS.map((group) => (
-              <div key={group.label} className="flex flex-col gap-4 whitespace-nowrap">
+            {linkGroups.map((group) => (
+              <div key={group.id} className="flex flex-col gap-4 whitespace-nowrap">
                 <p className={LABEL_CLASS}>{group.label}</p>
                 <ul className="flex flex-col gap-3">
                   <GroupLinks group={group} />
@@ -204,7 +251,7 @@ export function SiteFooter() {
               </div>
             ))}
             <div className="flex flex-col gap-4">
-              <p className={LABEL_CLASS}>Contact</p>
+              <p className={LABEL_CLASS}>{t.contact}</p>
               <ul className="flex flex-col gap-3">
                 <ContactLinks />
               </ul>
@@ -212,20 +259,22 @@ export function SiteFooter() {
           </div>
 
           <div className="min-[800px]:hidden">
-            {LINK_GROUPS.map((group) => (
+            {linkGroups.map((group) => (
               <AccordionSection
-                key={group.label}
+                key={group.id}
+                id={group.id}
                 title={group.label}
-                isOpen={openSection === group.label}
-                onToggle={() => toggleSection(group.label)}
+                isOpen={openSection === group.id}
+                onToggle={() => toggleSection(group.id)}
               >
                 <GroupLinks group={group} />
               </AccordionSection>
             ))}
             <AccordionSection
-              title="Contact"
-              isOpen={openSection === 'Contact'}
-              onToggle={() => toggleSection('Contact')}
+              id={CONTACT_SECTION_ID}
+              title={t.contact}
+              isOpen={openSection === CONTACT_SECTION_ID}
+              onToggle={() => toggleSection(CONTACT_SECTION_ID)}
               isLast
             >
               <ContactLinks />
@@ -236,9 +285,9 @@ export function SiteFooter() {
         <div className="h-px w-full bg-white/8" />
 
         <div className="flex flex-col gap-2.5 text-[13px] leading-[18px] text-viratec-subtle min-[800px]:flex-row min-[800px]:justify-between">
-          <p>© 2026 VIRaTeC KNU. All rights reserved.</p>
-          <ul className="flex gap-6">
-            {LEGAL_LINKS.map((link) => (
+          <p>{t.copyright}</p>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2">
+            {legalLinks.map((link) => (
               <li key={link.to}>
                 <Link to={link.to} className="transition-colors hover:text-white">
                   {link.label}

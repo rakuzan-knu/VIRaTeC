@@ -1,4 +1,5 @@
 import { ROUTES } from '@/shared/config/routes';
+import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { InfoCard } from '@/shared/ui/info-card';
@@ -8,76 +9,210 @@ import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { useDocumentTitle } from '@/shared/lib';
 
-const FORMATS = [
-  {
-    title: 'COIL projects',
-    description:
-      'Collaborative Online International Learning: one shared project for students from different countries and universities.',
-    linkLabel: 'See projects →',
-    to: ROUTES.PROJECTS,
-  },
-  {
-    title: 'Synchronous online workshops',
-    description:
-      'Live sessions and role-play simulations, e.g. offshore wind farm negotiations with Johns Hopkins University.',
-    linkLabel: 'See events →',
-    to: ROUTES.PUBLICATIONS,
-  },
-  {
-    title: 'Certified modules',
-    description:
-      'Certified Research-Based Learning modules where Master’s students lead workshops for international cohorts.',
-    linkLabel: 'Learn more →',
-    to: ROUTES.OPPORTUNITIES,
-  },
-] as const;
+interface LearningFormat {
+  title: string;
+  description: string;
+  linkLabel: string;
+  to: string;
+}
 
-const PRINCIPLES: StepItem[] = [
-  {
-    title: 'Idea → outcome',
-    description: 'Every project starts with a student idea and ends with a tangible result.',
-  },
-  {
-    title: 'Challenge → collaboration',
-    description: 'Teams from different countries solve one real problem together.',
-  },
-  {
-    title: 'Knowledge → implementation',
-    description: 'What students learn is applied in practice, not only in exams.',
-  },
-];
+interface TitledText {
+  title: string;
+  description: string;
+}
 
-const OUTCOMES = [
-  { title: 'Research skills', description: 'From formulating a question to presenting results.' },
-  {
-    title: 'Cross-cultural competence',
-    description: 'Working with people from different cultures and time zones.',
+interface ExperientialLearningContent {
+  documentTitle: string;
+  breadcrumb: string[];
+  title: string;
+  accent: string;
+  description: string;
+  formatsEyebrow: string;
+  formatsTitle: string;
+  formats: LearningFormat[];
+  approachEyebrow: string;
+  approachTitle: string;
+  approachAccent: string;
+  principles: StepItem[];
+  outcomesEyebrow: string;
+  outcomesTitle: string;
+  outcomes: TitledText[];
+  ctaTitle: string;
+  ctaDescription: string;
+}
+
+const EXPERIENTIAL_LEARNING_CONTENT = defineMessages<ExperientialLearningContent>({
+  en: {
+    documentTitle: 'Experiential Learning',
+    breadcrumb: ['Research & Projects', 'Experiential Learning'],
+    title: 'Learning by',
+    accent: 'doing.',
+    description:
+      'At VIRaTeC students learn through real international projects: they research, collaborate across cultures and deliver results together with partner universities.',
+    formatsEyebrow: 'Learning formats',
+    formatsTitle: 'How students learn',
+    formats: [
+      {
+        title: 'COIL projects',
+        description:
+          'Collaborative Online International Learning: one shared project for students from different countries and universities.',
+        linkLabel: 'See projects →',
+        to: ROUTES.PROJECTS,
+      },
+      {
+        title: 'Synchronous online workshops',
+        description:
+          'Live sessions and role-play simulations, e.g. offshore wind farm negotiations with Johns Hopkins University.',
+        linkLabel: 'See events →',
+        to: ROUTES.PUBLICATIONS,
+      },
+      {
+        title: 'Certified modules',
+        description:
+          'Certified Research-Based Learning modules where Master’s students lead workshops for international cohorts.',
+        linkLabel: 'Learn more →',
+        to: ROUTES.OPPORTUNITIES,
+      },
+    ],
+    approachEyebrow: 'Our approach',
+    approachTitle: 'Three principles',
+    approachAccent: 'of every project',
+    principles: [
+      {
+        title: 'Idea → outcome',
+        description: 'Every project starts with a student idea and ends with a tangible result.',
+      },
+      {
+        title: 'Challenge → collaboration',
+        description: 'Teams from different countries solve one real problem together.',
+      },
+      {
+        title: 'Knowledge → implementation',
+        description: 'What students learn is applied in practice, not only in exams.',
+      },
+    ],
+    outcomesEyebrow: 'Outcomes',
+    outcomesTitle: 'What students gain',
+    outcomes: [
+      {
+        title: 'Research skills',
+        description: 'From formulating a question to presenting results.',
+      },
+      {
+        title: 'Cross-cultural competence',
+        description: 'Working with people from different cultures and time zones.',
+      },
+      {
+        title: 'Emotional intelligence',
+        description: 'Empathy and communication in virtual teams.',
+      },
+      {
+        title: 'Global teamwork',
+        description: 'Delivering one result together with international peers.',
+      },
+    ],
+    ctaTitle: 'Ready to learn by doing?',
+    ctaDescription: 'Join the next COIL project or workshop.',
   },
-  { title: 'Emotional intelligence', description: 'Empathy and communication in virtual teams.' },
-  {
-    title: 'Global teamwork',
-    description: 'Delivering one result together with international peers.',
+  uk: {
+    documentTitle: 'Навчання через досвід',
+    breadcrumb: ['Дослідження та проєкти', 'Навчання через досвід'],
+    title: 'Навчання',
+    accent: 'на практиці.',
+    description:
+      'У VIRaTeC студенти навчаються через реальні міжнародні проєкти: досліджують, співпрацюють із представниками різних культур і досягають результатів разом з університетами-партнерами.',
+    formatsEyebrow: 'Формати навчання',
+    formatsTitle: 'Як навчаються студенти',
+    formats: [
+      {
+        title: 'COIL-проєкти',
+        description:
+          'Collaborative Online International Learning: один спільний проєкт для студентів із різних країн і університетів.',
+        linkLabel: 'Переглянути проєкти →',
+        to: ROUTES.PROJECTS,
+      },
+      {
+        title: 'Синхронні онлайн-воркшопи',
+        description:
+          'Живі сесії та рольові симуляції, як-от переговори щодо офшорної вітрової електростанції з Університетом Джонса Гопкінса.',
+        linkLabel: 'Переглянути події →',
+        to: ROUTES.PUBLICATIONS,
+      },
+      {
+        title: 'Сертифіковані модулі',
+        description:
+          'Сертифіковані модулі Research-Based Learning, у яких магістранти проводять воркшопи для міжнародних груп.',
+        linkLabel: 'Дізнатися більше →',
+        to: ROUTES.OPPORTUNITIES,
+      },
+    ],
+    approachEyebrow: 'Наш підхід',
+    approachTitle: 'Три принципи',
+    approachAccent: 'кожного проєкту',
+    principles: [
+      {
+        title: 'Ідея → результат',
+        description:
+          'Кожен проєкт починається зі студентської ідеї та завершується відчутним результатом.',
+      },
+      {
+        title: 'Виклик → співпраця',
+        description: 'Команди з різних країн разом розв’язують одну реальну проблему.',
+      },
+      {
+        title: 'Знання → впровадження',
+        description: 'Здобуті знання застосовуються на практиці, а не лише на іспитах.',
+      },
+    ],
+    outcomesEyebrow: 'Результати',
+    outcomesTitle: 'Що отримують студенти',
+    outcomes: [
+      {
+        title: 'Дослідницькі навички',
+        description: 'Від формулювання питання до презентації результатів.',
+      },
+      {
+        title: 'Міжкультурна компетентність',
+        description: 'Робота з людьми з різних культур і часових поясів.',
+      },
+      {
+        title: 'Емоційний інтелект',
+        description: 'Емпатія та комунікація у віртуальних командах.',
+      },
+      {
+        title: 'Глобальна командна робота',
+        description: 'Спільне досягнення результату з міжнародними колегами.',
+      },
+    ],
+    ctaTitle: 'Готові навчатися на практиці?',
+    ctaDescription: 'Долучайтеся до наступного COIL-проєкту чи воркшопу.',
   },
-] as const;
+});
 
 export function ExperientialLearningPage() {
-  useDocumentTitle('Experiential Learning');
+  const content = useLocalized(EXPERIENTIAL_LEARNING_CONTENT);
+  const common = useCommonMessages();
+  useDocumentTitle(content.documentTitle);
 
   return (
     <PageLayout
       intro={
         <PageIntro
-          breadcrumb={['Research & Projects', 'Experiential Learning']}
-          title="Learning by"
-          accent="doing."
-          description="At VIRaTeC students learn through real international projects: they research, collaborate across cultures and deliver results together with partner universities."
+          breadcrumb={content.breadcrumb}
+          title={content.title}
+          accent={content.accent}
+          description={content.description}
         />
       }
     >
       <PageSection aria-labelledby="formats-title">
-        <SectionHeader id="formats-title" eyebrow="Learning formats" title="How students learn" />
+        <SectionHeader
+          id="formats-title"
+          eyebrow={content.formatsEyebrow}
+          title={content.formatsTitle}
+        />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {FORMATS.map((format) => (
+          {content.formats.map((format) => (
             <li key={format.title}>
               <InfoCard
                 title={format.title}
@@ -94,17 +229,21 @@ export function ExperientialLearningPage() {
       <PageSection tone="surface" aria-labelledby="approach-title">
         <SectionHeader
           id="approach-title"
-          eyebrow="Our approach"
-          title="Three principles"
-          accent="of every project"
+          eyebrow={content.approachEyebrow}
+          title={content.approachTitle}
+          accent={content.approachAccent}
         />
-        <StepsList steps={PRINCIPLES} />
+        <StepsList steps={content.principles} />
       </PageSection>
 
       <PageSection aria-labelledby="outcomes-title">
-        <SectionHeader id="outcomes-title" eyebrow="Outcomes" title="What students gain" />
+        <SectionHeader
+          id="outcomes-title"
+          eyebrow={content.outcomesEyebrow}
+          title={content.outcomesTitle}
+        />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {OUTCOMES.map((outcome, index) => (
+          {content.outcomes.map((outcome, index) => (
             <li key={outcome.title}>
               <InfoCard
                 index={String(index + 1).padStart(2, '0')}
@@ -119,9 +258,9 @@ export function ExperientialLearningPage() {
 
       <CtaSection
         tone="surface"
-        title="Ready to learn by doing?"
-        description="Join the next COIL project or workshop."
-        action={{ label: 'See opportunities', to: ROUTES.OPPORTUNITIES }}
+        title={content.ctaTitle}
+        description={content.ctaDescription}
+        action={{ label: common.seeOpportunities, to: ROUTES.OPPORTUNITIES }}
       />
     </PageLayout>
   );

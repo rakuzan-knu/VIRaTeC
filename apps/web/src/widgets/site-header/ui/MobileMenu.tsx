@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn, useBodyScrollLock, useFocusTrap } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
-import { MAIN_NAV } from '@/shared/config/navigation';
+import { useNavigation } from '@/shared/config/navigation';
+import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { Logo } from '@/shared/ui/logo';
 import { LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import closeIcon from '@/shared/assets/icons/close.svg';
@@ -12,12 +13,20 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
+const MOBILE_MENU_MESSAGES = defineMessages({
+  en: { mainMenu: 'Main menu', mainNav: 'Main', closeMenu: 'Close menu' },
+  uk: { mainMenu: 'Головне меню', mainNav: 'Головна навігація', closeMenu: 'Закрити меню' },
+});
+
 const ROW_CLASS =
   'flex w-full items-center justify-between border-b border-white/8 py-5 text-left font-display text-[26px] leading-8 font-medium tracking-[-0.02em] text-white';
 
 export function MobileMenu({ onClose }: MobileMenuProps) {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const { main: mainNav } = useNavigation();
+  const common = useCommonMessages();
+  const t = useLocalized(MOBILE_MENU_MESSAGES);
 
   useBodyScrollLock(true);
   useFocusTrap(dialogRef, true);
@@ -36,27 +45,27 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
       id="mobile-menu"
       role="dialog"
       aria-modal="true"
-      aria-label="Main menu"
+      aria-label={t.mainMenu}
       className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-viratec-bg font-viratec xl:hidden"
     >
       <div className="flex h-16 shrink-0 items-center justify-between px-5">
-        <Link to={ROUTES.HOME} onClick={onClose} aria-label="VIRaTeC home">
+        <Link to={ROUTES.HOME} onClick={onClose} aria-label={common.homeAriaLabel}>
           <Logo className="w-[132px]" />
         </Link>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close menu"
+          aria-label={t.closeMenu}
           className="-mr-2 flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-white/8"
         >
           <img src={closeIcon} alt="" />
         </button>
       </div>
 
-      <nav aria-label="Main" className="px-5 pt-3">
+      <nav aria-label={t.mainNav} className="px-5 pt-3">
         <ul>
-          {MAIN_NAV.map((entry, index) => {
-            const isLast = index === MAIN_NAV.length - 1;
+          {mainNav.map((entry, index) => {
+            const isLast = index === mainNav.length - 1;
 
             if (entry.type === 'link') {
               return (
@@ -73,16 +82,16 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
             }
 
             const { group } = entry;
-            const isOpen = openGroup === group.label;
+            const isOpen = openGroup === group.id;
             const panelId = `mobile-submenu-${index}`;
 
             return (
-              <li key={group.label}>
+              <li key={group.id}>
                 <button
                   type="button"
                   aria-expanded={isOpen}
                   aria-controls={panelId}
-                  onClick={() => setOpenGroup(isOpen ? null : group.label)}
+                  onClick={() => setOpenGroup(isOpen ? null : group.id)}
                   className={cn(ROW_CLASS, 'cursor-pointer')}
                 >
                   {group.label}
@@ -115,14 +124,14 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
 
       <div className="mt-auto flex flex-col gap-3 px-5 pt-8 pb-8">
         <LinkButton to={ROUTES.CONTACT} onClick={onClose} className="w-full">
-          Contact / Collaborate
+          {common.contactCollaborate}
         </LinkButton>
         <Link
           to={ROUTES.LOGIN}
           onClick={onClose}
           className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
         >
-          Log in
+          {common.logIn}
         </Link>
       </div>
     </div>

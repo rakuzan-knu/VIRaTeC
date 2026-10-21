@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/shared/lib';
 import { Eyebrow } from '@/shared/ui/eyebrow';
+import { defineMessages, useLocalized } from '@/shared/i18n';
 import { SiteHeader } from '@/widgets/site-header';
 import contactGlow from '@/shared/assets/icons/contact-glow.svg';
 
@@ -21,6 +22,11 @@ interface PageIntroProps {
   children?: ReactNode;
 }
 
+const PAGE_INTRO_MESSAGES = defineMessages({
+  en: { breadcrumb: 'Breadcrumb' },
+  uk: { breadcrumb: 'Навігаційний ланцюжок' },
+});
+
 const TONE_CLASS: Record<PageIntroTone, string> = {
   blue: 'bg-viratec-bg bg-[radial-gradient(120%_90%_at_100%_100%,rgba(11,90,168,0.55)_0%,rgba(5,27,64,0.4)_45%,transparent_75%)]',
   teal: 'bg-viratec-bg bg-[radial-gradient(120%_90%_at_100%_100%,rgba(19,138,138,0.5)_0%,rgba(5,27,64,0.4)_45%,transparent_75%)]',
@@ -38,6 +44,8 @@ export function PageIntro({
   className,
   children,
 }: PageIntroProps) {
+  const t = useLocalized(PAGE_INTRO_MESSAGES);
+
   return (
     <div className={cn('relative overflow-hidden', TONE_CLASS[tone])}>
       {tone === 'glow' && (
@@ -60,7 +68,7 @@ export function PageIntro({
         )}
       >
         {breadcrumb && (
-          <nav aria-label="Breadcrumb">
+          <nav aria-label={t.breadcrumb}>
             <ol className="flex flex-wrap items-center text-[13px] text-viratec-subtle lg:text-sm">
               {breadcrumb.map((item, index) => (
                 <li key={typeof item === 'string' ? item : item.to} className="flex items-center">

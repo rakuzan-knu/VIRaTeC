@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { cn } from '@/shared/lib';
+import { useCommonMessages } from '@/shared/i18n';
 
 interface ExpandableTextProps {
   children: string;
@@ -9,6 +10,7 @@ interface ExpandableTextProps {
 export function ExpandableText({ children, className }: ExpandableTextProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const textId = useId();
+  const common = useCommonMessages();
 
   return (
     <>
@@ -22,7 +24,7 @@ export function ExpandableText({ children, className }: ExpandableTextProps) {
         onClick={() => setIsExpanded((value) => !value)}
         className="cursor-pointer text-sm leading-5 font-medium text-viratec-cyan lg:hidden"
       >
-        {isExpanded ? 'Show less ↑' : 'Read more ↓'}
+        {isExpanded ? common.showLessToggle : common.readMoreToggle}
       </button>
     </>
   );

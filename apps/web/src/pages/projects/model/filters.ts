@@ -1,44 +1,96 @@
 import { ProjectStatus } from '@viratec/contracts';
+import { defineMessages, mapLocalized, useLocalized } from '@/shared/i18n';
 
 export const ALL = 'all';
 
-export const AREA_OPTIONS = [
-  { value: ALL, label: 'All areas' },
-  { value: 'Cybersecurity', label: 'Cybersecurity' },
-  { value: 'AI & NLP', label: 'AI & NLP' },
-  { value: 'Data Analytics', label: 'Data Analytics' },
-  { value: 'Education & EdTech', label: 'Education & EdTech' },
-  { value: 'Cross-cultural', label: 'Cross-cultural' },
-  { value: 'Experiential', label: 'Experiential' },
+const AREA_VALUES = [
+  ALL,
+  'Cybersecurity',
+  'AI & NLP',
+  'Data Analytics',
+  'Education & EdTech',
+  'Cross-cultural',
+  'Experiential',
 ] as const;
 
-export type AreaFilter = (typeof AREA_OPTIONS)[number]['value'];
+export type AreaFilter = (typeof AREA_VALUES)[number];
 
-export const STATUS_OPTIONS = [
-  { value: ALL, label: 'All' },
-  { value: ProjectStatus.IN_PROGRESS, label: 'Ongoing' },
-  { value: ProjectStatus.COMPLETED, label: 'Completed' },
-  { value: ProjectStatus.IDEA, label: 'Planned' },
+const STATUS_VALUES = [
+  ALL,
+  ProjectStatus.IN_PROGRESS,
+  ProjectStatus.COMPLETED,
+  ProjectStatus.IDEA,
 ] as const;
 
-export type StatusFilter = (typeof STATUS_OPTIONS)[number]['value'];
+export type StatusFilter = (typeof STATUS_VALUES)[number];
 
-export const SORT_OPTIONS = [
-  { value: 'newest', label: 'Newest first' },
-  { value: 'oldest', label: 'Oldest first' },
-  { value: 'az', label: 'A–Z' },
-] as const;
+const SORT_VALUES = ['newest', 'oldest', 'az'] as const;
 
-export type SortOrder = (typeof SORT_OPTIONS)[number]['value'];
+export type SortOrder = (typeof SORT_VALUES)[number];
+
+interface FilterLabels {
+  area: Record<AreaFilter, string>;
+  status: Record<StatusFilter, string>;
+  sort: Record<SortOrder, string>;
+}
+
+const FILTER_LABELS = defineMessages<FilterLabels>({
+  en: {
+    area: {
+      [ALL]: 'All areas',
+      Cybersecurity: 'Cybersecurity',
+      'AI & NLP': 'AI & NLP',
+      'Data Analytics': 'Data Analytics',
+      'Education & EdTech': 'Education & EdTech',
+      'Cross-cultural': 'Cross-cultural',
+      Experiential: 'Experiential',
+    },
+    status: {
+      [ALL]: 'All',
+      [ProjectStatus.IN_PROGRESS]: 'Ongoing',
+      [ProjectStatus.COMPLETED]: 'Completed',
+      [ProjectStatus.IDEA]: 'Planned',
+    },
+    sort: { newest: 'Newest first', oldest: 'Oldest first', az: 'A–Z' },
+  },
+  uk: {
+    area: {
+      [ALL]: 'Усі напрями',
+      Cybersecurity: 'Кібербезпека',
+      'AI & NLP': 'ШІ та NLP',
+      'Data Analytics': 'Аналітика даних',
+      'Education & EdTech': 'Освіта та EdTech',
+      'Cross-cultural': 'Міжкультурна співпраця',
+      Experiential: 'Навчання через досвід',
+    },
+    status: {
+      [ALL]: 'Усі',
+      [ProjectStatus.IN_PROGRESS]: 'Триває',
+      [ProjectStatus.COMPLETED]: 'Завершено',
+      [ProjectStatus.IDEA]: 'Заплановано',
+    },
+    sort: { newest: 'Спочатку нові', oldest: 'Спочатку старі', az: 'А–Я' },
+  },
+});
+
+const toOptions = <T extends string>(values: readonly T[], labels: Record<T, string>) =>
+  values.map((value) => ({ value, label: labels[value] }));
+
+const FILTER_OPTIONS = mapLocalized(FILTER_LABELS, (labels) => ({
+  area: toOptions(AREA_VALUES, labels.area),
+  status: toOptions(STATUS_VALUES, labels.status),
+  sort: toOptions(SORT_VALUES, labels.sort),
+}));
+
+export const useFilterOptions = () => useLocalized(FILTER_OPTIONS);
 
 export const PAGE_SIZE = 6;
 
-const pickOption = <T extends string>(options: readonly { value: T }[], raw: string | null) =>
-  options.find((option) => option.value === raw)?.value ?? options[0].value;
+const pickValue = <T extends string>(values: readonly [T, ...T[]], raw: string | null) =>
+  values.find((value) => value === raw) ?? values[0];
 
 export const parseArea = (raw: string | null): AreaFilter =>
-  pickOption<AreaFilter>(AREA_OPTIONS, raw);
+  pickValue<AreaFilter>(AREA_VALUES, raw);
 export const parseStatus = (raw: string | null): StatusFilter =>
-  pickOption<StatusFilter>(STATUS_OPTIONS, raw);
-export const parseSort = (raw: string | null): SortOrder =>
-  pickOption<SortOrder>(SORT_OPTIONS, raw);
+  pickValue<StatusFilter>(STATUS_VALUES, raw);
+export const parseSort = (raw: string | null): SortOrder => pickValue<SortOrder>(SORT_VALUES, raw);

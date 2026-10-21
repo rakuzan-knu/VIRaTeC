@@ -1,5 +1,6 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { cn } from '@/shared/lib';
+import { defineMessages, useLocalized } from '@/shared/i18n';
 import dotIcon from '@/shared/assets/icons/timeline-dot.svg';
 import upcomingDotIcon from '@/shared/assets/icons/timeline-dot-upcoming.svg';
 import type { Milestone } from '../model/content';
@@ -7,6 +8,11 @@ import type { Milestone } from '../model/content';
 interface JourneyTimelineProps {
   milestones: Milestone[];
 }
+
+const TIMELINE_MESSAGES = defineMessages({
+  en: { upcoming: 'Upcoming' },
+  uk: { upcoming: 'Незабаром' },
+});
 
 function useScrollProgress(
   trackRef: RefObject<HTMLElement | null>,
@@ -57,6 +63,7 @@ function useScrollProgress(
 export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
+  const t = useLocalized(TIMELINE_MESSAGES);
 
   useScrollProgress(trackRef, barRef);
 
@@ -109,7 +116,9 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
                     {milestone.date}
                   </span>
                   {milestone.isUpcoming && (
-                    <span className="text-[13px] leading-[18px] text-viratec-subtle">Upcoming</span>
+                    <span className="text-[13px] leading-[18px] text-viratec-subtle">
+                      {t.upcoming}
+                    </span>
                   )}
                 </p>
                 <h3 className="font-display text-lg leading-[24px] font-medium tracking-[-0.015em] text-white lg:text-xl lg:leading-[26px]">

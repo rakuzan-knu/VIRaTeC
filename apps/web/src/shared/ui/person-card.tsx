@@ -1,4 +1,4 @@
-import { NOT_AVAILABLE_YET } from '@/shared/config/navigation';
+import { useCommonMessages } from '@/shared/i18n';
 
 interface PersonCardProps {
   name: string;
@@ -15,6 +15,9 @@ const getInitials = (name: string) =>
     .toUpperCase();
 
 export function PersonCard({ name, role, photo }: PersonCardProps) {
+  const common = useCommonMessages();
+  const placeholderLabel = common.unavailable(common.photo);
+
   return (
     <article className="flex h-full items-center gap-4 rounded-[28px] border border-white/10 bg-white/[0.035] p-5 lg:flex-col lg:items-start lg:gap-5 lg:p-7">
       {photo ? (
@@ -29,8 +32,8 @@ export function PersonCard({ name, role, photo }: PersonCardProps) {
       ) : (
         <span
           role="img"
-          aria-label={`Photo: ${NOT_AVAILABLE_YET}`}
-          title={`Photo: ${NOT_AVAILABLE_YET}`}
+          aria-label={placeholderLabel}
+          title={placeholderLabel}
           className="flex size-14 shrink-0 items-center justify-center rounded-full bg-viratec-deep font-display text-lg font-medium text-viratec-accent ring-1 ring-white/12 lg:size-24 lg:text-2xl"
         >
           {getInitials(name)}

@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { PROJECTS, RESEARCH_HIGHLIGHT_NUMBERS } from '../model/content';
+import { useLocalized } from '@/shared/i18n';
+import { HOME_CONTENT } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import {
@@ -13,23 +14,25 @@ import {
 } from './styles';
 
 export function ResearchSection() {
+  const { research } = useLocalized(HOME_CONTENT);
+
   return (
     <section aria-labelledby="research-title" className="bg-viratec-deep">
       <div className={SECTION_CONTAINER_CLASS}>
         <div className="flex items-end justify-between gap-10">
           <div className="flex flex-col gap-4 lg:gap-5">
-            <Eyebrow>Research &amp; Projects</Eyebrow>
+            <Eyebrow>{research.eyebrow}</Eyebrow>
             <h2 id="research-title" className={SECTION_TITLE_CLASS}>
-              What we work on
+              {research.title}
             </h2>
           </div>
           <LinkButton to={ROUTES.PROJECTS} className="hidden lg:inline-flex">
-            View All Projects
+            {research.action}
           </LinkButton>
         </div>
 
         <ul className="grid gap-4 lg:grid-cols-3 lg:gap-5">
-          {PROJECTS.map((project) => (
+          {research.projects.map((project) => (
             <li key={project.title}>
               <Link
                 to={project.to}
@@ -42,7 +45,7 @@ export function ResearchSection() {
                   {project.description}
                 </p>
                 <span className="mt-auto flex items-center justify-between pt-4 text-[15px] font-medium text-viratec-cyan lg:text-base">
-                  Explore
+                  {research.cardAction}
                   <span
                     aria-hidden="true"
                     className="flex size-10 items-center justify-center rounded-full border border-white/14 text-white transition-colors duration-200 group-hover/card:border-viratec-lime group-hover/card:bg-viratec-lime group-hover/card:text-viratec-ink"
@@ -58,15 +61,14 @@ export function ResearchSection() {
         <div className="flex flex-col gap-6 rounded-[28px] border border-white/10 bg-viratec-bg px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:rounded-[36px] lg:px-14 lg:py-14">
           <div className="flex flex-col gap-3.5 lg:max-w-[640px] lg:gap-4">
             <h3 className="font-display text-[28px] leading-[34px] font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]">
-              Students don’t just join research — they lead it.
+              {research.highlightTitle}
             </h3>
             <ExpandableText className="text-[15px] leading-[23px] text-viratec-muted lg:text-lg lg:leading-7">
-              Master’s students design cases, lead workshops and mentor international teams of
-              undergraduates in certified Research-Based Learning modules.
+              {research.highlightDescription}
             </ExpandableText>
           </div>
           <dl className="flex gap-10 border-t border-white/10 pt-6 whitespace-nowrap lg:shrink-0 lg:gap-14 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
-            {RESEARCH_HIGHLIGHT_NUMBERS.map((item) => (
+            {research.highlightNumbers.map((item) => (
               <div key={item.value} className="flex flex-col gap-1">
                 <dt className="order-2 text-[13px] text-viratec-muted lg:text-[15px]">
                   {item.label}
@@ -80,7 +82,7 @@ export function ResearchSection() {
         </div>
 
         <LinkButton to={ROUTES.PROJECTS} className="w-full lg:hidden">
-          View All Projects
+          {research.action}
         </LinkButton>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { useCommonMessages } from '@/shared/i18n';
 import { ButtonArrow, linkButtonClassName } from './link-button';
 
 interface ListFeedbackProps {
@@ -33,6 +34,8 @@ interface LoadMoreButtonProps {
 }
 
 export function LoadMoreButton({ onClick }: LoadMoreButtonProps) {
+  const common = useCommonMessages();
+
   return (
     <div className="flex justify-center pt-6">
       <button
@@ -43,7 +46,7 @@ export function LoadMoreButton({ onClick }: LoadMoreButtonProps) {
           className: 'w-full cursor-pointer px-[26px] sm:w-auto',
         })}
       >
-        Load more
+        {common.loadMore}
         <ButtonArrow />
       </button>
     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { defineMessages, useLocalized } from '@/shared/i18n';
 import playIcon from '@/shared/assets/icons/play.svg';
 
 export interface VideoSource {
@@ -13,12 +14,18 @@ interface IntroVideoProps {
   poster?: string;
 }
 
+const INTRO_VIDEO_MESSAGES = defineMessages({
+  en: { play: (caption: string) => `Play video: ${caption}` },
+  uk: { play: (caption: string) => `Відтворити відео: ${caption}` },
+});
+
 const FRAME_CLASS =
   'relative aspect-video w-full overflow-hidden rounded-[24px] border border-white/10 lg:aspect-auto lg:h-[714px] lg:rounded-[40px]';
 
 export function IntroVideo({ title, duration, sources, poster }: IntroVideoProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const caption = `${title} · ${duration}`;
+  const t = useLocalized(INTRO_VIDEO_MESSAGES);
 
   if (isPlaying) {
     return (
@@ -41,7 +48,7 @@ export function IntroVideo({ title, duration, sources, poster }: IntroVideoProps
     <button
       type="button"
       onClick={() => setIsPlaying(true)}
-      aria-label={`Play video: ${caption}`}
+      aria-label={t.play(caption)}
       className={`${FRAME_CLASS} group flex cursor-pointer flex-col items-center justify-center gap-3.5 bg-viratec-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-viratec-lime`}
     >
       {poster && (

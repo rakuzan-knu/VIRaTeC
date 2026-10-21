@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { PARTNERS } from '../model/content';
+import { useLocalized } from '@/shared/i18n';
+import { HOME_CONTENT, PARTNERS } from '../model/content';
 
 const ARC_HEIGHT = 112;
 const DRAW_DELAY_MS = 1000;
@@ -51,6 +52,7 @@ export function PartnerNetwork() {
   const [originX = 0, ...partnerXs] = centers;
   const maxDistance = (partnerXs.at(-1) ?? 0) - originX;
   const hasLayout = width > 0 && originX > 0 && maxDistance > 0;
+  const { hero } = useLocalized(HOME_CONTENT);
 
   return (
     <div className="flex flex-col items-center gap-8 lg:items-stretch lg:gap-0">
@@ -58,7 +60,7 @@ export function PartnerNetwork() {
         className={`text-sm leading-5 text-viratec-muted lg:mb-2 ${REVEAL_CLASS}`}
         style={delay(REVEAL_DELAY_MS - 80)}
       >
-        In collaboration with
+        {hero.partnersCaption}
       </p>
 
       <div className="relative w-full lg:pt-[112px]">
@@ -126,8 +128,8 @@ export function PartnerNetwork() {
               aria-hidden="true"
               className="absolute -top-[5px] size-2.5 rounded-full bg-viratec-lime ring-4 ring-viratec-lime/20"
             />
-            <span className="text-[15px] leading-5 font-medium text-white">KNU</span>
-            <span className="text-[13px] leading-[18px] text-viratec-subtle">Kyiv</span>
+            <span className="text-[15px] leading-5 font-medium text-white">{hero.knu}</span>
+            <span className="text-[13px] leading-[18px] text-viratec-subtle">{hero.kyiv}</span>
           </li>
           {PARTNERS.map((partner, index) => (
             <li

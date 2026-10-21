@@ -11,6 +11,9 @@ export default () => ({
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'default_jwt_refresh_secret_for_local_dev',
     refreshTtl: process.env.JWT_REFRESH_TTL || '7d',
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+  },
   redis: {
     url: process.env.REDIS_URL || 'redis://localhost:6379',
   },

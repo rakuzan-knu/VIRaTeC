@@ -9,31 +9,79 @@ import { CtaSection } from '@/shared/ui/cta-section';
 import { ListFeedback } from '@/shared/ui/list-feedback';
 import { ButtonArrow, LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import {
-  PROJECT_STATUS_LABEL,
   getProjectFaculties,
   getProjectYear,
   useProject,
+  useProjectLabels,
   useProjects,
   type Project,
 } from '@/entities/project';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { useDocumentTitle } from '@/shared/lib';
+import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
-const BREADCRUMB_ROOT: BreadcrumbItem[] = [
-  'Research & Projects',
-  { label: 'Projects', to: ROUTES.PROJECTS },
-];
-
-const buildFacts = (project: Project): Fact[] =>
-  [
-    { label: 'Area', value: project.tags.join(', ') },
-    { label: 'Status', value: PROJECT_STATUS_LABEL[project.status] },
-    { label: 'Year', value: String(getProjectYear(project)) },
-    { label: 'Faculties', value: getProjectFaculties(project) },
-  ].filter((fact) => fact.value.length > 0);
+const PROJECT_DETAIL_MESSAGES = defineMessages({
+  en: {
+    researchAndProjects: 'Research & Projects',
+    projects: 'Projects',
+    project: 'Project',
+    area: 'Area',
+    aboutProject: 'About the project',
+    projectFacts: 'Project facts',
+    joinProject: 'Join a project',
+    openDemo: 'Open demo',
+    repository: 'Repository',
+    relatedEyebrow: 'Related projects',
+    relatedTitle: 'More projects',
+    loadingTitle: 'Loading project…',
+    loadingDescription: 'Fetching project details.',
+    notFoundTitle: 'Project not found',
+    notFoundDescription: 'The project may have been moved or is no longer available.',
+    loadError: 'We couldn’t load this project.',
+    missing: 'This project does not exist.',
+    backToProjects: 'Back to projects',
+    ctaTitle: 'Have a project idea?',
+    ctaDescription:
+      'Students and researchers can propose their own project and find an international team.',
+    ctaAction: 'Propose a project',
+  },
+  uk: {
+    researchAndProjects: 'Дослідження та проєкти',
+    projects: 'Проєкти',
+    project: 'Проєкт',
+    area: 'Напрям',
+    aboutProject: 'Про проєкт',
+    projectFacts: 'Інформація про проєкт',
+    joinProject: 'Долучитися до проєкту',
+    openDemo: 'Відкрити демо',
+    repository: 'Репозиторій',
+    relatedEyebrow: 'Схожі проєкти',
+    relatedTitle: 'Більше проєктів',
+    loadingTitle: 'Завантаження проєкту…',
+    loadingDescription: 'Отримуємо інформацію про проєкт.',
+    notFoundTitle: 'Проєкт не знайдено',
+    notFoundDescription: 'Можливо, проєкт перемістили або він більше не доступний.',
+    loadError: 'Не вдалося завантажити цей проєкт.',
+    missing: 'Такого проєкту не існує.',
+    backToProjects: 'До проєктів',
+    ctaTitle: 'Маєте ідею проєкту?',
+    ctaDescription:
+      'Студенти та дослідники можуть запропонувати власний проєкт і знайти міжнародну команду.',
+    ctaAction: 'Запропонувати проєкт',
+  },
+});
 
 function ProjectBody({ project }: { project: Project }) {
+  const t = useLocalized(PROJECT_DETAIL_MESSAGES);
+  const common = useCommonMessages();
+  const labels = useProjectLabels();
+  const facts: Fact[] = [
+    { label: t.area, value: project.tags.join(', ') },
+    { label: common.status, value: labels.status[project.status] },
+    { label: common.year, value: String(getProjectYear(project)) },
+    { label: labels.faculties, value: getProjectFaculties(project, labels.faculty) },
+  ].filter((fact) => fact.value.length > 0);
   const paragraphs = project.description.split(/\n{2,}/).filter(Boolean);
 
   return (
@@ -41,7 +89,7 @@ function ProjectBody({ project }: { project: Project }) {
       <div className="flex flex-1 flex-col gap-5">
         <MediaPlaceholder className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]" />
         <h2 className="font-display text-2xl leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">
-          About the project
+          {t.aboutProject}
         </h2>
         {paragraphs.map((paragraph) => (
           <p
@@ -53,12 +101,12 @@ function ProjectBody({ project }: { project: Project }) {
         ))}
       </div>
       <FactsCard
-        title="Project facts"
-        facts={buildFacts(project)}
+        title={t.projectFacts}
+        facts={facts}
         actions={
           <div className="flex flex-col gap-3">
             <LinkButton to={ROUTES.OPPORTUNITIES} className="w-full">
-              Join a project
+              {t.joinProject}
             </LinkButton>
             {project.demoUrl && (
               <a
@@ -67,7 +115,7 @@ function ProjectBody({ project }: { project: Project }) {
                 rel="noreferrer"
                 className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
               >
-                Open demo
+                {t.openDemo}
                 <ButtonArrow />
               </a>
             )}
@@ -78,7 +126,7 @@ function ProjectBody({ project }: { project: Project }) {
                 rel="noreferrer"
                 className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
               >
-                Repository
+                {t.repository}
                 <ButtonArrow />
               </a>
             )}
@@ -91,13 +139,15 @@ function ProjectBody({ project }: { project: Project }) {
 
 function RelatedProjects({ currentId }: { currentId: string }) {
   const { data } = useProjects();
+  const t = useLocalized(PROJECT_DETAIL_MESSAGES);
+  const common = useCommonMessages();
   const related = (data ?? []).filter((project) => project.id !== currentId).slice(0, 3);
 
   if (related.length === 0) return null;
 
   return (
     <PageSection tone="surface" aria-labelledby="related-title">
-      <SectionHeader id="related-title" eyebrow="Related projects" title="More projects" />
+      <SectionHeader id="related-title" eyebrow={t.relatedEyebrow} title={t.relatedTitle} />
       <ul className="grid gap-6 lg:grid-cols-3">
         {related.map((project) => (
           <li key={project.id}>
@@ -105,7 +155,7 @@ function RelatedProjects({ currentId }: { currentId: string }) {
               withImage
               title={project.title}
               description={project.description}
-              linkLabel="View project →"
+              linkLabel={common.viewProject}
               to={buildProjectPath(project.id)}
               className="lg:min-h-[409px] [&>p]:line-clamp-3"
             />
@@ -120,25 +170,29 @@ export function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { data: project, isPending, isError, refetch } = useProject(projectId);
-  useDocumentTitle(project?.title ?? (isPending ? 'Project' : 'Project not found'));
+  const t = useLocalized(PROJECT_DETAIL_MESSAGES);
+  const common = useCommonMessages();
+  const labels = useProjectLabels();
+  useDocumentTitle(project?.title ?? (isPending ? t.project : t.notFoundTitle));
+
+  const breadcrumbRoot: BreadcrumbItem[] = [
+    t.researchAndProjects,
+    { label: t.projects, to: ROUTES.PROJECTS },
+  ];
 
   const intro = project ? (
     <PageIntro
-      breadcrumb={[...BREADCRUMB_ROOT, project.title]}
+      breadcrumb={[...breadcrumbRoot, project.title]}
       title={project.title}
-      description={`${PROJECT_STATUS_LABEL[project.status]} · ${getProjectYear(project)}`}
+      description={`${labels.status[project.status]} · ${getProjectYear(project)}`}
       descriptionClassName="lg:max-w-[720px]"
       className="lg:pb-16"
     />
   ) : (
     <PageIntro
-      breadcrumb={BREADCRUMB_ROOT}
-      title={isPending ? 'Loading project…' : 'Project not found'}
-      description={
-        isPending
-          ? 'Fetching project details.'
-          : 'The project may have been moved or is no longer available.'
-      }
+      breadcrumb={breadcrumbRoot}
+      title={isPending ? t.loadingTitle : t.notFoundTitle}
+      description={isPending ? t.loadingDescription : t.notFoundDescription}
       className="lg:pb-16"
     />
   );
@@ -154,16 +208,16 @@ export function ProjectDetailPage() {
       {!project && !isPending && (
         <PageSection>
           <ListFeedback
-            message={isError ? 'We couldn’t load this project.' : 'This project does not exist.'}
-            actionLabel={isError ? 'Try again' : 'Back to projects'}
+            message={isError ? t.loadError : t.missing}
+            actionLabel={isError ? common.tryAgain : t.backToProjects}
             onAction={() => (isError ? void refetch() : navigate(ROUTES.PROJECTS))}
           />
         </PageSection>
       )}
       <CtaSection
-        title="Have a project idea?"
-        description="Students and researchers can propose their own project and find an international team."
-        action={{ label: 'Propose a project', to: ROUTES.CONTACT }}
+        title={t.ctaTitle}
+        description={t.ctaDescription}
+        action={{ label: t.ctaAction, to: ROUTES.CONTACT }}
       />
     </PageLayout>
   );

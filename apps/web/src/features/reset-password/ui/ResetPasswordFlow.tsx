@@ -1,24 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Check, Eye, EyeOff } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
-import { CONTACT_EMAIL, NOT_AVAILABLE_YET } from '@/shared/config/navigation';
+import { CONTACT_EMAIL } from '@/shared/config/navigation';
+import { useCommonMessages } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
 import {
   PASSWORD_RULES,
-  newPasswordSchema,
-  requestCodeSchema,
-  verifyCodeSchema,
+  createNewPasswordSchema,
+  createRequestCodeSchema,
+  createVerifyCodeSchema,
   type NewPasswordValues,
   type RequestCodeValues,
   type VerifyCodeValues,
 } from '../model/schema';
 import { useResendCountdown } from '../model/useResendCountdown';
 import { IS_RECOVERY_AVAILABLE } from '../model/config';
+import { useResetPasswordMessages } from '../model/messages';
 import {
   FIELD_INPUT_CLASS,
   FIELD_LABEL_CLASS,
@@ -39,22 +41,22 @@ function RequestStep({
   onSubmit: (email: string) => void;
   isUnavailable: boolean;
 }) {
+  const t = useResetPasswordMessages();
+  const common = useCommonMessages();
+  const schema = useMemo(() => createRequestCodeSchema(t.validation), [t]);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<RequestCodeValues>({
-    resolver: zodResolver(requestCodeSchema),
+    resolver: zodResolver(schema),
     defaultValues: { email: '' },
   });
 
   return (
     <>
-      <StepTopBar step={1} backLabel="Back to login" />
-      <StepHeader
-        title="Forgot your password?"
-        description="Enter your account email. If it matches a VIRaTeC account, we'll send a secure 6-digit recovery code."
-      />
+      <StepTopBar step={1} backLabel={t.backToLogin} />
+      <StepHeader title={t.request.title} description={t.request.description} />
       <form
         onSubmit={handleSubmit((values) => onSubmit(values.email))}
         className="space-y-4 pt-6"
@@ -62,7 +64,7 @@ function RequestStep({
       >
         <div className="space-y-1.5">
           <label htmlFor="recovery-email" className={FIELD_LABEL_CLASS}>
-            Email address
+            {common.emailAddress}
           </label>
           <Input
             id="recovery-email"
@@ -81,7 +83,7 @@ function RequestStep({
           )}
         </div>
         <Button type="submit" className={SUBMIT_CLASS}>
-          Send recovery code
+          {t.request.submit}
           <ArrowRight className="w-4 h-4" />
         </Button>
       </form>
@@ -90,9 +92,9 @@ function RequestStep({
           role="alert"
           className="mt-5 rounded-[10px] border border-amber-200 bg-amber-50 px-4 py-3.5 text-xs leading-[18px] text-amber-900"
         >
-          <p className="font-medium">Password recovery by email: {NOT_AVAILABLE_YET}</p>
+          <p className="font-medium">{common.unavailable(t.request.unavailableTitle)}</p>
           <p className="mt-1">
-            No code was sent. To restore access, write to{' '}
+            {t.request.unavailablePrefix}{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium underline">
               {CONTACT_EMAIL}
             </a>
@@ -101,10 +103,9 @@ function RequestStep({
         </div>
       )}
       <div className="mt-5 rounded-[10px] border border-auth-border bg-auth-surface px-4 py-3.5">
-        <p className="text-xs font-medium text-auth-navy">Secure by design</p>
+        <p className="text-xs font-medium text-auth-navy">{t.request.secureTitle}</p>
         <p className="mt-1 text-[11px] leading-[16.5px] text-auth-muted">
-          For privacy, we&apos;ll show the same confirmation whether or not an account exists for
-          this email.
+          {t.request.secureDescription}
         </p>
       </div>
       <SupportLine />
@@ -122,32 +123,34 @@ function VerifyStep({
   onSubmit: () => void;
 }) {
   const countdown = useResendCountdown(RESEND_SECONDS);
+  const t = useResetPasswordMessages();
+  const schema = useMemo(() => createVerifyCodeSchema(t.validation), [t]);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<VerifyCodeValues>({
-    resolver: zodResolver(verifyCodeSchema),
+    resolver: zodResolver(schema),
     defaultValues: { code: '' },
   });
 
   return (
     <>
-      <StepTopBar step={2} backLabel="Back" onBack={onBack} />
+      <StepTopBar step={2} backLabel={t.back} onBack={onBack} />
       <StepHeader
-        title="Check your inbox"
+        title={t.verify.title}
         description={
           <>
-            If an account exists for{' '}
-            <strong className="font-medium text-auth-heading">{email}</strong>, a recovery code has
-            been sent. It expires in 10 minutes.
+            {t.verify.descriptionPrefix}{' '}
+            <strong className="font-medium text-auth-heading">{email}</strong>
+            {t.verify.descriptionSuffix}
           </>
         }
       />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-6" noValidate>
         <div className="space-y-1.5">
           <label htmlFor="recovery-code" className={FIELD_LABEL_CLASS}>
-            Recovery code
+            {t.verify.codeLabel}
           </label>
           <Input
             id="recovery-code"
@@ -164,25 +167,25 @@ function VerifyStep({
             id="recovery-code-hint"
             className={cn('text-[11px]', errors.code ? 'text-auth-error' : 'text-auth-muted')}
           >
-            {errors.code?.message ?? 'Enter the 6 digits from your recovery email.'}
+            {errors.code?.message ?? t.verify.codeHint}
           </p>
         </div>
         <Button type="submit" className={SUBMIT_CLASS}>
-          Verify code
+          {t.verify.submit}
           <ArrowRight className="w-4 h-4" />
         </Button>
       </form>
       <p className="pt-4 text-center text-xs text-auth-muted">
-        Didn&apos;t receive the email?{' '}
+        {t.verify.noEmail}{' '}
         {countdown.remaining > 0 ? (
-          <span className="font-medium text-auth-navy">Resend in {countdown.label}</span>
+          <span className="font-medium text-auth-navy">{t.verify.resendIn(countdown.label)}</span>
         ) : (
           <button
             type="button"
             onClick={countdown.restart}
             className="cursor-pointer font-medium text-auth-navy hover:underline"
           >
-            Resend code
+            {t.verify.resend}
           </button>
         )}
       </p>
@@ -193,28 +196,28 @@ function VerifyStep({
 
 function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
+  const t = useResetPasswordMessages();
+  const common = useCommonMessages();
+  const schema = useMemo(() => createNewPasswordSchema(t.validation), [t]);
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<NewPasswordValues>({
-    resolver: zodResolver(newPasswordSchema),
+    resolver: zodResolver(schema),
     defaultValues: { password: '', confirmPassword: '' },
   });
   const password = useWatch({ control, name: 'password' });
 
   return (
     <>
-      <StepTopBar step={3} backLabel="Back" onBack={onBack} />
-      <StepHeader
-        title="Create a new password"
-        description="Choose a strong, unique password for your VIRaTeC account."
-      />
+      <StepTopBar step={3} backLabel={t.back} onBack={onBack} />
+      <StepHeader title={t.reset.title} description={t.reset.description} />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-6" noValidate>
         <div className="space-y-1.5">
           <label htmlFor="new-password" className={FIELD_LABEL_CLASS}>
-            New password
+            {t.reset.newPassword}
           </label>
           <div className="relative">
             <Input
@@ -222,7 +225,7 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
               {...register('password')}
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
-              placeholder="Enter a strong password"
+              placeholder={t.reset.newPasswordPlaceholder}
               error={!!errors.password}
               aria-describedby={cn('new-password-rules', errors.password && 'new-password-error')}
               className={cn(FIELD_INPUT_CLASS, 'pr-14')}
@@ -230,7 +233,7 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? common.hidePassword : common.showPassword}
               className="absolute right-2 top-1/2 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -241,7 +244,7 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
               const isMet = rule.test(password);
               return (
                 <li
-                  key={rule.label}
+                  key={rule.id}
                   className={cn(
                     'rounded-full px-2.5 py-1 text-[11px] transition-colors',
                     isMet
@@ -249,8 +252,8 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
                       : 'bg-auth-surface text-auth-muted',
                   )}
                 >
-                  {rule.label}
-                  <span className="sr-only">{isMet ? ': met' : ': not met'}</span>
+                  {t.reset.rules[rule.id]}
+                  <span className="sr-only">{isMet ? t.reset.ruleMet : t.reset.ruleNotMet}</span>
                 </li>
               );
             })}
@@ -263,14 +266,14 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
         </div>
         <div className="space-y-1.5">
           <label htmlFor="confirm-password" className={FIELD_LABEL_CLASS}>
-            Confirm new password
+            {t.reset.confirmPassword}
           </label>
           <Input
             id="confirm-password"
             {...register('confirmPassword')}
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
-            placeholder="Repeat your new password"
+            placeholder={t.reset.confirmPasswordPlaceholder}
             error={!!errors.confirmPassword}
             aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
             className={FIELD_INPUT_CLASS}
@@ -282,7 +285,7 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
           )}
         </div>
         <Button type="submit" className={SUBMIT_CLASS}>
-          Update password
+          {t.reset.submit}
           <ArrowRight className="w-4 h-4" />
         </Button>
       </form>
@@ -293,26 +296,23 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
 
 function DoneStep() {
   const navigate = useNavigate();
+  const t = useResetPasswordMessages();
 
   return (
     <>
-      <StepTopBar backLabel="Back" />
+      <StepTopBar backLabel={t.back} />
       <div className="flex flex-col items-center">
         <span className="mt-2 flex size-12 items-center justify-center rounded-full bg-auth-success-bg text-auth-success">
           <Check className="size-6" />
         </span>
       </div>
-      <StepHeader
-        centered
-        title="Password updated"
-        description="Your VIRaTeC password has been changed successfully. You can now sign in with your new credentials."
-      />
+      <StepHeader centered title={t.done.title} description={t.done.description} />
       <Button
         type="button"
         onClick={() => navigate(ROUTES.LOGIN, { replace: true })}
         className={cn(SUBMIT_CLASS, 'mt-6')}
       >
-        Return to login
+        {t.done.action}
         <ArrowRight className="w-4 h-4" />
       </Button>
     </>
