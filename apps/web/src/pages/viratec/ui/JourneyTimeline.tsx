@@ -94,16 +94,16 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
               />
               <article
                 className={cn(
-                  'flex flex-col gap-2.5 rounded-[22px] border bg-white/5 p-5 lg:row-start-1 lg:w-full lg:max-w-[560px] lg:p-7',
-                  milestone.isUpcoming ? 'border-dashed border-white/20' : 'border-white/12',
+                  'flex flex-col gap-2.5 rounded-[24px] border bg-white/[0.035] p-6 lg:row-start-1 lg:w-full lg:max-w-[560px] lg:rounded-[28px] lg:p-8',
+                  milestone.isUpcoming ? 'border-dashed border-white/18' : 'border-white/10',
                   isLeft ? 'lg:col-start-1 lg:justify-self-end' : 'lg:col-start-3',
                 )}
               >
                 <p className="flex items-center gap-2.5">
                   <span
                     className={cn(
-                      'text-[22px] leading-7 font-medium uppercase lg:text-[26px] lg:leading-8',
-                      milestone.isUpcoming ? 'text-viratec-soft' : 'text-[#b5fa66]',
+                      'font-display text-[24px] leading-7 font-medium tracking-[-0.02em] tabular-nums lg:text-[30px] lg:leading-9',
+                      milestone.isUpcoming ? 'text-viratec-soft' : 'text-viratec-lime',
                     )}
                   >
                     {milestone.date}
@@ -112,7 +112,7 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
                     <span className="text-[13px] leading-[18px] text-viratec-subtle">Upcoming</span>
                   )}
                 </p>
-                <h3 className="text-lg leading-[24px] font-medium text-white lg:text-xl lg:leading-[26px]">
+                <h3 className="font-display text-lg leading-[24px] font-medium tracking-[-0.015em] text-white lg:text-xl lg:leading-[26px]">
                   {milestone.title}
                 </h3>
                 <p className="text-[15px] leading-[23px] text-viratec-muted">

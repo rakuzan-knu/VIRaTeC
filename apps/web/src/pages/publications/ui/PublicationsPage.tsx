@@ -10,8 +10,11 @@ import { FeaturedPublicationCard, PublicationCard } from '@/entities/publication
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { SORT_OPTIONS, TYPE_OPTIONS, usePublicationListing } from '../model/usePublicationListing';
+import { useDocumentTitle } from '@/shared/lib';
 
 export function PublicationsPage() {
+  useDocumentTitle('Publications');
+
   const listing = usePublicationListing();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const closeSheet = useCallback(() => setIsSheetOpen(false), []);

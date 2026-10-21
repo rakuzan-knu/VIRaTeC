@@ -6,46 +6,50 @@ import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { useDocumentTitle } from '@/shared/lib';
 
 const AREAS = [
   {
     title: 'Cybersecurity',
     description:
-      'Threats, defence strategies and secure digital collaboration, studied by international student teams in a certified module.',
+      'Cyber risks, business intelligence and cyber hygiene, studied by international student teams in certified COIL modules.',
   },
   {
-    title: 'Cross-cultural competence',
+    title: 'NLP & AI',
     description:
-      'Emotional intelligence and intercultural communication in virtual international teams.',
+      'Foundations of NLP: from text preprocessing to sentiment analysis, with 206 students from 7 universities and Chartbeat.',
   },
   {
     title: 'Education & EdTech',
     description:
-      'COIL methodology and technology-enhanced learning that make international research accessible to every student.',
+      'COIL, virtual exchange and Research-Based Learning that turn students into researchers and global citizens.',
   },
 ] as const;
 
 const FUTURE_DIRECTIONS = [
   {
-    title: 'AI in education',
-    description: 'EAP + AI technologies: how students use AI to learn and research.',
+    title: 'Intercultural communication',
+    description: 'ESP + Intercultural Communication: pre-COIL workshops and global teamwork.',
   },
   {
     title: 'Data analytics & storytelling',
-    description: 'ESP/EAP + Data Analytics: turning data into stories and decisions.',
+    description: 'ESP/EAP + Data Analytics: Data-Driven Decision Making Across Borders.',
   },
   {
     title: 'Gerontology & digital society',
-    description: 'ESP/EAP + Gerontology: interdisciplinary COIL with Georgia State University.',
+    description:
+      'ESP/EAP + Gerontology: interdisciplinary COIL with Georgia State University, Perimeter College.',
   },
 ] as const;
 
 const AREA_STATS = [
-  { value: '16', label: 'partner universities' },
-  { value: '5', label: 'continents' },
+  { value: '14', label: 'partner universities' },
+  { value: '8', label: 'countries' },
 ];
 
 export function ResearchAreasPage() {
+  useDocumentTitle('Research Areas');
+
   return (
     <PageLayout
       intro={
@@ -91,9 +95,9 @@ export function ResearchAreasPage() {
       <PageSection aria-labelledby="future-title">
         <SectionHeader
           id="future-title"
-          eyebrow="Future directions"
-          title="What’s next"
-          description="Planned research directions. Details will be announced together with partner universities."
+          eyebrow="Interdisciplinary models"
+          title="Language meets discipline"
+          description="ESP/EAP courses combined with other fields, so that language competence and subject expertise grow together."
         />
         <ul className="grid gap-6 lg:grid-cols-3">
           {FUTURE_DIRECTIONS.map((direction) => (
@@ -102,7 +106,7 @@ export function ResearchAreasPage() {
                 variant="muted"
                 title={direction.title}
                 description={direction.description}
-                linkLabel="Get notified →"
+                linkLabel="Discuss a project →"
                 to={ROUTES.CONTACT}
                 className="lg:min-h-[197px]"
               />

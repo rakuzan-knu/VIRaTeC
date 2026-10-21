@@ -25,7 +25,7 @@ export function PageSection({
     <section className={cn(TONE_CLASS[tone], className)} {...props}>
       <div
         className={cn(
-          'mx-auto flex max-w-[1440px] flex-col gap-6 px-5 py-16 lg:gap-12 lg:px-[85px] lg:py-28',
+          'mx-auto flex max-w-[1440px] flex-col gap-8 px-5 py-20 lg:gap-14 lg:px-[85px] lg:py-32',
           containerClassName,
         )}
       >

@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
+@import '@fontsource/instrument-sans/400.css';
+@import '@fontsource/instrument-sans/500.css';
 @import '@fontsource/dm-sans/400.css';
 @import '@fontsource/dm-sans/500.css';
 @import '@fontsource/dm-sans/600.css';
@@ -94,12 +95,38 @@
   --color-viratec-soft: #dbe4f0;
   --color-viratec-ink: #101721;
   --color-viratec-dropdown: rgba(10, 33, 72, 0.96);
+  --color-viratec-deep: #071c3d;
+  --color-viratec-night: #020c20;
+  --color-viratec-paper: #f4f7fb;
+  --color-viratec-paper-line: #e2e8f0;
+  --color-viratec-paper-line-strong: #c5d0dc;
+  --color-viratec-graphite: #475467;
+
+  --font-display: 'Instrument Sans', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --font-auth: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-auth-navy: #082455;
+  --color-auth-navy-hover: #0d3170;
+  --color-auth-banner: #021329;
+  --color-auth-overlay: #041a3a;
+  --color-auth-heading: #041a3a;
+  --color-auth-label: #0b1f3a;
+  --color-auth-muted: #677588;
+  --color-auth-border: #d7e0e8;
+  --color-auth-surface: #f3f7fb;
+  --color-auth-accent: #77c447;
+  --color-auth-progress: #1976bf;
+  --color-auth-success: #3d7a1c;
+  --color-auth-success-bg: #e6f6dc;
+  --color-auth-error: #b91c1c;
 
   --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-hero-reveal: hero-reveal 1.2s var(--ease-apple) both;
   --animate-hero-settle: hero-settle 2.4s var(--ease-apple) both;
   --animate-hero-shimmer: hero-shimmer 2.6s var(--ease-apple) 1.3s both;
   --animate-hero-drift: hero-drift 14s ease-in-out infinite alternate;
+  --animate-hero-draw: hero-draw 1.6s var(--ease-apple) both;
+  --animate-hero-fade: hero-fade 1.4s var(--ease-apple) both;
 
   @keyframes hero-reveal {
     from {
@@ -131,6 +158,26 @@
     }
     to {
       background-position: 0% 0;
+    }
+  }
+
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes hero-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
     }
   }
 
@@ -189,7 +236,23 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: rgba(3, 197, 234, 0.32);
+    color: #ffffff;
+  }
+
   html {
+    scroll-padding-top: 96px;
     scrollbar-color: var(--color-border-strong) var(--color-bg-page);
     scrollbar-width: auto;
   }

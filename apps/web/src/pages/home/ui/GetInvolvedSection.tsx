@@ -2,45 +2,61 @@ import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
 import { AUDIENCES } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
+import auroraSrc from '../assets/hero-background.webp';
 
 export function GetInvolvedSection() {
   return (
     <section aria-labelledby="get-involved-title" className="bg-viratec-bg">
-      <div className="mx-auto max-w-[1440px] px-5 pt-2 pb-[72px] lg:px-[85px] lg:pt-10 lg:pb-[140px]">
-        <div className="flex flex-col gap-6 rounded-[26px] bg-[linear-gradient(129.68deg,#0a2f73_0%,#0b5f9e_43.8%,#2fbf8f_72.99%)] px-[22px] py-8 lg:gap-10 lg:rounded-[32px] lg:bg-[linear-gradient(153.25deg,#0a2f73_0%,#0b5f9e_42.86%,#2fbf8f_71.43%)] lg:p-16">
-          <div className="flex items-end justify-between">
-            <div className="flex flex-col gap-6 lg:gap-5">
-              <Eyebrow>Get Involved</Eyebrow>
-              <h2
-                id="get-involved-title"
-                className="text-[32px] leading-9 tracking-[-0.96px] text-white lg:text-[52px] lg:leading-[58px] lg:tracking-[-1.56px]"
-              >
-                Become part of the <br className="hidden lg:inline" />
-                VIRaTeC network.
-              </h2>
+      <div className="mx-auto max-w-[1440px] px-5 pt-20 pb-20 lg:px-[85px] lg:pt-32 lg:pb-32">
+        <div className="relative isolate overflow-hidden rounded-[28px] border border-white/10 lg:rounded-[40px]">
+          <img
+            src={auroraSrc}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 -z-20 size-full object-cover object-[70%_center]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(3,18,46,0.92)_0%,rgba(3,18,46,0.7)_55%,rgba(3,18,46,0.88)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,18,46,0.94)_0%,rgba(3,18,46,0.72)_50%,rgba(3,18,46,0.35)_100%)]"
+          />
+
+          <div className="flex flex-col gap-10 px-6 py-10 lg:gap-20 lg:px-16 lg:py-20">
+            <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex flex-col gap-4 lg:gap-5">
+                <Eyebrow>Get Involved</Eyebrow>
+                <h2
+                  id="get-involved-title"
+                  className="font-display text-[38px] leading-[42px] font-medium tracking-[-0.035em] text-white lg:text-[72px] lg:leading-[74px]"
+                >
+                  Become part of the <br className="hidden lg:inline" />
+                  VIRaTeC network.
+                </h2>
+              </div>
+              <LinkButton to={ROUTES.REGISTER} className="hidden lg:inline-flex">
+                Join Us
+              </LinkButton>
             </div>
-            <LinkButton to={ROUTES.REGISTER} className="hidden lg:inline-flex">
+
+            <ul className="grid gap-8 lg:grid-cols-3 lg:gap-10">
+              {AUDIENCES.map((audience) => (
+                <li
+                  key={audience.title}
+                  className="flex flex-col gap-2.5 border-t border-white/20 pt-5 lg:gap-3 lg:pt-6"
+                >
+                  <h3 className="font-display text-xl leading-[26px] font-medium tracking-[-0.015em] text-white lg:text-[22px] lg:leading-7">
+                    {audience.title}
+                  </h3>
+                  <p className="max-w-[40ch] text-[15px] leading-[23px] text-viratec-soft lg:text-base lg:leading-[26px]">
+                    {audience.description}
+                  </p>
+                </li>
+              ))}
+            </ul>
+
+            <LinkButton to={ROUTES.REGISTER} className="w-full lg:hidden">
               Join Us
             </LinkButton>
           </div>
-
-          <ul className="grid gap-6 lg:grid-cols-3 lg:gap-5">
-            {AUDIENCES.map((audience) => (
-              <li
-                key={audience.title}
-                className="flex flex-col gap-2 rounded-2xl border border-white/16 bg-white/8 p-[18px] lg:gap-2.5 lg:rounded-[20px] lg:p-6"
-              >
-                <h3 className="text-lg font-medium text-white lg:text-xl">{audience.title}</h3>
-                <p className="text-[15px] leading-[22px] text-viratec-soft lg:text-base lg:leading-6">
-                  {audience.description}
-                </p>
-              </li>
-            ))}
-          </ul>
-
-          <LinkButton to={ROUTES.REGISTER} className="w-full lg:hidden">
-            Join Us
-          </LinkButton>
         </div>
       </div>
     </section>

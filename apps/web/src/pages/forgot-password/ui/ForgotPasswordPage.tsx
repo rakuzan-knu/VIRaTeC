@@ -1,7 +1,10 @@
 import { AuthLayout } from '@/widgets/auth-layout';
 import { ResetPasswordFlow } from '@/features/reset-password';
+import { useDocumentTitle } from '@/shared/lib';
 
 export function ForgotPasswordPage() {
+  useDocumentTitle('Reset password');
+
   return (
     <AuthLayout
       title="Recover access."

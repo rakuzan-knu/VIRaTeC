@@ -16,10 +16,14 @@ import {
   useProjects,
   type Project,
 } from '@/entities/project';
-import { PageIntro } from '@/widgets/page-intro';
+import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { useDocumentTitle } from '@/shared/lib';
 
-const BREADCRUMB_ROOT = ['Research & Projects', 'Projects'];
+const BREADCRUMB_ROOT: BreadcrumbItem[] = [
+  'Research & Projects',
+  { label: 'Projects', to: ROUTES.PROJECTS },
+];
 
 const buildFacts = (project: Project): Fact[] =>
   [
@@ -35,8 +39,8 @@ function ProjectBody({ project }: { project: Project }) {
   return (
     <PageSection containerClassName="lg:flex-row lg:items-start lg:gap-16">
       <div className="flex flex-1 flex-col gap-5">
-        <MediaPlaceholder className="h-[220px] rounded-[18px] bg-linear-to-r from-[#0d338c] to-[#1a8c99] lg:h-[420px] lg:rounded-[22px]" />
-        <h2 className="text-2xl leading-[30px] text-white lg:text-[28px] lg:leading-[34px]">
+        <MediaPlaceholder className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]" />
+        <h2 className="font-display text-2xl leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">
           About the project
         </h2>
         {paragraphs.map((paragraph) => (
@@ -116,6 +120,7 @@ export function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { data: project, isPending, isError, refetch } = useProject(projectId);
+  useDocumentTitle(project?.title ?? (isPending ? 'Project' : 'Project not found'));
 
   const intro = project ? (
     <PageIntro

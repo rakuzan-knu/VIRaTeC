@@ -9,8 +9,11 @@ import { ExpandableText } from '@/shared/ui/expandable-text';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { MISSION_VISION, PHILOSOPHY, TEAM, VALUES } from '../model/content';
+import { useDocumentTitle } from '@/shared/lib';
 
 export function AboutInitiativePage() {
+  useDocumentTitle('About the Initiative');
+
   return (
     <PageLayout
       intro={
@@ -27,10 +30,10 @@ export function AboutInitiativePage() {
         <div className="flex flex-col gap-7 lg:flex-row lg:gap-16">
           {MISSION_VISION.map((item) => (
             <div key={item.label} className="flex flex-col items-start gap-3.5 lg:flex-1">
-              <h3 className="text-[13px] tracking-[2.6px] text-viratec-accent uppercase">
+              <h3 className="text-[15px] leading-5 font-medium text-viratec-accent lg:text-[17px] lg:leading-6">
                 {item.label}
               </h3>
-              <ExpandableText className="text-xl leading-7 tracking-[-0.2px] text-white lg:text-[28px] lg:leading-[38px] lg:tracking-[-0.28px]">
+              <ExpandableText className="font-display text-[22px] leading-[30px] tracking-[-0.02em] text-white lg:text-[30px] lg:leading-[40px]">
                 {item.text}
               </ExpandableText>
             </div>

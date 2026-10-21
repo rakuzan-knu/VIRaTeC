@@ -113,6 +113,27 @@ const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('@/pages/contact')).ContactPage }),
       },
       {
+        path: ROUTES.TERMS,
+        lazy: async () => {
+          const { LegalPage } = await import('@/pages/legal');
+          return { element: <LegalPage title="Terms of Service" /> };
+        },
+      },
+      {
+        path: ROUTES.PRIVACY,
+        lazy: async () => {
+          const { LegalPage } = await import('@/pages/legal');
+          return { element: <LegalPage title="Privacy Policy" /> };
+        },
+      },
+      {
+        path: ROUTES.COOKIES,
+        lazy: async () => {
+          const { LegalPage } = await import('@/pages/legal');
+          return { element: <LegalPage title="Cookie Settings" /> };
+        },
+      },
+      {
         path: '*',
         lazy: async () => ({ Component: (await import('@/pages/not-found')).NotFoundPage }),
       },

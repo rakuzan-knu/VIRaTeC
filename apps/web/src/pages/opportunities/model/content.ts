@@ -23,13 +23,13 @@ export const AUDIENCE_GROUPS: AudienceGroup[] = [
     tab: 'For Students',
     title: 'Learn by doing in international teams.',
     description:
-      'Take part in real research with students from partner universities on three continents.',
+      'Take part in real research with students from partner universities on four continents.',
     opportunities: [
       {
-        meta: 'Online · 1 semester',
+        meta: 'Online · 8 weeks',
         title: 'COIL research project',
         description:
-          'Join a mixed international team and work on one research challenge for a semester.',
+          'Join a mixed international team, work with real data and present your results in a final video poster.',
         actionLabel: 'Apply',
         to: ROUTES.CONTACT,
       },
@@ -59,24 +59,27 @@ export const AUDIENCE_GROUPS: AudienceGroup[] = [
       'Work with colleagues from partner universities and mentor the next generation of researchers.',
     opportunities: [
       {
-        meta: 'Online · 1 semester',
-        title: 'Co-supervise a student team',
-        description: 'Mentor an international student team from idea to published result.',
+        meta: 'Online · 8 weeks',
+        title: 'Join the Board of Advisors',
+        description:
+          'Guide master’s students who lead workshops, or speak on a panel as an academic or industry expert.',
         actionLabel: 'Get involved',
         to: ROUTES.CONTACT,
       },
       {
         meta: 'Flexible',
-        title: 'Joint research',
-        description: 'Start a research project with colleagues from partner universities.',
+        title: 'Joint publications',
+        description:
+          'Turn a shared idea into a research article, book chapter or monograph, including the planned collaborative book with JHU.',
         actionLabel: 'Discuss',
         to: ROUTES.CONTACT,
       },
       {
-        meta: 'KNU · 14–15 Oct 2026',
-        title: 'Call for keynote speakers',
-        description: 'Section 7 “IT in Education and Science” at the KNU international conference.',
-        actionLabel: 'Offer a topic',
+        meta: 'Oxford · 14–16 Dec 2026',
+        title: 'Oxford Education Research Symposium',
+        description:
+          'Shared by VIRaTeC: abstracts are due by 15 November 2026, final registration by 22 November 2026.',
+        actionLabel: 'Ask for guidance',
         to: ROUTES.CONTACT,
       },
     ],
@@ -85,18 +88,17 @@ export const AUDIENCE_GROUPS: AudienceGroup[] = [
     id: 'for-partners',
     tab: 'For Partners',
     title: 'Bring your university into the network.',
-    description:
-      'Join the Global Collaboration Framework and give your students access to intercontinental projects.',
+    description: 'Join VIRaTeC and give your students access to intercontinental COIL projects.',
     opportunities: [
       {
         meta: 'Partnership',
-        title: 'Join the Framework',
+        title: 'Join the network',
         description: 'Become a partner university and co-host COIL projects with KNU.',
         actionLabel: 'Become a partner',
         to: ROUTES.GLOBAL_COLLABORATION,
       },
       {
-        meta: '1 semester',
+        meta: '8 weeks',
         title: 'Co-host a COIL project',
         description: 'Match your course with a KNU course and run one shared project.',
         actionLabel: 'Propose a course',

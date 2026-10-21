@@ -7,10 +7,12 @@ import {
   CONTACT_EMAIL,
   EXPLORE_NAV,
   RESEARCH_NAV,
+  NOT_AVAILABLE_YET,
   SOCIAL_LINKS,
   type NavGroup,
 } from '@/shared/config/navigation';
 import { Logo } from '@/shared/ui/logo';
+import { OptionalLink } from '@/shared/ui/optional-link';
 import languageGlobe from '@/shared/assets/icons/language-globe.svg';
 import chevronDown from '@/shared/assets/icons/chevron-down.svg';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
@@ -25,16 +27,15 @@ const LEGAL_LINKS = [
 ] as const;
 
 const LANGUAGES = [
-  { value: 'en', label: 'English' },
-  { value: 'uk', label: 'Українська' },
+  { value: 'en', label: 'English', isAvailable: true },
+  { value: 'uk', label: 'Українська', isAvailable: false },
 ] as const;
 
-type LanguageCode = (typeof LANGUAGES)[number]['value'];
-
-const LABEL_CLASS = 'text-xs font-medium leading-4 tracking-[2.16px] text-viratec-accent uppercase';
-const LINK_CLASS = 'text-sm leading-5 text-viratec-soft transition-colors hover:text-white';
+const LABEL_CLASS = 'text-[13px] font-medium leading-[18px] text-white';
+const LINK_CLASS =
+  'rounded text-sm leading-5 text-viratec-muted transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';
 const ICON_LINK_CLASS =
-  'flex size-10 items-center justify-center rounded-xl border border-white/14 bg-white/6 transition-colors hover:bg-white/12';
+  'flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/4 transition-colors hover:border-white/22 hover:bg-white/10';
 
 function ContactLinks() {
   return (
@@ -42,7 +43,7 @@ function ContactLinks() {
       <li>
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          className="text-sm leading-5 text-viratec-cyan hover:underline"
+          className="text-sm leading-5 text-viratec-cyan underline-offset-4 hover:underline"
         >
           {CONTACT_EMAIL}
         </a>
@@ -76,13 +77,13 @@ function AccordionSection({ title, isOpen, onToggle, children, isLast }: Accordi
   const panelId = `footer-${title.toLowerCase().replace(/[^a-z]+/g, '-')}`;
 
   return (
-    <div className={cn('border-t border-white/10', isLast && 'border-b')}>
+    <div className={cn('border-t border-white/8', isLast && 'border-b')}>
       <button
         type="button"
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={onToggle}
-        className="flex w-full cursor-pointer items-center justify-between py-[18px] text-base leading-[22px] font-medium text-white"
+        className="flex w-full cursor-pointer items-center justify-between py-5 text-base leading-[22px] font-medium text-white"
       >
         {title}
         <img
@@ -101,21 +102,20 @@ function AccordionSection({ title, isOpen, onToggle, children, isLast }: Accordi
 }
 
 export function SiteFooter() {
-  const [language, setLanguage] = useState<LanguageCode>('en');
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   const toggleSection = (title: string) =>
     setOpenSection((current) => (current === title ? null : title));
 
   return (
-    <footer className="bg-viratec-bg font-viratec">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-5 pt-12 pb-7 min-[800px]:gap-14 min-[800px]:px-20 min-[800px]:pt-20 min-[800px]:pb-8">
+    <footer className="border-t border-white/8 bg-viratec-night font-viratec">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-5 pt-14 pb-8 min-[800px]:gap-16 min-[800px]:px-[85px] min-[800px]:pt-24 min-[800px]:pb-10">
         <div className="flex flex-col gap-8 min-[800px]:gap-14 lg:flex-row lg:justify-between">
           <div className="flex flex-col gap-5 min-[800px]:gap-6">
             <Link to={ROUTES.HOME} aria-label="VIRaTeC home" className="w-fit">
-              <Logo className="w-[202px]" />
+              <Logo className="w-[180px]" />
             </Link>
-            <p className="text-sm leading-[22px] text-viratec-subtle min-[800px]:w-80">
+            <p className="max-w-80 text-sm leading-[22px] text-viratec-subtle">
               Virtual Innovative Research &amp; Technology (VIRaTeC) Global Community at Taras
               Shevchenko National University of Kyiv.
             </p>
@@ -132,13 +132,17 @@ export function SiteFooter() {
                 />
                 <select
                   id="footer-language"
-                  value={language}
-                  onChange={(event) => setLanguage(event.target.value as LanguageCode)}
-                  className="w-full cursor-pointer appearance-none rounded-xl border border-white/14 bg-white/6 py-[11px] pr-10 pl-10 text-sm leading-5 text-white outline-none focus-visible:border-viratec-lime"
+                  defaultValue="en"
+                  className="w-full cursor-pointer appearance-none rounded-full border border-white/10 bg-white/4 py-[11px] pr-10 pl-10 text-sm leading-5 text-white transition-colors outline-none hover:border-white/22 focus-visible:border-viratec-lime"
                 >
                   {LANGUAGES.map((option) => (
-                    <option key={option.value} value={option.value} className="bg-viratec-bg">
-                      {option.label}
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      disabled={!option.isAvailable}
+                      className="bg-viratec-bg"
+                    >
+                      {option.isAvailable ? option.label : `${option.label} — ${NOT_AVAILABLE_YET}`}
                     </option>
                   ))}
                 </select>
@@ -153,41 +157,53 @@ export function SiteFooter() {
             <div className="flex flex-col gap-2.5">
               <p className={LABEL_CLASS}>Follow us</p>
               <div className="flex gap-2.5">
-                <a
+                <OptionalLink
                   href={SOCIAL_LINKS.linkedinGroup}
-                  aria-label="LinkedIn"
+                  label="LinkedIn"
                   className={ICON_LINK_CLASS}
+                  unavailableClassName="hover:bg-white/6"
                 >
                   <img src={linkedinIcon} alt="" />
-                </a>
-                <a
-                  href={SOCIAL_LINKS.researchGate}
-                  aria-label="ResearchGate"
+                </OptionalLink>
+                <OptionalLink
+                  href={SOCIAL_LINKS.orcid}
+                  label="ORCID"
                   className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
+                  unavailableClassName="hover:bg-white/6"
+                >
+                  iD
+                </OptionalLink>
+                <OptionalLink
+                  href={SOCIAL_LINKS.researchGate}
+                  label="ResearchGate"
+                  className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
+                  unavailableClassName="hover:bg-white/6"
                 >
                   RG
-                </a>
-                <a
+                </OptionalLink>
+                <OptionalLink
                   href={SOCIAL_LINKS.googleScholar}
-                  aria-label="Google Scholar"
+                  label="Google Scholar"
                   className={ICON_LINK_CLASS}
+                  unavailableClassName="hover:bg-white/6"
                 >
                   <img src={scholarIcon} alt="" />
-                </a>
+                </OptionalLink>
               </div>
+              <p className="text-xs text-viratec-subtle">ResearchGate: {NOT_AVAILABLE_YET}</p>
             </div>
           </div>
 
           <div className="hidden grid-cols-2 gap-x-16 gap-y-10 min-[800px]:grid min-[1400px]:flex min-[1400px]:gap-16">
             {LINK_GROUPS.map((group) => (
-              <div key={group.label} className="flex flex-col gap-3.5 whitespace-nowrap">
+              <div key={group.label} className="flex flex-col gap-4 whitespace-nowrap">
                 <p className={LABEL_CLASS}>{group.label}</p>
                 <ul className="flex flex-col gap-3">
                   <GroupLinks group={group} />
                 </ul>
               </div>
             ))}
-            <div className="flex flex-col gap-3.5">
+            <div className="flex flex-col gap-4">
               <p className={LABEL_CLASS}>Contact</p>
               <ul className="flex flex-col gap-3">
                 <ContactLinks />
@@ -217,7 +233,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="h-px w-full bg-white/10" />
+        <div className="h-px w-full bg-white/8" />
 
         <div className="flex flex-col gap-2.5 text-[13px] leading-[18px] text-viratec-subtle min-[800px]:flex-row min-[800px]:justify-between">
           <p>© 2026 VIRaTeC KNU. All rights reserved.</p>

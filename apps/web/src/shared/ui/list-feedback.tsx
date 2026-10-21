@@ -10,7 +10,7 @@ export function ListFeedback({ message, actionLabel, onAction }: ListFeedbackPro
   return (
     <div
       role="status"
-      className="flex flex-col items-center gap-5 rounded-[22px] border border-dashed border-white/16 px-6 py-14 text-center"
+      className="flex flex-col items-center gap-5 rounded-[28px] border border-dashed border-white/16 px-6 py-14 text-center"
     >
       <p className="text-[17px] text-viratec-muted">{message}</p>
       <button

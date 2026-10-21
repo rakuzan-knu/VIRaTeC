@@ -13,8 +13,11 @@ import {
   PARTNER_UNIVERSITIES,
   PARTNERSHIP_STEPS,
 } from '../model/content';
+import { useDocumentTitle } from '@/shared/lib';
 
 export function GlobalCollaborationPage() {
+  useDocumentTitle('Global Collaboration Framework');
+
   return (
     <PageLayout
       intro={

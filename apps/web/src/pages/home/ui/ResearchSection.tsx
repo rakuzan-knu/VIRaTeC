@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
 import { PROJECTS, RESEARCH_HIGHLIGHT_NUMBERS } from '../model/content';
@@ -13,10 +14,10 @@ import {
 
 export function ResearchSection() {
   return (
-    <section aria-labelledby="research-title" className="bg-viratec-surface">
+    <section aria-labelledby="research-title" className="bg-viratec-deep">
       <div className={SECTION_CONTAINER_CLASS}>
-        <div className="flex items-end justify-between">
-          <div className="flex flex-col gap-8 lg:gap-6">
+        <div className="flex items-end justify-between gap-10">
+          <div className="flex flex-col gap-4 lg:gap-5">
             <Eyebrow>Research &amp; Projects</Eyebrow>
             <h2 id="research-title" className={SECTION_TITLE_CLASS}>
               What we work on
@@ -27,53 +28,55 @@ export function ResearchSection() {
           </LinkButton>
         </div>
 
-        <ul className="grid gap-4 lg:grid-cols-3 lg:gap-6">
+        <ul className="grid gap-4 lg:grid-cols-3 lg:gap-5">
           {PROJECTS.map((project) => (
             <li key={project.title}>
               <Link
                 to={project.to}
-                className={`${CARD_CLASS} ${CARD_LINK_CLASS} h-full gap-3.5 lg:min-h-[434px] lg:gap-[18px]`}
+                className={`${CARD_CLASS} ${CARD_LINK_CLASS} h-full gap-4 lg:min-h-[400px] lg:gap-5`}
               >
-                <span
-                  aria-hidden="true"
-                  className="h-[150px] w-full rounded-xl bg-linear-to-r from-[#0a3d8f] to-[rgba(27,212,223,0.55)] lg:h-[180px] lg:rounded-[14px]"
-                />
-                <h3 className="text-[21px] leading-[26px] font-medium text-white lg:text-2xl lg:leading-[30px]">
+                <h3 className="font-display text-[26px] leading-[30px] font-medium tracking-[-0.025em] text-white lg:text-[34px] lg:leading-[38px]">
                   {project.title}
                 </h3>
-                <p className="text-[15px] leading-[22px] text-viratec-muted lg:text-base lg:leading-6">
+                <p className="text-[15px] leading-[23px] text-viratec-muted lg:text-base lg:leading-[26px]">
                   {project.description}
                 </p>
-                <span className="text-[15px] font-medium text-viratec-cyan lg:mt-auto lg:text-base">
-                  Explore →
+                <span className="mt-auto flex items-center justify-between pt-4 text-[15px] font-medium text-viratec-cyan lg:text-base">
+                  Explore
+                  <span
+                    aria-hidden="true"
+                    className="flex size-10 items-center justify-center rounded-full border border-white/14 text-white transition-colors duration-200 group-hover/card:border-viratec-lime group-hover/card:bg-viratec-lime group-hover/card:text-viratec-ink"
+                  >
+                    <ArrowRight className="size-[18px]" />
+                  </span>
                 </span>
               </Link>
             </li>
           ))}
         </ul>
 
-        <div className="flex flex-col gap-3.5 rounded-[22px] bg-[linear-gradient(146.23deg,#0b3f8a_0%,#138a8a_71.43%)] px-[22px] py-[26px] lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:rounded-[28px] lg:bg-linear-to-r lg:from-[#0b3f8a] lg:to-[#138a8a] lg:px-12 lg:py-11">
-          <div className="flex flex-col gap-3.5 lg:max-w-[680px] lg:gap-4">
-            <h3 className="text-[26px] leading-8 tracking-[-0.52px] text-white lg:text-[34px] lg:leading-[42px] lg:tracking-[-0.68px]">
+        <div className="flex flex-col gap-6 rounded-[28px] border border-white/10 bg-viratec-bg px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:rounded-[36px] lg:px-14 lg:py-14">
+          <div className="flex flex-col gap-3.5 lg:max-w-[640px] lg:gap-4">
+            <h3 className="font-display text-[28px] leading-[34px] font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]">
               Students don’t just join research — they lead it.
             </h3>
-            <ExpandableText className="text-[15px] leading-[23px] text-viratec-soft lg:text-lg lg:leading-7 lg:text-viratec-muted">
-              Master’s students of the Faculty of Information Technologies initiated and delivered
-              the first intercontinental author’s research project in Ukrainian higher education.
+            <ExpandableText className="text-[15px] leading-[23px] text-viratec-muted lg:text-lg lg:leading-7">
+              Master’s students design cases, lead workshops and mentor international teams of
+              undergraduates in certified Research-Based Learning modules.
             </ExpandableText>
           </div>
-          <ul className="flex gap-8 pt-1.5 whitespace-nowrap lg:gap-14 lg:pt-0">
+          <dl className="flex gap-10 border-t border-white/10 pt-6 whitespace-nowrap lg:shrink-0 lg:gap-14 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
             {RESEARCH_HIGHLIGHT_NUMBERS.map((item) => (
-              <li key={item.value} className="flex flex-col gap-0.5">
-                <p className="text-[34px] leading-10 text-viratec-accent lg:text-[44px] lg:leading-[50px]">
-                  {item.value}
-                </p>
-                <p className="text-[13px] text-viratec-soft lg:text-[15px] lg:text-viratec-muted">
+              <div key={item.value} className="flex flex-col gap-1">
+                <dt className="order-2 text-[13px] text-viratec-muted lg:text-[15px]">
                   {item.label}
-                </p>
-              </li>
+                </dt>
+                <dd className="order-1 font-display text-[40px] leading-[44px] font-medium tracking-[-0.03em] text-viratec-accent tabular-nums lg:text-[56px] lg:leading-[60px]">
+                  {item.value}
+                </dd>
+              </div>
             ))}
-          </ul>
+          </dl>
         </div>
 
         <LinkButton to={ROUTES.PROJECTS} className="w-full lg:hidden">

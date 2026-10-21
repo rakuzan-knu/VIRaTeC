@@ -1,17 +1,20 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
-import { CONTACT_EMAIL, SOCIAL_LINKS } from '@/shared/config/navigation';
+import { CONTACT_EMAIL, NOT_AVAILABLE_YET, SOCIAL_LINKS } from '@/shared/config/navigation';
+import { OptionalLink } from '@/shared/ui/optional-link';
+import { CardLinkLabel } from '@/shared/ui/card-link-label';
 import { ButtonArrow, linkButtonClassName } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import larysaPhoto from '@/shared/assets/people/larysa-liashenko.webp';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
+import { useDocumentTitle } from '@/shared/lib';
 
 const CARD_CLASS =
-  'flex flex-col gap-4 rounded-[24px] border border-white/12 bg-white/5 p-6 lg:min-h-[266px] lg:p-8';
+  'flex flex-col gap-4 rounded-[24px] border border-white/10 bg-white/[0.035] p-6 lg:min-h-[266px] lg:rounded-[28px] lg:p-8';
 
 const COLUMN_TITLE_CLASS =
-  'text-[28px] leading-[34px] tracking-[-0.56px] text-white lg:text-[36px] lg:leading-[42px] lg:tracking-[-0.72px]';
+  'font-display text-[30px] leading-[36px] font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]';
 
 const WAYS = [
   {
@@ -41,15 +44,19 @@ const WAYS = [
 ] as const;
 
 const SOCIALS = [
-  { label: 'VIRaTeC group', href: SOCIAL_LINKS.linkedinGroup, icon: 'linkedin' },
-  { label: 'Project Chair', href: SOCIAL_LINKS.linkedinChair, icon: 'linkedin' },
-  { label: 'ResearchGate', href: SOCIAL_LINKS.researchGate, icon: 'rg' },
+  { label: 'VIRaTeC group', href: SOCIAL_LINKS.linkedinGroup, badge: null },
+  { label: 'Dr. Larysa Liashenko', href: SOCIAL_LINKS.linkedinChair, badge: null },
+  { label: 'ORCID', href: SOCIAL_LINKS.orcid, badge: 'iD' },
+  { label: 'Facebook group', href: SOCIAL_LINKS.facebookGroup, badge: 'f' },
+  { label: 'Google Scholar', href: SOCIAL_LINKS.googleScholar, badge: 'GS' },
 ] as const;
 
 const mailtoWithSubject = (subject: string) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
 
 export function ContactPage() {
+  useDocumentTitle('Contact');
+
   return (
     <PageLayout
       intro={
@@ -99,7 +106,7 @@ export function ContactPage() {
             <div className="flex items-center gap-[18px]">
               <img
                 src={larysaPhoto}
-                alt="Larysa Liashenko"
+                alt=""
                 width={64}
                 height={64}
                 loading="lazy"
@@ -125,22 +132,27 @@ export function ContactPage() {
             <ul className="mt-auto flex flex-wrap gap-x-6 gap-y-3 pt-4">
               {SOCIALS.map((social) => (
                 <li key={social.label}>
-                  <a
+                  <OptionalLink
                     href={social.href}
+                    label={social.label}
                     className="flex items-center gap-2.5 text-sm leading-5 text-viratec-soft transition-colors hover:text-white"
+                    unavailableClassName="hover:text-viratec-soft"
                   >
                     <span className="flex size-8 items-center justify-center rounded-[10px] border border-white/14 bg-white/6">
-                      {social.icon === 'linkedin' ? (
-                        <img src={linkedinIcon} alt="" />
+                      {social.badge ? (
+                        <span className="text-xs leading-[14px] font-medium text-white">
+                          {social.badge}
+                        </span>
                       ) : (
-                        <span className="text-xs leading-[14px] font-medium text-white">RG</span>
+                        <img src={linkedinIcon} alt="" />
                       )}
                     </span>
                     {social.label}
-                  </a>
+                  </OptionalLink>
                 </li>
               ))}
             </ul>
+            <p className="text-xs text-viratec-subtle">ResearchGate: {NOT_AVAILABLE_YET}</p>
           </article>
         </section>
 
@@ -148,16 +160,10 @@ export function ContactPage() {
           <h2 id="ways-title" className={COLUMN_TITLE_CLASS}>
             Ways to collaborate
           </h2>
-          {WAYS.map((way, index) => (
-            <article
-              key={way.title}
-              className="flex flex-col gap-3 rounded-[24px] border border-white/12 bg-white/5 p-6 lg:min-h-[266px] lg:p-7"
-            >
-              <h3 className="flex items-center gap-3.5 font-medium">
-                <span className="text-xl leading-7 tracking-[2px] text-viratec-cyan lg:text-2xl lg:tracking-[2.4px]">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <span className="text-xl text-white lg:text-[22px]">{way.title}</span>
+          {WAYS.map((way) => (
+            <article key={way.title} className={CARD_CLASS}>
+              <h3 className="font-display text-xl leading-[26px] font-medium tracking-[-0.02em] text-white lg:text-2xl lg:leading-[30px]">
+                {way.title}
               </h3>
               <p className="text-[15px] leading-[22px] text-viratec-muted lg:text-base lg:leading-6">
                 {way.description}
@@ -171,9 +177,9 @@ export function ContactPage() {
                 </a>
                 <Link
                   to={way.to}
-                  className="text-[15px] font-medium text-viratec-cyan hover:underline"
+                  className="group/card rounded text-[15px] font-medium text-viratec-cyan focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
                 >
-                  {way.linkLabel}
+                  <CardLinkLabel label={way.linkLabel} />
                 </Link>
               </div>
             </article>

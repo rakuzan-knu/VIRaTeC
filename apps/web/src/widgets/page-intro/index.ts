@@ -1,1 +1,1 @@
-export { PageIntro } from './ui/PageIntro';
+export { PageIntro, type BreadcrumbItem } from './ui/PageIntro';

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/lib';
 import type { NavGroup } from '@/shared/config/navigation';
 import navChevron from '@/shared/assets/icons/nav-chevron.svg';
@@ -27,7 +28,10 @@ export function DesktopNavDropdown({
         aria-expanded={isOpen}
         aria-controls={menuId}
         onClick={(event) => (event.detail === 0 ? onToggle() : onOpen())}
-        className="flex cursor-pointer items-center gap-[5px] text-base text-white transition-opacity hover:opacity-80"
+        className={cn(
+          'flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-2 text-[15px] transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime',
+          isOpen ? 'text-white' : 'text-viratec-light/72',
+        )}
       >
         {group.label}
         <img
@@ -40,26 +44,24 @@ export function DesktopNavDropdown({
       <div
         id={menuId}
         className={cn(
-          'absolute top-full left-1/2 z-30 w-[362px] -translate-x-1/2 pt-[22px] transition-[opacity,translate] duration-200',
+          'absolute top-full left-1/2 z-30 w-[380px] -translate-x-1/2 pt-3 transition-[opacity,translate] duration-200 ease-apple',
           isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
         )}
       >
-        <ul className="flex flex-col gap-1 rounded-[20px] border border-white/12 bg-viratec-dropdown p-2.5 shadow-[0px_24px_60px_0px_rgba(0,5,26,0.55)]">
+        <ul className="flex flex-col gap-0.5 rounded-[24px] border border-white/10 bg-viratec-dropdown/88 p-2 shadow-[0_30px_80px_-20px_rgba(0,5,26,0.8)] backdrop-blur-2xl backdrop-saturate-150">
           {group.items.map((item) => (
             <li key={item.to}>
               <Link
                 to={item.to}
                 onClick={onClose}
-                className="group flex flex-col gap-1 rounded-[14px] px-[18px] py-3.5 transition-colors hover:bg-white/7 focus-visible:bg-white/7 focus-visible:outline-none"
+                className="group flex flex-col gap-1 rounded-[18px] px-[18px] py-3.5 transition-colors hover:bg-white/7 focus-visible:bg-white/7 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime"
               >
-                <span className="flex items-center gap-2 text-[17px] font-medium text-white">
+                <span className="flex items-center gap-2 text-base font-medium tracking-[-0.01em] text-white">
                   {item.label}
-                  <span
+                  <ArrowRight
                     aria-hidden="true"
-                    className="font-normal text-viratec-accent opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-                  >
-                    →
-                  </span>
+                    className="size-4 -translate-x-1 text-viratec-accent opacity-0 transition-[opacity,translate] duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
+                  />
                 </span>
                 {item.description && (
                   <span className="text-sm leading-5 text-viratec-subtle">{item.description}</span>

@@ -24,27 +24,27 @@ export function SectionHeader({
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10',
+        'flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-16',
         className,
       )}
     >
-      <div className="flex flex-col gap-3.5 lg:gap-5">
+      <div className="flex max-w-[820px] flex-col gap-3 lg:gap-4">
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
         <h2
           id={id}
-          className="text-[30px] leading-9 tracking-[-0.9px] text-white lg:text-5xl lg:leading-[54px] lg:tracking-[-1.44px]"
+          className="font-display text-[34px] leading-[38px] font-medium tracking-[-0.03em] text-white lg:text-[56px] lg:leading-[60px]"
         >
           {title}
           {accent && (
             <>
-              <br />
-              <span className="text-viratec-cyan">{accent}</span>
+              {' '}
+              <span className="text-white/50">{accent}</span>
             </>
           )}
         </h2>
       </div>
       {description && (
-        <p className="text-base leading-6 text-viratec-muted lg:w-[460px] lg:shrink-0 lg:text-lg lg:leading-7">
+        <p className="max-w-[60ch] text-base leading-[26px] text-viratec-muted lg:w-[440px] lg:shrink-0 lg:text-lg lg:leading-[29px]">
           {description}
         </p>
       )}

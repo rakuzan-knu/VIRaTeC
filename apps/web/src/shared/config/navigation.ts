@@ -80,9 +80,16 @@ export const MAIN_NAV: MainNavItem[] = [
 
 export const CONTACT_EMAIL = 'coil.knu@gmail.com';
 
-export const SOCIAL_LINKS = {
-  linkedinGroup: '#',
-  linkedinChair: '#',
-  researchGate: '#',
-  googleScholar: '#',
-} as const;
+export const NOT_AVAILABLE_YET = 'Not available yet';
+
+export type SocialLinkKey =
+  'linkedinGroup' | 'linkedinChair' | 'orcid' | 'facebookGroup' | 'researchGate' | 'googleScholar';
+
+export const SOCIAL_LINKS: Record<SocialLinkKey, string | null> = {
+  linkedinGroup: 'https://www.linkedin.com/groups/13199033/',
+  linkedinChair: 'https://www.linkedin.com/in/dr-larysa-liashenko-aa382990/',
+  orcid: 'https://orcid.org/0009-0008-6464-3167',
+  facebookGroup: 'https://www.facebook.com/groups/1654374395202463/',
+  researchGate: null,
+  googleScholar: 'https://scholar.google.com/citations?user=7zimYMcAAAAJ',
+};
