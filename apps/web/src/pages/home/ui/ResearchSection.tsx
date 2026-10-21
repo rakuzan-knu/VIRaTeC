@@ -12,6 +12,9 @@ import {
   SECTION_CONTAINER_CLASS,
   SECTION_TITLE_CLASS,
 } from './styles';
+import { SplitWords } from '@/shared/ui/split-words';
+import { trackSpotlight } from '@/shared/lib';
+import { CountUp } from '@/shared/ui/count-up';
 
 export function ResearchSection() {
   const { research } = useLocalized(HOME_CONTENT);
@@ -23,7 +26,7 @@ export function ResearchSection() {
           <div className="flex flex-col gap-4 lg:gap-5">
             <Eyebrow>{research.eyebrow}</Eyebrow>
             <h2 id="research-title" className={SECTION_TITLE_CLASS}>
-              {research.title}
+              <SplitWords text={research.title} />
             </h2>
           </div>
           <LinkButton to={ROUTES.PROJECTS} className="hidden lg:inline-flex">
@@ -36,6 +39,7 @@ export function ResearchSection() {
             <li key={project.title}>
               <Link
                 to={project.to}
+                onPointerMove={trackSpotlight}
                 className={`${CARD_CLASS} ${CARD_LINK_CLASS} h-full gap-4 lg:min-h-[400px] lg:gap-5`}
               >
                 <h3 className="font-display text-[26px] leading-[30px] font-medium tracking-[-0.025em] text-white lg:text-[34px] lg:leading-[38px]">
@@ -74,7 +78,7 @@ export function ResearchSection() {
                   {item.label}
                 </dt>
                 <dd className="order-1 font-display text-[40px] leading-[44px] font-medium tracking-[-0.03em] text-viratec-accent tabular-nums lg:text-[56px] lg:leading-[60px]">
-                  {item.value}
+                  <CountUp value={item.value} />
                 </dd>
               </div>
             ))}

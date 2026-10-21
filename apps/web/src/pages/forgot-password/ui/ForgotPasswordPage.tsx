@@ -1,6 +1,6 @@
 import { AuthLayout } from '@/widgets/auth-layout';
 import { ResetPasswordFlow } from '@/features/reset-password';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 
 const FORGOT_PASSWORD_MESSAGES = defineMessages({
@@ -26,7 +26,7 @@ const FORGOT_PASSWORD_MESSAGES = defineMessages({
 
 export function ForgotPasswordPage() {
   const t = useLocalized(FORGOT_PASSWORD_MESSAGES);
-  useDocumentTitle(t.documentTitle);
+  useSeo(t.documentTitle);
 
   return (
     <AuthLayout

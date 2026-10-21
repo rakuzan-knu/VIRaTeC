@@ -1,7 +1,7 @@
 import { AuthLayout } from '@/widgets/auth-layout';
 import { RegisterForm } from '@/features/register-by-email';
 import { GoogleAuthButton } from '@/features/login-by-google';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 
 const REGISTER_PAGE_MESSAGES = defineMessages({
@@ -11,7 +11,7 @@ const REGISTER_PAGE_MESSAGES = defineMessages({
 
 export function RegisterPage() {
   const t = useLocalized(REGISTER_PAGE_MESSAGES);
-  useDocumentTitle(t.documentTitle);
+  useSeo(t.documentTitle);
 
   return (
     <AuthLayout>

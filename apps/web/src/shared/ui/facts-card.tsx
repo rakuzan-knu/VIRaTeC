@@ -17,7 +17,7 @@ export function FactsCard({ title, facts, actions, className }: FactsCardProps) 
   return (
     <aside
       className={cn(
-        'flex flex-col gap-6 rounded-[28px] border border-white/10 bg-white/[0.035] p-6 lg:w-[380px] lg:shrink-0 lg:p-8',
+        'atlas-card flex flex-col gap-6 rounded-[28px] border border-transparent p-6 backdrop-blur-xl lg:sticky lg:top-28 lg:w-[380px] lg:shrink-0 lg:self-start lg:p-8',
         className,
       )}
     >

@@ -3,6 +3,7 @@ import { buildProjectPath } from '@/shared/config/routes';
 import { CardLinkLabel } from '@/shared/ui/card-link-label';
 import { MediaPlaceholder } from '@/shared/ui/media-placeholder';
 import { getProjectFaculties, getProjectYear, useProjectLabels } from '../lib/format';
+import { getProjectCover } from '../lib/cover';
 import type { Project } from '../model/types';
 
 interface ProjectCardProps {
@@ -22,7 +23,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
       to={buildProjectPath(project.id)}
       className="group/card flex h-full flex-col gap-4 rounded-[28px] border border-white/10 bg-white/[0.035] px-5 pt-5 pb-7 transition-colors duration-200 hover:border-white/22 hover:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
     >
-      <MediaPlaceholder className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]" />
+      <MediaPlaceholder
+        src={getProjectCover(project)}
+        className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]"
+      />
       <div className="flex flex-col gap-3 px-2">
         <h3 className="font-display text-xl leading-[26px] font-medium tracking-[-0.02em] text-white lg:text-2xl lg:leading-[30px]">
           {project.title}

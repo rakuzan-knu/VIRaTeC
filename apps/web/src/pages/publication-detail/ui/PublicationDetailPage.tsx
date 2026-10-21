@@ -15,7 +15,7 @@ import {
 } from '@/entities/publication';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
 const PUBLICATION_DETAIL_MESSAGES = defineMessages({
@@ -108,7 +108,11 @@ function PublicationBody({ publication }: { publication: Publication }) {
             </span>
           ))}
         </p>
-        <MediaPlaceholder className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]" />
+        <MediaPlaceholder
+          src={publication.image}
+          label={typeLabel}
+          className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]"
+        />
         {detail ? (
           detail.blocks.map((block) => (
             <ArticleBlock key={`${block.kind}-${block.text}`} block={block} />
@@ -169,7 +173,12 @@ export function PublicationDetailPage() {
   const publication = findPublication(publications, slug);
   const t = useLocalized(PUBLICATION_DETAIL_MESSAGES);
   const labels = usePublicationLabels();
-  useDocumentTitle(publication?.title ?? t.notFoundTitle);
+  useSeo(publication?.title ?? t.notFoundTitle, {
+    description: publication && (publication.detail?.lead ?? publication.excerpt),
+    image: publication?.image,
+    type: 'article',
+    noindex: !publication,
+  });
 
   const breadcrumbRoot: BreadcrumbItem[] = [
     t.publicationsAndMedia,

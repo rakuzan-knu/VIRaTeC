@@ -23,6 +23,25 @@ interface Principle extends TitledText {
   to: string;
 }
 
+export type MomentKey =
+  | 'certificateCeremony'
+  | 'coilSeriesTalk'
+  | 'studentSpeaker'
+  | 'alliance'
+  | 'oxford'
+  | 'ivec'
+  | 'jhuRolePlay'
+  | 'karunya'
+  | 'certificatesParticipants'
+  | 'intercultural'
+  | 'community'
+  | 'studentsFaculty';
+
+export interface MomentItem {
+  photo: MomentKey;
+  caption: string;
+}
+
 export interface ViratecContent {
   documentTitle: string;
   breadcrumb: string[];
@@ -49,6 +68,10 @@ export interface ViratecContent {
   joinTitle: string;
   joinAccent: string;
   joinSteps: StepItem[];
+  momentsEyebrow: string;
+  momentsTitle: string;
+  momentsAccent: string;
+  moments: MomentItem[];
   ctaTitle: string;
   ctaDescription: string;
 }
@@ -64,13 +87,13 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
     whatIsEyebrow: 'What is VIRaTeC',
     whatIsTitle: 'What is VIRaTeC?',
     whatIsDescription:
-      'Watch how students, educators and researchers from partner universities in 8 countries learn and do research together, online and across borders.',
+      'Watch how students, educators and researchers from partner universities in 10 countries learn and do research together, online and across borders.',
     videoTitle: 'What is VIRaTeC?',
     stats: [
-      { value: '14', label: 'partner universities named in projects' },
-      { value: '8', label: 'countries' },
-      { value: '360', label: 'participants in three 2025–2026 modules' },
-      { value: '142', label: 'members of the LinkedIn community' },
+      { value: '500+', label: 'students from the Americas, Europe, Africa and Asia' },
+      { value: '15+', label: 'partner universities worldwide' },
+      { value: '10', label: 'partner countries' },
+      { value: '5', label: 'industry & research partners' },
     ],
     journeyEyebrow: 'Our journey',
     journeyTitle: 'From an idea',
@@ -104,7 +127,7 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
         date: 'February 2026',
         title: 'Foundations of NLP',
         description:
-          'An 8-week certified Research-Based Learning module starts on 16 February: 206 students from 7 universities and Chartbeat, 31 international teams.',
+          'An 8-week certified Research-Based Learning module starts on 16 February: 206 students from 8 universities, 31 international teams.',
       },
       {
         date: 'Spring 2026',
@@ -135,6 +158,20 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
         title: 'Tyshchenko Legacy Conference at KNU',
         description:
           'The II International Scientific Conference on 14–15 October, where Dr. Larysa Liashenko gives a plenary talk on the global student collaboration network.',
+      },
+      {
+        date: 'November 2026',
+        title: 'CIITD-2026 and the Space Analytics symposium',
+        description:
+          'On 19 November: the VIII International Conference of Young Scientists at PSTU and a symposium presenting the research outcomes of the VIRaTeC International COIL Module.',
+        isUpcoming: true,
+      },
+      {
+        date: 'December 2026',
+        title: 'Digital simulation course with Johns Hopkins',
+        description:
+          'An AI-based digital simulation course “Environmental Decision-Making: Foundations and Applied Approaches from the Field”.',
+        isUpcoming: true,
       },
     ],
     participantsEyebrow: 'Who takes part',
@@ -193,6 +230,35 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
       },
       { title: 'Create together', description: 'Work on the project and present the results.' },
     ],
+    momentsEyebrow: 'Moments',
+    momentsTitle: 'Life of',
+    momentsAccent: 'the network.',
+    moments: [
+      {
+        photo: 'certificateCeremony',
+        caption: 'Certificate ceremony of the 2025 VIRaTeC COIL Series, KNU',
+      },
+      {
+        photo: 'coilSeriesTalk',
+        caption: 'Implementing COIL modules: a talk at the VIRaTeC COIL Series 2025',
+      },
+      { photo: 'oxford', caption: 'Presenting at the University of Oxford, Saïd Business School' },
+      { photo: 'ivec', caption: 'International Virtual Exchange Conference IVEC 2025, Heraklion' },
+      {
+        photo: 'jhuRolePlay',
+        caption: 'Offshore wind farm negotiation with Johns Hopkins University, online',
+      },
+      { photo: 'alliance', caption: 'With the Alliance of Ukrainian Universities at KNU' },
+      { photo: 'studentSpeaker', caption: 'A student takes the floor at KNU' },
+      {
+        photo: 'karunya',
+        caption: 'Online session with Karunya Institute of Technology and Sciences',
+      },
+      { photo: 'certificatesParticipants', caption: 'Module participants with their certificates' },
+      { photo: 'intercultural', caption: 'Intercultural exchange at KNU' },
+      { photo: 'community', caption: 'The VIRaTeC community at KNU' },
+      { photo: 'studentsFaculty', caption: 'Students and faculty at KNU' },
+    ],
     ctaTitle: 'Ready to join VIRaTeC?',
     ctaDescription:
       'Find a program, a project or a workshop that fits you and become part of the community.',
@@ -207,13 +273,13 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
     whatIsEyebrow: 'Що таке VIRaTeC',
     whatIsTitle: 'Що таке VIRaTeC?',
     whatIsDescription:
-      'Подивіться, як студенти, викладачі та дослідники з університетів-партнерів у 8 країнах разом навчаються й досліджують — онлайн і без кордонів.',
+      'Подивіться, як студенти, викладачі та дослідники з університетів-партнерів у 10 країнах разом навчаються й досліджують — онлайн і без кордонів.',
     videoTitle: 'Що таке VIRaTeC?',
     stats: [
-      { value: '14', label: 'університетів-партнерів, залучених до проєктів' },
-      { value: '8', label: 'країн' },
-      { value: '360', label: 'учасників трьох модулів 2025–2026 років' },
-      { value: '142', label: 'учасники спільноти в LinkedIn' },
+      { value: '500+', label: 'студентів з Америки, Європи, Африки та Азії' },
+      { value: '15+', label: 'університетів-партнерів у світі' },
+      { value: '10', label: 'країн-партнерів' },
+      { value: '5', label: 'індустріальних і дослідницьких партнерів' },
     ],
     journeyEyebrow: 'Наш шлях',
     journeyTitle: 'Від ідеї',
@@ -247,7 +313,7 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
         date: 'Лютий 2026',
         title: 'Foundations of NLP',
         description:
-          '16 лютого стартує 8-тижневий сертифікований модуль Research-Based Learning: 206 студентів із 7 університетів і компанії Chartbeat, 31 міжнародна команда.',
+          '16 лютого стартує 8-тижневий сертифікований модуль Research-Based Learning: 206 студентів із 8 університетів, 31 міжнародна команда.',
       },
       {
         date: 'Весна 2026',
@@ -278,6 +344,20 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
         title: 'Конференція в КНУ, присвячена спадщині Тищенка',
         description:
           'ІІ Міжнародна наукова конференція 14–15 жовтня, на якій д-р Лариса Ляшенко виступає з пленарною доповіддю про глобальну мережу студентської співпраці.',
+      },
+      {
+        date: 'Листопад 2026',
+        title: 'CIITD-2026 і симпозіум Space Analytics',
+        description:
+          '19 листопада: VIII Міжнародна конференція молодих учених у ПДТУ та симпозіум, де представлять результати досліджень міжнародного COIL-модуля VIRaTeC.',
+        isUpcoming: true,
+      },
+      {
+        date: 'Грудень 2026',
+        title: 'Курс цифрового моделювання з Університетом Джонса Гопкінса',
+        description:
+          'Курс цифрового моделювання на основі ШІ «Environmental Decision-Making: Foundations and Applied Approaches from the Field».',
+        isUpcoming: true,
       },
     ],
     participantsEyebrow: 'Хто бере участь',
@@ -344,6 +424,36 @@ export const VIRATEC_CONTENT = defineMessages<ViratecContent>({
         title: 'Творіть разом',
         description: 'Працюйте над проєктом і презентуйте результати.',
       },
+    ],
+    momentsEyebrow: 'Моменти',
+    momentsTitle: 'Життя',
+    momentsAccent: 'мережі.',
+    moments: [
+      {
+        photo: 'certificateCeremony',
+        caption: 'Церемонія вручення сертифікатів VIRaTeC COIL Series 2025, КНУ',
+      },
+      {
+        photo: 'coilSeriesTalk',
+        caption: 'Доповідь про впровадження COIL-модулів на VIRaTeC COIL Series 2025',
+      },
+      { photo: 'oxford', caption: 'Виступ в Оксфордському університеті, Saïd Business School' },
+      {
+        photo: 'ivec',
+        caption: 'Міжнародна конференція з віртуального обміну IVEC 2025, Іракліон',
+      },
+      {
+        photo: 'jhuRolePlay',
+        caption:
+          'Переговори щодо офшорної вітрової електростанції з Університетом Джонса Гопкінса, онлайн',
+      },
+      { photo: 'alliance', caption: 'Разом з Альянсом українських університетів у КНУ' },
+      { photo: 'studentSpeaker', caption: 'Виступ студентки в КНУ' },
+      { photo: 'karunya', caption: 'Онлайн-сесія з Karunya Institute of Technology and Sciences' },
+      { photo: 'certificatesParticipants', caption: 'Учасники модулів із сертифікатами' },
+      { photo: 'intercultural', caption: 'Міжкультурний обмін у КНУ' },
+      { photo: 'community', caption: 'Спільнота VIRaTeC у КНУ' },
+      { photo: 'studentsFaculty', caption: 'Студенти й викладачі в КНУ' },
     ],
     ctaTitle: 'Готові долучитися до VIRaTeC?',
     ctaDescription:

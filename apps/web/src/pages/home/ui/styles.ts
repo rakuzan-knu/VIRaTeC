@@ -5,7 +5,7 @@ export const SECTION_TITLE_CLASS =
   'font-display text-[36px] leading-[40px] font-medium tracking-[-0.03em] text-white lg:text-[60px] lg:leading-[64px]';
 
 export const CARD_CLASS =
-  'flex flex-col rounded-[24px] border border-white/10 bg-white/[0.035] p-6 lg:rounded-[28px] lg:p-8';
+  'atlas-card flex flex-col rounded-[24px] border border-transparent p-6 lg:rounded-[28px] lg:p-8';
 
 export const CARD_LINK_CLASS =
-  'group/card transition-colors duration-200 hover:border-white/22 hover:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';
+  'atlas-spotlight group/card transition-colors duration-200 hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';

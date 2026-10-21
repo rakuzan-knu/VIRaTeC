@@ -20,27 +20,40 @@ const HEADER_MESSAGES = defineMessages({
 });
 
 const SCROLL_THRESHOLD = 12;
+const HIDE_OFFSET = 160;
+const HIDE_DELTA = 6;
 const NAV_LINK_CLASS =
   'rounded-full px-3.5 py-2 text-[15px] transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';
 
-function useIsScrolled() {
+function useHeaderScroll() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    const update = () => setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
+    let lastY = window.scrollY;
+
+    const update = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      setIsScrolled(y > SCROLL_THRESHOLD);
+      if (y < HIDE_OFFSET || delta < -HIDE_DELTA) setIsHidden(false);
+      else if (delta > HIDE_DELTA) setIsHidden(true);
+      if (Math.abs(delta) > HIDE_DELTA) lastY = y;
+    };
+
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
 
-  return isScrolled;
+  return { isScrolled, isHidden };
 }
 
 export function SiteHeader({ className }: SiteHeaderProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
-  const isScrolled = useIsScrolled();
+  const { isScrolled, isHidden } = useHeaderScroll();
   const { main: mainNav } = useNavigation();
   const common = useCommonMessages();
   const t = useLocalized(HEADER_MESSAGES);
@@ -53,7 +66,13 @@ export function SiteHeader({ className }: SiteHeaderProps) {
   return (
     <>
       <div aria-hidden="true" className="h-16 xl:h-[88px]" />
-      <header className={cn('fixed inset-x-0 top-0 z-40 font-viratec', className)}>
+      <header
+        className={cn(
+          'fixed inset-x-0 top-0 z-40 font-viratec transition-transform duration-500 ease-apple [view-transition-name:site-header] focus-within:translate-y-0 motion-reduce:transition-none',
+          isHidden && openDropdown === null && !isMobileMenuOpen && '-translate-y-full',
+          className,
+        )}
+      >
         <div
           aria-hidden="true"
           className={cn(

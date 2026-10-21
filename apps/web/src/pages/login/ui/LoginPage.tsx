@@ -1,12 +1,12 @@
 import { AuthLayout } from '@/widgets/auth-layout';
 import { LoginForm } from '@/features/login-by-email';
 import { GoogleAuthButton } from '@/features/login-by-google';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 import { useCommonMessages } from '@/shared/i18n';
 
 export function LoginPage() {
   const common = useCommonMessages();
-  useDocumentTitle(common.logIn);
+  useSeo(common.logIn);
 
   return (
     <AuthLayout>

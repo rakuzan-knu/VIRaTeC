@@ -9,6 +9,7 @@ import { CtaSection } from '@/shared/ui/cta-section';
 import { ListFeedback } from '@/shared/ui/list-feedback';
 import { ButtonArrow, LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import {
+  getProjectCover,
   getProjectFaculties,
   getProjectYear,
   useProject,
@@ -18,7 +19,7 @@ import {
 } from '@/entities/project';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
 const PROJECT_DETAIL_MESSAGES = defineMessages({
@@ -87,7 +88,10 @@ function ProjectBody({ project }: { project: Project }) {
   return (
     <PageSection containerClassName="lg:flex-row lg:items-start lg:gap-16">
       <div className="flex flex-1 flex-col gap-5">
-        <MediaPlaceholder className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]" />
+        <MediaPlaceholder
+          src={getProjectCover(project)}
+          className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]"
+        />
         <h2 className="font-display text-2xl leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">
           {t.aboutProject}
         </h2>
@@ -152,7 +156,7 @@ function RelatedProjects({ currentId }: { currentId: string }) {
         {related.map((project) => (
           <li key={project.id}>
             <InfoCard
-              withImage
+              image={getProjectCover(project)}
               title={project.title}
               description={project.description}
               linkLabel={common.viewProject}
@@ -173,7 +177,12 @@ export function ProjectDetailPage() {
   const t = useLocalized(PROJECT_DETAIL_MESSAGES);
   const common = useCommonMessages();
   const labels = useProjectLabels();
-  useDocumentTitle(project?.title ?? (isPending ? t.project : t.notFoundTitle));
+  useSeo(project?.title ?? (isPending ? t.project : t.notFoundTitle), {
+    description: project?.description,
+    image: project && getProjectCover(project),
+    type: 'article',
+    noindex: isError,
+  });
 
   const breadcrumbRoot: BreadcrumbItem[] = [
     t.researchAndProjects,

@@ -4,10 +4,10 @@ import { AboutSection } from './AboutSection';
 import { ResearchSection } from './ResearchSection';
 import { PublicationsSection } from './PublicationsSection';
 import { GetInvolvedSection } from './GetInvolvedSection';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 
 export function HomePage() {
-  useDocumentTitle();
+  useSeo();
 
   return (
     <PageLayout intro={<HeroSection />}>

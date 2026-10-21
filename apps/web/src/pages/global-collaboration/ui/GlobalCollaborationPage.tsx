@@ -1,4 +1,7 @@
 import { ROUTES } from '@/shared/config/routes';
+import coilTeamsPhoto from '@/shared/assets/photos/coil-online-teams.webp';
+import talksPhoto from '@/shared/assets/photos/conference-audience-knu.webp';
+import rolePlayPhoto from '@/shared/assets/photos/jhu-role-play-online.webp';
 import { useCommonMessages, useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -9,12 +12,14 @@ import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { GLOBAL_COLLABORATION_CONTENT } from '../model/content';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
+
+const FORMAT_PHOTOS = [coilTeamsPhoto, talksPhoto, rolePlayPhoto];
 
 export function GlobalCollaborationPage() {
   const content = useLocalized(GLOBAL_COLLABORATION_CONTENT);
   const common = useCommonMessages();
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -40,6 +45,7 @@ export function GlobalCollaborationPage() {
                 index={partner.code}
                 title={partner.name}
                 description={partner.location}
+                logo={partner.logo}
                 className="lg:min-h-[184px]"
               />
             </li>
@@ -73,10 +79,10 @@ export function GlobalCollaborationPage() {
           description={content.formatsDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {content.formats.map((format) => (
+          {content.formats.map((format, index) => (
             <li key={format.title}>
               <InfoCard
-                withImage
+                image={FORMAT_PHOTOS[index]}
                 title={format.title}
                 description={format.description}
                 linkLabel={common.learnMore}

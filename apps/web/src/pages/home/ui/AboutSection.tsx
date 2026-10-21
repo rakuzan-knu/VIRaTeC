@@ -5,18 +5,23 @@ import { HOME_CONTENT } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
+import { SplitWords, countWords } from '@/shared/ui/split-words';
+import { CountUp } from '@/shared/ui/count-up';
 
 export function AboutSection() {
   const { about } = useLocalized(HOME_CONTENT);
 
   return (
-    <section aria-labelledby="about-title" className="bg-viratec-bg">
+    <section aria-labelledby="about-title">
       <div className={SECTION_CONTAINER_CLASS}>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-24">
           <div className="flex flex-col items-start gap-5 lg:sticky lg:top-32 lg:flex-1 lg:gap-7">
             <Eyebrow>{about.eyebrow}</Eyebrow>
             <h2 id="about-title" className={SECTION_TITLE_CLASS}>
-              {about.title} <span className="text-white/50">{about.titleAccent}</span>
+              <SplitWords text={about.title} />{' '}
+              <span className="text-white/50">
+                <SplitWords text={about.titleAccent} offset={countWords(about.title)} />
+              </span>
             </h2>
             <ExpandableText className="max-w-[60ch] text-[17px] leading-[27px] text-viratec-muted lg:text-xl lg:leading-8">
               {about.description}
@@ -61,7 +66,7 @@ export function AboutSection() {
                 {stat.label}
               </dt>
               <dd className="order-1 w-[84px] shrink-0 font-display text-[44px] leading-[48px] font-medium tracking-[-0.04em] text-white tabular-nums lg:w-auto lg:text-[72px] lg:leading-[72px]">
-                {stat.value}
+                <CountUp value={stat.value} />
               </dd>
             </div>
           ))}

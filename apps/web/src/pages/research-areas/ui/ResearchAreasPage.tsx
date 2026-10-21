@@ -1,4 +1,7 @@
 import { ROUTES } from '@/shared/config/routes';
+import cybersecurityPhoto from '@/shared/assets/photos/cybersecurity-session.webp';
+import nlpPhoto from '@/shared/assets/photos/nlp-classroom.webp';
+import educationPhoto from '@/shared/assets/photos/lecture-hall.webp';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -7,7 +10,7 @@ import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 
 const RESEARCH_AREAS_CONTENT = defineMessages({
   en: {
@@ -30,7 +33,7 @@ const RESEARCH_AREAS_CONTENT = defineMessages({
       {
         title: 'NLP & AI',
         description:
-          'Foundations of NLP: from text preprocessing to sentiment analysis, with 206 students from 7 universities and Chartbeat.',
+          'Foundations of NLP: from text preprocessing to sentiment analysis, with 206 students from 8 universities.',
       },
       {
         title: 'Education & EdTech',
@@ -42,8 +45,8 @@ const RESEARCH_AREAS_CONTENT = defineMessages({
     bannerDescription:
       'Students and researchers from Kyiv work together with partners from the UK, Colombia, Chile, the UAE and India on one shared research question.',
     stats: [
-      { value: '14', label: 'partner universities' },
-      { value: '8', label: 'countries' },
+      { value: '15+', label: 'partner universities' },
+      { value: '10', label: 'partner countries' },
     ],
     futureEyebrow: 'Interdisciplinary models',
     futureTitle: 'Language meets discipline',
@@ -88,7 +91,7 @@ const RESEARCH_AREAS_CONTENT = defineMessages({
       {
         title: 'NLP та ШІ',
         description:
-          'Foundations of NLP: від попередньої обробки тексту до аналізу тональності — 206 студентів із 7 університетів і компанії Chartbeat.',
+          'Foundations of NLP: від попередньої обробки тексту до аналізу тональності — 206 студентів із 8 університетів.',
       },
       {
         title: 'Освіта та EdTech',
@@ -100,8 +103,8 @@ const RESEARCH_AREAS_CONTENT = defineMessages({
     bannerDescription:
       'Студенти та дослідники з Києва працюють разом із партнерами з Великої Британії, Колумбії, Чилі, ОАЕ та Індії над одним спільним дослідницьким питанням.',
     stats: [
-      { value: '14', label: 'університетів-партнерів' },
-      { value: '8', label: 'країн' },
+      { value: '15+', label: 'університетів-партнерів' },
+      { value: '10', label: 'країн-партнерів' },
     ],
     futureEyebrow: 'Міждисциплінарні моделі',
     futureTitle: 'Мова зустрічає фах',
@@ -130,10 +133,12 @@ const RESEARCH_AREAS_CONTENT = defineMessages({
   },
 });
 
+const AREA_PHOTOS = [cybersecurityPhoto, nlpPhoto, educationPhoto];
+
 export function ResearchAreasPage() {
   const content = useLocalized(RESEARCH_AREAS_CONTENT);
   const common = useCommonMessages();
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -154,10 +159,10 @@ export function ResearchAreasPage() {
           description={content.areasDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {content.areas.map((area) => (
+          {content.areas.map((area, index) => (
             <li key={area.title}>
               <InfoCard
-                withImage
+                image={AREA_PHOTOS[index]}
                 title={area.title}
                 description={area.description}
                 linkLabel={common.seeProjects}

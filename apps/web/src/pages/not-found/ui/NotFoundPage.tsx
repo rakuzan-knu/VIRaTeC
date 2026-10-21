@@ -3,7 +3,7 @@ import { defineMessages, useLocalized } from '@/shared/i18n';
 import { LinkButton } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 
 const NOT_FOUND_MESSAGES = defineMessages({
   en: {
@@ -22,7 +22,7 @@ const NOT_FOUND_MESSAGES = defineMessages({
 
 export function NotFoundPage() {
   const t = useLocalized(NOT_FOUND_MESSAGES);
-  useDocumentTitle(t.title);
+  useSeo(t.title, { noindex: true });
 
   return (
     <PageLayout

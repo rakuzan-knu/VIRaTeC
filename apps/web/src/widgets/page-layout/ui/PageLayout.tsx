@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
+import { useScrollReveal } from '@/shared/lib';
 import { SiteFooter } from '@/widgets/site-footer';
 
 interface PageLayoutProps {
@@ -7,11 +8,24 @@ interface PageLayoutProps {
 }
 
 export function PageLayout({ intro, children }: PageLayoutProps) {
+  const mainRef = useRef<HTMLElement>(null);
+  useScrollReveal(mainRef);
+
   return (
-    <div className="min-h-screen bg-viratec-bg font-viratec">
+    <div className="relative isolate min-h-screen overflow-x-clip bg-viratec-bg font-viratec">
+      <div aria-hidden="true" className="page-sky">
+        <span className="page-sky-aurora" />
+        <span className="page-sky-stars page-sky-far" />
+        <span className="page-sky-stars page-sky-mid" />
+        <span className="page-sky-stars page-sky-near" />
+        <span className="page-sky-stars page-sky-bright" />
+        <span className="page-sky-shooting" />
+      </div>
+      <div aria-hidden="true" className="page-ambient" />
       {intro}
-      <main>{children}</main>
+      <main ref={mainRef}>{children}</main>
       <SiteFooter />
+      <div aria-hidden="true" className="field-grain" />
     </div>
   );
 }

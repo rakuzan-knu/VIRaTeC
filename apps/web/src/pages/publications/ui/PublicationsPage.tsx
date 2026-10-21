@@ -10,7 +10,7 @@ import { FeaturedPublicationCard, PublicationCard } from '@/entities/publication
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { useListingOptions, usePublicationListing } from '../model/usePublicationListing';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 import { countUk, defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
 const PUBLICATIONS_MESSAGES = defineMessages({
@@ -50,7 +50,7 @@ export function PublicationsPage() {
   const t = useLocalized(PUBLICATIONS_MESSAGES);
   const common = useCommonMessages();
   const options = useListingOptions();
-  useDocumentTitle(t.documentTitle);
+  useSeo(t.documentTitle);
 
   const listing = usePublicationListing();
   const [isSheetOpen, setIsSheetOpen] = useState(false);

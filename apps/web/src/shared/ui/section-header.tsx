@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/shared/lib';
 import { Eyebrow } from './eyebrow';
+import { SplitWords, countWords } from './split-words';
 
 interface SectionHeaderProps {
   id?: string;
@@ -22,33 +23,36 @@ export function SectionHeader({
   className,
 }: SectionHeaderProps) {
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-16',
-        className,
-      )}
-    >
-      <div className="flex max-w-[820px] flex-col gap-3 lg:gap-4">
-        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-        <h2
-          id={id}
-          className="font-display text-[34px] leading-[38px] font-medium tracking-[-0.03em] text-white lg:text-[56px] lg:leading-[60px]"
-        >
-          {title}
-          {accent && (
-            <>
-              {' '}
-              <span className="text-white/50">{accent}</span>
-            </>
+    <div className={cn('@container', className)}>
+      <div className="grid gap-4 @4xl:grid-cols-[minmax(0,220px)_minmax(0,1fr)] @4xl:gap-x-14">
+        {eyebrow && (
+          <div className="@4xl:pt-[18px]">
+            <Eyebrow>{eyebrow}</Eyebrow>
+          </div>
+        )}
+        <div className="flex max-w-[920px] flex-col items-start gap-5 @4xl:col-start-2 lg:gap-6">
+          <h2
+            id={id}
+            className="font-display text-[36px] leading-[40px] font-medium tracking-[-0.035em] text-white lg:text-[64px] lg:leading-[66px]"
+          >
+            <SplitWords text={title} />
+            {accent && (
+              <>
+                {' '}
+                <span className="text-white/50">
+                  <SplitWords text={accent} offset={countWords(title)} />
+                </span>
+              </>
+            )}
+          </h2>
+          {description && (
+            <p className="max-w-[60ch] text-base leading-[26px] text-viratec-muted lg:text-lg lg:leading-[29px]">
+              {description}
+            </p>
           )}
-        </h2>
+          {action}
+        </div>
       </div>
-      {description && (
-        <p className="max-w-[60ch] text-base leading-[26px] text-viratec-muted lg:w-[440px] lg:shrink-0 lg:text-lg lg:leading-[29px]">
-          {description}
-        </p>
-      )}
-      {action}
     </div>
   );
 }

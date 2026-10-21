@@ -1,4 +1,7 @@
 import { ROUTES } from '@/shared/config/routes';
+import cyberRisksPhoto from '@/shared/assets/photos/cyber-operations-session.webp';
+import nlpModulePhoto from '@/shared/assets/photos/nlp-online-module.webp';
+import cyberHygienePhoto from '@/shared/assets/photos/deepfake-ethics-session.webp';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -8,7 +11,7 @@ import { HighlightBanner, type HighlightStat } from '@/shared/ui/highlight-banne
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useDocumentTitle } from '@/shared/lib';
+import { useSeo } from '@/shared/lib';
 
 interface TitledText {
   title: string;
@@ -49,8 +52,8 @@ const STUDENT_RESEARCH_CONTENT = defineMessages<StudentResearchContent>({
     bannerDescription:
       'Six students of the KNU Faculty of Information Technology turned their COIL research into two articles in Grail of Science, a Ukrainian Category B journal, published on 1 May 2026.',
     stats: [
-      { value: '6', label: 'student authors' },
-      { value: '2', label: 'articles in a Category B journal' },
+      { value: '8', label: 'students published in Category B journals' },
+      { value: '4', label: 'students published in Scopus-indexed journals' },
     ],
     projectsEyebrow: 'Student projects',
     projectsTitle: 'Led by students',
@@ -64,7 +67,7 @@ const STUDENT_RESEARCH_CONTENT = defineMessages<StudentResearchContent>({
       {
         title: 'Foundations of NLP module',
         description:
-          'Led by Master’s student Eduard Parkhomenko: 31 teams, 206 students, 7 universities.',
+          'Led by Master’s student Eduard Parkhomenko: 31 teams, 206 students, 8 universities.',
       },
       {
         title: 'Fundamentals of Cyber Hygiene',
@@ -99,8 +102,8 @@ const STUDENT_RESEARCH_CONTENT = defineMessages<StudentResearchContent>({
     bannerDescription:
       'Шестеро студентів факультету інформаційних технологій КНУ перетворили свої COIL-дослідження на дві статті в Grail of Science — українському журналі категорії Б, опубліковані 1 травня 2026 року.',
     stats: [
-      { value: '6', label: 'студентів-авторів' },
-      { value: '2', label: 'статті в журналі категорії Б' },
+      { value: '8', label: 'студентів опублікувалися в журналах категорії Б' },
+      { value: '4', label: 'студенти опублікувалися в журналах Scopus' },
     ],
     projectsEyebrow: 'Студентські проєкти',
     projectsTitle: 'Під керівництвом студентів',
@@ -114,7 +117,7 @@ const STUDENT_RESEARCH_CONTENT = defineMessages<StudentResearchContent>({
       {
         title: 'Модуль Foundations of NLP',
         description:
-          'Під керівництвом магістранта Едуарда Пархоменка: 31 команда, 206 студентів, 7 університетів.',
+          'Під керівництвом магістранта Едуарда Пархоменка: 31 команда, 206 студентів, 8 університетів.',
       },
       {
         title: 'Fundamentals of Cyber Hygiene',
@@ -149,10 +152,12 @@ const STUDENT_RESEARCH_CONTENT = defineMessages<StudentResearchContent>({
   },
 });
 
+const PROJECT_PHOTOS = [cyberRisksPhoto, nlpModulePhoto, cyberHygienePhoto];
+
 export function StudentResearchPage() {
   const content = useLocalized(STUDENT_RESEARCH_CONTENT);
   const common = useCommonMessages();
-  useDocumentTitle(content.documentTitle);
+  useSeo(content.documentTitle);
 
   return (
     <PageLayout
@@ -181,10 +186,10 @@ export function StudentResearchPage() {
           description={content.projectsDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {content.projects.map((project) => (
+          {content.projects.map((project, index) => (
             <li key={project.title}>
               <InfoCard
-                withImage
+                image={PROJECT_PHOTOS[index]}
                 title={project.title}
                 description={project.description}
                 linkLabel={common.viewProject}

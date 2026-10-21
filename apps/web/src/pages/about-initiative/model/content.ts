@@ -37,6 +37,10 @@ export interface AboutInitiativeContent {
   philosophyEyebrow: string;
   philosophyTitle: string;
   philosophy: StepItem[];
+  founderEyebrow: string;
+  founderName: string;
+  founderRole: string;
+  founderBio: string[];
   teamEyebrow: string;
   teamTitle: string;
   teamAccent: string;
@@ -45,6 +49,8 @@ export interface AboutInitiativeContent {
   ctaDescription: string;
   ctaAction: string;
 }
+
+export const FOUNDER_PHOTO = larysaPhoto;
 
 export const ABOUT_INITIATIVE_CONTENT = defineMessages<AboutInitiativeContent>({
   en: {
@@ -102,13 +108,21 @@ export const ABOUT_INITIATIVE_CONTENT = defineMessages<AboutInitiativeContent>({
           'Experiential Learning for undergraduates, Research-Based Learning for postgraduates.',
       },
     ],
+    founderEyebrow: 'Academic Lead',
+    founderName: 'Dr. Larysa Liashenko',
+    founderRole: 'Associate Professor · PhD in Psychology, CELTA · Honoured Educator of Ukraine',
+    founderBio: [
+      'Dr. Larysa Liashenko, Associate Professor at Taras Shevchenko National University of Kyiv (PhD in Psychology, CELTA), is an expert in Research-Based Learning and EAP/ESP pedagogy.',
+      'An award-winning academic recognized as an Honoured Educator of Ukraine and commendee of the NATO-Ukraine PDP, she has authored around 50 scholarly works at the intersection of developmental psychology and applied linguistics.',
+      'As Academic Lead of the VIRaTeC Global COIL Program, she spearheads transformative Internationalisation at Home initiatives. She facilitates student-centered, cross-border research platforms where postgraduate module designers and industry mentors empower undergraduate researchers through authentic global collaboration.',
+    ],
     teamEyebrow: 'Team',
     teamTitle: 'People behind',
     teamAccent: 'the initiative',
     team: [
       {
         name: 'Larysa Liashenko',
-        role: 'Founder & Academic Lead of COIL Programmes · PhD in Psychology, Associate Professor, Department of Foreign Languages for Mathematical Faculties, KNU',
+        role: 'Founder & Academic Lead of the VIRaTeC Global COIL Program · Associate Professor, Department of Foreign Languages for Mathematical Faculties, KNU',
         photo: larysaPhoto,
       },
       {
@@ -197,6 +211,15 @@ export const ABOUT_INITIATIVE_CONTENT = defineMessages<AboutInitiativeContent>({
         description:
           'Experiential Learning для бакалаврів, Research-Based Learning для магістрантів і аспірантів.',
       },
+    ],
+    founderEyebrow: 'Академічна керівниця',
+    founderName: 'Д-р Лариса Ляшенко',
+    founderRole:
+      'Доцентка · кандидатка психологічних наук, CELTA · заслужена працівниця освіти України',
+    founderBio: [
+      'Д-р Лариса Ляшенко — доцентка Київського національного університету імені Тараса Шевченка (кандидатка психологічних наук, CELTA), експертка з Research-Based Learning та методики EAP/ESP.',
+      'Відзначена нагородами науковиця, заслужена працівниця освіти України та відзначена учасниця програми NATO-Ukraine PDP, вона є авторкою близько 50 наукових праць на перетині психології розвитку та прикладної лінгвістики.',
+      'Як академічна керівниця глобальної COIL-програми VIRaTeC, вона очолює трансформаційні ініціативи інтернаціоналізації вдома. Вона розвиває студентоцентровані міжнародні дослідницькі платформи, де магістранти — розробники модулів — і ментори з індустрії допомагають бакалаврам-дослідникам через справжню глобальну співпрацю.',
     ],
     teamEyebrow: 'Команда',
     teamTitle: 'Люди, що стоять',
