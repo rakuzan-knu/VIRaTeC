@@ -32,6 +32,8 @@ Never point preview migrations at the production database.
 
 Google sign-in additionally requires matching `GOOGLE_CLIENT_ID` and `VITE_GOOGLE_CLIENT_ID`
 and allowed origins in Google Cloud. Password-based registration and login work independently.
+See [Google sign-in setup](google-auth.md) for local environment files, migrations,
+Docker build arguments, and account collision behavior.
 
 ## Verification
 

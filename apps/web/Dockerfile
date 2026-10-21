@@ -14,6 +14,12 @@ ENV CI=true
 RUN pnpm install --frozen-lockfile --filter @viratec/web...
 
 COPY apps/web ./apps/web
+ARG VITE_API_BASE_URL=http://localhost:3000/api/v1
+ARG VITE_APP_TITLE="VIRaTeC — KNU Community"
+ARG VITE_GOOGLE_CLIENT_ID
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL \
+    VITE_APP_TITLE=$VITE_APP_TITLE \
+    VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 RUN pnpm --filter @viratec/contracts build \
     && pnpm --filter @viratec/utils build \
     && pnpm --filter @viratec/web build

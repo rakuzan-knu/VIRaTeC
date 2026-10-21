@@ -12,6 +12,7 @@ COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml turbo.json ./
 COPY packages ./packages/
 COPY apps/backend/package.json ./apps/backend/
 COPY apps/backend/prisma ./apps/backend/prisma/
+COPY apps/backend/prisma.config.ts ./apps/backend/
 
 ENV CI=true
 RUN pnpm install --frozen-lockfile --filter @viratec/backend...

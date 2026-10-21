@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
 import { OAuth2Client, type TokenPayload } from 'google-auth-library';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -87,18 +88,13 @@ export class AuthService {
     const payload = await this.verifyGoogleCredential(dto.credential);
     const email = payload.email.toLowerCase();
 
-    const existing = await this.prisma.user.findFirst({
-      where: { OR: [{ googleId: payload.sub }, { email }] },
+    let user = await this.prisma.user.findUnique({
+      where: { googleId: payload.sub },
     });
 
-    const user = existing
-      ? existing.googleId
-        ? existing
-        : await this.prisma.user.update({
-            where: { id: existing.id },
-            data: { googleId: payload.sub, avatarUrl: existing.avatarUrl ?? payload.picture },
-          })
-      : await this.prisma.user.create({
+    if (!user) {
+      try {
+        user = await this.prisma.user.create({
           data: {
             email,
             googleId: payload.sub,
@@ -106,6 +102,20 @@ export class AuthService {
             avatarUrl: payload.picture,
           },
         });
+      } catch (error) {
+        if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
+          throw error;
+        }
+        // A concurrent sign-in may have created this Google account. Email alone
+        // never authorizes linking an existing account or issuing its tokens.
+        user = await this.prisma.user.findUnique({ where: { googleId: payload.sub } });
+        if (!user) {
+          throw new ConflictException(
+            'An account with this email already exists. Sign in using its existing method.',
+          );
+        }
+      }
+    }
 
     const tokens = await this.generateTokens(user.id, user.email, user.role, user.faculty);
     return {
@@ -133,7 +143,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Google credential');
     }
 
-    if (!payload?.email || !payload.email_verified) {
+    if (!payload?.sub || !payload.email || !payload.email_verified) {
       throw new UnauthorizedException('Google account email is not verified');
     }
 

@@ -15,6 +15,7 @@ import { CommunityModule } from './community/community.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env', '../../.env'],
       load: [configuration],
     }),
     LoggerModule.forRoot({
