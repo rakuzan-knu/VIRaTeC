@@ -13,8 +13,9 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user / researcher' })
+  @ApiOperation({ summary: 'Register a student or partner account' })
   @ApiResponse({ status: 201, description: 'User successfully registered' })
+  @ApiResponse({ status: 403, description: 'Privileged roles require administrative provisioning' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);

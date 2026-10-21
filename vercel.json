@@ -1,0 +1,45 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["fra1"],
+  "services": {
+    "web": {
+      "root": "apps/web",
+      "framework": "vite",
+      "buildCommand": "pnpm --filter @viratec/contracts build && pnpm build",
+      "outputDirectory": "dist",
+      "routes": [
+        {
+          "src": "/assets/(.*)",
+          "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
+          "continue": true
+        },
+        { "handle": "filesystem" },
+        { "src": "/assets/(.*)", "status": 404 },
+        { "src": "/(.*)", "dest": "/$1.html", "check": true },
+        { "src": "/(.*)", "dest": "/spa.html" }
+      ]
+    },
+    "api": {
+      "root": "apps/backend",
+      "framework": "nestjs",
+      "buildCommand": "pnpm build && pnpm db:migrate"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/docs", "destination": { "service": "api" } },
+    { "source": "/docs/(.*)", "destination": { "service": "api" } },
+    { "source": "/docs-json", "destination": { "service": "api" } },
+    { "source": "/docs-yaml", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
+}
