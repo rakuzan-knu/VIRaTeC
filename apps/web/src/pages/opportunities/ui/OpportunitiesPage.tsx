@@ -1,25 +1,24 @@
 import { ROUTES } from '@/shared/config/routes';
 import { cn, useDocumentTitle } from '@/shared/lib';
+import { useCommonMessages, useLocalized } from '@/shared/i18n';
 import { LinkButton } from '@/shared/ui/link-button';
 import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { AUDIENCE_GROUPS, HOW_IT_WORKS, type AudienceGroup } from '../model/content';
+import { AUDIENCE_SECTION_IDS, OPPORTUNITIES_CONTENT, type AudienceGroup } from '../model/content';
 import { useActiveSection } from '../lib/useActiveSection';
-
-const SECTION_IDS = AUDIENCE_GROUPS.map((group) => group.id);
 
 const SECTION_TITLE_CLASS =
   'font-display text-[30px] leading-[36px] font-medium tracking-[-0.025em] text-white lg:text-[44px] lg:leading-[50px]';
 
-function RoleTabs() {
-  const activeId = useActiveSection(SECTION_IDS);
+function RoleTabs({ label, groups }: { label: string; groups: AudienceGroup[] }) {
+  const activeId = useActiveSection(AUDIENCE_SECTION_IDS);
 
   return (
-    <nav aria-label="Opportunities by role" className="w-full pt-3">
+    <nav aria-label={label} className="w-full pt-3">
       <ul className="flex flex-wrap gap-2.5">
-        {AUDIENCE_GROUPS.map((group) => {
+        {groups.map((group) => {
           const isActive = group.id === activeId;
           return (
             <li key={group.id}>
@@ -97,41 +96,43 @@ function AudienceSection({ group }: { group: AudienceGroup }) {
 }
 
 export function OpportunitiesPage() {
-  useDocumentTitle('Opportunities');
+  const content = useLocalized(OPPORTUNITIES_CONTENT);
+  const common = useCommonMessages();
+  useDocumentTitle(content.documentTitle);
 
   return (
     <PageLayout
       intro={
         <PageIntro
           tone="teal"
-          eyebrow="Opportunities"
-          title="Find your place in"
-          accent="the VIRaTeC network."
-          description="Projects, workshops and partnerships for students, researchers and universities. Pick your role to see what is open right now."
+          eyebrow={content.eyebrow}
+          title={content.title}
+          accent={content.accent}
+          description={content.description}
           descriptionClassName="lg:max-w-[720px]"
           className="lg:pt-20 lg:pb-[72px]"
         >
-          <RoleTabs />
+          <RoleTabs label={content.tabsLabel} groups={content.audienceGroups} />
         </PageIntro>
       }
     >
-      {AUDIENCE_GROUPS.map((group) => (
+      {content.audienceGroups.map((group) => (
         <AudienceSection key={group.id} group={group} />
       ))}
 
       <section aria-labelledby="how-it-works-title">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-16 pb-12 lg:gap-10 lg:px-[85px] lg:pt-[120px] lg:pb-16">
           <h2 id="how-it-works-title" className={SECTION_TITLE_CLASS}>
-            How it works
+            {content.howItWorksTitle}
           </h2>
-          <StepsList steps={HOW_IT_WORKS} />
+          <StepsList steps={content.howItWorks} />
         </div>
       </section>
 
       <CtaSection
-        title="Didn’t find your format?"
-        description="Write to us — we are open to new ideas, courses and partnerships."
-        action={{ label: 'Contact / Collaborate', to: ROUTES.CONTACT }}
+        title={content.ctaTitle}
+        description={content.ctaDescription}
+        action={{ label: common.contactCollaborate, to: ROUTES.CONTACT }}
       />
     </PageLayout>
   );

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { buildProjectPath } from '@/shared/config/routes';
 import { CardLinkLabel } from '@/shared/ui/card-link-label';
 import { MediaPlaceholder } from '@/shared/ui/media-placeholder';
-import { getProjectFaculties, getProjectYear } from '../lib/format';
+import { getProjectFaculties, getProjectYear, useProjectLabels } from '../lib/format';
 import type { Project } from '../model/types';
 
 interface ProjectCardProps {
@@ -10,10 +10,11 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const faculties = getProjectFaculties(project);
+  const labels = useProjectLabels();
+  const faculties = getProjectFaculties(project, labels.faculty);
   const meta = [
-    { label: 'Faculties', value: faculties },
-    { label: 'Year', value: String(getProjectYear(project)) },
+    { label: labels.faculties, value: faculties },
+    { label: labels.year, value: String(getProjectYear(project)) },
   ].filter((row) => row.value.length > 0);
 
   return (
@@ -39,7 +40,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </dl>
       </div>
       <CardLinkLabel
-        label="View project"
+        label={labels.viewProject}
         className="mt-auto pt-1 pl-2 text-[15px] font-medium text-viratec-cyan"
       />
     </Link>

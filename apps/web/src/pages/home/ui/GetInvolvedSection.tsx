@@ -1,10 +1,13 @@
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { AUDIENCES } from '../model/content';
+import { useLocalized } from '@/shared/i18n';
+import { HOME_CONTENT } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import auroraSrc from '../assets/hero-background.webp';
 
 export function GetInvolvedSection() {
+  const { getInvolved } = useLocalized(HOME_CONTENT);
+
   return (
     <section aria-labelledby="get-involved-title" className="bg-viratec-bg">
       <div className="mx-auto max-w-[1440px] px-5 pt-20 pb-20 lg:px-[85px] lg:pt-32 lg:pb-32">
@@ -23,22 +26,22 @@ export function GetInvolvedSection() {
           <div className="flex flex-col gap-10 px-6 py-10 lg:gap-20 lg:px-16 lg:py-20">
             <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="flex flex-col gap-4 lg:gap-5">
-                <Eyebrow>Get Involved</Eyebrow>
+                <Eyebrow>{getInvolved.eyebrow}</Eyebrow>
                 <h2
                   id="get-involved-title"
                   className="font-display text-[38px] leading-[42px] font-medium tracking-[-0.035em] text-white lg:text-[72px] lg:leading-[74px]"
                 >
-                  Become part of the <br className="hidden lg:inline" />
-                  VIRaTeC network.
+                  {getInvolved.titleLine} <br className="hidden lg:inline" />
+                  {getInvolved.titleAccent}
                 </h2>
               </div>
               <LinkButton to={ROUTES.REGISTER} className="hidden lg:inline-flex">
-                Join Us
+                {getInvolved.action}
               </LinkButton>
             </div>
 
             <ul className="grid gap-8 lg:grid-cols-3 lg:gap-10">
-              {AUDIENCES.map((audience) => (
+              {getInvolved.audiences.map((audience) => (
                 <li
                   key={audience.title}
                   className="flex flex-col gap-2.5 border-t border-white/20 pt-5 lg:gap-3 lg:pt-6"
@@ -54,7 +57,7 @@ export function GetInvolvedSection() {
             </ul>
 
             <LinkButton to={ROUTES.REGISTER} className="w-full lg:hidden">
-              Join Us
+              {getInvolved.action}
             </LinkButton>
           </div>
         </div>

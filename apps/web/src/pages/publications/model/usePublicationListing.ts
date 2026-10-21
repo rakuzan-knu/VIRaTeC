@@ -1,23 +1,42 @@
 import { useDeferredValue, useMemo, useState } from 'react';
-import { PUBLICATIONS, type Publication, type PublicationType } from '@/entities/publication';
+import { usePublications, type Publication, type PublicationType } from '@/entities/publication';
+import { defineMessages, mapLocalized, useLocalized } from '@/shared/i18n';
 
-export const TYPE_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'paper', label: 'Papers' },
-  { value: 'news', label: 'News' },
-  { value: 'event', label: 'Events' },
-  { value: 'media', label: 'Media' },
-] as const satisfies readonly { value: PublicationType | 'all'; label: string }[];
+const TYPE_VALUES = ['all', 'paper', 'news', 'event', 'media'] as const satisfies readonly (
+  PublicationType | 'all'
+)[];
 
-export type TypeFilter = (typeof TYPE_OPTIONS)[number]['value'];
+export type TypeFilter = (typeof TYPE_VALUES)[number];
 
-export const SORT_OPTIONS = [
-  { value: 'newest', label: 'Newest first' },
-  { value: 'oldest', label: 'Oldest first' },
-  { value: 'az', label: 'A–Z' },
-] as const;
+const SORT_VALUES = ['newest', 'oldest', 'az'] as const;
 
-export type SortOrder = (typeof SORT_OPTIONS)[number]['value'];
+export type SortOrder = (typeof SORT_VALUES)[number];
+
+interface ListingLabels {
+  type: Record<TypeFilter, string>;
+  sort: Record<SortOrder, string>;
+}
+
+const LISTING_LABELS = defineMessages<ListingLabels>({
+  en: {
+    type: { all: 'All', paper: 'Papers', news: 'News', event: 'Events', media: 'Media' },
+    sort: { newest: 'Newest first', oldest: 'Oldest first', az: 'A–Z' },
+  },
+  uk: {
+    type: { all: 'Усі', paper: 'Статті', news: 'Новини', event: 'Події', media: 'Медіа' },
+    sort: { newest: 'Спочатку нові', oldest: 'Спочатку старі', az: 'А–Я' },
+  },
+});
+
+const toOptions = <T extends string>(values: readonly T[], labels: Record<T, string>) =>
+  values.map((value) => ({ value, label: labels[value] }));
+
+const LISTING_OPTIONS = mapLocalized(LISTING_LABELS, (labels) => ({
+  type: toOptions(TYPE_VALUES, labels.type),
+  sort: toOptions(SORT_VALUES, labels.sort),
+}));
+
+export const useListingOptions = () => useLocalized(LISTING_OPTIONS);
 
 export const PAGE_SIZE = 6;
 
@@ -39,6 +58,7 @@ export function usePublicationListing() {
   const [sort, setSort] = useState<SortOrder>('newest');
   const [search, setSearch] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const publications = usePublications();
   const deferredSearch = useDeferredValue(search);
 
   const query = deferredSearch.trim().toLowerCase();
@@ -46,7 +66,7 @@ export function usePublicationListing() {
 
   const { featured, items } = useMemo(() => {
     const filtered = sortPublications(
-      PUBLICATIONS.filter(
+      publications.filter(
         (publication) =>
           (type === 'all' || publication.type === type) && matchesQuery(publication, query),
       ),
@@ -61,7 +81,7 @@ export function usePublicationListing() {
         ? filtered.filter((publication) => publication !== featuredItem)
         : filtered,
     };
-  }, [type, query, sort, isDefaultView]);
+  }, [publications, type, query, sort, isDefaultView]);
 
   const resetPagination = () => setVisibleCount(PAGE_SIZE);
 

@@ -1,4 +1,5 @@
 import { ROUTES } from '@/shared/config/routes';
+import { useCommonMessages, useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { InfoCard } from '@/shared/ui/info-card';
@@ -7,36 +8,33 @@ import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import {
-  FORMATS,
-  FRAMEWORK_STATS,
-  PARTNER_UNIVERSITIES,
-  PARTNERSHIP_STEPS,
-} from '../model/content';
+import { GLOBAL_COLLABORATION_CONTENT } from '../model/content';
 import { useDocumentTitle } from '@/shared/lib';
 
 export function GlobalCollaborationPage() {
-  useDocumentTitle('Global Collaboration Framework');
+  const content = useLocalized(GLOBAL_COLLABORATION_CONTENT);
+  const common = useCommonMessages();
+  useDocumentTitle(content.documentTitle);
 
   return (
     <PageLayout
       intro={
         <PageIntro
-          breadcrumb={['About', 'Global Collaboration Framework']}
-          title="Collaboration"
-          accent="without borders."
-          description="How KNU and partner universities build joint programs, research and student projects within the VIRaTeC network."
+          breadcrumb={content.breadcrumb}
+          title={content.title}
+          accent={content.accent}
+          description={content.description}
         />
       }
     >
       <PageSection aria-labelledby="partners-title">
         <SectionHeader
           id="partners-title"
-          eyebrow="Partner universities"
-          title="Our global network"
+          eyebrow={content.partnersEyebrow}
+          title={content.partnersTitle}
         />
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {PARTNER_UNIVERSITIES.map((partner) => (
+          {content.partners.map((partner) => (
             <li key={partner.name}>
               <InfoCard
                 index={partner.code}
@@ -49,8 +47,8 @@ export function GlobalCollaborationPage() {
           <li>
             <InfoCard
               index="+"
-              title="Your university"
-              description="Join the network and co-create international programs."
+              title={content.inviteTitle}
+              description={content.inviteDescription}
               to={ROUTES.CONTACT}
               variant="invite"
               className="lg:min-h-[184px]"
@@ -61,27 +59,27 @@ export function GlobalCollaborationPage() {
 
       <PageSection tone="surface">
         <HighlightBanner
-          title="One framework for joint learning and research"
-          description="Partners agree on shared goals, co-design modules and form mixed student teams. KNU coordinates the network, partners bring their expertise and students."
-          stats={FRAMEWORK_STATS}
+          title={content.bannerTitle}
+          description={content.bannerDescription}
+          stats={content.stats}
         />
       </PageSection>
 
       <PageSection aria-labelledby="formats-title">
         <SectionHeader
           id="formats-title"
-          eyebrow="Formats"
-          title="Ways to collaborate"
-          description="Flexible formats that fit different partners and academic calendars."
+          eyebrow={content.formatsEyebrow}
+          title={content.formatsTitle}
+          description={content.formatsDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {FORMATS.map((format) => (
+          {content.formats.map((format) => (
             <li key={format.title}>
               <InfoCard
                 withImage
                 title={format.title}
                 description={format.description}
-                linkLabel="Learn more →"
+                linkLabel={common.learnMore}
                 to={format.to}
                 className="lg:min-h-[381px]"
               />
@@ -93,17 +91,17 @@ export function GlobalCollaborationPage() {
       <PageSection tone="surface" aria-labelledby="partnership-title">
         <SectionHeader
           id="partnership-title"
-          eyebrow="Become a partner"
-          title="How partnership"
-          accent="starts"
+          eyebrow={content.partnershipEyebrow}
+          title={content.partnershipTitle}
+          accent={content.partnershipAccent}
         />
-        <StepsList steps={PARTNERSHIP_STEPS} />
+        <StepsList steps={content.partnershipSteps} />
       </PageSection>
 
       <CtaSection
-        title="Let’s collaborate"
-        description="Represent a university or organization? Tell us about your idea and we will find a format together."
-        action={{ label: 'Become a partner', to: ROUTES.CONTACT }}
+        title={content.ctaTitle}
+        description={content.ctaDescription}
+        action={{ label: content.ctaAction, to: ROUTES.CONTACT }}
       />
     </PageLayout>
   );

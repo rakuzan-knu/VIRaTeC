@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useBodyScrollLock, useFocusTrap } from '@/shared/lib';
+import { useCommonMessages } from '@/shared/i18n';
 
 interface BottomSheetSectionProps {
   title: string;
@@ -35,6 +36,7 @@ export function BottomSheet({
 }: BottomSheetProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const common = useCommonMessages();
 
   useBodyScrollLock(isOpen);
   useFocusTrap(dialogRef, isOpen);
@@ -54,7 +56,7 @@ export function BottomSheet({
     <div className="fixed inset-0 z-50 flex items-end font-viratec">
       <button
         type="button"
-        aria-label="Close"
+        aria-label={common.close}
         onClick={onClose}
         className="absolute inset-0 cursor-default bg-[rgba(1,6,18,0.72)]"
       />

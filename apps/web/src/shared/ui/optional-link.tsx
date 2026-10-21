@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/shared/lib';
-import { NOT_AVAILABLE_YET } from '@/shared/config/navigation';
+import { useCommonMessages } from '@/shared/i18n';
 
 interface OptionalLinkProps {
   href: string | null;
@@ -17,13 +17,15 @@ export function OptionalLink({
   unavailableClassName,
   children,
 }: OptionalLinkProps) {
+  const common = useCommonMessages();
+
   if (href) {
     return (
       <a
         href={href}
         target="_blank"
         rel="noreferrer"
-        aria-label={`${label} (opens in new tab)`}
+        aria-label={common.opensInNewTab(label)}
         className={className}
       >
         {children}
@@ -34,8 +36,8 @@ export function OptionalLink({
   return (
     <span
       role="img"
-      aria-label={`${label}: ${NOT_AVAILABLE_YET}`}
-      title={NOT_AVAILABLE_YET}
+      aria-label={common.unavailable(label)}
+      title={common.notAvailableYet}
       className={cn(className, 'cursor-not-allowed opacity-45', unavailableClassName)}
     >
       {children}

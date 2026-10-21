@@ -19,7 +19,7 @@ export function DesktopNavDropdown({
   onClose,
   onToggle,
 }: DesktopNavDropdownProps) {
-  const menuId = `nav-menu-${group.label.toLowerCase().replace(/[^a-z]+/g, '-')}`;
+  const menuId = `nav-menu-${group.id}`;
 
   return (
     <div className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>

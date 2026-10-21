@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { buildPublicationPath } from '@/shared/config/routes';
 import { CardLinkLabel } from '@/shared/ui/card-link-label';
 import { MediaPlaceholder } from '@/shared/ui/media-placeholder';
+import { usePublicationLabels } from '../model/data';
 import type { Publication } from '../model/types';
 
 interface PublicationCardProps {
@@ -60,6 +61,8 @@ interface RelatedPublicationCardProps {
 }
 
 export function RelatedPublicationCard({ publication }: RelatedPublicationCardProps) {
+  const labels = usePublicationLabels();
+
   return (
     <Link
       to={buildPublicationPath(publication.slug)}
@@ -73,7 +76,7 @@ export function RelatedPublicationCard({ publication }: RelatedPublicationCardPr
         {publication.excerpt}
       </p>
       <CardLinkLabel
-        label="Read more"
+        label={labels.readMore}
         className="mt-auto pt-1 text-[15px] font-medium text-viratec-cyan"
       />
     </Link>

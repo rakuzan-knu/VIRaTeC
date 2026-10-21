@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { cn, useDismiss } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
-import { MAIN_NAV } from '@/shared/config/navigation';
+import { useNavigation } from '@/shared/config/navigation';
+import { useCommonMessages, useLocalized, defineMessages } from '@/shared/i18n';
 import { Logo } from '@/shared/ui/logo';
 import { linkButtonClassName } from '@/shared/ui/link-button';
 import burgerIcon from '@/shared/assets/icons/burger.svg';
@@ -12,6 +13,11 @@ import { MobileMenu } from './MobileMenu';
 interface SiteHeaderProps {
   className?: string;
 }
+
+const HEADER_MESSAGES = defineMessages({
+  en: { mainNav: 'Main', openMenu: 'Open menu' },
+  uk: { mainNav: 'Головна навігація', openMenu: 'Відкрити меню' },
+});
 
 const SCROLL_THRESHOLD = 12;
 const NAV_LINK_CLASS =
@@ -35,6 +41,9 @@ export function SiteHeader({ className }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const isScrolled = useIsScrolled();
+  const { main: mainNav } = useNavigation();
+  const common = useCommonMessages();
+  const t = useLocalized(HEADER_MESSAGES);
 
   const closeDropdown = useCallback(() => setOpenDropdown(null), []);
   const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
@@ -62,7 +71,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
         >
           <Link
             to={ROUTES.HOME}
-            aria-label="VIRaTeC home"
+            aria-label={common.homeAriaLabel}
             className="shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-viratec-lime"
           >
             <Logo
@@ -73,9 +82,9 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             />
           </Link>
 
-          <nav ref={navRef} aria-label="Main" className="hidden xl:block">
+          <nav ref={navRef} aria-label={t.mainNav} className="hidden xl:block">
             <ul className="flex items-center gap-1">
-              {MAIN_NAV.map((entry) =>
+              {mainNav.map((entry) =>
                 entry.type === 'link' ? (
                   <li key={entry.link.to}>
                     <NavLink
@@ -88,15 +97,15 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                     </NavLink>
                   </li>
                 ) : (
-                  <li key={entry.group.label}>
+                  <li key={entry.group.id}>
                     <DesktopNavDropdown
                       group={entry.group}
-                      isOpen={openDropdown === entry.group.label}
-                      onOpen={() => setOpenDropdown(entry.group.label)}
+                      isOpen={openDropdown === entry.group.id}
+                      onOpen={() => setOpenDropdown(entry.group.id)}
                       onClose={closeDropdown}
                       onToggle={() =>
                         setOpenDropdown((current) =>
-                          current === entry.group.label ? null : entry.group.label,
+                          current === entry.group.id ? null : entry.group.id,
                         )
                       }
                     />
@@ -108,7 +117,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
 
           <div className="hidden items-center gap-2 xl:flex">
             <Link to={ROUTES.LOGIN} className={cn(NAV_LINK_CLASS, 'text-viratec-light/72')}>
-              Log in
+              {common.logIn}
             </Link>
             <Link
               to={ROUTES.CONTACT}
@@ -117,13 +126,13 @@ export function SiteHeader({ className }: SiteHeaderProps) {
                 className: 'px-[18px] py-2.5 text-[15px]',
               })}
             >
-              Contact / Collaborate
+              {common.contactCollaborate}
             </Link>
           </div>
 
           <button
             type="button"
-            aria-label="Open menu"
+            aria-label={t.openMenu}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             onClick={() => setIsMobileMenuOpen(true)}

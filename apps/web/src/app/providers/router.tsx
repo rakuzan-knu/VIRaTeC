@@ -116,21 +116,28 @@ const router = createBrowserRouter([
         path: ROUTES.TERMS,
         lazy: async () => {
           const { LegalPage } = await import('@/pages/legal');
-          return { element: <LegalPage title="Terms of Service" /> };
+          return { element: <LegalPage kind="terms" /> };
         },
       },
       {
         path: ROUTES.PRIVACY,
         lazy: async () => {
           const { LegalPage } = await import('@/pages/legal');
-          return { element: <LegalPage title="Privacy Policy" /> };
+          return { element: <LegalPage kind="privacy" /> };
         },
       },
       {
         path: ROUTES.COOKIES,
         lazy: async () => {
           const { LegalPage } = await import('@/pages/legal');
-          return { element: <LegalPage title="Cookie Settings" /> };
+          return { element: <LegalPage kind="cookies" /> };
+        },
+      },
+      {
+        path: ROUTES.GUIDELINES,
+        lazy: async () => {
+          const { LegalPage } = await import('@/pages/legal');
+          return { element: <LegalPage kind="guidelines" /> };
         },
       },
       {
