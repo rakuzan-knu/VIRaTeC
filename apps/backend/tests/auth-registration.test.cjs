@@ -1,0 +1,67 @@
+const assert = require('node:assert/strict');
+const { test } = require('node:test');
+const { AuthService } = require('../dist/auth/auth.service.js');
+
+for (const role of ['ADMIN', 'PROFESSOR', 'RESEARCHER']) {
+  test(`public registration cannot grant ${role} privileges`, async () => {
+    let databaseCalls = 0;
+    const service = new AuthService(
+      {
+        user: {
+          findUnique: async () => {
+            databaseCalls++;
+            return null;
+          },
+        },
+      },
+      {},
+      {},
+    );
+
+    await assert.rejects(
+      service.register({
+        email: 'registration@example.invalid',
+        password: 'RegistrationTest123!',
+        name: 'Registration Test',
+        role,
+      }),
+      (error) => error.getStatus() === 403,
+    );
+    assert.equal(databaseCalls, 0);
+  });
+}
+
+for (const role of [undefined, 'STUDENT', 'PARTNER']) {
+  test(`public registration preserves the ${role ?? 'default student'} account flow`, async () => {
+    let storedUser;
+    let tokenCount = 0;
+    const service = new AuthService(
+      {
+        user: {
+          findUnique: async () => null,
+          create: async ({ data }) => {
+            storedUser = { ...data, id: 'registration-test', role: data.role ?? 'STUDENT' };
+            return storedUser;
+          },
+        },
+        refreshToken: { create: async () => ({}) },
+      },
+      { signAsync: async () => `token-${++tokenCount}` },
+      { get: () => undefined },
+    );
+
+    const result = await service.register({
+      email: 'Registration@Example.invalid',
+      password: 'RegistrationTest123!',
+      name: 'Registration Test',
+      role,
+    });
+
+    assert.equal(storedUser.email, 'registration@example.invalid');
+    assert.equal(result.user.role, role ?? 'STUDENT');
+    assert.equal(result.user.passwordHash, undefined);
+    assert.ok(storedUser.passwordHash.startsWith('$argon2'));
+    assert.ok(result.accessToken);
+    assert.ok(result.refreshToken);
+  });
+}

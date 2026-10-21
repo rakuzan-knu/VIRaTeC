@@ -6,13 +6,14 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "prisma generate && nest build",
+    "build": "pnpm --filter @viratec/contracts build && prisma generate && nest build",
     "start": "node dist/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "typecheck": "prisma generate && tsc --noEmit",
     "lint": "oxlint",
+    "test": "pnpm build && node --test tests/*.test.cjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio"
