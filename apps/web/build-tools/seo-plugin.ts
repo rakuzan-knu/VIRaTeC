@@ -1,3 +1,5 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { createServer, type Plugin, type ResolvedConfig, type Rollup } from 'vite';
 import type { Localized } from '../src/shared/i18n/model/types';
 import type { Publication } from '../src/entities/publication/model/types';
@@ -8,7 +10,6 @@ import {
   PAGE_SEO,
   ROBOTS_INDEX,
   SITE_NAME,
-  SITE_URL,
   SOCIAL_LOCALE,
   absoluteUrl,
   formatTitle,
@@ -19,8 +20,6 @@ const HEAD_PLACEHOLDER = '<!--seo-head-->';
 const SEO_LOCALE = 'uk';
 const SPA_FALLBACK_FILE = 'spa.html';
 const PUBLICATIONS_MODULE = '/src/entities/publication/model/data.ts';
-const WEBSITE_ID = `${SITE_URL}/#website`;
-const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 interface HeadImage {
   url: string;
@@ -28,6 +27,13 @@ interface HeadImage {
   type?: string;
   width?: number;
   height?: number;
+}
+
+interface Site {
+  url: (pathname: string) => string;
+  websiteId: string;
+  organizationId: string;
+  defaultImage: HeadImage;
 }
 
 interface PageHead {
@@ -54,16 +60,24 @@ const escapeText = (value: string) =>
 const meta = (attribute: 'name' | 'property', key: string, content: string) =>
   `<meta ${attribute}="${key}" content="${escapeAttribute(content)}" />`;
 
-const DEFAULT_IMAGE: HeadImage = {
-  url: absoluteUrl(OG_IMAGE.path),
-  alt: OG_IMAGE.alt,
-  type: OG_IMAGE.type,
-  width: OG_IMAGE.width,
-  height: OG_IMAGE.height,
+const createSite = (siteUrl: string): Site => {
+  const url = (pathname: string) => absoluteUrl(pathname, siteUrl);
+  return {
+    url,
+    websiteId: `${url('/')}#website`,
+    organizationId: `${url('/')}#organization`,
+    defaultImage: {
+      url: url(OG_IMAGE.path),
+      alt: OG_IMAGE.alt,
+      type: OG_IMAGE.type,
+      width: OG_IMAGE.width,
+      height: OG_IMAGE.height,
+    },
+  };
 };
 
-const renderHead = ({ path, title, description, type, image, jsonLd }: PageHead) => {
-  const url = path === undefined ? undefined : absoluteUrl(path);
+const renderHead = (site: Site, { path, title, description, type, image, jsonLd }: PageHead) => {
+  const url = path === undefined ? undefined : site.url(path);
   const tags = [
     `<title>${escapeText(title)}</title>`,
     meta('name', 'description', description),
@@ -91,20 +105,21 @@ const renderHead = ({ path, title, description, type, image, jsonLd }: PageHead)
   return tags.filter(Boolean).join('\n    ');
 };
 
-const webPageJsonLd = (path: string, title: string, description: string) => ({
+const webPageJsonLd = (site: Site, path: string, title: string, description: string) => ({
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  '@id': `${absoluteUrl(path)}#webpage`,
-  url: absoluteUrl(path),
+  '@id': `${site.url(path)}#webpage`,
+  url: site.url(path),
   name: title,
   description,
   inLanguage: 'uk-UA',
-  isPartOf: { '@id': WEBSITE_ID },
-  about: { '@id': ORGANIZATION_ID },
-  primaryImageOfPage: DEFAULT_IMAGE.url,
+  isPartOf: { '@id': site.websiteId },
+  about: { '@id': site.organizationId },
+  primaryImageOfPage: site.defaultImage.url,
 });
 
 const publicationJsonLd = (
+  site: Site,
   publication: Publication,
   path: string,
   description: string,
@@ -112,9 +127,9 @@ const publicationJsonLd = (
 ) => ({
   '@context': 'https://schema.org',
   '@type': publication.type === 'paper' ? 'ScholarlyArticle' : 'Article',
-  '@id': `${absoluteUrl(path)}#article`,
-  url: absoluteUrl(path),
-  mainEntityOfPage: absoluteUrl(path),
+  '@id': `${site.url(path)}#article`,
+  url: site.url(path),
+  mainEntityOfPage: site.url(path),
   headline: publication.title,
   description,
   image,
@@ -126,11 +141,11 @@ const publicationJsonLd = (
   ...((publication.detail?.sourceUrl ?? publication.sourceUrl) && {
     sameAs: publication.detail?.sourceUrl ?? publication.sourceUrl,
   }),
-  publisher: { '@id': ORGANIZATION_ID },
-  isPartOf: { '@id': WEBSITE_ID },
+  publisher: { '@id': site.organizationId },
+  isPartOf: { '@id': site.websiteId },
 });
 
-const staticPages = (): (PageHead & { path: string })[] =>
+const staticPages = (site: Site): (PageHead & { path: string })[] =>
   Object.entries(PAGE_SEO).flatMap(([path, seo]) => {
     if (!seo) return [];
     const { title, description } = seo[SEO_LOCALE];
@@ -142,8 +157,9 @@ const staticPages = (): (PageHead & { path: string })[] =>
         title: fullTitle,
         description: metaDescription,
         type: 'website' as const,
-        image: DEFAULT_IMAGE,
-        jsonLd: path === ROUTES.HOME ? undefined : webPageJsonLd(path, fullTitle, metaDescription),
+        image: site.defaultImage,
+        jsonLd:
+          path === ROUTES.HOME ? undefined : webPageJsonLd(site, path, fullTitle, metaDescription),
       },
     ];
   });
@@ -169,23 +185,23 @@ const loadPublications = async (config: ResolvedConfig) => {
   }
 };
 
-const findEmittedAsset = (bundle: Rollup.OutputBundle, source: string | undefined) => {
+const findEmittedAsset = (site: Site, bundle: Rollup.OutputBundle, source: string | undefined) => {
   if (!source) return undefined;
   const relative = source.replace(/^\//, '');
   const asset = Object.values(bundle).find(
     (output): output is Rollup.OutputAsset =>
       output.type === 'asset' && output.originalFileNames.some((name) => name.endsWith(relative)),
   );
-  return asset && absoluteUrl(`/${asset.fileName}`);
+  return asset && site.url(`/${asset.fileName}`);
 };
 
-const publicationPages = (publications: Publication[], bundle: Rollup.OutputBundle) =>
+const publicationPages = (site: Site, publications: Publication[], bundle: Rollup.OutputBundle) =>
   publications.map((publication): PageHead & { path: string } => {
     const path = buildPublicationPath(publication.slug);
     const title = formatTitle(publication.title);
     const description = toMetaDescription(publication.detail?.lead ?? publication.excerpt);
-    const coverUrl = findEmittedAsset(bundle, publication.image);
-    const image = coverUrl ? { url: coverUrl, alt: publication.title } : DEFAULT_IMAGE;
+    const coverUrl = findEmittedAsset(site, bundle, publication.image);
+    const image = coverUrl ? { url: coverUrl, alt: publication.title } : site.defaultImage;
 
     return {
       path,
@@ -193,17 +209,17 @@ const publicationPages = (publications: Publication[], bundle: Rollup.OutputBund
       description,
       type: 'article',
       image,
-      jsonLd: publicationJsonLd(publication, path, description, image.url),
+      jsonLd: publicationJsonLd(site, publication, path, description, image.url),
     };
   });
 
-const renderSitemap = (entries: SitemapEntry[], lastmod: string) =>
+const renderSitemap = (site: Site, entries: SitemapEntry[], lastmod: string) =>
   [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...entries.map(
       ({ path, priority, changefreq }) =>
-        `  <url><loc>${escapeText(absoluteUrl(path))}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`,
+        `  <url><loc>${escapeText(site.url(path))}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`,
     ),
     '</urlset>',
     '',
@@ -226,15 +242,16 @@ const sitemapEntry = (path: string): SitemapEntry => {
 const toHtmlFileName = (path: string) =>
   path === ROUTES.HOME ? 'index.html' : `${path.slice(1)}.html`;
 
-const homeHead = (): PageHead => ({
+const homeHead = (site: Site): PageHead => ({
   path: ROUTES.HOME,
   title: formatTitle(),
   description: toMetaDescription(DEFAULT_SEO[SEO_LOCALE].description),
   type: 'website',
-  image: DEFAULT_IMAGE,
+  image: site.defaultImage,
 });
 
-export function seoPlugin(): Plugin {
+export function seoPlugin(siteUrl: string): Plugin {
+  const site = createSite(siteUrl);
   let config: ResolvedConfig;
 
   return {
@@ -245,8 +262,17 @@ export function seoPlugin(): Plugin {
     },
     transformIndexHtml(html) {
       return config.command === 'serve'
-        ? html.replace(HEAD_PLACEHOLDER, renderHead(homeHead()))
+        ? html.replace(HEAD_PLACEHOLDER, renderHead(site, homeHead(site)))
         : html;
+    },
+    async writeBundle({ dir }) {
+      if (!dir) return;
+      const robotsPath = join(dir, 'robots.txt');
+      const robots = await readFile(robotsPath, 'utf8');
+      await writeFile(
+        robotsPath,
+        robots.replace(/^Sitemap:.*$/m, `Sitemap: ${site.url('/sitemap.xml')}`),
+      );
     },
     async generateBundle(_, bundle) {
       const template = bundle['index.html'];
@@ -256,10 +282,13 @@ export function seoPlugin(): Plugin {
         this.error(`index.html must contain ${HEAD_PLACEHOLDER}`);
       }
 
-      const pages = [...staticPages(), ...publicationPages(await loadPublications(config), bundle)];
+      const pages = [
+        ...staticPages(site),
+        ...publicationPages(site, await loadPublications(config), bundle),
+      ];
 
       for (const page of pages) {
-        const source = html.replace(HEAD_PLACEHOLDER, renderHead(page));
+        const source = html.replace(HEAD_PLACEHOLDER, renderHead(site, page));
         if (page.path === ROUTES.HOME) {
           template.source = source;
         } else {
@@ -267,17 +296,18 @@ export function seoPlugin(): Plugin {
         }
       }
 
-      const fallbackHead = { ...homeHead(), path: undefined, title: SITE_NAME };
+      const fallbackHead = { ...homeHead(site), path: undefined, title: SITE_NAME };
       this.emitFile({
         type: 'asset',
         fileName: SPA_FALLBACK_FILE,
-        source: html.replace(HEAD_PLACEHOLDER, renderHead(fallbackHead)),
+        source: html.replace(HEAD_PLACEHOLDER, renderHead(site, fallbackHead)),
       });
 
       this.emitFile({
         type: 'asset',
         fileName: 'sitemap.xml',
         source: renderSitemap(
+          site,
           pages.map((page) => sitemapEntry(page.path)),
           new Date().toISOString().slice(0, 10),
         ),
