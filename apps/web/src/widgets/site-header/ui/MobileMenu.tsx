@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { cn, useBodyScrollLock } from '@/shared/lib';
+import { cn, useBodyScrollLock, useFocusTrap } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import { MAIN_NAV } from '@/shared/config/navigation';
 import { Logo } from '@/shared/ui/logo';
-import { LinkButton } from '@/shared/ui/link-button';
+import { LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import closeIcon from '@/shared/assets/icons/close.svg';
 import menuChevron from '@/shared/assets/icons/menu-chevron.svg';
 
@@ -13,12 +13,14 @@ interface MobileMenuProps {
 }
 
 const ROW_CLASS =
-  'flex w-full items-center justify-between border-b border-white/10 py-[18px] text-left text-[22px] font-medium text-white';
+  'flex w-full items-center justify-between border-b border-white/8 py-5 text-left font-display text-[26px] leading-8 font-medium tracking-[-0.02em] text-white';
 
 export function MobileMenu({ onClose }: MobileMenuProps) {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useBodyScrollLock(true);
+  useFocusTrap(dialogRef, true);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -30,17 +32,23 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
 
   return (
     <div
+      ref={dialogRef}
       id="mobile-menu"
       role="dialog"
       aria-modal="true"
       aria-label="Main menu"
       className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-viratec-bg font-viratec xl:hidden"
     >
-      <div className="flex items-center justify-between px-5 py-3.5">
+      <div className="flex h-16 shrink-0 items-center justify-between px-5">
         <Link to={ROUTES.HOME} onClick={onClose} aria-label="VIRaTeC home">
-          <Logo className="w-[141px]" />
+          <Logo className="w-[132px]" />
         </Link>
-        <button type="button" onClick={onClose} aria-label="Close menu" className="cursor-pointer">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close menu"
+          className="-mr-2 flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-white/8"
+        >
           <img src={closeIcon} alt="" />
         </button>
       </div>
@@ -91,7 +99,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
                         <Link
                           to={item.to}
                           onClick={onClose}
-                          className="text-[17px] leading-[22px] text-viratec-soft transition-colors hover:text-white"
+                          className="text-[17px] leading-6 text-viratec-muted transition-colors hover:text-white"
                         >
                           {item.label}
                         </Link>
@@ -112,7 +120,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
         <Link
           to={ROUTES.LOGIN}
           onClick={onClose}
-          className="flex w-full justify-center rounded-2xl border-[1.5px] border-white/30 py-[15px] text-[17px] font-medium text-white transition-colors hover:bg-white/6"
+          className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
         >
           Log in
         </Link>

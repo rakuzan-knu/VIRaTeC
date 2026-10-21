@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { ROUTES } from '@/shared/config/routes';
-import { cn } from '@/shared/lib';
+import { cn, useDocumentTitle } from '@/shared/lib';
 import { ChipGroup } from '@/shared/ui/chip';
 import { SelectMenu } from '@/shared/ui/select-menu';
 import { RadioList } from '@/shared/ui/radio-list';
@@ -15,6 +15,8 @@ import { AREA_OPTIONS, PAGE_SIZE, SORT_OPTIONS, STATUS_OPTIONS } from '../model/
 import { useProjectListing } from '../model/useProjectListing';
 
 export function ProjectsPage() {
+  useDocumentTitle('Projects');
+
   const listing = useProjectListing();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const closeSheet = useCallback(() => setIsSheetOpen(false), []);

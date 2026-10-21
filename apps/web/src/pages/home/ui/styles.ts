@@ -1,11 +1,11 @@
 export const SECTION_CONTAINER_CLASS =
-  'mx-auto flex max-w-[1440px] flex-col gap-8 px-5 py-[72px] lg:gap-14 lg:px-[85px] lg:py-[120px]';
+  'mx-auto flex max-w-[1440px] flex-col gap-10 px-5 py-20 lg:gap-16 lg:px-[85px] lg:py-32';
 
 export const SECTION_TITLE_CLASS =
-  'text-[34px] leading-[38px] tracking-[-1.02px] text-white lg:text-[52px] lg:leading-[58px] lg:tracking-[-1.56px]';
+  'font-display text-[36px] leading-[40px] font-medium tracking-[-0.03em] text-white lg:text-[60px] lg:leading-[64px]';
 
 export const CARD_CLASS =
-  'flex flex-col rounded-[18px] border border-white/12 bg-white/5 p-5 lg:rounded-[22px] lg:p-7';
+  'flex flex-col rounded-[24px] border border-white/10 bg-white/[0.035] p-6 lg:rounded-[28px] lg:p-8';
 
 export const CARD_LINK_CLASS =
-  'transition-colors hover:border-white/25 hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';
+  'group/card transition-colors duration-200 hover:border-white/22 hover:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';

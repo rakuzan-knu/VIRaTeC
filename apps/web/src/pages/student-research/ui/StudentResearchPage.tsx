@@ -7,17 +7,18 @@ import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { useDocumentTitle } from '@/shared/lib';
 
 const STUDENT_PROJECTS = [
   {
-    title: 'First intercontinental student research project',
+    title: 'Cyber Risks and Business Intelligence',
     description:
-      'Author’s COIL project initiated by master’s students of the Faculty of Information Technologies.',
+      'A COIL module with the American University in the Emirates, led by Head Project Lead Anastasiia Loban with Anton Dmytrenko.',
   },
   {
     title: 'Foundations of NLP module',
     description:
-      'Designed by Master’s student Eduard Parkhomenko: 31 teams, 200+ students, 7 universities.',
+      'Led by Master’s student Eduard Parkhomenko: 31 teams, 206 students, 7 universities.',
   },
   {
     title: 'Fundamentals of Cyber Hygiene',
@@ -37,11 +38,13 @@ const START_STEPS: StepItem[] = [
 ];
 
 const HIGHLIGHT_STATS = [
-  { value: '1st', label: 'in Ukrainian higher education' },
-  { value: '16', label: 'partner universities' },
+  { value: '6', label: 'student authors' },
+  { value: '2', label: 'articles in a Category B journal' },
 ];
 
 export function StudentResearchPage() {
+  useDocumentTitle('Student Research');
+
   return (
     <PageLayout
       intro={
@@ -55,8 +58,8 @@ export function StudentResearchPage() {
     >
       <PageSection>
         <HighlightBanner
-          title="The first intercontinental student research project in Ukraine."
-          description="Master’s students Anastasiia Loban and Anton Dmytrenko from the Faculty of Information Technologies initiated and delivered an author’s COIL research project together with partner universities on three continents."
+          title="From a global virtual classroom to a peer-reviewed journal."
+          description="Six students of the KNU Faculty of Information Technology turned their COIL research into two articles in Grail of Science, a Ukrainian Category B journal, published on 1 May 2026."
           stats={HIGHLIGHT_STATS}
         />
       </PageSection>

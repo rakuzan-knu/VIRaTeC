@@ -30,26 +30,30 @@ export function CtaSection({
   className,
 }: CtaSectionProps) {
   const buttonClass = 'w-full lg:w-auto lg:shrink-0';
+  const buttonVariant = 'ink';
 
   return (
     <section className={cn(TONE_CLASS[tone], className)}>
-      <div className="mx-auto max-w-[1440px] px-5 pt-2 pb-[72px] lg:px-[85px] lg:pt-6 lg:pb-[120px]">
-        <div className="flex flex-col gap-6 rounded-[26px] bg-[linear-gradient(129.68deg,#0a2f73_0%,#0b5f9e_43.8%,#2fbf8f_72.99%)] px-[22px] py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:rounded-[30px] lg:bg-[linear-gradient(169.41deg,#0a2f73_0%,#0b5f9e_42.86%,#2fbf8f_71.43%)] lg:px-14 lg:py-12">
-          <div className="flex flex-col gap-2.5">
-            <h2 className="text-[28px] leading-[34px] tracking-[-0.56px] text-white lg:text-[40px] lg:leading-[46px] lg:tracking-[-0.8px]">
+      <div className="mx-auto max-w-[1440px] px-5 pt-2 pb-20 lg:px-[85px] lg:pt-6 lg:pb-32">
+        <div className="flex flex-col gap-8 rounded-[28px] bg-viratec-paper px-6 py-9 text-viratec-ink lg:flex-row lg:items-end lg:justify-between lg:gap-16 lg:rounded-[40px] lg:px-16 lg:py-16">
+          <div className="flex max-w-[720px] flex-col gap-3 lg:gap-4">
+            <h2 className="font-display text-[30px] leading-[34px] font-medium tracking-[-0.03em] lg:text-[52px] lg:leading-[56px]">
               {title}
             </h2>
-            <p className="text-base leading-6 text-viratec-soft lg:text-lg lg:leading-[26px]">
+            <p className="text-base leading-[26px] text-viratec-graphite lg:text-lg lg:leading-[29px]">
               {description}
             </p>
           </div>
           {action.href ? (
-            <a href={action.href} className={linkButtonClassName({ className: buttonClass })}>
+            <a
+              href={action.href}
+              className={linkButtonClassName({ variant: buttonVariant, className: buttonClass })}
+            >
               {action.label}
               <ButtonArrow />
             </a>
           ) : (
-            <LinkButton to={action.to ?? '/'} className={buttonClass}>
+            <LinkButton to={action.to ?? '/'} variant={buttonVariant} className={buttonClass}>
               {action.label}
             </LinkButton>
           )}

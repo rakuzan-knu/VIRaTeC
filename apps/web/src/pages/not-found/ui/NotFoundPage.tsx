@@ -2,8 +2,11 @@ import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { useDocumentTitle } from '@/shared/lib';
 
 export function NotFoundPage() {
+  useDocumentTitle('Page not found');
+
   return (
     <PageLayout
       intro={

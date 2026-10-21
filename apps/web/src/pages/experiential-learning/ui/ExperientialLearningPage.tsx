@@ -6,6 +6,7 @@ import { StepsList, type StepItem } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { useDocumentTitle } from '@/shared/lib';
 
 const FORMATS = [
   {
@@ -60,6 +61,8 @@ const OUTCOMES = [
 ] as const;
 
 export function ExperientialLearningPage() {
+  useDocumentTitle('Experiential Learning');
+
   return (
     <PageLayout
       intro={

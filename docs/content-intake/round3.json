@@ -1,0 +1,740 @@
+{
+  "collected_at": "2026-10-20T22:16:42.161Z",
+  "found": [
+    {
+      "id": "tyshchenko_cover",
+      "category": "event_photos",
+      "source_url": "https://philology.knu.ua/conference-dedicated-to-the-legacy-of-professor-kostiantyn-tyshchenko/",
+      "source_date": "2026-10-16",
+      "image_url": "https://philology.knu.ua/wp-content/uploads/2026/10/%D0%BA%D0%BE%D0%BD%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%86%D1%96%D1%8F-%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D1%8F%D1%87%D0%B5%D0%BD%D0%B0-%D0%9A%D0%BE%D1%81%D1%82%D1%8F%D0%BD%D1%82%D0%B8%D0%BD%D1%83-%D0%A2%D0%B8%D1%89%D0%B5%D0%BD%D0%BA%D1%83-768x512.jpg",
+      "image_url_opened": true,
+      "description": "Портрет професора у рамці поруч із вазою; обкладинка звіту конференції.",
+      "identifiable_people": true,
+      "may_show_minors": false,
+      "visual_inspection": true
+    },
+    {
+      "id": "digital_narratives_cover",
+      "category": "event_photos",
+      "source_url": "https://philology.knu.ua/digital-narratives-ai-and-it-in-multidisciplinary-research-2026/",
+      "source_date": "2026-06-12",
+      "image_url": "https://philology.knu.ua/wp-content/uploads/2026/06/%D0%9C%D1%96%D0%B6%D0%BD%D0%B0%D1%80%D0%BE%D0%B4%D0%BD%D0%B0-%D0%BD%D0%B0%D1%83%D0%BA%D0%BE%D0%B2%D0%BE-%D0%BE%D1%81%D0%B2%D1%96%D1%82%D0%BD%D1%8F-%D0%BA%D0%BE%D0%BD%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%86%D1%96%D1%8F-Digital-Narratives-AI-e1781260694920-2048x899.jpg",
+      "image_url_opened": true,
+      "description": "Групове фото учасників у приміщенні на тлі екрана відеоконференції.",
+      "identifiable_people": true,
+      "may_show_minors": "unknown",
+      "age_note": "Вік усіх студентів та учасників відеозв’язку джерело не вказує; можливу присутність неповнолітніх не виключено.",
+      "visual_inspection": true
+    },
+    {
+      "id": "knu_certificate_photos",
+      "category": "event_photos",
+      "source_url": "https://knu.ua/news/13647",
+      "source_date": "2025-06-06",
+      "images": [
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/637639088.jpg",
+          "image_url_opened": true,
+          "description": "Групове фото учасників на сходах червоного корпусу.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/837335699.jpg",
+          "image_url_opened": true,
+          "description": "Учасники церемонії в аудиторії аплодують.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/915386093.jpg",
+          "image_url_opened": true,
+          "description": "Виступ учасниці за настільним мікрофоном.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/1224999630.jpg",
+          "image_url_opened": true,
+          "description": "Виступ із ручним мікрофоном; слухачі на тлі.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/1323820598.jpg",
+          "image_url_opened": true,
+          "description": "Виступ представниці університету в аудиторії.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/1096604067.jpg",
+          "image_url_opened": true,
+          "description": "Виступ за ноутбуком і настільним мікрофоном.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/1478351873.jpg",
+          "image_url_opened": true,
+          "description": "Фото учасника із сертифікатом та представницями університету.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/1439719281.jpg",
+          "image_url_opened": true,
+          "description": "Момент вручення сертифіката учаснику.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://knu.ua/news/13647",
+          "image_url": "https://knu.ua/content/upload/2025/2073335010.jpg",
+          "image_url_opened": true,
+          "description": "Учасниця із сертифікатом Workshop Trainer.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        }
+      ],
+      "age_note": "Джерело не підтверджує вік усіх зображених студентів; ці фото не позначено як гарантовано без неповнолітніх."
+    },
+    {
+      "id": "coil2025_cover",
+      "category": "event_photos",
+      "source_url": "https://philology.knu.ua/professional-development-initiative-2025-viratec-coil-series-coil-cyberbridge-talks/",
+      "source_date": "2025-06-10",
+      "image_url": "https://philology.knu.ua/wp-content/uploads/2025/06/2025-VIRaTeC-COIL.jpeg",
+      "image_url_opened": true,
+      "description": "Церемонія в аудиторії: учасниця біля трибуни, викладачі та студенти за столами.",
+      "identifiable_people": true,
+      "may_show_minors": "unknown",
+      "visual_inspection": true
+    },
+    {
+      "id": "coventry_coil_confirmation",
+      "category": "partner_confirmations",
+      "institution": "Coventry University",
+      "source_url": "https://pureportal.coventry.ac.uk/en/activities/bridging-divides-internationalisation-at-home-through-coil/",
+      "source_date": null,
+      "event_date": "2025-04-28",
+      "title": "Bridging Divides: Internationalisation at Home through COIL",
+      "summary": "Портал Coventry фіксує запрошений виступ Marina Orsini-Jones у National Taras Shevchenko University of Kyiv про підхід Coventry до COIL та міжкультурні навички.",
+      "limitation": "Не підтверджує конкретний модуль Data-Driven Decision Making або Florida.",
+      "photo_urls": []
+    },
+    {
+      "id": "santo_tomas_confirmation",
+      "category": "partner_confirmations",
+      "institution": "Instituto Profesional Santo Tomás",
+      "source_url": "https://enlinea.santotomas.cl/mundo-santo-tomas-2/estudiantes-de-ingenieria-en-informatica-de-santo-tomas-valdivia-destacan-en-experiencia-internacional-coil/321756/",
+      "source_date": "2025-08-20",
+      "title": "Estudiantes de Ingeniería en Informática de Santo Tomás Valdivia destacan en experiencia internacional COIL",
+      "summary": "Звіт підтверджує міжнародний COIL із цифрової безпеки для Juan Pablo Coronado і Diego Cares та сертифікати KNU. Координаторку названо «Laura Liashencko».",
+      "photo_urls": [
+        {
+          "source_url": "https://enlinea.santotomas.cl/mundo-santo-tomas-2/estudiantes-de-ingenieria-en-informatica-de-santo-tomas-valdivia-destacan-en-experiencia-internacional-coil/321756/",
+          "image_url": "https://enlinea.santotomas.cl/web/wp-content/uploads/sites/2/2025/08/Diseno-sin-titulo-35.jpg",
+          "access_status": "attempted_open_timeout",
+          "visual_inspection": false,
+          "identifiable_people": "unknown",
+          "may_show_minors": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "uca_nlp_confirmation",
+      "category": "partner_confirmations",
+      "institution": "University of Central Arkansas",
+      "source_url": "https://uca.edu/global-learning/coil/",
+      "source_date": null,
+      "activity_period": "Spring 2026",
+      "title": "COIL: Collaborative Online International Learning",
+      "module_title_exact": "Data-Driven Decision Making Across Borders: Foundations of Natural Language Processing (NLP) – From Text Preprocessing to Sentiment Analysis",
+      "summary": "Таблиця CISA 4320 Critical Thinking in Analytics (Samira Shirzaei Nichols) підтверджує KNU, PSTU, ENP Algiers, Karunya та Georgia State University як партнерів NLP-модуля.",
+      "partners_as_written": [
+        "Liashenko, Laura & Ilarionov, Oleg — Taras Shevchenko National University of Kyiv, Ukraine",
+        "Pronina, Olha — Pryazovskyi State Technical University, Ukraine",
+        "Bareche, Imene — National Polytechnical School of Algiers, Algeria",
+        "Princess, P. Joyce Beryl — Karunya Institute of Technology & Sciences, India",
+        "Dayan, Mathes A. Kanishka — Georgia State University, USA"
+      ],
+      "limitation": "Не є власними повідомленнями GSU, Karunya та ENP; Perimeter, LNTU, Chartbeat і загальну кількість університетів цей рядок не називає.",
+      "photo_urls": []
+    },
+    {
+      "id": "pstu_jhu_workshop_confirmation",
+      "category": "partner_confirmations",
+      "institution": "Pryazovskyi State Technical University",
+      "source_url": "https://pstu.edu/uk/novyny/pdtu-doluchyvsya-do-mizhnarodnogo-vorkshopu-global-collaboration-framework-novi-mozhlyvosti-dlya-osvity-nauky-ta-mizhnarodnoyi-spivpraczi/",
+      "source_date": "2026-09-21",
+      "event_date": "2026-09-15",
+      "title": "ПДТУ долучився до міжнародного воркшопу Global Collaboration Framework: нові можливості для освіти, науки та міжнародної співпраці",
+      "event_title_exact": "Global Collaborative Framework (GCF) and International Publications",
+      "summary": "ПДТУ підтверджує воркшоп VIRaTeC Global Network at KNU за участю KNU і JHU. Dr. Kelly Tzoumis, Principal Investigator, Johns Hopkins University, говорила про AI, симуляції, міжнародні дослідження, публікації та спільну книгу.",
+      "photo_urls": [
+        {
+          "source_url": "https://pstu.edu/uk/novyny/pdtu-doluchyvsya-do-mizhnarodnogo-vorkshopu-global-collaboration-framework-novi-mozhlyvosti-dlya-osvity-nauky-ta-mizhnarodnoyi-spivpraczi/",
+          "image_url": "https://pstu.edu/wp-content/uploads/2026/09/2026-09-21-16.01.56-1024x541.jpg",
+          "access_status": "opened",
+          "visual_inspection": false,
+          "identifiable_people": "unknown",
+          "may_show_minors": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "latest_official_title",
+      "category": "academic_title",
+      "source_url": "https://philology.knu.ua/conference-dedicated-to-the-legacy-of-professor-kostiantyn-tyshchenko/",
+      "source_date": "2026-10-16",
+      "exact_title": "кандидатка психологічних наук, доцентка КНУТШ",
+      "interpretation": "Найновіше знайдене датоване офіційне формулювання. Дати наказу про призначення або присвоєння вченого звання не наведено."
+    },
+    {
+      "id": "title_dated_comparison",
+      "category": "academic_title",
+      "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+      "statements": [
+        {
+          "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+          "source_date": "2026-06-18",
+          "exact_title": "асистентка кафедри іноземних мов математичних факультетів ННІ філології"
+        },
+        {
+          "source_url": "https://philology.knu.ua/digital-narratives-ai-and-it-in-multidisciplinary-research-2026/",
+          "source_date": "2026-06-12",
+          "exact_title": "кандидат психологічних наук, асистент кафедри іноземних мов математичних факультетів ННІ філології"
+        },
+        {
+          "source_url": "https://archive.journal-grail.science/index.php/2710-3056/article/view/4534",
+          "source_date": "2026-05-01",
+          "exact_title": "Candidate of Psychological Sciences, Assistant Professor"
+        },
+        {
+          "source_url": "https://philology.knu.ua/struktura-if/kafedry/matem-fak/spivrobitnyky/lyashenko/",
+          "source_date": null,
+          "exact_title": "Кандидат психологічних наук, асистент кафедри іноземних мов математичних факультетів Навчально-наукового інституту філології, заслужений працівник освіти України"
+        }
+      ],
+      "scope_note": "Це цільове порівняння посад за запитом round3; бібліографію round2 не дубльовано."
+    },
+    {
+      "id": "knu_new_report",
+      "category": "knu_news",
+      "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+      "source_date": "2026-06-18",
+      "title": "Університет формує нову модель міжнародної освіти",
+      "summary": "Новий офіційний звіт про Digital Narratives і студентське авторство COIL-модулів; називає Едуарда Пархоменка магістром ФІТ та автором NLP-модуля."
+    },
+    {
+      "id": "eduard_official_role",
+      "category": "team_members",
+      "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+      "source_date": "2026-06-18",
+      "name": "Едуард Пархоменко",
+      "role_exact": "магістр Факультету інформаційних технологій",
+      "project_role": "Автор міжнародного NLP-модуля",
+      "current_year_of_study": null,
+      "limitation": "Курс навчання й статус після червня 2026 цей матеріал не встановлює."
+    },
+    {
+      "id": "eduard_department_page",
+      "category": "team_members",
+      "source_url": "https://kiis.knu.ua/?page_id=3136",
+      "source_date": null,
+      "name_as_written": "Пархоменко Едуард Дмитрович",
+      "role": "Староста групи АнД-31",
+      "limitation": "Сторінка не датована; не використовувати код групи як доказ поточного курсу у жовтні 2026."
+    },
+    {
+      "id": "olha_official_committee",
+      "category": "team_members",
+      "source_url": "https://csc.knu.ua/media/filer_public/32/ce/32ce8d10-2134-45ce-8000-77aa391d882b/zbirnik_tez_stud_konferentsiyi_shi.pdf",
+      "source_year": 2025,
+      "source_date": null,
+      "title": "Штучний інтелект та технології в науковій діяльності",
+      "page": 2,
+      "name_as_written": "Єзерська Ольга Андріївна",
+      "role_exact": "студентка 2 курсу ОР \"Бакалавр\" ОП \"Інженерія програмного забезпечення\"",
+      "affiliation": "Факультет інформаційних технологій КНУ",
+      "role_context": "Організаційний комітет конференції",
+      "identity_confidence": "Узгоджується з ім’ям, ФІТ і бакалаврським статусом у VIRaTeC-анонсі; ідентифікатора персонального профілю немає.",
+      "limitation": "Це датований роком історичний запис; поточний курс не обчислювався автоматично."
+    },
+    {
+      "id": "nlp_official_covers",
+      "category": "event_photos",
+      "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+      "source_date": "2026-04-20",
+      "images": [
+        {
+          "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+          "image_url": "https://philology.knu.ua/wp-content/uploads/2026/04/%D0%BC%D0%BE%D0%B2%D0%B0-%D1%8F%D0%BA-%D1%80%D1%83%D1%88%D1%96%D0%B9-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%97-%D0%86%D0%A2-%D0%BE%D1%81%D0%B2%D1%96%D1%82%D0%B8-768x432.jpg",
+          "image_url_opened": true,
+          "description": "Текстовий постер NLP-модуля із логотипами партнерів; портретів немає.",
+          "identifiable_people": false,
+          "may_show_minors": false,
+          "visual_inspection": true
+        },
+        {
+          "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+          "image_url": "https://philology.knu.ua/wp-content/uploads/2026/04/%D0%BC%D0%BE%D0%B2%D0%B0-%D1%8F%D0%BA-%D1%80%D1%83%D1%88%D1%96%D0%B9-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%97-%D0%86%D0%A2-%D0%BE%D1%81%D0%B2%D1%96%D1%82%D0%B81.jpg",
+          "image_url_opened": true,
+          "description": "Скріншот відеоконференції з учасниками та іменами.",
+          "identifiable_people": true,
+          "may_show_minors": "unknown",
+          "visual_inspection": true
+        }
+      ],
+      "cover_note": "Перший постер придатний як варіант без зображених людей; другий потребує перевірки віку студентів."
+    }
+  ],
+  "not_found": [
+    {
+      "id": "researchgate_profile",
+      "category": "academic_profiles",
+      "source_url": "https://www.researchgate.net/publication/404639776_THE_ECONOMIC_EFFICIENCY_OF_AI-DRIVEN_TALENT_ACQUISITION",
+      "status": "unconfirmed_profile",
+      "profile_url": null,
+      "queries": [
+        "site:researchgate.net \"Larysa Liashenko\"",
+        "site:researchgate.net \"Larisa Liashenko\"",
+        "site:researchgate.net \"Лариса Ляшенко\"",
+        "site:researchgate.net/profile \"Liashenko\" \"Larysa\""
+      ],
+      "evidence": "На сторінці точної Grail of Science 2026 роботи біля Larysa Liashenko вказано: This person is not on ResearchGate, or hasn’t claimed this research yet. Це не доводить відсутності окремого профілю.",
+      "browser_access": {
+        "source_url": "https://www.researchgate.net/publication/380688434_The_Psychology_of_Adaptive_and_Maladaptive_Relationships_between_Parents_and_Children_of_Senior_School_Age",
+        "error_exact": "Доступ тимчасово обмежено",
+        "detail": "Вас було заблоковано, тому що деякі дії вашого браузера здаються нам підозрілими."
+      }
+    },
+    {
+      "id": "pcsics_collection_access",
+      "category": "proceedings",
+      "source_url": "https://dwl.kiev.ua/art/pcsics/pcsics.pdf",
+      "status": "certificate_error_repeated",
+      "error_exact": "net::ERR_CERT_COMMON_NAME_INVALID",
+      "title_requested": "Кібербезпека в дії: досвід міжнародного COIL-проєкту з інтерактивними воркшопами та постерною сесією",
+      "authors_requested": ["Лариса Ляшенко", "Тетяна Андрійчук"],
+      "paper_text_verified": false,
+      "pages": null,
+      "doi": null,
+      "limitation": "Повторне відкриття браузером заблоковане сертифікатом; обхід не виконувався."
+    },
+    {
+      "id": "upcoming_facebook_events",
+      "category": "upcoming_activities",
+      "source_url": "https://www.facebook.com/groups/1654374395202463/events",
+      "status": "no_upcoming_events_displayed",
+      "evidence_exact": "Немає майбутніх подій.",
+      "cutoff_date": "2026-10-21",
+      "limitation": "Перевірено вкладку Події; це не доказ відсутності анонсів у всіх дописах."
+    },
+    {
+      "id": "facebook_group_video",
+      "category": "video",
+      "source_url": "https://www.facebook.com/groups/1654374395202463/media/videos",
+      "status": "no_results_displayed",
+      "evidence_exact": "Немає результатів",
+      "recording_url": null
+    },
+    {
+      "id": "upcoming_linkedin",
+      "category": "upcoming_activities",
+      "source_url": "https://www.linkedin.com/groups/13199033/",
+      "status": "no_new_confirmed_future_announcement",
+      "scope": "Повторно відкрито верхню частину публічної стрічки: закріплений звіт HacKITSnova 15.10.2026 та ретроспектива offshore wind negotiation. Нового датованого анонсу після 21.10.2026 тут немає.",
+      "limitation": "Не вичерпна перевірка всієї історії; пов’язаний листопадово-грудневий анонс уже збережено у round2 і не дублюється."
+    },
+    {
+      "id": "iti_target_paper",
+      "category": "proceedings",
+      "source_url": "https://iti.fit.univ.kiev.ua/en/home-2/",
+      "status": "not_located",
+      "title_requested": "Implementing Research-Based Learning within Certified Online International (COIL) Modules",
+      "authors": null,
+      "pages": null,
+      "doi": null,
+      "paper_url": null,
+      "checks": [
+        {
+          "source_url": "https://ceur-ws.org/Vol-4158/",
+          "result": "У повному змісті немає запитаної назви або Larysa Liashenko."
+        },
+        {
+          "source_url": "https://ceur-ws.org/Vol-4170/",
+          "result": "У повному змісті немає запитаної назви або Larysa Liashenko."
+        },
+        {
+          "source_url": "https://dblp.org/db/conf/iti2/index.html",
+          "result": "Розділ IT&I 2025 веде до цих двох workshop-збірників."
+        },
+        {
+          "source_url": "https://iti.fit.univ.kiev.ua/en/home-2/",
+          "result": "Failed to fetch https://iti.fit.univ.kiev.ua/en/home-2/: (400) Timeout fetching"
+        },
+        {
+          "source_url": "https://www.google.com/search?q=%22IT%26I-2025%22+%22Liashenko%22",
+          "result": "Видача стосується переважно Serhii Liashenko, не потрібної авторки."
+        }
+      ],
+      "limitation": "Відсутність у workshop-збірниках не виключає пленарної доповіді або окремої збірки тез."
+    },
+    {
+      "id": "loban_faculty_paper",
+      "category": "proceedings",
+      "source_url": "https://fit.knu.ua/conf-2025",
+      "status": "not_located",
+      "title": null,
+      "paper_url": null,
+      "queries": [
+        "site:fit.knu.ua \"Лобан\" збірник",
+        "\"Лобан\" \"COIL\" тези",
+        "\"Лобан\" \"COIL\" \"збірка\""
+      ],
+      "result": "Точної факультетської публікації про результати cybersecurity COIL не знайдено. План конференцій не ідентифікує цю роботу.",
+      "limitation": "Знайдені рейтингові списки студентів не використано як бібліографічні докази."
+    },
+    {
+      "id": "tyshchenko_collection",
+      "category": "proceedings",
+      "source_url": "https://philology.knu.ua/conference-dedicated-to-the-legacy-of-professor-kostiantyn-tyshchenko/",
+      "status": "not_located",
+      "collection_url": null,
+      "result": "На сторінці звіту є лише українська й англійська програми; посилання на збірник немає.",
+      "additional_check": {
+        "source_url": "https://philology.knu.ua/nauka/konferentsii/",
+        "result": "У переліку конференцій не знайдено збірника саме конференції Тищенка 2026."
+      }
+    },
+    {
+      "id": "acit_title_programme",
+      "category": "academic_title",
+      "source_url": "https://acit.tech/",
+      "status": "not_verified",
+      "exact_title": null,
+      "result": "Офіційний сайт уже показує ACIT 2027; окрему програму 2026 з посадою Larysa Liashenko не знайдено."
+    },
+    {
+      "id": "digital_narratives_title_programme",
+      "category": "academic_title",
+      "source_url": "https://philology.knu.ua/digital-narratives-ai-and-it-in-multidisciplinary-research-2026/",
+      "status": "no_separate_programme_located",
+      "result": "Офіційний звіт містить посаду авторки, але не посилання на окрему програму."
+    },
+    {
+      "id": "team_qualified_profiles",
+      "category": "team_members",
+      "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+      "status": "not_verified",
+      "people": [
+        {
+          "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+          "name": "Eduard Parkhomenko",
+          "linkedin_url": null,
+          "orcid_url": null,
+          "google_scholar_url": null
+        },
+        {
+          "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+          "name": "Olha Yezerska",
+          "linkedin_url": null,
+          "orcid_url": null,
+          "google_scholar_url": null
+        }
+      ],
+      "result": "В офіційних матеріалах КНУ не знайдено персональних посилань, що однозначно пов’язують ці профілі з учасниками VIRaTeC. Поточний курс станом на жовтень 2026 не підтверджений."
+    },
+    {
+      "id": "partner_own_site_gaps",
+      "category": "partner_confirmations",
+      "source_url": "https://uca.edu/global-learning/coil/",
+      "scope": "Цільові пошуки власних офіційних повідомлень; відсутність результату не означає відсутність партнерства.",
+      "institutions": [
+        {
+          "institution": "American University in the Emirates",
+          "source_url": "https://aue.ae/",
+          "queries": [
+            "site:aue.ae Shevchenko COIL",
+            "site:aue.ae Kyiv Liashenko COIL cybersecurity"
+          ],
+          "result": "На головній і в цільовій видачі власного підтвердження не знайдено."
+        },
+        {
+          "institution": "Karunya Institute of Technology and Sciences",
+          "source_url": "https://uca.edu/global-learning/coil/",
+          "queries": [
+            "site:karunya.edu Shevchenko COIL",
+            "site:karunya.edu Liashenko",
+            "site:karunya.edu COIL Ukraine"
+          ],
+          "result": "Власної новини не знайдено; участь підтверджує партнер UCA."
+        },
+        {
+          "institution": "Georgia State University / Perimeter College",
+          "source_url": "https://uca.edu/global-learning/coil/",
+          "queries": [
+            "site:gsu.edu Shevchenko COIL",
+            "site:gsu.edu Kyiv virtual exchange",
+            "site:gsu.edu Liashenko"
+          ],
+          "result": "Власної новини не знайдено. UCA підтверджує GSU, але Perimeter у рядку не уточнено."
+        },
+        {
+          "institution": "Universidad Católica de Colombia",
+          "source_url": "https://philology.knu.ua/professional-development-initiative-2025-viratec-coil-series-coil-cyberbridge-talks/",
+          "queries": [
+            "site:ucatolica.edu.co COIL Ucrania",
+            "site:ucatolica.edu.co COIL Taras",
+            "site:ucatolica.edu.co Liashenko",
+            "site:ucatolica.edu.co ciberseguridad Ucrania"
+          ],
+          "result": "Власного партнерського підтвердження не знайдено; source_url вказує на вже відоме твердження KNU, не на незалежне підтвердження."
+        },
+        {
+          "institution": "École Nationale Polytechnique, Algiers",
+          "source_url": "https://www.enp.edu.dz/en/english-virtual-education-center/",
+          "queries": ["site:enp.edu.dz Shevchenko COIL", "site:enp.edu.dz Liashenko"],
+          "result": "Офіційна сторінка описує COIL загалом; конкретної KNU/VIRaTeC-новини не знайдено. UCA підтверджує участь."
+        },
+        {
+          "institution": "Lutsk National Technical University",
+          "source_url": "https://lntu.edu.ua/uk/media/lntu-rozshyryuye-mizhnarodnu-spivpratsyu-cherez-coil-navchannya",
+          "queries": [
+            "site:lntu.edu.ua COIL Liashenko",
+            "site:lntu.edu.ua COIL Шевченка",
+            "site:lntu.edu.ua NLP VIRaTeC"
+          ],
+          "result": "Відкриття знайденої COIL-новини повернуло Internal Error; фрагмент пошуку був про Universidad de Sonora. Власного підтвердження KNU не знайдено."
+        },
+        {
+          "institution": "University of Florida",
+          "source_url": "https://ces.ufl.edu/resources/ukraine-readings-and-resources/",
+          "queries": [
+            "site:ufl.edu Shevchenko COIL",
+            "site:ufl.edu \"Data-Driven Decision Making Across Borders\""
+          ],
+          "result": "Релевантного підтвердження не знайдено. Контрольна Ukraine-сторінка повернула Internal Error і не є COIL-доказом."
+        },
+        {
+          "institution": "Johns Hopkins University",
+          "source_url": "https://ep.jhu.edu/news/course-that-brings-environmental-justice-movement-to-life-earns-blackboard-honors/",
+          "source_date": "2018-06-01",
+          "queries": [
+            "site:jhu.edu Tzoumis Kyiv",
+            "site:jhu.edu Tzoumis Global Collaboration",
+            "site:jhu.edu VIRaTeC"
+          ],
+          "result": "Відкрита сторінка підтверджує викладання Kelly Tzoumis у JHU, але не зв’язок із KNU; власного JHU-звіту про воркшоп не знайдено. Подію підтверджує PSTU."
+        }
+      ]
+    },
+    {
+      "id": "video_digital_narratives",
+      "category": "video",
+      "source_url": "https://philology.knu.ua/digital-narratives-ai-and-it-in-multidisciplinary-research-2026/",
+      "title_requested": "Digital Narratives: AI and IT in Multidisciplinary Research – 2026",
+      "event_date": "2026-06-08",
+      "recording_url": null,
+      "title": null,
+      "date": null,
+      "channel_owner": null,
+      "duration": null,
+      "checks": [
+        {
+          "source_url": "https://www.youtube.com/results?search_query=%22Digital+Narratives%22+%22KNU%22",
+          "result": "У відображеній видачі немає відповідного запису; показано рекламу."
+        },
+        {
+          "source_url": "https://philology.knu.ua/digital-narratives-ai-and-it-in-multidisciplinary-research-2026/",
+          "result": "У статті немає video/iframe або посилання на запис."
+        }
+      ],
+      "status": "not_located"
+    },
+    {
+      "id": "video_coil_2025",
+      "category": "video",
+      "source_url": "https://www.facebook.com/share/p/1C8tCMh9pR/?mibextid=wwXIfr",
+      "title_requested": "2025 VIRaTeC COIL Series / COIL + CyberBridge Talks",
+      "recording_url": null,
+      "title": null,
+      "date": null,
+      "channel_owner": null,
+      "duration": null,
+      "checks": [
+        {
+          "source_url": "https://www.youtube.com/results?search_query=VIRaTeC+COIL+KNU",
+          "result": "Відображені результати не відповідають проєкту."
+        },
+        {
+          "source_url": "https://www.facebook.com/share/p/1C8tCMh9pR/?mibextid=wwXIfr",
+          "result": "Публічний допис Інституту філології від 13.06.2025 містить фото й посилання на звіт; відеопосилання не знайдено."
+        }
+      ],
+      "status": "not_located"
+    },
+    {
+      "id": "video_jhu_knu",
+      "category": "video",
+      "source_url": "https://pstu.edu/uk/novyny/pdtu-doluchyvsya-do-mizhnarodnogo-vorkshopu-global-collaboration-framework-novi-mozhlyvosti-dlya-osvity-nauky-ta-mizhnarodnoyi-spivpraczi/",
+      "title_requested": "From Student Ideas to Global Research",
+      "event_date": "2026-09-15",
+      "recording_url": null,
+      "title": null,
+      "date": null,
+      "channel_owner": null,
+      "duration": null,
+      "checks": [
+        {
+          "source_url": "https://www.youtube.com/results?search_query=%22From+Student+Ideas+to+Global+Research%22",
+          "result": "Відображено інші навчальні відео; збігу події немає."
+        }
+      ],
+      "status": "summary_found_recording_not_located",
+      "summary_reference": "found:pstu_jhu_workshop_confirmation"
+    },
+    {
+      "id": "video_tyshchenko",
+      "category": "video",
+      "source_url": "https://philology.knu.ua/conference-dedicated-to-the-legacy-of-professor-kostiantyn-tyshchenko/",
+      "title_requested": "Конференція Тищенка 2026",
+      "event_dates": ["2026-10-14", "2026-10-15"],
+      "recording_url": null,
+      "title": null,
+      "date": null,
+      "channel_owner": null,
+      "duration": null,
+      "checks": [
+        {
+          "source_url": "https://www.youtube.com/results?search_query=%D0%A2%D0%B8%D1%89%D0%B5%D0%BD%D0%BA%D0%B0+%D0%BA%D0%BE%D0%BD%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%86%D1%96%D1%8F+2026+%D0%9A%D0%9D%D0%A3",
+          "result": "Видача показує інші конференції та однофамільців; потрібного запису немає."
+        },
+        {
+          "source_url": "https://philology.knu.ua/conference-dedicated-to-the-legacy-of-professor-kostiantyn-tyshchenko/",
+          "result": "У звіті є програми, але немає посилання на відеозапис."
+        }
+      ],
+      "status": "not_located"
+    },
+    {
+      "id": "video_student_posters",
+      "category": "video",
+      "source_url": "https://www.youtube.com/results?search_query=COIL+KNU+student+video+poster+Liashenko",
+      "title_requested": "Student final video poster presentations",
+      "recording_url": null,
+      "title": null,
+      "date": null,
+      "channel_owner": null,
+      "duration": null,
+      "result": "Відображені відео не відповідають фінальним постерам VIRaTeC. У Facebook-групі відеовкладка порожня.",
+      "additional_source": {
+        "source_url": "https://www.facebook.com/groups/1654374395202463/media/videos"
+      },
+      "status": "not_located"
+    },
+    {
+      "id": "upcoming_official_knu",
+      "category": "upcoming_activities",
+      "source_url": "https://philology.knu.ua/nauka/konferentsii/",
+      "status": "no_confirmed_viratec_activity_located",
+      "cutoff_date": "2026-10-21",
+      "queries": [
+        "site:philology.knu.ua COIL листопад 2026",
+        "site:knu.ua VIRaTeC 2026 жовтень",
+        "site:fit.knu.ua COIL 2026 листопад"
+      ],
+      "result": "Датованого майбутнього модуля чи воркшопу з підтвердженою участю VIRaTeC не знайдено.",
+      "related_listing": {
+        "source_url": "https://philology.knu.ua/nauka/konferentsii/",
+        "title": "СВІТ МОВ І ЛІТЕРАТУР",
+        "date": "2026-11-10",
+        "viratec_participation_confirmed": false,
+        "format": null,
+        "partners": null,
+        "registration_url": null,
+        "limitation": "Загальна конференція Інституту філології; належність до VIRaTeC не заявлена."
+      }
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "title_chronology",
+      "source_url": "https://philology.knu.ua/conference-dedicated-to-the-legacy-of-professor-kostiantyn-tyshchenko/",
+      "topic": "Поточна посада Лариси Ляшенко",
+      "status": "latest_dated_official_wording_identified",
+      "finding": "Звіт 16.10.2026 має «доцентка КНУТШ», тоді як червневі звіти й недатована staff-сторінка ще містять «асистент/асистентка». Це може бути зміна посади, але наказ та дата переходу не знайдені.",
+      "comparison_sources": [
+        {
+          "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+          "date": "2026-06-18"
+        },
+        {
+          "source_url": "https://philology.knu.ua/struktura-if/kafedry/matem-fak/spivrobitnyky/lyashenko/",
+          "date": null
+        }
+      ]
+    },
+    {
+      "id": "nlp_institution_count",
+      "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+      "topic": "7 чи 8 університетів NLP",
+      "status": "unresolved",
+      "finding": "Новий центральний звіт КНУ від 18.06.2026 також заявляє вісім університетів; отже розбіжність існує й між офіційними джерелами, а не лише в LinkedIn.",
+      "comparison": {
+        "source_url": "https://philology.knu.ua/institute-of-philology-in-the-international-educational-space-language-as-a-driver-of-global-it-education/",
+        "date": "2026-04-20",
+        "finding": "Перелік містить сім університетів."
+      },
+      "poster_observation": {
+        "source_url": "https://philology.knu.ua/wp-content/uploads/2026/04/%D0%BC%D0%BE%D0%B2%D0%B0-%D1%8F%D0%BA-%D1%80%D1%83%D1%88%D1%96%D0%B9-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%97-%D0%86%D0%A2-%D0%BE%D1%81%D0%B2%D1%96%D1%82%D0%B8-768x432.jpg",
+        "finding": "На постері вісім логотипів, зокрема окремо KNU та Інститут філології КНУ. Кількість логотипів не підтверджує кількість незалежних університетів."
+      },
+      "partner_check": {
+        "source_url": "https://uca.edu/global-learning/coil/",
+        "finding": "UCA перелічує себе та п’ять партнерів; перелік не підтверджує загальну кількість."
+      }
+    },
+    {
+      "id": "uca_module_naming",
+      "source_url": "https://uca.edu/global-learning/coil/",
+      "topic": "Назва NLP і Data-Driven Decision Making",
+      "status": "needs_disambiguation",
+      "finding": "UCA об’єднує ці назви в одному рядку; це не достатня підстава зливати NLP-модуль із окремою співпрацею Coventry–Florida."
+    },
+    {
+      "id": "olha_study_level",
+      "source_url": "https://csc.knu.ua/media/filer_public/32/ce/32ce8d10-2134-45ce-8000-77aa391d882b/zbirnik_tez_stud_konferentsiyi_shi.pdf",
+      "topic": "Освітній рівень Ольги Єзерської",
+      "status": "unresolved_current_year",
+      "finding": "Новий офіційний збірник за 2025 рік називає її студенткою другого курсу бакалаврату; це підтримує бакалаврську траєкторію, але не доводить поточний курс у жовтні 2026.",
+      "prior_conflict_reference": "round2.json: квітнева згадка серед магістрів проти вересневого undergraduate-анонсу"
+    },
+    {
+      "id": "florida_partner_independent_confirmation",
+      "source_url": "https://knu.ua/news/14058?trk=public_profile__reactions-text",
+      "topic": "University of Florida / Florida State University",
+      "status": "uf_supported_independent_partner_confirmation_missing",
+      "finding": "Новий центральний звіт KNU від 18.06.2026 також називає University of Florida; власне підтвердження UF або конкретного модуля від Coventry не знайдено."
+    }
+  ]
+}

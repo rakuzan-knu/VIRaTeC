@@ -13,11 +13,21 @@ colors:
   muted: '#b8becf'
   subtle: '#8b97a6'
   error: '#ff6b6b'
+  deep: '#071c3d'
+  night: '#020c20'
+  paper: '#f4f7fb'
+  paperLine: '#e2e8f0'
+  paperLineStrong: '#c5d0dc'
+  graphite: '#475467'
 typography:
   sans:
     fontFamily: 'DM Sans, Inter, ui-sans-serif, system-ui, sans-serif'
     fontSize: '16px'
     lineHeight: '24px'
+  display:
+    fontFamily: 'Instrument Sans, DM Sans, ui-sans-serif, system-ui, sans-serif'
+    fontWeight: 500
+    letterSpacing: '-0.03em'
   cardTitle:
     fontFamily: 'DM Sans, Inter, ui-sans-serif, system-ui, sans-serif'
     fontSize: '22px'
@@ -116,9 +126,38 @@ owns only the runtime coordinates needed for anchored overlay positioning.
 Feedback transitions respect reduced motion. State examples and browser checks live in
 `apps/web/tests`; the fixture is development-only and is not a production route.
 
+## Website layer
+
+The public site builds on the kit with a calmer, editorial treatment. These rules apply to the
+site widgets and `shared/ui` site primitives (link-button, section-header, info-card, cta-section
+and similar); the six kit components above keep their Figma values and tests.
+
+- **Color roles.** Lime is reserved for the primary action and key figures; cyan marks links and
+  interactive text. Sections alternate between page navy, `deep` (#071C3D) and one light `paper`
+  band (#F4F7FB, ink text, graphite secondary text, `paperLine` borders) to give the page rhythm.
+  The footer sits on `night` (#020C20). Gradients are not used as decoration; the hero and the
+  closing panel share the aurora image instead.
+- **Type.** Headings use the `font-display` token (Instrument Sans 500) with negative tracking:
+  hero 96/94 px, page intro 88/88, section 56–60/60–64, card titles 22–34 px. Body stays DM Sans
+  at 16–22 px with line length capped near 60–72 characters. A heading's optional accent phrase
+  is set in white at 50% opacity rather than a different hue. Section labels (Eyebrow) are
+  sentence case, lime, 15–17 px; all-caps tracked labels are not used outside kit Tags.
+- **Shapes.** Site buttons are pills. Site cards use 24 px (mobile) / 28 px (desktop) corners,
+  white 10% borders and white 3.5% fill; large panels use 36–40 px. Hover changes border and fill
+  only.
+- **Links in cards.** `CardLinkLabel` renders the label with an arrow icon that nudges on hover;
+  a trailing "→" in label text is stripped so copy stays unchanged.
+- **Header.** Fixed; transparent at the top of the page, blurred navy with a hairline once the
+  page scrolls, and compacts on desktop. The current route is marked with `aria-current`.
+- **Motion.** One orchestrated hero entrance (text reveal plus the KNU-to-partner arcs drawing in)
+  and responses to user action. No per-section entrance animations; all motion respects
+  `prefers-reduced-motion`.
+
 ## Do's and Don'ts
 
 - Reuse the six public component APIs in shared/ui and supply translated content from consumers.
 - Keep equal-height cards and aligned CTAs per row; permit natural single-column mobile flow.
 - Preserve the navy/lime/cyan identity from Figma rather than introducing a new visual theme.
+- Use `font-display` for headings and the site card tokens above; do not reintroduce decorative
+  gradients, all-caps labels or numbered markers on content that is not a sequence.
 - Do not render placeholder links, non-semantic actions, color-only errors or hover-only essential content.

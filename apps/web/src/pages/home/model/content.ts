@@ -78,9 +78,9 @@ export interface Stat {
 }
 
 export const STATS: Stat[] = [
-  { value: '16', label: 'partner universities' },
-  { value: '11', label: 'countries in the network' },
-  { value: '1st', label: 'intercontinental student-led COIL project in Ukraine' },
+  { value: '14', label: 'partner universities named in projects' },
+  { value: '8', label: 'countries in the network' },
+  { value: '206', label: 'students in the 2026 Foundations of NLP module' },
 ];
 
 export interface ProjectCard {
@@ -93,26 +93,26 @@ export const PROJECTS: ProjectCard[] = [
   {
     title: 'Cybersecurity',
     description:
-      'A certified cybersecurity module where international student teams study threats and defence strategies together.',
+      'COIL modules on cyber risks, business intelligence and cyber hygiene, led by master’s students with partners in the UK, the UAE, Colombia, Chile and India.',
     to: ROUTES.PROJECTS,
   },
   {
     title: 'Foundations of NLP',
     description:
-      'An 8-week certified module designed by a Master’s student: 31 international teams, 200+ students from 7 universities.',
+      'An 8-week certified module led by a Master’s student: 31 international teams, 206 students from 7 universities and Chartbeat.',
     to: ROUTES.PROJECTS,
   },
   {
-    title: 'Cross-cultural competence',
+    title: 'Data-driven decision making',
     description:
-      'Research on emotional intelligence and intercultural communication in virtual international teams.',
+      'An 8-week COIL with Coventry University and the University of Florida: 67 students worked with modern data analytics tools.',
     to: ROUTES.PROJECTS,
   },
 ];
 
 export const RESEARCH_HIGHLIGHT_NUMBERS: Stat[] = [
-  { value: 'COIL', label: 'project format' },
-  { value: '3', label: 'continents in one team' },
+  { value: '31', label: 'international teams' },
+  { value: '8', label: 'weeks per module' },
 ];
 
 export interface PublicationCard {
@@ -125,23 +125,22 @@ export interface PublicationCard {
 
 export const PUBLICATIONS: PublicationCard[] = [
   {
-    year: '2025',
-    title: 'The first intercontinental virtual student research (COIL) project',
-    source: 'Educational and Scientific Institute of Philology, KNU',
-    to: buildPublicationPath('first-intercontinental-coil-project'),
+    year: '2026',
+    title: 'Big Data and AI: the foundation of the digital economy',
+    source: 'K. Kravets, A. Mekshun, A. Loban, L. Liashenko · Grail of Science, No. 67',
+    to: buildPublicationPath('big-data-and-ai-digital-economy'),
   },
   {
     year: '2026',
-    title: 'Author-led workshop by Dr. Kelly Tzoumis (JHU): Global Collaboration Framework',
-    source: 'VIRaTeC',
-    to: buildPublicationPath('global-collaboration-framework-workshop'),
+    title: 'The economic efficiency of AI-driven talent acquisition',
+    source: 'M. Artemenko, S. Vasylyeva, M. Tymoshenko, L. Liashenko · Grail of Science, No. 67',
+    to: buildPublicationPath('ai-driven-talent-acquisition'),
   },
   {
     year: '2026',
-    title: 'From virtual classroom to publication: student research in a category «B» journal',
-    source: 'A. Loban, K. Kravets et al. · KNU FIT',
-    to: buildPublicationPath('from-virtual-classroom-to-publication'),
-    isUpcoming: true,
+    title: 'Digital Narratives: AI and IT in Multidisciplinary Research 2026',
+    source: 'Conference · KNU, 8 June 2026',
+    to: buildPublicationPath('digital-narratives-2026'),
   },
 ];
 
@@ -154,7 +153,7 @@ export const AUDIENCES: Audience[] = [
   {
     title: 'For students',
     description:
-      'Join an international COIL project, lead your own research and gain experience in a global team.',
+      'Join a certified COIL module, lead workshops as a master’s student and prepare your research for publication.',
   },
   {
     title: 'For researchers',
@@ -163,6 +162,6 @@ export const AUDIENCES: Audience[] = [
   },
   {
     title: 'For partners',
-    description: 'Bring your university or organisation into the Global Collaboration Framework.',
+    description: 'Bring your university or organisation into VIRaTeC COIL projects.',
   },
 ];

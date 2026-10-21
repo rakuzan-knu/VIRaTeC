@@ -1,6 +1,6 @@
-import { useEffect, useId, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { useBodyScrollLock } from '@/shared/lib';
+import { useBodyScrollLock, useFocusTrap } from '@/shared/lib';
 
 interface BottomSheetSectionProps {
   title: string;
@@ -10,7 +10,7 @@ interface BottomSheetSectionProps {
 export function BottomSheetSection({ title, children }: BottomSheetSectionProps) {
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="text-xs tracking-[1.44px] text-viratec-subtle uppercase">{title}</h3>
+      <h3 className="text-[13px] font-medium text-viratec-subtle">{title}</h3>
       {children}
     </section>
   );
@@ -34,8 +34,10 @@ export function BottomSheet({
   children,
 }: BottomSheetProps) {
   const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useBodyScrollLock(isOpen);
+  useFocusTrap(dialogRef, isOpen);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -57,6 +59,8 @@ export function BottomSheet({
         className="absolute inset-0 cursor-default bg-[rgba(1,6,18,0.72)]"
       />
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

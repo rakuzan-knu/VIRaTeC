@@ -13,15 +13,19 @@ import {
   type Publication,
   type PublicationBlock,
 } from '@/entities/publication';
-import { PageIntro } from '@/widgets/page-intro';
+import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { useDocumentTitle } from '@/shared/lib';
 
-const BREADCRUMB_ROOT = ['Publications & Media', 'Publications'];
+const BREADCRUMB_ROOT: BreadcrumbItem[] = [
+  'Publications & Media',
+  { label: 'Publications', to: ROUTES.PUBLICATIONS },
+];
 
 function ArticleBlock({ block }: { block: PublicationBlock }) {
   if (block.kind === 'heading') {
     return (
-      <h2 className="pt-1 text-2xl leading-[30px] text-white lg:text-[28px] lg:leading-[34px]">
+      <h2 className="pt-1 font-display text-2xl leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">
         {block.text}
       </h2>
     );
@@ -29,7 +33,9 @@ function ArticleBlock({ block }: { block: PublicationBlock }) {
   if (block.kind === 'quote') {
     return (
       <blockquote className="flex flex-col gap-2 border-l-[3px] border-viratec-accent pl-6">
-        <p className="text-xl leading-7 text-white lg:text-2xl lg:leading-8">{block.text}</p>
+        <p className="font-display text-xl leading-8 tracking-[-0.015em] text-white lg:text-[26px] lg:leading-9">
+          {block.text}
+        </p>
         <footer className="text-sm leading-5 text-viratec-subtle">{block.author}</footer>
       </blockquote>
     );
@@ -72,7 +78,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
             </span>
           ))}
         </p>
-        <MediaPlaceholder className="h-[220px] rounded-[18px] bg-linear-to-r from-[#0d338c] to-[#1a8c99] lg:h-[420px] lg:rounded-[22px]" />
+        <MediaPlaceholder className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]" />
         {detail ? (
           detail.blocks.map((block) => (
             <ArticleBlock key={`${block.kind}-${block.text}`} block={block} />
@@ -110,6 +116,16 @@ function PublicationBody({ publication }: { publication: Publication }) {
                 </a>
               )}
             </div>
+          ) : publication.sourceUrl ? (
+            <a
+              href={publication.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
+            >
+              Open source
+              <ButtonArrow />
+            </a>
           ) : undefined
         }
       />
@@ -120,6 +136,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
 export function PublicationDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const publication = findPublication(slug);
+  useDocumentTitle(publication?.title ?? 'Publication not found');
 
   if (!publication) {
     return (

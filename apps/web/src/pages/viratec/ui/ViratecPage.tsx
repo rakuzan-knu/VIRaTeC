@@ -12,8 +12,11 @@ import introVideoWebm from '../assets/what-is-viratec.webm';
 import introVideoMp4 from '../assets/what-is-viratec.mp4';
 import introVideoPoster from '../assets/what-is-viratec-poster.webp';
 import { JourneyTimeline } from './JourneyTimeline';
+import { useDocumentTitle } from '@/shared/lib';
 
 export function ViratecPage() {
+  useDocumentTitle('About VIRaTeC');
+
   return (
     <PageLayout
       intro={
@@ -28,8 +31,8 @@ export function ViratecPage() {
       <PageSection aria-labelledby="what-is-title">
         <SectionHeader id="what-is-title" eyebrow="What is VIRaTeC" title="What is VIRaTeC?" />
         <p className="text-base leading-6 text-viratec-muted lg:max-w-[760px] lg:text-lg lg:leading-7">
-          Watch how students, educators and researchers from 16 universities in 11 countries learn
-          and do research together, online and across borders.
+          Watch how students, educators and researchers from partner universities in 8 countries
+          learn and do research together, online and across borders.
         </p>
         <IntroVideo
           title="What is VIRaTeC?"

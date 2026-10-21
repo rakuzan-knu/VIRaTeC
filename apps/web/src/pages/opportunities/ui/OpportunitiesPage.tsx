@@ -1,5 +1,5 @@
 import { ROUTES } from '@/shared/config/routes';
-import { cn } from '@/shared/lib';
+import { cn, useDocumentTitle } from '@/shared/lib';
 import { LinkButton } from '@/shared/ui/link-button';
 import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
@@ -11,7 +11,7 @@ import { useActiveSection } from '../lib/useActiveSection';
 const SECTION_IDS = AUDIENCE_GROUPS.map((group) => group.id);
 
 const SECTION_TITLE_CLASS =
-  'text-[28px] leading-[34px] tracking-[-0.56px] text-white lg:text-[44px] lg:leading-[50px] lg:tracking-[-0.88px]';
+  'font-display text-[30px] leading-[36px] font-medium tracking-[-0.025em] text-white lg:text-[44px] lg:leading-[50px]';
 
 function RoleTabs() {
   const activeId = useActiveSection(SECTION_IDS);
@@ -71,9 +71,9 @@ function AudienceSection({ group }: { group: AudienceGroup }) {
         <ul className="grid gap-4 lg:grid-cols-3 lg:gap-6">
           {group.opportunities.map((opportunity) => (
             <li key={opportunity.title}>
-              <article className="flex h-full flex-col gap-3.5 rounded-[22px] border border-white/12 bg-white/5 p-5 lg:min-h-[267px] lg:p-7">
+              <article className="flex h-full flex-col gap-4 rounded-[24px] border border-white/10 bg-white/[0.035] p-6 lg:min-h-[267px] lg:rounded-[28px] lg:p-8">
                 <p className="text-[13px] text-viratec-subtle">{opportunity.meta}</p>
-                <h3 className="text-xl leading-[26px] font-medium text-white lg:text-[23px] lg:leading-[30px]">
+                <h3 className="font-display text-xl leading-[26px] font-medium tracking-[-0.02em] text-white lg:text-2xl lg:leading-[30px]">
                   {opportunity.title}
                 </h3>
                 <p className="text-[15px] leading-[22px] text-viratec-muted lg:text-base lg:leading-6">
@@ -97,6 +97,8 @@ function AudienceSection({ group }: { group: AudienceGroup }) {
 }
 
 export function OpportunitiesPage() {
+  useDocumentTitle('Opportunities');
+
   return (
     <PageLayout
       intro={

@@ -3,44 +3,42 @@ import { LinkButton } from '@/shared/ui/link-button';
 import { PILLARS, STATS } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
-import { CARD_CLASS, SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
+import { SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
 
 export function AboutSection() {
   return (
     <section aria-labelledby="about-title" className="bg-viratec-bg">
       <div className={SECTION_CONTAINER_CLASS}>
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-20">
-          <div className="flex flex-col items-start gap-8 lg:flex-1 lg:gap-7">
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-24">
+          <div className="flex flex-col items-start gap-5 lg:sticky lg:top-32 lg:flex-1 lg:gap-7">
             <Eyebrow>About VIRaTeC</Eyebrow>
             <h2 id="about-title" className={SECTION_TITLE_CLASS}>
-              Research that crosses
-              <br />
-              <span className="text-viratec-cyan">borders and disciplines.</span>
+              Research that crosses <span className="text-white/50">borders and disciplines.</span>
             </h2>
-            <ExpandableText className="text-[17px] leading-[26px] text-viratec-muted lg:text-xl lg:leading-8">
-              Since 2019 VIRaTeC has been building inclusive virtual environments where students
-              from different countries work together on joint projects and research using AI, EdTech
-              and COIL.
+            <ExpandableText className="max-w-[60ch] text-[17px] leading-[27px] text-viratec-muted lg:text-xl lg:leading-8">
+              Since 2019 Dr. Larysa Liashenko and colleagues have been building international
+              virtual learning experiences. VIRaTeC connects students from different countries in
+              joint projects and research through AI, EdTech and COIL.
             </ExpandableText>
             <LinkButton
               to={ROUTES.ABOUT_INITIATIVE}
               variant="secondary"
-              className="hidden lg:inline-flex"
+              className="mt-2 hidden lg:inline-flex"
             >
               Learn More
             </LinkButton>
           </div>
 
-          <ul className="flex flex-col gap-3 lg:flex-1 lg:gap-4">
+          <ul className="flex flex-col border-b border-white/10 lg:flex-1">
             {PILLARS.map((pillar) => (
-              <li key={pillar.index} className={`${CARD_CLASS} gap-3 lg:gap-3.5`}>
-                <p className="flex items-center gap-3 font-medium lg:gap-4">
-                  <span className="text-[13px] tracking-[1.3px] text-viratec-cyan lg:text-sm lg:tracking-[1.4px]">
-                    {pillar.index}
-                  </span>
-                  <span className="text-[19px] text-white lg:text-[22px]">{pillar.title}</span>
-                </p>
-                <p className="text-[15px] leading-[22px] text-viratec-muted lg:text-base lg:leading-6">
+              <li
+                key={pillar.index}
+                className="flex flex-col gap-2.5 border-t border-white/10 py-7 lg:gap-3 lg:py-10"
+              >
+                <h3 className="font-display text-[24px] leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">
+                  {pillar.title}
+                </h3>
+                <p className="max-w-[48ch] text-[15px] leading-[23px] text-viratec-muted lg:text-[17px] lg:leading-[27px]">
                   {pillar.description}
                 </p>
               </li>
@@ -52,21 +50,21 @@ export function AboutSection() {
           Learn More
         </LinkButton>
 
-        <ul className="flex flex-col lg:flex-row lg:gap-6">
+        <dl className="grid gap-px overflow-hidden rounded-[24px] border border-white/10 bg-white/10 lg:grid-cols-3 lg:rounded-[28px]">
           {STATS.map((stat) => (
-            <li
+            <div
               key={stat.value}
-              className="flex items-center gap-4 border-t border-white/14 py-[18px] lg:flex-1 lg:flex-col lg:items-start lg:gap-1.5 lg:pt-6 lg:pb-0"
+              className="flex items-center gap-5 bg-viratec-bg px-6 py-6 lg:flex-col lg:items-start lg:gap-3 lg:px-8 lg:py-9"
             >
-              <p className="w-[72px] shrink-0 text-[40px] leading-[44px] tracking-[-0.8px] text-viratec-accent lg:w-auto lg:text-[56px] lg:leading-[64px] lg:tracking-[-1.12px]">
-                {stat.value}
-              </p>
-              <p className="text-[15px] leading-[22px] text-viratec-muted lg:text-base lg:leading-6">
+              <dt className="order-2 text-[15px] leading-[22px] text-viratec-muted lg:text-base lg:leading-6">
                 {stat.label}
-              </p>
-            </li>
+              </dt>
+              <dd className="order-1 w-[84px] shrink-0 font-display text-[44px] leading-[48px] font-medium tracking-[-0.04em] text-white tabular-nums lg:w-auto lg:text-[72px] lg:leading-[72px]">
+                {stat.value}
+              </dd>
+            </div>
           ))}
-        </ul>
+        </dl>
       </div>
     </section>
   );
