@@ -94,6 +94,89 @@
   --color-viratec-soft: #dbe4f0;
   --color-viratec-ink: #101721;
   --color-viratec-dropdown: rgba(10, 33, 72, 0.96);
+
+  --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-hero-reveal: hero-reveal 1.2s var(--ease-apple) both;
+  --animate-hero-settle: hero-settle 2.4s var(--ease-apple) both;
+  --animate-hero-shimmer: hero-shimmer 2.6s var(--ease-apple) 1.3s both;
+  --animate-hero-drift: hero-drift 14s ease-in-out infinite alternate;
+
+  @keyframes hero-reveal {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0) scale(0.98);
+      filter: blur(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes hero-settle {
+    from {
+      opacity: 0;
+      transform: scale(1.12);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes hero-shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0% 0;
+    }
+  }
+
+  @keyframes hero-drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(40px, -30px, 0) scale(1.08);
+    }
+  }
+}
+
+@utility hero-shimmer-text {
+  color: var(--color-viratec-cyan);
+  background-image: linear-gradient(
+    100deg,
+    var(--color-viratec-cyan) 0%,
+    var(--color-viratec-cyan) 40%,
+    #e9fdff 50%,
+    var(--color-viratec-cyan) 60%,
+    var(--color-viratec-cyan) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes hero-scroll-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -80px, 0) scale(0.96);
+    filter: blur(6px);
+  }
+}
+
+@utility hero-scroll-out {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: hero-scroll-out linear both;
+      animation-timeline: view();
+      animation-range: exit 10% exit 90%;
+    }
+  }
 }
 
 @layer base {
