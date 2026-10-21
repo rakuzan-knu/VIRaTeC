@@ -8,6 +8,8 @@ The `viratec` project in `magchannel228-1236` deploys both services from the rep
 Pushes to `main` create production deployments. Other branches create previews.
 Keep the project root at the repository root; `vercel.json` defines each service's root and build command.
 The API and Neon Postgres use the Frankfurt region.
+The service install commands use pnpm's hoisted linker so Vercel can package the API's runtime dependencies.
+Dependency versions remain controlled by `pnpm-lock.yaml`.
 
 ## Environment
 
