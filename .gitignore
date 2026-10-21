@@ -55,3 +55,9 @@ minio_data
 # Cache
 .eslintcache
 .cache
+
+# AI assistants
+.claude/
+*[Cc]laude*
+*[Cc][Oo][Dd][Ee][Xx]*
+*CLAUDE*
