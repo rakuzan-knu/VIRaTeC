@@ -19,7 +19,7 @@ import { CommunityModule } from './community/community.module';
     }),
     LoggerModule.forRoot({
       pinoHttp: {
-        redact: ['req.headers.authorization', 'req.headers.cookie', 'res.headers["set-cookie"]'],
+        redact: ['req.headers', 'res.headers["set-cookie"]'],
         transport:
           process.env.NODE_ENV !== 'production'
             ? {
