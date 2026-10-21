@@ -1,7 +1,6 @@
 import type { Localized } from '../i18n/model/types';
 import { ROUTES } from './routes';
 
-export const SITE_URL = 'https://viratec.knu.ua';
 export const SITE_NAME = 'VIRaTeC';
 export const DEFAULT_TITLE = 'VIRaTeC — Virtual Innovating Research & Technology Community (КНУ)';
 
@@ -218,7 +217,8 @@ const DESCRIPTION_LIMIT = 160;
 export const normalizePath = (pathname: string) =>
   pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
 
-export const absoluteUrl = (pathname: string) => new URL(normalizePath(pathname), SITE_URL).href;
+export const absoluteUrl = (pathname: string, siteUrl: string) =>
+  new URL(normalizePath(pathname), siteUrl).href;
 
 export const formatTitle = (title?: string) => (title ? `${title} — ${SITE_NAME}` : DEFAULT_TITLE);
 

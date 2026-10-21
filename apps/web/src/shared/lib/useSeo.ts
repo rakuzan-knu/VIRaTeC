@@ -13,6 +13,7 @@ import {
   normalizePath,
   toMetaDescription,
 } from '@/shared/config/seo';
+import { ENV } from '@/shared/config/env';
 
 interface SeoOptions {
   description?: string;
@@ -62,8 +63,8 @@ export function useSeo(
     const pageDescription = toMetaDescription(
       description ?? PAGE_SEO[path]?.[locale].description ?? DEFAULT_SEO[locale].description,
     );
-    const url = absoluteUrl(path);
-    const imageUrl = absoluteUrl(image ?? OG_IMAGE.path);
+    const url = absoluteUrl(path, ENV.SITE_URL);
+    const imageUrl = absoluteUrl(image ?? OG_IMAGE.path, ENV.SITE_URL);
     const isDefaultImage = !image;
     const imageAlt = isDefaultImage ? OG_IMAGE.alt : fullTitle;
 
