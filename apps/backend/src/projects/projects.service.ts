@@ -14,7 +14,6 @@ export class ProjectsService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
           },
         },
@@ -31,7 +30,6 @@ export class ProjectsService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
           },
         },
@@ -56,7 +54,6 @@ export class ProjectsService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
           },
         },

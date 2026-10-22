@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
-import { ApiError } from '@/shared/api/apiClient';
+import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
 import { Checkbox } from '@/shared/ui/checkbox';
@@ -62,8 +62,9 @@ const REGISTER_MESSAGES = defineMessages({
 
 type RegisterMessages = (typeof REGISTER_MESSAGES)['en'];
 
-const getErrorMessage = (error: Error | null, t: RegisterMessages) => {
+const getErrorMessage = (error: Error | null, t: RegisterMessages, networkError: string) => {
   if (!error) return null;
+  if (error instanceof ApiError && error.status === NETWORK_ERROR_STATUS) return networkError;
   if (error instanceof ApiError && error.status === 409) return t.accountExists;
   if (error instanceof ApiError && error.status === 400) return error.message || t.invalidData;
   return error.message || t.unexpectedError;
@@ -97,7 +98,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
     },
   });
 
-  const serverErrorMessage = getErrorMessage(error, t);
+  const serverErrorMessage = getErrorMessage(error, t, common.networkError);
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(8px,1.4svh,20px)]">

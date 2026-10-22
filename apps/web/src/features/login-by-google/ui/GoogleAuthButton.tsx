@@ -1,20 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import { ENV } from '@/shared/config/env';
-import { ApiError } from '@/shared/api/apiClient';
+import { useRef } from 'react';
+import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { cn } from '@/shared/lib';
-import {
-  defineMessages,
-  INTL_LOCALE,
-  useCommonMessages,
-  useLocale,
-  useLocalized,
-} from '@/shared/i18n';
+import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { Button } from '@/shared/ui/auth-button';
 import { GoogleIcon } from '@/shared/ui/google-icon';
-import { loadGoogleIdentity, type GoogleButtonText } from '../lib/googleIdentity';
+import { useGoogleButton, type GoogleButtonText } from '@/shared/lib/googleIdentity';
 import { useGoogleAuth } from '../model/useGoogleAuth';
-
-const GOOGLE_BUTTON_MAX_WIDTH = 400;
 
 const GOOGLE_AUTH_MESSAGES = defineMessages({
   en: {
@@ -33,8 +24,9 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
 
 type GoogleAuthMessages = (typeof GOOGLE_AUTH_MESSAGES)['en'];
 
-const getErrorMessage = (error: Error | null, t: GoogleAuthMessages) => {
+const getErrorMessage = (error: Error | null, t: GoogleAuthMessages, networkError: string) => {
   if (!error) return null;
+  if (error instanceof ApiError && error.status === NETWORK_ERROR_STATUS) return networkError;
   if (error instanceof ApiError && error.status === 401) return t.invalidCredential;
   if (error instanceof ApiError && error.status === 503) return t.notConfigured;
   return error.message || t.unexpectedError;
@@ -47,53 +39,15 @@ interface GoogleAuthButtonProps {
 
 export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [loadFailed, setLoadFailed] = useState(false);
   const { mutate: authenticate, isPending, error } = useGoogleAuth();
-  const authenticateRef = useRef(authenticate);
-  const locale = useLocale();
   const t = useLocalized(GOOGLE_AUTH_MESSAGES);
   const common = useCommonMessages();
+  const { isConfigured, loadFailed } = useGoogleButton(containerRef, {
+    text,
+    onCredential: authenticate,
+  });
 
-  useEffect(() => {
-    authenticateRef.current = authenticate;
-  }, [authenticate]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!ENV.GOOGLE_CLIENT_ID || !container) return;
-    let cancelled = false;
-
-    loadGoogleIdentity()
-      .then((googleId) => {
-        if (cancelled) return;
-        googleId.initialize({
-          client_id: ENV.GOOGLE_CLIENT_ID,
-          callback: ({ credential }) => authenticateRef.current(credential),
-          ux_mode: 'popup',
-          context: text === 'signup_with' ? 'signup' : 'signin',
-        });
-        container.replaceChildren();
-        googleId.renderButton(container, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          shape: 'rectangular',
-          logo_alignment: 'center',
-          text,
-          width: Math.min(container.clientWidth, GOOGLE_BUTTON_MAX_WIDTH),
-          locale: INTL_LOCALE[locale],
-        });
-      })
-      .catch(() => {
-        if (!cancelled) setLoadFailed(true);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [text, locale]);
-
-  if (!ENV.GOOGLE_CLIENT_ID) {
+  if (!isConfigured) {
     return (
       <Button
         variant="outline"
@@ -109,7 +63,7 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
     );
   }
 
-  const errorMessage = loadFailed ? t.loadFailed : getErrorMessage(error, t);
+  const errorMessage = loadFailed ? t.loadFailed : getErrorMessage(error, t, common.networkError);
 
   return (
     <div className="space-y-2">

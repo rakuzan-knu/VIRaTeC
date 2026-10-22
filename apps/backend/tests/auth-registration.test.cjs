@@ -44,7 +44,7 @@ for (const role of [undefined, 'STUDENT', 'PARTNER']) {
             return storedUser;
           },
         },
-        refreshToken: { create: async () => ({}) },
+        refreshToken: { create: async () => ({}), deleteMany: async () => ({ count: 0 }) },
       },
       { signAsync: async () => `token-${++tokenCount}` },
       { get: () => undefined },

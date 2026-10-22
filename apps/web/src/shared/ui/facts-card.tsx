@@ -1,9 +1,11 @@
 import { Fragment, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/shared/lib';
 
 export interface Fact {
   label: string;
   value: string;
+  to?: string;
 }
 
 interface FactsCardProps {
@@ -30,7 +32,18 @@ export function FactsCard({ title, facts, actions, className }: FactsCardProps) 
             {index > 0 && <span aria-hidden="true" className="h-px w-full bg-white/8" />}
             <div className="flex flex-col gap-1">
               <dt className="text-[13px] leading-[18px] text-viratec-subtle">{fact.label}</dt>
-              <dd className="text-base leading-6 text-viratec-soft">{fact.value}</dd>
+              <dd className="text-base leading-6 text-viratec-soft">
+                {fact.to ? (
+                  <Link
+                    to={fact.to}
+                    className="text-viratec-cyan underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
+                  >
+                    {fact.value}
+                  </Link>
+                ) : (
+                  fact.value
+                )}
+              </dd>
             </div>
           </Fragment>
         ))}

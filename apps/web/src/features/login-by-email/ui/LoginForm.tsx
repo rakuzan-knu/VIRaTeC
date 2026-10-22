@@ -1,11 +1,12 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
-import { ApiError } from '@/shared/api/apiClient';
+import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
+import { readAuthNavigationState } from '@/entities/session';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
 import { BrandLogo } from '@/shared/ui/brand-logo';
@@ -49,8 +50,9 @@ const LOGIN_MESSAGES = defineMessages({
 
 type LoginMessages = (typeof LOGIN_MESSAGES)['en'];
 
-const getErrorMessage = (error: Error | null, t: LoginMessages) => {
+const getErrorMessage = (error: Error | null, t: LoginMessages, networkError: string) => {
   if (!error) return null;
+  if (error instanceof ApiError && error.status === NETWORK_ERROR_STATUS) return networkError;
   if (error instanceof ApiError && error.status === 401) return t.invalidCredentials;
   return error.message || t.unexpectedError;
 };
@@ -61,6 +63,7 @@ interface LoginFormProps {
 
 export function LoginForm({ socialAuth }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
   const { mutate: login, isPending, error } = useLogin();
   const t = useLocalized(LOGIN_MESSAGES);
   const common = useCommonMessages();
@@ -72,10 +75,10 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: readAuthNavigationState(location.state).email ?? '', password: '' },
   });
 
-  const serverErrorMessage = getErrorMessage(error, t);
+  const serverErrorMessage = getErrorMessage(error, t, common.networkError);
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(10px,1.8svh,20px)]">

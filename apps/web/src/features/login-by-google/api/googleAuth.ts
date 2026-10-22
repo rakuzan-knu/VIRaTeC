@@ -1,6 +1,6 @@
 import { api } from '@/shared/api/apiClient';
-import type { AuthResponseDto, GoogleAuthRequestDto } from '@viratec/contracts';
+import type { GoogleAuthRequestDto, SignInResponseDto } from '@viratec/contracts';
 
-export const googleAuthRequest = async (dto: GoogleAuthRequestDto): Promise<AuthResponseDto> => {
-  return api.post<AuthResponseDto>('/auth/google', dto);
+export const googleAuthRequest = async (dto: GoogleAuthRequestDto): Promise<SignInResponseDto> => {
+  return api.post<SignInResponseDto>('/auth/google', dto, { retryOnUnauthorized: false });
 };

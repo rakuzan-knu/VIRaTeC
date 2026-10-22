@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { Check, Trash2 } from 'lucide-react';
-import { useSessionStore } from '@/entities/session';
+import { forgetAllAccounts, logoutRequest, useSessionStore } from '@/entities/session';
 import { clearStoredLocale, defineMessages, useLocalized } from '@/shared/i18n';
 
 const CLEAR_STORAGE_MESSAGES = defineMessages({
   en: {
     title: 'Clear what we store on this device',
     description:
-      'Removes your language preference and sign-in from this browser. You will be signed out; the language resets on your next visit.',
+      'Removes your language preference, sign-in and saved account list from this browser. You will be signed out; the language resets on your next visit.',
     action: 'Clear site data',
     done: 'Done. Nothing from VIRaTeC is stored in this browser any more.',
   },
   uk: {
     title: 'Очистити дані, збережені на цьому пристрої',
     description:
-      'Видаляє з цього браузера налаштування мови та дані входу. Ви вийдете з облікового запису, а мова повернеться до типової під час наступного візиту.',
+      'Видаляє з цього браузера налаштування мови, дані входу та список збережених облікових записів. Ви вийдете з облікового запису, а мова повернеться до типової під час наступного візиту.',
     action: 'Очистити дані сайту',
     done: 'Готово. У цьому браузері більше немає даних VIRaTeC.',
   },
@@ -25,8 +25,10 @@ export function ClearStorageCard() {
   const clearSession = useSessionStore((state) => state.clearSession);
   const [isCleared, setIsCleared] = useState(false);
 
-  const handleClear = () => {
+  const handleClear = async () => {
+    await logoutRequest().catch(() => undefined);
     clearSession();
+    forgetAllAccounts();
     clearStoredLocale();
     setIsCleared(true);
   };

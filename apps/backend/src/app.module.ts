@@ -10,6 +10,8 @@ import { ResearchModule } from './research/research.module';
 import { ProjectsModule } from './projects/projects.module';
 import { EventsModule } from './events/events.module';
 import { CommunityModule } from './community/community.module';
+import { SecurityModule } from './security/security.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { CommunityModule } from './community/community.module';
       },
     }),
     PrismaModule,
+    SecurityModule,
     HealthModule,
     AuthModule,
     UsersModule,
@@ -42,6 +45,7 @@ import { CommunityModule } from './community/community.module';
     ProjectsModule,
     EventsModule,
     CommunityModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

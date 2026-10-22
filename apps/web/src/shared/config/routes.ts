@@ -3,6 +3,12 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
+  ACCOUNT: '/account',
+  ADMIN: '/admin',
+  ADMIN_USERS: '/admin/users',
+  ADMIN_AUDIT: '/admin/audit',
+  PEOPLE: '/people',
+  PERSON: '/people/:userId',
   TERMS: '/terms',
   PRIVACY: '/privacy',
   COOKIES: '/cookies',
@@ -26,3 +32,13 @@ export const buildProjectPath = (projectId: string) =>
 
 export const buildPublicationPath = (slug: string) =>
   ROUTES.PUBLICATION_DETAIL.replace(':slug', encodeURIComponent(slug));
+
+export const buildPersonPath = (userId: string) =>
+  ROUTES.PERSON.replace(':userId', encodeURIComponent(userId));
+
+export const ACCOUNT_SECTION_PARAM = 'section';
+
+export const buildAccountPath = (section?: string) =>
+  section
+    ? `${ROUTES.ACCOUNT}?${ACCOUNT_SECTION_PARAM}=${encodeURIComponent(section)}`
+    : ROUTES.ACCOUNT;

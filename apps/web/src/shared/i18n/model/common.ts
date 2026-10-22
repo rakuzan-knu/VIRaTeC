@@ -44,6 +44,7 @@ export const COMMON_MESSAGES = defineMessages({
     continueWithGoogle: 'Continue with Google',
     googleSignIn: 'Google sign-in',
     or: 'or',
+    networkError: 'Could not reach the server. Check your connection and try again.',
   },
   uk: {
     notAvailableYet: 'Поки недоступно',
@@ -87,6 +88,7 @@ export const COMMON_MESSAGES = defineMessages({
     continueWithGoogle: 'Продовжити з Google',
     googleSignIn: 'Вхід через Google',
     or: 'або',
+    networkError: 'Не вдалося з’єднатися із сервером. Перевірте підключення та спробуйте ще раз.',
   },
 });
 

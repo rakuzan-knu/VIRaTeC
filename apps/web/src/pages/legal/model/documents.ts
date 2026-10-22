@@ -22,7 +22,7 @@ export const LEGAL_ROUTES: Record<LegalDocument, string> = {
   guidelines: ROUTES.GUIDELINES,
 };
 
-export const LEGAL_UPDATED_AT = new Date(2026, 9, 21);
+export const LEGAL_UPDATED_AT = new Date(2026, 9, 22);
 
 export const LEGAL_VERSION = '1.0';
 

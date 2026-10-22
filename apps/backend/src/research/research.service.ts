@@ -15,7 +15,6 @@ export class ResearchService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
           },
         },
@@ -32,7 +31,6 @@ export class ResearchService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
           },
         },
@@ -57,7 +55,6 @@ export class ResearchService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
           },
         },

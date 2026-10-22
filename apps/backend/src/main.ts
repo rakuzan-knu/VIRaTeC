@@ -5,9 +5,55 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import helmet from '@fastify/helmet';
 import compress from '@fastify/compress';
+import cookie from '@fastify/cookie';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { CSRF_HEADER, cookieNames } from './auth/session-cookies';
+import { safeEqual } from './security/crypto';
+
+const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+interface CsrfRequest {
+  method: string;
+  url: string;
+  headers: Record<string, string | string[] | undefined>;
+  cookies?: Record<string, string | undefined>;
+}
+
+interface CsrfReply {
+  status(code: number): { send(payload: unknown): unknown };
+}
+
+function hasSessionCookie(request: CsrfRequest) {
+  return [false, true].some((secure) => {
+    const names = cookieNames(secure);
+    return [names.access, names.refresh, names.mfa].some((name) => request.cookies?.[name]);
+  });
+}
+
+function readCsrfCookie(request: CsrfRequest) {
+  return request.cookies?.[cookieNames(true).csrf] ?? request.cookies?.[cookieNames(false).csrf];
+}
+
+async function verifyCsrf(request: CsrfRequest, reply: CsrfReply) {
+  if (!UNSAFE_METHODS.has(request.method) || !request.url.startsWith('/api/')) return;
+
+  const usesBearerOnly =
+    typeof request.headers.authorization === 'string' && !hasSessionCookie(request);
+  if (usesBearerOnly) return;
+
+  const header = request.headers[CSRF_HEADER];
+  const cookieToken = readCsrfCookie(request);
+  if (typeof header !== 'string' || !cookieToken || !safeEqual(header, cookieToken)) {
+    await reply.status(403).send({
+      statusCode: 403,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      error: { message: 'Invalid or missing CSRF token', code: 'CSRF_INVALID' },
+    });
+  }
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -26,6 +72,8 @@ async function bootstrap() {
     contentSecurityPolicy: process.env.NODE_ENV === 'production',
   });
   await (app.register as any)(compress, { encodings: ['gzip', 'deflate'] });
+  await (app.register as any)(cookie);
+  app.getHttpAdapter().getInstance().addHook('preValidation', verifyCsrf);
 
   // CORS configuration
   const allowedOrigins = process.env.CORS_ORIGIN
@@ -36,7 +84,7 @@ async function bootstrap() {
     origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-CSRF-Token'],
   });
 
   // Global prefixes and pipes
@@ -59,6 +107,7 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addBearerAuth()
+    .addCookieAuth('vt_at')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

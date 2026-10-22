@@ -1,6 +1,6 @@
 import { api } from '@/shared/api/apiClient';
-import type { AuthResponseDto, LoginRequestDto } from '@viratec/contracts';
+import type { LoginRequestDto, SignInResponseDto } from '@viratec/contracts';
 
-export const loginRequest = async (dto: LoginRequestDto): Promise<AuthResponseDto> => {
-  return api.post<AuthResponseDto>('/auth/login', dto);
+export const loginRequest = async (dto: LoginRequestDto): Promise<SignInResponseDto> => {
+  return api.post<SignInResponseDto>('/auth/login', dto, { retryOnUnauthorized: false });
 };
