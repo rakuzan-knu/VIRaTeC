@@ -204,6 +204,7 @@ export const NOINDEX_PATHS: readonly string[] = [
   ROUTES.LOGIN,
   ROUTES.REGISTER,
   ROUTES.FORGOT_PASSWORD,
+  ROUTES.ACCOUNT,
 ];
 
 export const ROBOTS_INDEX =

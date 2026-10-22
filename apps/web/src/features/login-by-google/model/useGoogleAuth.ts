@@ -1,18 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { useSessionStore } from '@/entities/session';
-import { ROUTES } from '@/shared/config/routes';
+import { useCompleteSignIn } from '@/entities/session';
 import { googleAuthRequest } from '../api/googleAuth';
 
 export function useGoogleAuth() {
-  const navigate = useNavigate();
-  const setSession = useSessionStore((state) => state.setSession);
+  const completeSignIn = useCompleteSignIn();
 
   return useMutation({
     mutationFn: (credential: string) => googleAuthRequest({ credential }),
-    onSuccess: (data) => {
-      setSession(data.user, data.accessToken);
-      navigate(ROUTES.HOME, { replace: true });
-    },
+    onSuccess: completeSignIn,
   });
 }

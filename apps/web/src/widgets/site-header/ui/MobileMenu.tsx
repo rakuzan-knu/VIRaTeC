@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeftRight, ChevronDown } from 'lucide-react';
+import { UserAvatar, useIsAuthenticated } from '@/entities/session';
 import { cn, useBodyScrollLock, useFocusTrap } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import { useNavigation } from '@/shared/config/navigation';
@@ -8,6 +10,8 @@ import { Logo } from '@/shared/ui/logo';
 import { LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import closeIcon from '@/shared/assets/icons/close.svg';
 import menuChevron from '@/shared/assets/icons/menu-chevron.svg';
+import { useAccountMenu } from '../model/accountMenu';
+import { AccountSwitchList } from './AccountSwitchList';
 
 interface MobileMenuProps {
   onClose: () => void;
@@ -27,6 +31,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
   const { main: mainNav } = useNavigation();
   const common = useCommonMessages();
   const t = useLocalized(MOBILE_MENU_MESSAGES);
+  const isAuthenticated = useIsAuthenticated();
 
   useBodyScrollLock(true);
   useFocusTrap(dialogRef, true);
@@ -126,14 +131,83 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
         <LinkButton to={ROUTES.CONTACT} onClick={onClose} className="w-full">
           {common.contactCollaborate}
         </LinkButton>
-        <Link
-          to={ROUTES.LOGIN}
-          onClick={onClose}
-          className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
-        >
-          {common.logIn}
-        </Link>
+        {isAuthenticated ? (
+          <MobileAccountPanel onClose={onClose} />
+        ) : (
+          <Link
+            to={ROUTES.LOGIN}
+            onClick={onClose}
+            className={linkButtonClassName({ variant: 'secondary', className: 'w-full' })}
+          >
+            {common.logIn}
+          </Link>
+        )}
       </div>
+    </div>
+  );
+}
+
+function MobileAccountPanel({ onClose }: MobileMenuProps) {
+  const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
+  const menu = useAccountMenu();
+  const { t, user, links, signOut, isSigningOut, signOutIcon: SignOutIcon } = menu;
+  const switcherId = 'mobile-account-switcher';
+
+  return (
+    <div className="flex flex-col gap-1 rounded-[24px] border border-white/10 bg-white/4 p-2">
+      {user && (
+        <div className="flex items-center gap-3 px-3 pt-2 pb-3">
+          <UserAvatar name={user.name} avatarUrl={user.avatarUrl} className="size-11" />
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate text-base font-medium text-white">{user.name}</span>
+            <span className="truncate text-sm text-viratec-subtle">{user.email}</span>
+          </div>
+        </div>
+      )}
+      <ul aria-label={t.accountMenu} className="grid grid-cols-2 gap-1">
+        {links.map(({ to, label, icon: Icon }) => (
+          <li key={to}>
+            <Link
+              to={to}
+              onClick={onClose}
+              className="flex items-center gap-2.5 rounded-[16px] px-3 py-3 text-[15px] font-medium text-white transition-colors hover:bg-white/7"
+            >
+              <Icon aria-hidden="true" className="size-[18px] shrink-0 text-viratec-muted" />
+              <span className="truncate">{label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        aria-expanded={isSwitcherOpen}
+        aria-controls={switcherId}
+        onClick={() => setIsSwitcherOpen((value) => !value)}
+        className="flex cursor-pointer items-center gap-2.5 rounded-[16px] px-3 py-3 text-[15px] font-medium text-white transition-colors hover:bg-white/7"
+      >
+        <ArrowLeftRight aria-hidden="true" className="size-[18px] shrink-0 text-viratec-muted" />
+        <span className="flex-1 text-left">{t.switchAccount}</span>
+        <ChevronDown
+          aria-hidden="true"
+          className={cn(
+            'size-4 text-viratec-muted transition-transform duration-200',
+            isSwitcherOpen && 'rotate-180',
+          )}
+        />
+      </button>
+      {isSwitcherOpen && <AccountSwitchList id={switcherId} menu={menu} onNavigate={onClose} />}
+      <button
+        type="button"
+        onClick={() => {
+          onClose();
+          signOut();
+        }}
+        disabled={isSigningOut}
+        className="flex cursor-pointer items-center justify-center gap-2 rounded-[16px] border border-white/14 px-3 py-3 text-[15px] font-medium text-white transition-colors hover:bg-white/7 disabled:opacity-50"
+      >
+        <SignOutIcon aria-hidden="true" className="size-[18px]" />
+        {t.signOut}
+      </button>
     </div>
   );
 }

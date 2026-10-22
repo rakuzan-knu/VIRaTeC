@@ -1,12 +1,15 @@
 import {
+  BadRequestException,
   Injectable,
   ConflictException,
+  NotFoundException,
   ForbiddenException,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
 import { OAuth2Client, type TokenPayload } from 'google-auth-library';
 import { Prisma } from '@prisma/client';
@@ -15,6 +18,33 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
 import { UserRole } from '@viratec/contracts';
+import { toAccount } from '../users/account';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import type { ClientContext } from '../common/decorators/client-context.decorator';
+import { AuditService } from '../security/audit.service';
+import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
+import { randomToken, sha256Hex } from '../security/crypto';
+import { TwoFactorService } from './two-factor.service';
+
+const MFA_CHALLENGE_TTL_MS = 5 * 60_000;
+const MFA_CHALLENGE_MAX_ATTEMPTS = 5;
+
+interface SessionCarry {
+  mfaVerifiedAt?: Date | null;
+  elevatedUntil?: Date | null;
+}
+
+interface SignInUser extends TokenSubject {
+  isBlocked: boolean;
+  twoFactorEnabled: boolean;
+}
+
+interface TokenSubject {
+  id: string;
+  email: string;
+  role: string;
+  faculty: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -24,9 +54,15 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private audit?: AuditService,
+    private rateLimit?: RateLimitService,
+    private twoFactor?: TwoFactorService,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto, client: ClientContext = {}) {
+    if (client.ipAddress) {
+      await this.rateLimit?.consume(`register:ip:${client.ipAddress}`, RATE_LIMITS.registerPerIp);
+    }
     if (dto.role && dto.role !== UserRole.STUDENT && dto.role !== UserRole.PARTNER) {
       throw new ForbiddenException('Privileged roles cannot be selected during registration');
     }
@@ -52,16 +88,23 @@ export class AuthService {
       },
     });
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role, user.faculty);
+    const tokens = await this.generateTokens(user, client);
     return {
-      user: this.sanitizeUser(user),
+      user: toAccount(user),
       ...tokens,
     };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, client: ClientContext = {}) {
+    const email = dto.email.toLowerCase();
+    const accountKey = `login:account:${sha256Hex(email)}`;
+    await this.rateLimit?.consume(accountKey, RATE_LIMITS.loginPerAccount);
+    if (client.ipAddress) {
+      await this.rateLimit?.consume(`login:ip:${client.ipAddress}`, RATE_LIMITS.loginPerIp);
+    }
+
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
+      where: { email },
     });
 
     if (!user) {
@@ -74,17 +117,96 @@ export class AuthService {
 
     const isValid = await argon2.verify(user.passwordHash, dto.password);
     if (!isValid) {
+      await this.audit?.record({ action: 'auth.login_failed', actorId: user.id, client });
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role, user.faculty);
+    await this.rateLimit?.reset(accountKey);
+    return this.completeSignIn(user, client);
+  }
+
+  private async completeSignIn<T extends SignInUser>(user: T, client: ClientContext) {
+    if (user.isBlocked) {
+      await this.audit?.record({ action: 'auth.login_blocked', actorId: user.id, client });
+      throw new ForbiddenException('This account has been suspended');
+    }
+
+    if (user.twoFactorEnabled) {
+      const challengeToken = randomToken();
+      await this.prisma.mfaChallenge.deleteMany({
+        where: {
+          userId: user.id,
+          OR: [{ expiresAt: { lt: new Date() } }, { consumedAt: { not: null } }],
+        },
+      });
+      await this.prisma.mfaChallenge.create({
+        data: {
+          userId: user.id,
+          tokenHash: sha256Hex(challengeToken),
+          expiresAt: new Date(Date.now() + MFA_CHALLENGE_TTL_MS),
+          userAgent: client.userAgent ?? null,
+          ipAddress: client.ipAddress ?? null,
+        },
+      });
+      return { mfaRequired: true as const, challengeToken };
+    }
+
+    const tokens = await this.generateTokens(user, client);
+    await this.audit?.record({ action: 'auth.login', actorId: user.id, client });
     return {
-      user: this.sanitizeUser(user),
+      user: toAccount(user as unknown as Parameters<typeof toAccount>[0]),
       ...tokens,
     };
   }
 
-  async googleAuth(dto: GoogleAuthDto) {
+  async verifyMfaChallenge(challengeToken: string, code: string, client: ClientContext = {}) {
+    const challenge = await this.prisma.mfaChallenge.findUnique({
+      where: { tokenHash: sha256Hex(challengeToken) },
+      include: { user: true },
+    });
+
+    if (
+      !challenge ||
+      challenge.consumedAt ||
+      challenge.expiresAt < new Date() ||
+      challenge.attempts >= MFA_CHALLENGE_MAX_ATTEMPTS
+    ) {
+      throw new UnauthorizedException('The sign-in attempt has expired. Sign in again.');
+    }
+
+    await this.prisma.mfaChallenge.update({
+      where: { id: challenge.id },
+      data: { attempts: { increment: 1 } },
+    });
+    await this.rateLimit?.consume(`mfa:login:${challenge.userId}`, RATE_LIMITS.mfaPerAccount);
+
+    if (!this.twoFactor)
+      throw new ServiceUnavailableException('Two-factor verification is unavailable');
+    await this.twoFactor.requireSecondFactor(challenge.userId, code, client);
+
+    const { count } = await this.prisma.mfaChallenge.updateMany({
+      where: { id: challenge.id, consumedAt: null },
+      data: { consumedAt: new Date() },
+    });
+    if (count === 0) {
+      throw new UnauthorizedException('The sign-in attempt has expired. Sign in again.');
+    }
+
+    const { user } = challenge;
+    if (user.isBlocked) {
+      throw new ForbiddenException('This account has been suspended');
+    }
+
+    await this.rateLimit?.reset(`mfa:login:${user.id}`);
+    const tokens = await this.generateTokens(user, client, randomUUID(), {
+      mfaVerifiedAt: new Date(),
+    });
+    await this.audit?.record({ action: 'auth.mfa_verified', actorId: user.id, client });
+    await this.audit?.record({ action: 'auth.login', actorId: user.id, client });
+    return { user: toAccount(user), ...tokens };
+  }
+
+  async googleAuth(dto: GoogleAuthDto, client: ClientContext = {}) {
     const payload = await this.verifyGoogleCredential(dto.credential);
     const email = payload.email.toLowerCase();
 
@@ -117,11 +239,7 @@ export class AuthService {
       }
     }
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role, user.faculty);
-    return {
-      user: this.sanitizeUser(user),
-      ...tokens,
-    };
+    return this.completeSignIn(user, client);
   }
 
   private async verifyGoogleCredential(
@@ -150,50 +268,90 @@ export class AuthService {
     return { ...payload, email: payload.email };
   }
 
-  async refreshToken(refreshToken: string) {
+  async refreshToken(refreshToken: string, client: ClientContext = {}) {
     const tokenRecord = await this.prisma.refreshToken.findUnique({
-      where: { token: refreshToken },
+      where: { token: sha256Hex(refreshToken) },
       include: { user: true },
     });
+
+    if (tokenRecord?.revoked) {
+      await this.prisma.refreshToken.updateMany({
+        where: { userId: tokenRecord.userId, sessionId: tokenRecord.sessionId, revoked: false },
+        data: { revoked: true },
+      });
+      await this.audit?.record({
+        action: 'auth.refresh_reuse',
+        actorId: tokenRecord.userId,
+        metadata: { sessionId: tokenRecord.sessionId },
+        client,
+      });
+    }
 
     if (!tokenRecord || tokenRecord.revoked || tokenRecord.expiresAt < new Date()) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
+    if (tokenRecord.user.isBlocked) {
+      throw new ForbiddenException('This account has been suspended');
+    }
+
     // Revoke old token and issue new pair (rotation)
-    await this.prisma.refreshToken.update({
-      where: { id: tokenRecord.id },
+    const { count } = await this.prisma.refreshToken.updateMany({
+      where: { id: tokenRecord.id, revoked: false },
       data: { revoked: true },
     });
+    if (count === 0) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
 
     const user = tokenRecord.user;
-    const tokens = await this.generateTokens(user.id, user.email, user.role, user.faculty);
+    const tokens = await this.generateTokens(user, client, tokenRecord.sessionId, {
+      mfaVerifiedAt: tokenRecord.mfaVerifiedAt,
+      elevatedUntil: tokenRecord.elevatedUntil,
+    });
     return {
-      user: this.sanitizeUser(user),
+      user: toAccount(user),
       ...tokens,
     };
   }
 
-  private async generateTokens(userId: string, email: string, role: string, faculty: string) {
-    const payload = { sub: userId, email, role, faculty };
+  private async generateTokens(
+    { id: userId, email, role, faculty }: TokenSubject,
+    client: ClientContext = {},
+    sessionId: string = randomUUID(),
+    carry: SessionCarry = {},
+  ) {
+    const payload = { sub: userId, email, role, faculty, sid: sessionId };
 
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('jwt.accessSecret'),
       expiresIn: (this.configService.get<string>('jwt.accessTtl') || '15m') as any,
     });
 
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('jwt.refreshSecret'),
-      expiresIn: (this.configService.get<string>('jwt.refreshTtl') || '7d') as any,
-    });
+    const refreshToken = await this.jwtService.signAsync(
+      { ...payload, jti: randomUUID() },
+      {
+        secret: this.configService.get<string>('jwt.refreshSecret'),
+        expiresIn: (this.configService.get<string>('jwt.refreshTtl') || '7d') as any,
+      },
+    );
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
+    await this.prisma.refreshToken.deleteMany({
+      where: { userId, expiresAt: { lt: new Date() } },
+    });
+
     await this.prisma.refreshToken.create({
       data: {
-        token: refreshToken,
+        token: sha256Hex(refreshToken),
         userId,
+        sessionId,
+        mfaVerifiedAt: carry.mfaVerifiedAt ?? null,
+        elevatedUntil: carry.elevatedUntil ?? null,
+        userAgent: client.userAgent ?? null,
+        ipAddress: client.ipAddress ?? null,
         expiresAt,
       },
     });
@@ -201,20 +359,158 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private sanitizeUser(user: {
-    id: string;
-    email: string;
-    name: string;
-    role: any;
-    faculty: any;
-    department?: string | null;
-    bio?: string | null;
-    avatarUrl?: string | null;
-    skills: string[];
-    createdAt: Date;
-    updatedAt: Date;
-  }) {
-    const { passwordHash: _, googleId: __, ...safeUser } = user as any;
-    return safeUser;
+  async linkGoogle(userId: string, dto: GoogleAuthDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+    if (user.googleId) {
+      throw new ConflictException('A Google account is already connected');
+    }
+
+    const payload = await this.verifyGoogleCredential(dto.credential).catch((error: unknown) => {
+      if (error instanceof UnauthorizedException) {
+        throw new BadRequestException('Invalid Google credential');
+      }
+      throw error;
+    });
+    const owner = await this.prisma.user.findUnique({ where: { googleId: payload.sub } });
+    if (owner) {
+      throw new ConflictException('This Google account is connected to another VIRaTeC account');
+    }
+
+    try {
+      const updated = await this.prisma.user.update({
+        where: { id: userId },
+        data: { googleId: payload.sub, avatarUrl: user.avatarUrl ?? payload.picture },
+      });
+      return toAccount(updated);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('This Google account is connected to another VIRaTeC account');
+      }
+      throw error;
+    }
+  }
+
+  async unlinkGoogle(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+    if (!user.passwordHash) {
+      throw new BadRequestException('Set a password before disconnecting Google');
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { googleId: null },
+    });
+    return toAccount(updated);
+  }
+
+  async getAccount(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+    return toAccount(user);
+  }
+
+  async logout(refreshToken: string) {
+    await this.prisma.refreshToken.updateMany({
+      where: { token: sha256Hex(refreshToken), revoked: false },
+      data: { revoked: true },
+    });
+    return { success: true };
+  }
+
+  async logoutAll(userId: string) {
+    await this.revokeAllSessions(userId);
+    return { success: true };
+  }
+
+  async changePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+    client: ClientContext = {},
+    sessionId?: string,
+  ) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+
+    if (user.passwordHash) {
+      const isValid =
+        !!dto.currentPassword && (await argon2.verify(user.passwordHash, dto.currentPassword));
+      if (!isValid) {
+        throw new ForbiddenException('Current password is incorrect');
+      }
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: await argon2.hash(dto.newPassword) },
+    });
+    await this.revokeAllSessions(userId);
+
+    const tokens = await this.generateTokens(updated, client, sessionId);
+    return {
+      user: toAccount(updated),
+      ...tokens,
+    };
+  }
+
+  private async revokeAllSessions(userId: string) {
+    await this.prisma.refreshToken.updateMany({
+      where: { userId, revoked: false },
+      data: { revoked: true },
+    });
+  }
+
+  async listSessions(userId: string, currentSessionId?: string) {
+    const tokens = await this.prisma.refreshToken.findMany({
+      where: { userId, revoked: false, expiresAt: { gt: new Date() } },
+      select: {
+        sessionId: true,
+        userAgent: true,
+        ipAddress: true,
+        createdAt: true,
+        lastUsedAt: true,
+      },
+      orderBy: { lastUsedAt: 'desc' },
+    });
+
+    const sessions = new Map<string, (typeof tokens)[number]>();
+    for (const token of tokens) {
+      if (!sessions.has(token.sessionId)) sessions.set(token.sessionId, token);
+    }
+
+    return [...sessions.values()].map(({ sessionId, ...session }) => ({
+      id: sessionId,
+      ...session,
+      isCurrent: sessionId === currentSessionId,
+    }));
+  }
+
+  async eraseOtherSessions(userId: string, currentSessionId?: string) {
+    const { count } = await this.prisma.refreshToken.deleteMany({
+      where: currentSessionId
+        ? { userId, sessionId: { not: currentSessionId } }
+        : { userId, OR: [{ revoked: true }, { expiresAt: { lt: new Date() } }] },
+    });
+    return { removed: count };
+  }
+
+  async revokeSession(userId: string, sessionId: string) {
+    const { count } = await this.prisma.refreshToken.updateMany({
+      where: { userId, sessionId, revoked: false },
+      data: { revoked: true },
+    });
+    if (count === 0) {
+      throw new NotFoundException('Session not found');
+    }
+    return { success: true };
   }
 }

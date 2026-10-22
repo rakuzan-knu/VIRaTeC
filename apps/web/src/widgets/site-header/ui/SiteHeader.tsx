@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { useIsAuthenticated } from '@/entities/session';
 import { cn, useDismiss } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import { useNavigation } from '@/shared/config/navigation';
@@ -9,6 +10,7 @@ import { linkButtonClassName } from '@/shared/ui/link-button';
 import burgerIcon from '@/shared/assets/icons/burger.svg';
 import { DesktopNavDropdown } from './DesktopNavDropdown';
 import { MobileMenu } from './MobileMenu';
+import { AccountMenu } from './AccountMenu';
 
 interface SiteHeaderProps {
   className?: string;
@@ -57,6 +59,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
   const { main: mainNav } = useNavigation();
   const common = useCommonMessages();
   const t = useLocalized(HEADER_MESSAGES);
+  const isAuthenticated = useIsAuthenticated();
 
   const closeDropdown = useCallback(() => setOpenDropdown(null), []);
   const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
@@ -135,9 +138,13 @@ export function SiteHeader({ className }: SiteHeaderProps) {
           </nav>
 
           <div className="hidden items-center gap-2 xl:flex">
-            <Link to={ROUTES.LOGIN} className={cn(NAV_LINK_CLASS, 'text-viratec-light/72')}>
-              {common.logIn}
-            </Link>
+            {isAuthenticated ? (
+              <AccountMenu />
+            ) : (
+              <Link to={ROUTES.LOGIN} className={cn(NAV_LINK_CLASS, 'text-viratec-light/72')}>
+                {common.logIn}
+              </Link>
+            )}
             <Link
               to={ROUTES.CONTACT}
               className={linkButtonClassName({

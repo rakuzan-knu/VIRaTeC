@@ -1,3 +1,7 @@
+import { useEffect, useRef, useState, type RefObject } from 'react';
+import { ENV } from '../config/env';
+import { INTL_LOCALE, useLocale } from '../i18n';
+
 const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
 
 export type GoogleButtonText = 'signin_with' | 'signup_with' | 'continue_with';
@@ -59,4 +63,61 @@ export function loadGoogleIdentity(): Promise<GoogleAccountsId> {
   });
 
   return scriptPromise;
+}
+
+const GOOGLE_BUTTON_MAX_WIDTH = 400;
+
+interface GoogleButtonOptions {
+  text: GoogleButtonText;
+  onCredential: (credential: string) => void;
+}
+
+export function useGoogleButton(
+  containerRef: RefObject<HTMLDivElement | null>,
+  { text, onCredential }: GoogleButtonOptions,
+) {
+  const [loadFailed, setLoadFailed] = useState(false);
+  const onCredentialRef = useRef(onCredential);
+  const locale = useLocale();
+
+  useEffect(() => {
+    onCredentialRef.current = onCredential;
+  }, [onCredential]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!ENV.GOOGLE_CLIENT_ID || !container) return;
+    let cancelled = false;
+
+    loadGoogleIdentity()
+      .then((googleId) => {
+        if (cancelled) return;
+        googleId.initialize({
+          client_id: ENV.GOOGLE_CLIENT_ID,
+          callback: ({ credential }) => onCredentialRef.current(credential),
+          ux_mode: 'popup',
+          context: text === 'signup_with' ? 'signup' : text === 'continue_with' ? 'use' : 'signin',
+        });
+        container.replaceChildren();
+        googleId.renderButton(container, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          shape: 'rectangular',
+          logo_alignment: 'center',
+          text,
+          width: Math.min(container.clientWidth, GOOGLE_BUTTON_MAX_WIDTH),
+          locale: INTL_LOCALE[locale],
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setLoadFailed(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [containerRef, text, locale]);
+
+  return { isConfigured: Boolean(ENV.GOOGLE_CLIENT_ID), loadFailed };
 }

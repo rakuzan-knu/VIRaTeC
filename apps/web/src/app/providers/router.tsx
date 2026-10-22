@@ -7,13 +7,15 @@ import {
 import { HomePage } from '@/pages/home';
 import { RegisterPage } from '@/pages/register';
 import { GuestRoute } from './GuestRoute';
-import { RootLayout, RouteFallback } from './RootLayout';
+import { ProtectedRoute } from './ProtectedRoute';
+import { RootLayout, RouteError, RouteFallback } from './RootLayout';
 import { ROUTES } from '@/shared/config/routes';
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     hydrateFallbackElement: <RouteFallback />,
+    errorElement: <RouteError />,
     children: [
       {
         path: ROUTES.HOME,
@@ -52,6 +54,54 @@ const router = createBrowserRouter([
             ),
           };
         },
+      },
+      {
+        path: ROUTES.ADMIN,
+        lazy: async () => {
+          const { AdminLayout } = await import('@/pages/admin');
+          return {
+            element: (
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            ),
+          };
+        },
+        children: [
+          {
+            index: true,
+            lazy: async () => ({ Component: (await import('@/pages/admin')).AdminDashboardPage }),
+          },
+          {
+            path: ROUTES.ADMIN_USERS,
+            lazy: async () => ({ Component: (await import('@/pages/admin')).AdminUsersPage }),
+          },
+          {
+            path: ROUTES.ADMIN_AUDIT,
+            lazy: async () => ({ Component: (await import('@/pages/admin')).AdminAuditPage }),
+          },
+        ],
+      },
+      {
+        path: ROUTES.ACCOUNT,
+        lazy: async () => {
+          const { AccountPage } = await import('@/pages/account');
+          return {
+            element: (
+              <ProtectedRoute>
+                <AccountPage />
+              </ProtectedRoute>
+            ),
+          };
+        },
+      },
+      {
+        path: ROUTES.PEOPLE,
+        lazy: async () => ({ Component: (await import('@/pages/people')).PeoplePage }),
+      },
+      {
+        path: ROUTES.PERSON,
+        lazy: async () => ({ Component: (await import('@/pages/person')).PersonPage }),
       },
       {
         path: ROUTES.ABOUT_INITIATIVE,

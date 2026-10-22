@@ -32,6 +32,8 @@ const NAV_TEXT = defineMessages({
     viratecDescription: 'Virtual Innovative Research & Technology Community',
     globalCollaboration: 'Global Collaboration Framework',
     globalCollaborationDescription: 'How we partner with universities around the world',
+    people: 'Community members',
+    peopleDescription: 'Find researchers, mentors and partners to collaborate with',
     research: 'Research & Projects',
     researchAreas: 'Research Areas',
     researchAreasDescription: 'Cybersecurity, cross-cultural competence and more',
@@ -54,6 +56,8 @@ const NAV_TEXT = defineMessages({
     viratecDescription: 'Віртуальна інноваційна дослідницька та технологічна спільнота',
     globalCollaboration: 'Рамкова програма глобальної співпраці',
     globalCollaborationDescription: 'Як ми співпрацюємо з університетами світу',
+    people: 'Учасники спільноти',
+    peopleDescription: 'Знайдіть дослідників, менторів і партнерів для співпраці',
     research: 'Дослідження та проєкти',
     researchAreas: 'Напрями досліджень',
     researchAreasDescription: 'Кібербезпека, міжкультурна компетентність та інше',
@@ -75,6 +79,11 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
   const home: NavLinkItem = { label: text.home, to: ROUTES.HOME };
   const publications: NavLinkItem = { label: text.publications, to: ROUTES.PUBLICATIONS };
   const opportunities: NavLinkItem = { label: text.opportunities, to: ROUTES.OPPORTUNITIES };
+  const people: NavLinkItem = {
+    label: text.people,
+    to: ROUTES.PEOPLE,
+    description: text.peopleDescription,
+  };
 
   const about: NavGroup = {
     id: 'about',
@@ -91,6 +100,7 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
         to: ROUTES.GLOBAL_COLLABORATION,
         description: text.globalCollaborationDescription,
       },
+      people,
     ],
   };
 
@@ -120,7 +130,13 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
   const explore: NavGroup = {
     id: 'explore',
     label: text.explore,
-    items: [home, publications, opportunities, { label: text.contact, to: ROUTES.CONTACT }],
+    items: [
+      home,
+      publications,
+      opportunities,
+      { label: people.label, to: people.to },
+      { label: text.contact, to: ROUTES.CONTACT },
+    ],
   };
 
   return {

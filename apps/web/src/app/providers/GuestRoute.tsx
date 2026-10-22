@@ -1,18 +1,19 @@
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useSessionStore } from '@/entities/session';
+import { useLocation } from 'react-router-dom';
+import { readAuthNavigationState, useSessionStore } from '@/entities/session';
 import { ROUTES } from '@/shared/config/routes';
+import { Redirect } from './Redirect';
 
 interface GuestRouteProps {
   children: ReactNode;
 }
 
 export function GuestRoute({ children }: GuestRouteProps) {
-  const token = useSessionStore((state) => state.token);
+  const location = useLocation();
+  const hasSession = useSessionStore((state) => state.hasSession);
 
-  // Якщо користувач вже авторизований — перенаправляємо на головну
-  if (token) {
-    return <Navigate to={ROUTES.HOME} replace />;
+  if (hasSession) {
+    return <Redirect to={readAuthNavigationState(location.state).from ?? ROUTES.HOME} />;
   }
 
   return <>{children}</>;

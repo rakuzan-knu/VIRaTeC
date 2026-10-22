@@ -5,25 +5,53 @@ import type { LegalDocumentContent } from './types';
 export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
   en: {
     title: 'Cookie Policy',
-    accent: 'Spoiler: no cookies here.',
+    accent: 'Only the cookies that keep you signed in.',
     description:
-      'VIRaTeC does not set its own cookies and does not track you. We keep just two small notes in your browser so the site remembers your language and your sign-in.',
+      'VIRaTeC does not track you. We use a few strictly necessary cookies to keep your sign-in secure, and a few small notes in your browser for your language and accounts.',
     sections: [
       {
         id: 'short-answer',
         title: 'The short answer',
         summary:
-          'No first-party cookies, no analytics, no ads. That is why you never see a cookie banner here.',
+          'Only strictly necessary sign-in and security cookies. No analytics, no ads, no tracking — that is why you never see a cookie banner here.',
         paragraphs: [
           'Cookies are small text files that websites store in your browser. Many sites use them to track visitors across the web. We do not.',
-          'The VIRaTeC Platform does not set any first-party cookies and does not use analytics, advertising or social media tracking cookies. Because we only use storage that is strictly necessary for features you request, no consent banner is required.',
+          'The VIRaTeC Platform sets only first-party cookies that are strictly necessary to sign you in and protect your account. They cannot be read by JavaScript, are sent only to VIRaTeC over HTTPS and are never used for analytics, advertising or tracking. Strictly necessary cookies do not require consent, so no banner is shown.',
         ],
+        table: {
+          columns: ['Cookie', 'Purpose', 'Type', 'Kept until'],
+          rows: [
+            [
+              'vt_at (__Host-vt_at)',
+              'Short-lived proof that you are signed in',
+              'Authentication, strictly necessary',
+              '15 minutes or until you sign out',
+            ],
+            [
+              'vt_rt (__Secure-vt_rt)',
+              'Renews your sign-in without asking for the password again',
+              'Authentication, strictly necessary',
+              '7 days or until you sign out',
+            ],
+            [
+              'vt_csrf (__Host-vt_csrf)',
+              'Protects your account from forged requests sent by other websites',
+              'Security, strictly necessary',
+              'You close the browser',
+            ],
+            [
+              'vt_mfa (__Secure-vt_mfa)',
+              'Links the two steps of sign-in when two-step verification is on',
+              'Security, strictly necessary',
+              '5 minutes',
+            ],
+          ],
+        },
       },
       {
         id: 'local-storage',
-        title: 'What we store instead',
-        summary:
-          'Two entries in your browser’s local storage. They never leave your device except to sign you in.',
+        title: 'What we store in your browser',
+        summary: 'Three entries in your browser’s local storage. They never leave your device.',
         paragraphs: [
           'We use your browser’s local storage — a similar technology that stays on your device and is not sent with every request. Here is the full list:',
         ],
@@ -37,10 +65,16 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
               'You change the language or clear site data',
             ],
             [
-              'viratec_token',
-              'Keeps you signed in after you log in',
+              'viratec_session',
+              'A yes/no note that you are signed in, so the site knows to restore your session (not a password or token)',
               'Authentication, strictly necessary',
               'You sign out or clear site data',
+            ],
+            [
+              'viratec_known_accounts',
+              'Names and emails of accounts used on this device, for quick account switching (no passwords)',
+              'Preference, functional',
+              'You remove the account from the list or clear site data',
             ],
           ],
         },
@@ -83,25 +117,53 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
   },
   uk: {
     title: 'Політика щодо cookie',
-    accent: 'Спойлер: cookie тут немає.',
+    accent: 'Лише cookie, що зберігають ваш вхід.',
     description:
-      'VIRaTeC не встановлює власних cookie та не стежить за вами. Ми зберігаємо у вашому браузері лише дві невеликі нотатки, щоб сайт пам’ятав мову та ваш вхід.',
+      'VIRaTeC не стежить за вами. Ми використовуємо кілька суворо необхідних cookie, щоб ваш вхід був захищеним, і кілька невеликих нотаток у браузері для мови та облікових записів.',
     sections: [
       {
         id: 'short-answer',
         title: 'Коротка відповідь',
         summary:
-          'Жодних власних cookie, аналітики чи реклами. Тому ви й не бачите тут банера cookie.',
+          'Лише суворо необхідні cookie для входу та безпеки. Жодної аналітики, реклами чи стеження — тому ви й не бачите тут банера cookie.',
         paragraphs: [
           'Cookie — це невеликі текстові файли, які сайти зберігають у вашому браузері. Багато сайтів використовують їх, щоб відстежувати відвідувачів в інтернеті. Ми — ні.',
-          'Платформа VIRaTeC не встановлює власних cookie і не використовує аналітичних, рекламних чи соціальних трекінгових cookie. Оскільки ми використовуємо лише сховище, суворо необхідне для функцій, які ви самі запитуєте, банер згоди не потрібен.',
+          'Платформа VIRaTeC встановлює лише власні cookie, суворо необхідні для входу та захисту облікового запису. JavaScript не може їх прочитати, вони надсилаються лише до VIRaTeC через HTTPS і ніколи не використовуються для аналітики, реклами чи стеження. Суворо необхідні cookie не потребують згоди, тому банер не показується.',
         ],
+        table: {
+          columns: ['Cookie', 'Призначення', 'Тип', 'Зберігається до'],
+          rows: [
+            [
+              'vt_at (__Host-vt_at)',
+              'Короткочасне підтвердження того, що ви увійшли',
+              'Автентифікація, суворо необхідне',
+              '15 хвилин або до виходу',
+            ],
+            [
+              'vt_rt (__Secure-vt_rt)',
+              'Оновлює вхід, не запитуючи пароль повторно',
+              'Автентифікація, суворо необхідне',
+              '7 днів або до виходу',
+            ],
+            [
+              'vt_csrf (__Host-vt_csrf)',
+              'Захищає обліковий запис від підроблених запитів з інших сайтів',
+              'Безпека, суворо необхідне',
+              'Закриття браузера',
+            ],
+            [
+              'vt_mfa (__Secure-vt_mfa)',
+              'Пов’язує два кроки входу, коли ввімкнено двоетапну перевірку',
+              'Безпека, суворо необхідне',
+              '5 хвилин',
+            ],
+          ],
+        },
       },
       {
         id: 'local-storage',
-        title: 'Що ми зберігаємо натомість',
-        summary:
-          'Два записи в локальному сховищі браузера. Вони не залишають ваш пристрій, окрім як для входу.',
+        title: 'Що ми зберігаємо в браузері',
+        summary: 'Три записи в локальному сховищі браузера. Вони не залишають ваш пристрій.',
         paragraphs: [
           'Ми використовуємо локальне сховище браузера (local storage) — схожу технологію, дані якої залишаються на вашому пристрої та не надсилаються з кожним запитом. Ось повний перелік:',
         ],
@@ -115,10 +177,16 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
               'Зміни мови або очищення даних сайту',
             ],
             [
-              'viratec_token',
-              'Зберігає вхід після авторизації',
+              'viratec_session',
+              'Позначка «так/ні» про те, що ви увійшли, щоб сайт відновив сеанс (не пароль і не токен)',
               'Автентифікація, суворо необхідне',
               'Виходу з облікового запису або очищення даних сайту',
+            ],
+            [
+              'viratec_known_accounts',
+              'Імена та адреси облікових записів, використаних на цьому пристрої, для швидкого перемикання (без паролів)',
+              'Налаштування, функціональне',
+              'Видалення запису зі списку або очищення даних сайту',
             ],
           ],
         },

@@ -16,10 +16,12 @@
     "test": "pnpm build && node --test tests/*.test.cjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "owner:assign": "node dist/cli/assign-owner.js"
   },
   "dependencies": {
     "@fastify/compress": "^8.0.1",
+    "@fastify/cookie": "^11",
     "@fastify/helmet": "^13.0.1",
     "@fastify/static": "^9.0.1",
     "@nestjs/common": "^11.0.11",
@@ -45,6 +47,7 @@
     "pino-http": "^10.4.0",
     "pino-pretty": "^13.0.0",
     "prisma": "^6.4.1",
+    "qrcode": "^1.5",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^3.24.2"
@@ -55,6 +58,7 @@
     "@types/node": "^22.13.9",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
+    "@types/qrcode": "^1.5",
     "@viratec/tsconfig": "workspace:*",
     "typescript": "^5.9.3"
   }

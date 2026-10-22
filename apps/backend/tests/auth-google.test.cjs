@@ -48,6 +48,7 @@ function setup({
         },
       },
       refreshToken: {
+        deleteMany: async () => ({ count: 0 }),
         create: async () => {
           calls.refreshTokens++;
         },

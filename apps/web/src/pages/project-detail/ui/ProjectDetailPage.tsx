@@ -1,5 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { ROUTES, buildProjectPath } from '@/shared/config/routes';
+import { SavedItemKind } from '@viratec/contracts';
+import { SaveButton } from '@/features/save-item';
+import { ROUTES, buildProjectPath, buildPersonPath } from '@/shared/config/routes';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { InfoCard } from '@/shared/ui/info-card';
@@ -28,6 +30,7 @@ const PROJECT_DETAIL_MESSAGES = defineMessages({
     projects: 'Projects',
     project: 'Project',
     area: 'Area',
+    lead: 'Project lead',
     aboutProject: 'About the project',
     projectFacts: 'Project facts',
     joinProject: 'Join a project',
@@ -52,6 +55,7 @@ const PROJECT_DETAIL_MESSAGES = defineMessages({
     projects: 'Проєкти',
     project: 'Проєкт',
     area: 'Напрям',
+    lead: 'Керівник проєкту',
     aboutProject: 'Про проєкт',
     projectFacts: 'Інформація про проєкт',
     joinProject: 'Долучитися до проєкту',
@@ -82,6 +86,11 @@ function ProjectBody({ project }: { project: Project }) {
     { label: common.status, value: labels.status[project.status] },
     { label: common.year, value: String(getProjectYear(project)) },
     { label: labels.faculties, value: getProjectFaculties(project, labels.faculty) },
+    {
+      label: t.lead,
+      value: project.lead?.name ?? '',
+      to: project.lead ? buildPersonPath(project.lead.id) : undefined,
+    },
   ].filter((fact) => fact.value.length > 0);
   const paragraphs = project.description.split(/\n{2,}/).filter(Boolean);
 
@@ -196,7 +205,9 @@ export function ProjectDetailPage() {
       description={`${labels.status[project.status]} · ${getProjectYear(project)}`}
       descriptionClassName="lg:max-w-[720px]"
       className="lg:pb-16"
-    />
+    >
+      <SaveButton item={{ kind: SavedItemKind.PROJECT, refId: project.id }} />
+    </PageIntro>
   ) : (
     <PageIntro
       breadcrumb={breadcrumbRoot}

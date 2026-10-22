@@ -15,10 +15,48 @@ enum UserRole {
   PARTNER
 }
 
+enum StaffRole {
+  NONE
+  ADMIN
+  OWNER
+}
+
+enum AdminPermission {
+  DASHBOARD_VIEW
+  USERS_VIEW
+  USERS_MANAGE
+  CONTENT_VIEW
+  CONTENT_EDIT
+  CONTENT_PUBLISH
+  EVENTS_MANAGE
+  MEDIA_MANAGE
+  AUDIT_VIEW
+}
+
 enum FacultyDivision {
   FIT
   NNIF
   OTHER
+}
+
+enum StudyLevel {
+  BACHELOR
+  MASTER
+  PHD
+  FACULTY
+  RESEARCHER
+  OTHER
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  MEMBERS
+  PRIVATE
+}
+
+enum SavedItemKind {
+  PUBLICATION
+  PROJECT
 }
 
 enum ProjectStatus {
@@ -37,38 +75,147 @@ enum EventType {
 }
 
 model User {
-  id           String          @id @default(uuid())
-  email        String          @unique
+  id           String            @id @default(uuid())
+  email        String            @unique
   passwordHash String?
-  googleId     String?         @unique
+  googleId     String?           @unique
   name         String
-  role         UserRole        @default(STUDENT)
-  faculty      FacultyDivision @default(FIT)
+  role         UserRole          @default(STUDENT)
+  faculty      FacultyDivision   @default(FIT)
   department   String?
   bio          String?
   avatarUrl    String?
-  skills       String[]        @default([])
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  skills       String[]          @default([])
+  studyLevel   StudyLevel?
+  studyYear    Int?
+  institution  String?
+  country      String?
+  languages    Json              @default("[]")
+  links        Json              @default("{}")
+  openTo       String[]          @default([])
+  visibility   ProfileVisibility @default(MEMBERS)
+  showEmail    Boolean           @default(false)
+  isBlocked    Boolean           @default(false)
+
+  staffRole      StaffRole         @default(NONE)
+  permissions    AdminPermission[] @default([])
+  staffExpiresAt DateTime?
+
+  twoFactorEnabled       Boolean @default(false)
+  twoFactorSecret        String?
+  twoFactorPendingSecret String?
+  twoFactorLastStep      Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   papers        ResearchPaper[]
   projects      Project[]
   posts         CommunityPost[]
   refreshTokens RefreshToken[]
+  avatar        UserAvatar?
+  savedItems    SavedItem[]
+  backupCodes   BackupCode[]
+  mfaChallenges MfaChallenge[]
+  auditActions  AuditLog[]      @relation("AuditActor")
 
   @@map("users")
 }
 
-model RefreshToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String
+model UserAvatar {
+  userId    String   @id
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  revoked   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  data      Bytes
+  mimeType  String
+  updatedAt DateTime @updatedAt
 
+  @@map("user_avatars")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId  String
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  revoked    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+
+  mfaVerifiedAt DateTime?
+  elevatedUntil DateTime?
+
+  @@index([userId, sessionId])
   @@map("refresh_tokens")
+}
+
+model BackupCode {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("backup_codes")
+}
+
+model MfaChallenge {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  attempts   Int       @default(0)
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@map("mfa_challenges")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json     @default("{}")
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorId])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@map("rate_limit_buckets")
+}
+
+model SavedItem {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      SavedItemKind
+  refId     String
+  createdAt DateTime      @default(now())
+
+  @@unique([userId, kind, refId])
+  @@map("saved_items")
 }
 
 model ResearchPaper {

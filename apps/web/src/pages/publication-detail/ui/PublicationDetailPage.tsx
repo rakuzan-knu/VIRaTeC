@@ -1,4 +1,6 @@
 import { useParams } from 'react-router-dom';
+import { SavedItemKind } from '@viratec/contracts';
+import { SaveButton } from '@/features/save-item';
 import { ROUTES } from '@/shared/config/routes';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -222,7 +224,9 @@ export function PublicationDetailPage() {
           description={publication.detail?.lead ?? publication.source}
           descriptionClassName="lg:max-w-[680px]"
           className="lg:pb-16"
-        />
+        >
+          <SaveButton item={{ kind: SavedItemKind.PUBLICATION, refId: publication.slug }} />
+        </PageIntro>
       }
     >
       <PublicationBody publication={publication} />

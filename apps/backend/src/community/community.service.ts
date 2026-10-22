@@ -14,7 +14,6 @@ export class CommunityService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
             role: true,
             avatarUrl: true,
@@ -33,7 +32,6 @@ export class CommunityService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
             role: true,
             avatarUrl: true,
@@ -60,7 +58,6 @@ export class CommunityService {
           select: {
             id: true,
             name: true,
-            email: true,
             faculty: true,
             role: true,
             avatarUrl: true,
