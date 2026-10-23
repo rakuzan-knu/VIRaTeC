@@ -92,3 +92,16 @@ export function RelatedPublicationCard({ publication }: RelatedPublicationCardPr
     </Link>
   );
 }
+
+export function PublicationCardSkeleton() {
+  return (
+    <div
+      aria-hidden="true"
+      className="flex h-full animate-pulse flex-col gap-4 rounded-[24px] border border-white/8 bg-white/4 p-6 lg:min-h-[254px] lg:rounded-[28px] lg:p-8"
+    >
+      <span className="h-4 w-12 rounded bg-white/8" />
+      <span className="h-6 w-3/4 rounded bg-white/8" />
+      <span className="h-4 w-1/2 rounded bg-white/6" />
+    </div>
+  );
+}

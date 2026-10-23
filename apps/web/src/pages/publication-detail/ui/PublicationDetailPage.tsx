@@ -19,6 +19,7 @@ import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { useSeo } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
+import { ListFeedback } from '@/shared/ui/list-feedback';
 
 const PUBLICATION_DETAIL_MESSAGES = defineMessages({
   en: {
@@ -29,6 +30,9 @@ const PUBLICATION_DETAIL_MESSAGES = defineMessages({
     aboutPublication: 'About this publication',
     downloadPdf: 'Download PDF',
     openSource: 'Open source',
+    loadingTitle: 'Loading publication…',
+    loadingDescription: 'Fetching the publication.',
+    loadError: 'We couldn’t load this publication.',
     notFoundTitle: 'Publication not found',
     notFoundDescription: 'The publication may have been moved or is no longer available.',
     allPublications: 'All publications',
@@ -43,6 +47,9 @@ const PUBLICATION_DETAIL_MESSAGES = defineMessages({
     aboutPublication: 'Про публікацію',
     downloadPdf: 'Завантажити PDF',
     openSource: 'Відкрити джерело',
+    loadingTitle: 'Завантаження публікації…',
+    loadingDescription: 'Отримуємо публікацію.',
+    loadError: 'Не вдалося завантажити цю публікацію.',
     notFoundTitle: 'Публікацію не знайдено',
     notFoundDescription: 'Можливо, публікацію перемістили або вона більше не доступна.',
     allPublications: 'Усі публікації',
@@ -171,15 +178,16 @@ function PublicationBody({ publication }: { publication: Publication }) {
 
 export function PublicationDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const publications = usePublications();
+  const { publications, isPending, isError, retry } = usePublications();
   const publication = findPublication(publications, slug);
   const t = useLocalized(PUBLICATION_DETAIL_MESSAGES);
+  const common = useCommonMessages();
   const labels = usePublicationLabels();
-  useSeo(publication?.title ?? t.notFoundTitle, {
+  useSeo(publication?.title ?? (isPending ? t.loadingTitle : t.notFoundTitle), {
     description: publication && (publication.detail?.lead ?? publication.excerpt),
     image: publication?.image,
     type: 'article',
-    noindex: !publication,
+    noindex: !publication && !isPending,
   });
 
   const breadcrumbRoot: BreadcrumbItem[] = [
@@ -193,21 +201,27 @@ export function PublicationDetailPage() {
         intro={
           <PageIntro
             breadcrumb={breadcrumbRoot}
-            title={t.notFoundTitle}
-            description={t.notFoundDescription}
+            title={isPending ? t.loadingTitle : isError ? t.loadError : t.notFoundTitle}
+            description={isPending ? t.loadingDescription : t.notFoundDescription}
             className="lg:pb-16"
           >
-            <LinkButton
-              to={ROUTES.PUBLICATIONS}
-              variant="secondary"
-              className="mt-2 w-full sm:w-auto"
-            >
-              {t.allPublications}
-            </LinkButton>
+            {!isPending && !isError && (
+              <LinkButton
+                to={ROUTES.PUBLICATIONS}
+                variant="secondary"
+                className="mt-2 w-full sm:w-auto"
+              >
+                {t.allPublications}
+              </LinkButton>
+            )}
           </PageIntro>
         }
       >
-        {null}
+        {isError && (
+          <PageSection>
+            <ListFeedback message={t.loadError} actionLabel={common.tryAgain} onAction={retry} />
+          </PageSection>
+        )}
       </PageLayout>
     );
   }

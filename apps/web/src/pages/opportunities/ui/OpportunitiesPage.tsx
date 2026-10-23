@@ -13,6 +13,7 @@ import {
   type Opportunity,
 } from '../model/content';
 import { useActiveSection } from '../lib/useActiveSection';
+import { useUpcomingEvents } from '../model/useUpcomingEvents';
 
 const SECTION_TITLE_CLASS =
   'font-display text-[30px] leading-[36px] font-medium tracking-[-0.025em] text-white lg:text-[44px] lg:leading-[50px]';
@@ -156,6 +157,7 @@ function AudienceSection({ group }: { group: AudienceGroup }) {
 export function OpportunitiesPage() {
   const content = useLocalized(OPPORTUNITIES_CONTENT);
   const common = useCommonMessages();
+  const events = useUpcomingEvents();
   useSeo(content.documentTitle);
 
   return (
@@ -174,11 +176,13 @@ export function OpportunitiesPage() {
         </PageIntro>
       }
     >
-      <EventsSection
-        title={content.eventsTitle}
-        description={content.eventsDescription}
-        events={content.events}
-      />
+      {events.length > 0 && (
+        <EventsSection
+          title={content.eventsTitle}
+          description={content.eventsDescription}
+          events={events}
+        />
+      )}
 
       {content.audienceGroups.map((group) => (
         <AudienceSection key={group.id} group={group} />

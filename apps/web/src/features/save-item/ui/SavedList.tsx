@@ -50,7 +50,7 @@ const LINK_CLASS =
 export function SavedList() {
   const t = useLocalized(SAVED_MESSAGES);
   const locale = useLocale();
-  const publications = usePublications();
+  const { publications, isPending: isPublicationsPending } = usePublications();
   const { data: items, isPending, isError } = useSavedItems();
   const toggle = useToggleSaved();
   const dateFormat = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
@@ -58,7 +58,7 @@ export function SavedList() {
     month: 'short',
   });
 
-  if (isPending) {
+  if (isPending || isPublicationsPending) {
     return (
       <p className="flex items-center gap-2 text-sm text-viratec-muted">
         <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />

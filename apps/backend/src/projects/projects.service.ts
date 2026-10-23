@@ -1,13 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
+import { ProjectTranslationsSchema } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+
+const withTranslations = <T extends { translations: Prisma.JsonValue }>(project: T) => ({
+  ...project,
+  translations: project.translations ? ProjectTranslationsSchema.parse(project.translations) : null,
+});
 
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(tag?: string) {
-    return this.prisma.project.findMany({
+    const projects = await this.prisma.project.findMany({
       where: tag ? { tags: { has: tag } } : undefined,
       include: {
         lead: {
@@ -20,6 +27,7 @@ export class ProjectsService {
       },
       orderBy: { createdAt: 'desc' },
     });
+    return projects.map(withTranslations);
   }
 
   async findById(id: string) {
@@ -40,11 +48,11 @@ export class ProjectsService {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
 
-    return project;
+    return withTranslations(project);
   }
 
   async create(dto: CreateProjectDto, leadId: string) {
-    return this.prisma.project.create({
+    const project = await this.prisma.project.create({
       data: {
         ...dto,
         leadId,
@@ -59,5 +67,6 @@ export class ProjectsService {
         },
       },
     });
+    return withTranslations(project);
   }
 }

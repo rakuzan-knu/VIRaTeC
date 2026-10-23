@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { AdminPermission, EventType, ProjectStatus, StaffRole, UserRole } from './enums.js';
+import {
+  AdminPermission,
+  EventType,
+  ProjectStatus,
+  PublicationType,
+  StaffRole,
+  UserRole,
+} from './enums.js';
 
 export const ALL_ADMIN_PERMISSIONS = Object.values(AdminPermission);
 
@@ -49,6 +56,10 @@ export const AdminMetricsSchema = z.object({
     byType: z.record(z.nativeEnum(EventType), z.number()),
   }),
   research: z.object({ papers: z.number() }),
+  publications: z.object({
+    total: z.number(),
+    byType: z.record(z.nativeEnum(PublicationType), z.number()),
+  }),
   community: z.object({ posts: z.number() }),
   sessions: z.object({ active: z.number() }),
   generatedAt: z.string(),
