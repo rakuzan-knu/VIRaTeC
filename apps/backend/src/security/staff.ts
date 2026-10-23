@@ -1,5 +1,7 @@
 import { AdminPermission, ALL_ADMIN_PERMISSIONS, StaffRole } from '@viratec/contracts';
 
+export const MAX_OWNERS = 3;
+
 export interface StaffFields {
   staffRole: StaffRole | `${StaffRole}`;
   permissions: (AdminPermission | `${AdminPermission}`)[];
