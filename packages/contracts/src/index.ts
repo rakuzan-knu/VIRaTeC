@@ -4,5 +4,6 @@ export * from './profile.js';
 export * from './research.js';
 export * from './projects.js';
 export * from './events.js';
+export * from './publications.js';
 export * from './community.js';
 export * from './admin.js';

@@ -122,12 +122,12 @@ export function AdminDashboardPage() {
               value={data.events.total}
               details={[d.upcoming(data.events.upcoming), d.past(data.events.past)]}
             />
-            <MetricCard icon={BookOpen} label={d.papers} value={data.research.papers} />
+            <MetricCard icon={BookOpen} label={d.publications} value={data.publications.total} />
             <MetricCard icon={MessagesSquare} label={d.posts} value={data.community.posts} />
             <MetricCard icon={Activity} label={d.sessions} value={data.sessions.active} />
             <MetricCard icon={UserX} label={d.blocked} value={data.users.blocked} />
           </ul>
-          <div className="grid gap-4 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <Breakdown
               title={d.usersByRole}
               rows={Object.entries(data.users.byRole).map(([role, value]) => ({
@@ -146,6 +146,13 @@ export function AdminDashboardPage() {
               title={d.eventsByType}
               rows={Object.entries(data.events.byType).map(([type, value]) => ({
                 label: t.eventTypes[type as keyof typeof t.eventTypes],
+                value,
+              }))}
+            />
+            <Breakdown
+              title={d.publicationsByType}
+              rows={Object.entries(data.publications.byType).map(([type, value]) => ({
+                label: t.publicationTypes[type as keyof typeof t.publicationTypes],
                 value,
               }))}
             />

@@ -6,10 +6,18 @@ import { RadioList } from '@/shared/ui/radio-list';
 import { BottomSheet, BottomSheetSection } from '@/shared/ui/bottom-sheet';
 import { ListFeedback, LoadMoreButton } from '@/shared/ui/list-feedback';
 import { linkButtonClassName } from '@/shared/ui/link-button';
-import { FeaturedPublicationCard, PublicationCard } from '@/entities/publication';
+import {
+  FeaturedPublicationCard,
+  PublicationCard,
+  PublicationCardSkeleton,
+} from '@/entities/publication';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { useListingOptions, usePublicationListing } from '../model/usePublicationListing';
+import {
+  PAGE_SIZE,
+  useListingOptions,
+  usePublicationListing,
+} from '../model/usePublicationListing';
 import { useSeo } from '@/shared/lib';
 import { countUk, defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
@@ -27,6 +35,7 @@ const PUBLICATIONS_MESSAGES = defineMessages({
     count: (count: number) => `${count} ${count === 1 ? 'result' : 'results'}`,
     showCount: (count: number) => `Show ${count} ${count === 1 ? 'result' : 'results'}`,
     empty: 'Nothing matches your search yet.',
+    loadError: 'Could not load publications.',
   },
   uk: {
     documentTitle: 'Публікації',
@@ -43,6 +52,7 @@ const PUBLICATIONS_MESSAGES = defineMessages({
     showCount: (count: number) =>
       `Показати ${countUk(count, { one: 'результат', few: 'результати', many: 'результатів' })}`,
     empty: 'За вашим запитом поки нічого не знайдено.',
+    loadError: 'Не вдалося завантажити публікації.',
   },
 });
 
@@ -115,7 +125,21 @@ export function PublicationsPage() {
         </div>
 
         <div className="flex flex-col gap-6 pt-6 pb-[72px] lg:gap-8 lg:pt-10 lg:pb-[120px]">
-          {listing.totalCount === 0 ? (
+          {listing.isError ? (
+            <ListFeedback
+              message={t.loadError}
+              actionLabel={common.tryAgain}
+              onAction={listing.retry}
+            />
+          ) : listing.isLoading ? (
+            <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+              {Array.from({ length: PAGE_SIZE }, (_, index) => (
+                <li key={index}>
+                  <PublicationCardSkeleton />
+                </li>
+              ))}
+            </ul>
+          ) : listing.totalCount === 0 ? (
             <ListFeedback
               message={t.empty}
               actionLabel={common.resetFilters}

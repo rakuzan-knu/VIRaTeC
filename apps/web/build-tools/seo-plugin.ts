@@ -1,7 +1,8 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createServer, type Plugin, type ResolvedConfig, type Rollup } from 'vite';
-import type { Localized } from '../src/shared/i18n/model/types';
+import type { PublicationDto } from '@viratec/contracts';
+import type { Locale } from '../src/shared/i18n/model/types';
 import type { Publication } from '../src/entities/publication/model/types';
 import { ROUTES, buildPublicationPath } from '../src/shared/config/routes';
 import {
@@ -20,6 +21,8 @@ const HEAD_PLACEHOLDER = '<!--seo-head-->';
 const SEO_LOCALE = 'uk';
 const SPA_FALLBACK_FILE = 'spa.html';
 const PUBLICATIONS_MODULE = '/src/entities/publication/model/data.ts';
+const PUBLICATIONS_ENDPOINT = '/api/v1/publications';
+const API_TIMEOUT_MS = 15_000;
 
 interface HeadImage {
   url: string;
@@ -164,7 +167,32 @@ const staticPages = (site: Site): (PageHead & { path: string })[] =>
     ];
   });
 
-const loadPublications = async (config: ResolvedConfig) => {
+const fetchPublications = async (site: Site): Promise<PublicationDto[]> => {
+  const response = await fetch(site.url(PUBLICATIONS_ENDPOINT), {
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
+  });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  const body = (await response.json()) as { data?: PublicationDto[] };
+  if (!Array.isArray(body.data)) throw new Error('unexpected response shape');
+  return body.data;
+};
+
+const loadPublications = async (
+  config: ResolvedConfig,
+  site: Site,
+  warn: (message: string) => void,
+) => {
+  let publications: PublicationDto[];
+  try {
+    publications = await fetchPublications(site);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    warn(
+      `Publication pages were not prerendered: ${site.url(PUBLICATIONS_ENDPOINT)} is unavailable (${reason})`,
+    );
+    return [];
+  }
+
   const server = await createServer({
     configFile: false,
     root: config.root,
@@ -177,9 +205,9 @@ const loadPublications = async (config: ResolvedConfig) => {
 
   try {
     const module = (await server.ssrLoadModule(PUBLICATIONS_MODULE)) as {
-      PUBLICATIONS: Localized<Publication[]>;
+      toPublication: (dto: PublicationDto, locale: Locale) => Publication;
     };
-    return module.PUBLICATIONS[SEO_LOCALE];
+    return publications.map((dto) => module.toPublication(dto, SEO_LOCALE));
   } finally {
     await server.close();
   }
@@ -284,7 +312,11 @@ export function seoPlugin(siteUrl: string): Plugin {
 
       const pages = [
         ...staticPages(site),
-        ...publicationPages(site, await loadPublications(config), bundle),
+        ...publicationPages(
+          site,
+          await loadPublications(config, site, (message) => this.warn(message)),
+          bundle,
+        ),
       ];
 
       for (const page of pages) {

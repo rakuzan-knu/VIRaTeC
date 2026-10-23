@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { ResearchModule } from './research/research.module';
 import { ProjectsModule } from './projects/projects.module';
 import { EventsModule } from './events/events.module';
+import { PublicationsModule } from './publications/publications.module';
 import { CommunityModule } from './community/community.module';
 import { SecurityModule } from './security/security.module';
 import { AdminModule } from './admin/admin.module';
@@ -44,6 +45,7 @@ import { AdminModule } from './admin/admin.module';
     ResearchModule,
     ProjectsModule,
     EventsModule,
+    PublicationsModule,
     CommunityModule,
     AdminModule,
   ],

@@ -1,4 +1,11 @@
-import { AdminPermission, EventType, ProjectStatus, StaffRole, UserRole } from '@viratec/contracts';
+import {
+  AdminPermission,
+  EventType,
+  ProjectStatus,
+  PublicationType,
+  StaffRole,
+  UserRole,
+} from '@viratec/contracts';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 
 type PermissionCopy = Record<AdminPermission, { label: string; description: string }>;
@@ -126,13 +133,14 @@ const ADMIN_MESSAGES = defineMessages({
       events: 'Events and meetings',
       upcoming: (count: number) => `${count} upcoming`,
       past: (count: number) => `${count} past`,
-      papers: 'Research papers',
+      publications: 'Publications',
       posts: 'Community posts',
       sessions: 'Active sessions',
       blocked: 'Suspended users',
       usersByRole: 'Users by role',
       projectsByStatus: 'Projects by status',
       eventsByType: 'Events by type',
+      publicationsByType: 'Publications by type',
     },
     roles: {
       [UserRole.STUDENT]: 'Students',
@@ -154,6 +162,12 @@ const ADMIN_MESSAGES = defineMessages({
       [EventType.SEMINAR]: 'Seminars',
       [EventType.MEETUP]: 'Meetups',
     } satisfies Record<EventType, string>,
+    publicationTypes: {
+      [PublicationType.PAPER]: 'Papers',
+      [PublicationType.NEWS]: 'News',
+      [PublicationType.EVENT]: 'Event reports',
+      [PublicationType.MEDIA]: 'Media',
+    } satisfies Record<PublicationType, string>,
     users: {
       title: 'Users',
       subtitle: 'Search users, grant administrator access and keep the community safe.',
@@ -292,13 +306,14 @@ const ADMIN_MESSAGES = defineMessages({
       events: 'Події та зустрічі',
       upcoming: (count: number) => `${count} майбутніх`,
       past: (count: number) => `${count} минулих`,
-      papers: 'Наукові статті',
+      publications: 'Публікації',
       posts: 'Пости спільноти',
       sessions: 'Активні сеанси',
       blocked: 'Заблоковані користувачі',
       usersByRole: 'Користувачі за роллю',
       projectsByStatus: 'Проєкти за статусом',
       eventsByType: 'Події за типом',
+      publicationsByType: 'Публікації за типом',
     },
     roles: {
       [UserRole.STUDENT]: 'Студенти',
@@ -319,6 +334,12 @@ const ADMIN_MESSAGES = defineMessages({
       [EventType.WORKSHOP]: 'Воркшопи',
       [EventType.SEMINAR]: 'Семінари',
       [EventType.MEETUP]: 'Зустрічі',
+    },
+    publicationTypes: {
+      [PublicationType.PAPER]: 'Статті',
+      [PublicationType.NEWS]: 'Новини',
+      [PublicationType.EVENT]: 'Звіти про події',
+      [PublicationType.MEDIA]: 'Медіа',
     },
     users: {
       title: 'Користувачі',

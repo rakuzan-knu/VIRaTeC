@@ -42,6 +42,13 @@ export enum ProfileVisibility {
   PRIVATE = 'PRIVATE',
 }
 
+export enum PublicationType {
+  PAPER = 'PAPER',
+  NEWS = 'NEWS',
+  EVENT = 'EVENT',
+  MEDIA = 'MEDIA',
+}
+
 export enum SavedItemKind {
   PUBLICATION = 'PUBLICATION',
   PROJECT = 'PROJECT',

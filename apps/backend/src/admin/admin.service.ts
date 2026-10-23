@@ -11,6 +11,7 @@ import {
   AdminPermission,
   EventType,
   ProjectStatus,
+  PublicationType,
   StaffRole,
   UserRole,
   type AdminMetricsDto,
@@ -71,6 +72,8 @@ export class AdminService {
       upcomingEvents,
       eventsByType,
       papers,
+      totalPublications,
+      publicationsByType,
       posts,
       activeSessions,
     ] = await Promise.all([
@@ -93,6 +96,8 @@ export class AdminService {
       this.prisma.event.count({ where: { startDate: { gte: now } } }),
       this.prisma.event.groupBy({ by: ['type'], _count: { _all: true } }),
       this.prisma.researchPaper.count(),
+      this.prisma.publication.count(),
+      this.prisma.publication.groupBy({ by: ['type'], _count: { _all: true } }),
       this.prisma.communityPost.count(),
       this.prisma.refreshToken.findMany({
         where: { revoked: false, expiresAt: { gt: now } },
@@ -130,6 +135,13 @@ export class AdminService {
         ),
       },
       research: { papers },
+      publications: {
+        total: totalPublications,
+        byType: countBy(
+          Object.values(PublicationType),
+          publicationsByType.map((row) => ({ key: row.type, count: row._count._all })),
+        ),
+      },
       community: { posts },
       sessions: { active: activeSessions.length },
       generatedAt: now.toISOString(),

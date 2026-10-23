@@ -74,6 +74,13 @@ enum EventType {
   MEETUP
 }
 
+enum PublicationType {
+  PAPER
+  NEWS
+  EVENT
+  MEDIA
+}
+
 model User {
   id           String            @id @default(uuid())
   email        String            @unique
@@ -244,8 +251,9 @@ model Project {
   tags          String[]          @default([])
   repositoryUrl String?
   demoUrl       String?
-  leadId        String
-  lead          User              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  translations  Json?
+  leadId        String?
+  lead          User?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
@@ -264,10 +272,31 @@ model Event {
   endDate          DateTime
   capacity         Int?
   registrationLink String?
+  translations     Json?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
   @@map("events")
+}
+
+model Publication {
+  id           String          @id @default(uuid())
+  slug         String          @unique
+  type         PublicationType
+  year         Int
+  position     Int
+  isFeatured   Boolean         @default(false)
+  readMoreLink Boolean         @default(false)
+  coverKey     String?
+  sourceUrl    String?
+  pdfUrl       String?
+  detailSource String?
+  content      Json
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([position])
+  @@map("publications")
 }
 
 model CommunityPost {

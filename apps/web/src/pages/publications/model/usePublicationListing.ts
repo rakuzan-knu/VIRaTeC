@@ -58,7 +58,7 @@ export function usePublicationListing() {
   const [sort, setSort] = useState<SortOrder>('newest');
   const [search, setSearch] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const publications = usePublications();
+  const { publications, isPending, isError, retry } = usePublications();
   const deferredSearch = useDeferredValue(search);
 
   const query = deferredSearch.trim().toLowerCase();
@@ -113,5 +113,8 @@ export function usePublicationListing() {
     hasMore: items.length > visibleCount,
     loadMore: () => setVisibleCount((count) => count + PAGE_SIZE),
     activeFilterCount: Number(type !== 'all'),
+    isLoading: isPending,
+    isError,
+    retry,
   };
 }
