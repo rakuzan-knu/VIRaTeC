@@ -13,7 +13,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          'w-full h-11 px-4 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed',
+          'w-full h-11 px-4 text-sm font-medium rounded-lg transition-[background-color,color,opacity] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed',
           variant === 'primary' && 'bg-auth-navy hover:bg-auth-navy-hover text-white shadow-sm',
           variant === 'outline' &&
             'bg-white hover:bg-auth-surface border border-auth-border text-auth-label',

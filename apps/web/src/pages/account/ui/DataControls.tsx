@@ -124,7 +124,6 @@ function DataRow({
         <div className="flex shrink-0 gap-2">
           <button
             type="button"
-            autoFocus
             disabled={isPending}
             onClick={() => {
               onConfirm();
@@ -140,6 +139,7 @@ function DataRow({
           </button>
           <button
             type="button"
+            autoFocus
             onClick={() => setIsConfirming(false)}
             className={cn(buttonClass, 'border-transparent text-viratec-muted hover:text-white')}
           >

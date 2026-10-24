@@ -18,7 +18,7 @@ export function SearchField({ containerClassName, className, ...props }: SearchF
       <input
         type="search"
         className={cn(
-          'w-full min-w-0 bg-transparent text-[15px] leading-normal text-white outline-none placeholder:text-viratec-subtle',
+          'w-full min-w-0 bg-transparent text-[15px] leading-normal text-white outline-hidden placeholder:text-viratec-subtle',
           className,
         )}
         {...props}

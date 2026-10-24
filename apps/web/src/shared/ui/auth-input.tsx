@@ -12,7 +12,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         aria-invalid={error || undefined}
         className={cn(
-          'w-full h-11 px-3.5 py-2 text-sm bg-white border border-auth-border rounded-lg outline-none transition-all placeholder:text-auth-muted text-auth-heading',
+          'w-full h-11 px-3.5 py-2 text-sm bg-white border border-auth-border rounded-lg outline-hidden transition-[border-color,box-shadow] placeholder:text-auth-muted text-auth-heading',
           'focus:border-auth-progress focus:ring-1 focus:ring-auth-progress',
           error && 'border-auth-error focus:border-auth-error focus:ring-auth-error',
           className,
