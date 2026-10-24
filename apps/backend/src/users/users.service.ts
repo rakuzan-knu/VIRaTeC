@@ -56,7 +56,7 @@ export class UsersService {
     if (language) filters.push({ languages: { array_contains: [{ code: language }] } });
 
     const where: Prisma.UserWhereInput = { AND: filters };
-    const [total, users] = await this.prisma.$transaction([
+    const [total, users] = await Promise.all([
       this.prisma.user.count({ where }),
       this.prisma.user.findMany({
         where,

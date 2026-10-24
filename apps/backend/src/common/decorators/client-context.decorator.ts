@@ -12,15 +12,12 @@ interface RequestLike {
   ip?: string;
 }
 
-const firstHeader = (value: string | string[] | undefined) =>
-  Array.isArray(value) ? value[0] : value;
-
 export const Client = createParamDecorator((_: unknown, ctx: ExecutionContext): ClientContext => {
   const request = ctx.switchToHttp().getRequest<RequestLike>();
-  const forwardedFor = firstHeader(request.headers['x-forwarded-for'])?.split(',')[0]?.trim();
-  const userAgent = firstHeader(request.headers['user-agent'])?.slice(0, USER_AGENT_MAX);
+  const userAgent = request.headers['user-agent'];
   return {
-    userAgent: userAgent || null,
-    ipAddress: forwardedFor || request.ip || null,
+    userAgent:
+      (Array.isArray(userAgent) ? userAgent[0] : userAgent)?.slice(0, USER_AGENT_MAX) || null,
+    ipAddress: request.ip || null,
   };
 });

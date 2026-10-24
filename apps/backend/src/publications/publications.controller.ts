@@ -1,4 +1,5 @@
-import { Controller, Get, Param, ParseEnumPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseEnumPipe, Query, UseInterceptors } from '@nestjs/common';
+import { PublicCacheInterceptor } from '../common/interceptors/public-cache.interceptor';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { PublicationType } from '@viratec/contracts';
 import { PublicationsService } from './publications.service';
@@ -9,6 +10,7 @@ export class PublicationsController {
   constructor(private publicationsService: PublicationsService) {}
 
   @Get()
+  @UseInterceptors(PublicCacheInterceptor)
   @ApiOperation({ summary: 'List papers, news and event reports in both languages' })
   @ApiQuery({ name: 'type', enum: PublicationType, required: false })
   async findAll(
@@ -18,6 +20,7 @@ export class PublicationsController {
   }
 
   @Get(':slug')
+  @UseInterceptors(PublicCacheInterceptor)
   @ApiOperation({ summary: 'Get a publication by slug' })
   @ApiResponse({ status: 200, description: 'Publication retrieved' })
   @ApiResponse({ status: 404, description: 'Publication not found' })

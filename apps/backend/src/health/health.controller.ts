@@ -1,4 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
+import type { FastifyReply } from 'fastify';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -20,7 +21,7 @@ export class HealthController {
 
   @Get('ready')
   @ApiOperation({ summary: 'Readiness probe verifying DB connectivity' })
-  async ready() {
+  async ready(@Res({ passthrough: true }) reply: FastifyReply) {
     try {
       await this.prisma.$queryRaw`SELECT 1`;
       return {
@@ -29,6 +30,7 @@ export class HealthController {
         timestamp: new Date().toISOString(),
       };
     } catch {
+      reply.status(HttpStatus.SERVICE_UNAVAILABLE);
       return {
         status: 'degraded',
         database: 'unreachable',
