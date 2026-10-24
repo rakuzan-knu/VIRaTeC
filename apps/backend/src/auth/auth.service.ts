@@ -7,7 +7,7 @@ import {
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
@@ -28,6 +28,7 @@ import { TwoFactorService } from './two-factor.service';
 
 const MFA_CHALLENGE_TTL_MS = 5 * 60_000;
 const MFA_CHALLENGE_MAX_ATTEMPTS = 5;
+const DEFAULT_REFRESH_TTL_MS = 7 * 24 * 60 * 60_000;
 
 interface SessionCarry {
   mfaVerifiedAt?: Date | null;
@@ -67,15 +68,17 @@ export class AuthService {
       throw new ForbiddenException('Privileged roles cannot be selected during registration');
     }
 
-    const existing = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
-    });
+    const [existing, passwordHash] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { email: dto.email.toLowerCase() },
+        select: { id: true },
+      }),
+      argon2.hash(dto.password),
+    ]);
 
     if (existing) {
       throw new ConflictException('User with this email already exists');
     }
-
-    const passwordHash = await argon2.hash(dto.password);
 
     const user = await this.prisma.user.create({
       data: {
@@ -98,10 +101,12 @@ export class AuthService {
   async login(dto: LoginDto, client: ClientContext = {}) {
     const email = dto.email.toLowerCase();
     const accountKey = `login:account:${sha256Hex(email)}`;
-    await this.rateLimit?.consume(accountKey, RATE_LIMITS.loginPerAccount);
-    if (client.ipAddress) {
-      await this.rateLimit?.consume(`login:ip:${client.ipAddress}`, RATE_LIMITS.loginPerIp);
-    }
+    await Promise.all([
+      this.rateLimit?.consume(accountKey, RATE_LIMITS.loginPerAccount),
+      client.ipAddress
+        ? this.rateLimit?.consume(`login:ip:${client.ipAddress}`, RATE_LIMITS.loginPerIp)
+        : undefined,
+    ]);
 
     const user = await this.prisma.user.findUnique({
       where: { email },
@@ -117,7 +122,7 @@ export class AuthService {
 
     const isValid = await argon2.verify(user.passwordHash, dto.password);
     if (!isValid) {
-      await this.audit?.record({ action: 'auth.login_failed', actorId: user.id, client });
+      void this.audit?.record({ action: 'auth.login_failed', actorId: user.id, client });
       throw new UnauthorizedException('Invalid email or password');
     }
 
@@ -127,18 +132,12 @@ export class AuthService {
 
   private async completeSignIn<T extends SignInUser>(user: T, client: ClientContext) {
     if (user.isBlocked) {
-      await this.audit?.record({ action: 'auth.login_blocked', actorId: user.id, client });
+      void this.audit?.record({ action: 'auth.login_blocked', actorId: user.id, client });
       throw new ForbiddenException('This account has been suspended');
     }
 
     if (user.twoFactorEnabled) {
       const challengeToken = randomToken();
-      await this.prisma.mfaChallenge.deleteMany({
-        where: {
-          userId: user.id,
-          OR: [{ expiresAt: { lt: new Date() } }, { consumedAt: { not: null } }],
-        },
-      });
       await this.prisma.mfaChallenge.create({
         data: {
           userId: user.id,
@@ -152,7 +151,7 @@ export class AuthService {
     }
 
     const tokens = await this.generateTokens(user, client);
-    await this.audit?.record({ action: 'auth.login', actorId: user.id, client });
+    void this.audit?.record({ action: 'auth.login', actorId: user.id, client });
     return {
       user: toAccount(user as unknown as Parameters<typeof toAccount>[0]),
       ...tokens,
@@ -174,11 +173,13 @@ export class AuthService {
       throw new UnauthorizedException('The sign-in attempt has expired. Sign in again.');
     }
 
-    await this.prisma.mfaChallenge.update({
-      where: { id: challenge.id },
-      data: { attempts: { increment: 1 } },
-    });
-    await this.rateLimit?.consume(`mfa:login:${challenge.userId}`, RATE_LIMITS.mfaPerAccount);
+    await Promise.all([
+      this.prisma.mfaChallenge.update({
+        where: { id: challenge.id },
+        data: { attempts: { increment: 1 } },
+      }),
+      this.rateLimit?.consume(`mfa:login:${challenge.userId}`, RATE_LIMITS.mfaPerAccount),
+    ]);
 
     if (!this.twoFactor)
       throw new ServiceUnavailableException('Two-factor verification is unavailable');
@@ -197,12 +198,12 @@ export class AuthService {
       throw new ForbiddenException('This account has been suspended');
     }
 
-    await this.rateLimit?.reset(`mfa:login:${user.id}`);
-    const tokens = await this.generateTokens(user, client, randomUUID(), {
-      mfaVerifiedAt: new Date(),
-    });
-    await this.audit?.record({ action: 'auth.mfa_verified', actorId: user.id, client });
-    await this.audit?.record({ action: 'auth.login', actorId: user.id, client });
+    const [, tokens] = await Promise.all([
+      this.rateLimit?.reset(`mfa:login:${user.id}`),
+      this.generateTokens(user, client, randomUUID(), { mfaVerifiedAt: new Date() }),
+    ]);
+    void this.audit?.record({ action: 'auth.mfa_verified', actorId: user.id, client });
+    void this.audit?.record({ action: 'auth.login', actorId: user.id, client });
     return { user: toAccount(user), ...tokens };
   }
 
@@ -279,7 +280,7 @@ export class AuthService {
         where: { userId: tokenRecord.userId, sessionId: tokenRecord.sessionId, revoked: false },
         data: { revoked: true },
       });
-      await this.audit?.record({
+      void this.audit?.record({
         action: 'auth.refresh_reuse',
         actorId: tokenRecord.userId,
         metadata: { sessionId: tokenRecord.sessionId },
@@ -323,25 +324,25 @@ export class AuthService {
   ) {
     const payload = { sub: userId, email, role, faculty, sid: sessionId };
 
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('jwt.accessSecret'),
-      expiresIn: (this.configService.get<string>('jwt.accessTtl') || '15m') as any,
-    });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: this.configService.get<string>('jwt.accessSecret'),
+        expiresIn: (this.configService.get<string>('jwt.accessTtl') ||
+          '15m') as JwtSignOptions['expiresIn'],
+      }),
+      this.jwtService.signAsync(
+        { ...payload, jti: randomUUID() },
+        {
+          secret: this.configService.get<string>('jwt.refreshSecret'),
+          expiresIn: (this.configService.get<string>('jwt.refreshTtl') ||
+            '7d') as JwtSignOptions['expiresIn'],
+        },
+      ),
+    ]);
 
-    const refreshToken = await this.jwtService.signAsync(
-      { ...payload, jti: randomUUID() },
-      {
-        secret: this.configService.get<string>('jwt.refreshSecret'),
-        expiresIn: (this.configService.get<string>('jwt.refreshTtl') || '7d') as any,
-      },
-    );
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await this.prisma.refreshToken.deleteMany({
-      where: { userId, expiresAt: { lt: new Date() } },
-    });
+    const refreshTtlMs =
+      this.configService.get<number>('jwt.refreshTtlMs') ?? DEFAULT_REFRESH_TTL_MS;
+    const expiresAt = new Date(Date.now() + refreshTtlMs);
 
     await this.prisma.refreshToken.create({
       data: {

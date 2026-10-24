@@ -8,12 +8,12 @@ import {
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ResearchService } from './research.service';
 import { CreatePaperDto } from './dto/create-paper.dto';
+import { ListPapersQueryDto } from './dto/list-papers-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { FacultyDivision } from '@viratec/contracts';
 
 @ApiTags('Research')
 @Controller('research')
@@ -22,9 +22,8 @@ export class ResearchController {
 
   @Get()
   @ApiOperation({ summary: 'Get all research papers and publications' })
-  @ApiQuery({ name: 'faculty', enum: FacultyDivision, required: false })
-  async findAll(@Query('faculty') faculty?: FacultyDivision) {
-    return this.researchService.findAll(faculty);
+  async findAll(@Query() query: ListPapersQueryDto) {
+    return this.researchService.findAll(query);
   }
 
   @Get(':id')

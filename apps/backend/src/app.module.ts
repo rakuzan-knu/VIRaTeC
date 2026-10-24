@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import configuration from './config/configuration';
@@ -22,6 +22,10 @@ import { AdminModule } from './admin/admin.module';
       load: [configuration],
     }),
     LoggerModule.forRoot({
+      exclude: [
+        { method: RequestMethod.GET, path: 'health' },
+        { method: RequestMethod.GET, path: 'health/ready' },
+      ],
       pinoHttp: {
         redact: ['req.headers', 'res.headers["set-cookie"]'],
         transport:

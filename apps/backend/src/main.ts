@@ -1,8 +1,10 @@
+import { createHash } from 'node:crypto';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import helmet from '@fastify/helmet';
 import compress from '@fastify/compress';
 import cookie from '@fastify/cookie';
@@ -13,6 +15,27 @@ import { CSRF_HEADER, cookieNames } from './auth/session-cookies';
 import { safeEqual } from './security/crypto';
 
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const isProduction = process.env.NODE_ENV === 'production';
+
+function resolveTrustProxy(value = isProduction ? '1' : 'false'): boolean | number | string {
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  if (/^\d+$/.test(value)) return Number(value);
+  return value;
+}
+
+async function setEtag(request: FastifyRequest, reply: FastifyReply, payload: unknown) {
+  if (request.method !== 'GET' || reply.statusCode !== 200 || typeof payload !== 'string') {
+    return payload;
+  }
+  const etag = `W/"${createHash('sha1').update(payload).digest('base64url')}"`;
+  reply.header('ETag', etag);
+  if (request.headers['if-none-match'] === etag) {
+    reply.code(304);
+    return '';
+  }
+  return payload;
+}
 
 interface CsrfRequest {
   method: string;
@@ -60,6 +83,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({
       logger: false, // delegated to nestjs-pino
+      trustProxy: resolveTrustProxy(process.env.TRUST_PROXY),
     }),
     { bufferLogs: true },
   );
@@ -68,12 +92,14 @@ async function bootstrap() {
   app.useLogger(logger);
 
   // Security & Performance Plugins
-  await (app.register as any)(helmet, {
-    contentSecurityPolicy: process.env.NODE_ENV === 'production',
+  const fastify = app.getHttpAdapter().getInstance();
+  fastify.addHook('onSend', setEtag);
+  await app.register(helmet, {
+    contentSecurityPolicy: isProduction,
   });
-  await (app.register as any)(compress, { encodings: ['gzip', 'deflate'] });
-  await (app.register as any)(cookie);
-  app.getHttpAdapter().getInstance().addHook('preValidation', verifyCsrf);
+  await app.register(compress, { encodings: ['gzip', 'deflate'] });
+  await app.register(cookie);
+  fastify.addHook('preValidation', verifyCsrf);
 
   // CORS configuration
   const allowedOrigins = process.env.CORS_ORIGIN
@@ -100,18 +126,21 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
 
   // Swagger OpenAPI Documentation
-  const config = new DocumentBuilder()
-    .setTitle('VIRaTeC API')
-    .setDescription(
-      'Virtual Innovating Research & Technology Community Platform API — Taras Shevchenko National University of Kyiv (FIT + NNIF)',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addCookieAuth('vt_at')
-    .build();
+  const swaggerEnabled = !isProduction || process.env.SWAGGER_ENABLED === 'true';
+  if (swaggerEnabled) {
+    const config = new DocumentBuilder()
+      .setTitle('VIRaTeC API')
+      .setDescription(
+        'Virtual Innovating Research & Technology Community Platform API — Taras Shevchenko National University of Kyiv (FIT + NNIF)',
+      )
+      .setVersion('1.0')
+      .addBearerAuth()
+      .addCookieAuth('vt_at')
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
+  }
 
   app.enableShutdownHooks();
 
@@ -119,7 +148,9 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   logger.log(`🚀 VIRaTeC API is running on: http://localhost:${port}/api/v1`);
-  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/docs`);
+  if (swaggerEnabled) {
+    logger.log(`📚 Swagger documentation available at: http://localhost:${port}/docs`);
+  }
 }
 
 bootstrap();

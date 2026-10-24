@@ -6,11 +6,14 @@ import {
   Param,
   Query,
   UseGuards,
+  UseInterceptors,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { PublicCacheInterceptor } from '../common/interceptors/public-cache.interceptor';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { ListProjectsQueryDto } from './dto/list-projects-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
@@ -20,13 +23,14 @@ export class ProjectsController {
   constructor(private projectsService: ProjectsService) {}
 
   @Get()
+  @UseInterceptors(PublicCacheInterceptor)
   @ApiOperation({ summary: 'List all innovation projects' })
-  @ApiQuery({ name: 'tag', required: false })
-  async findAll(@Query('tag') tag?: string) {
-    return this.projectsService.findAll(tag);
+  async findAll(@Query() query: ListProjectsQueryDto) {
+    return this.projectsService.findAll(query);
   }
 
   @Get(':id')
+  @UseInterceptors(PublicCacheInterceptor)
   @ApiOperation({ summary: 'Get project details by ID' })
   @ApiResponse({ status: 200, description: 'Project retrieved' })
   @ApiResponse({ status: 404, description: 'Project not found' })

@@ -8,9 +8,10 @@ import {
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { ListPostsQueryDto } from './dto/list-posts-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
@@ -21,9 +22,8 @@ export class CommunityController {
 
   @Get()
   @ApiOperation({ summary: 'List discussions and announcements' })
-  @ApiQuery({ name: 'tag', required: false })
-  async findAll(@Query('tag') tag?: string) {
-    return this.communityService.findAll(tag);
+  async findAll(@Query() query: ListPostsQueryDto) {
+    return this.communityService.findAll(query);
   }
 
   @Get(':id')

@@ -1,6 +1,12 @@
 import { createHash } from 'node:crypto';
 
 const MIN_SECRET_LENGTH = 32;
+const DURATION_UNITS_MS: Record<string, number> = {
+  s: 1000,
+  m: 60_000,
+  h: 60 * 60_000,
+  d: 24 * 60 * 60_000,
+};
 const isProduction = process.env.NODE_ENV === 'production';
 
 function requireSecret(name: string, devFallback: string) {
@@ -12,6 +18,12 @@ function requireSecret(name: string, devFallback: string) {
     );
   }
   return value || devFallback;
+}
+
+function parseDurationMs(value: string) {
+  const match = /^(\d+)\s*([smhd]?)$/.exec(value.trim());
+  if (!match) throw new Error(`Invalid duration "${value}". Use a number with s, m, h or d`);
+  return Number(match[1]) * (match[2] ? DURATION_UNITS_MS[match[2]] : 1);
 }
 
 function resolveEncryptionKey(accessSecret: string) {
@@ -37,6 +49,8 @@ export default () => {
     'default_jwt_refresh_secret_for_local_dev',
   );
 
+  const refreshTtl = process.env.JWT_REFRESH_TTL || '7d';
+
   return {
     port: parseInt(process.env.PORT || '3000', 10),
     nodeEnv: process.env.NODE_ENV || 'development',
@@ -48,7 +62,8 @@ export default () => {
       accessSecret,
       accessTtl: process.env.JWT_ACCESS_TTL || '15m',
       refreshSecret,
-      refreshTtl: process.env.JWT_REFRESH_TTL || '7d',
+      refreshTtl,
+      refreshTtlMs: parseDurationMs(refreshTtl),
     },
     security: {
       isProduction,

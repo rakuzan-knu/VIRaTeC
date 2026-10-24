@@ -28,10 +28,28 @@ import type { AuditQueryDto, ListUsersQueryDto, UpdateStaffAccessDto } from './d
 
 const DAY_MS = 24 * 60 * 60_000;
 
-const countBy = <K extends string>(keys: K[], rows: { key: string; count: number }[]) =>
-  Object.fromEntries(
-    keys.map((key) => [key, rows.find((row) => row.key === key)?.count ?? 0]),
-  ) as Record<K, number>;
+interface MetricsRow {
+  totalUsers: number;
+  last7Days: number;
+  last30Days: number;
+  blocked: number;
+  admins: number;
+  staffWithTwoFactor: number;
+  usersByRole: Record<string, number>;
+  totalProjects: number;
+  projectsByStatus: Record<string, number>;
+  totalEvents: number;
+  upcomingEvents: number;
+  eventsByType: Record<string, number>;
+  papers: number;
+  totalPublications: number;
+  publicationsByType: Record<string, number>;
+  posts: number;
+  activeSessions: number;
+}
+
+const countBy = <K extends string>(keys: K[], counts: Record<string, number>) =>
+  Object.fromEntries(keys.map((key) => [key, counts[key] ?? 0])) as Record<K, number>;
 
 function toAdminUser(user: User): AdminUserDto {
   const staff = effectiveStaff(user);
@@ -58,7 +76,55 @@ export class AdminService {
 
   async metrics(): Promise<AdminMetricsDto> {
     const now = new Date();
-    const [
+    const [row] = await this.prisma.$queryRaw<MetricsRow[]>`
+      WITH
+        u AS (
+          SELECT
+            COUNT(*)::int AS "totalUsers",
+            COUNT(*) FILTER (WHERE "createdAt" >= ${new Date(now.getTime() - 7 * DAY_MS)})::int AS "last7Days",
+            COUNT(*) FILTER (WHERE "createdAt" >= ${new Date(now.getTime() - 30 * DAY_MS)})::int AS "last30Days",
+            COUNT(*) FILTER (WHERE "isBlocked")::int AS "blocked",
+            COUNT(*) FILTER (WHERE "staffRole" <> 'NONE')::int AS "admins",
+            COUNT(*) FILTER (WHERE "staffRole" <> 'NONE' AND "twoFactorEnabled")::int AS "staffWithTwoFactor"
+          FROM "users"
+        ),
+        ur AS (
+          SELECT COALESCE(jsonb_object_agg("key", "count"), '{}'::jsonb) AS "usersByRole"
+          FROM (SELECT "role"::text AS "key", COUNT(*)::int AS "count" FROM "users" GROUP BY "role") t
+        ),
+        p AS (
+          SELECT
+            COALESCE(SUM("count"), 0)::int AS "totalProjects",
+            COALESCE(jsonb_object_agg("key", "count"), '{}'::jsonb) AS "projectsByStatus"
+          FROM (SELECT "status"::text AS "key", COUNT(*)::int AS "count" FROM "projects" GROUP BY "status") t
+        ),
+        e AS (
+          SELECT
+            COUNT(*)::int AS "totalEvents",
+            COUNT(*) FILTER (WHERE "startDate" >= ${now})::int AS "upcomingEvents"
+          FROM "events"
+        ),
+        et AS (
+          SELECT COALESCE(jsonb_object_agg("key", "count"), '{}'::jsonb) AS "eventsByType"
+          FROM (SELECT "type"::text AS "key", COUNT(*)::int AS "count" FROM "events" GROUP BY "type") t
+        ),
+        pub AS (
+          SELECT
+            COALESCE(SUM("count"), 0)::int AS "totalPublications",
+            COALESCE(jsonb_object_agg("key", "count"), '{}'::jsonb) AS "publicationsByType"
+          FROM (SELECT "type"::text AS "key", COUNT(*)::int AS "count" FROM "publications" GROUP BY "type") t
+        )
+      SELECT
+        u.*, ur.*, p.*, e.*, et.*, pub.*,
+        (SELECT COUNT(*)::int FROM "research_papers") AS "papers",
+        (SELECT COUNT(*)::int FROM "community_posts") AS "posts",
+        (
+          SELECT COUNT(DISTINCT "sessionId")::int FROM "refresh_tokens"
+          WHERE NOT "revoked" AND "expiresAt" > ${now}
+        ) AS "activeSessions"
+      FROM u, ur, p, e, et, pub
+    `;
+    const {
       totalUsers,
       last7Days,
       last30Days,
@@ -76,35 +142,7 @@ export class AdminService {
       publicationsByType,
       posts,
       activeSessions,
-    ] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.user.count({
-        where: { createdAt: { gte: new Date(now.getTime() - 7 * DAY_MS) } },
-      }),
-      this.prisma.user.count({
-        where: { createdAt: { gte: new Date(now.getTime() - 30 * DAY_MS) } },
-      }),
-      this.prisma.user.count({ where: { isBlocked: true } }),
-      this.prisma.user.groupBy({ by: ['role'], _count: { _all: true } }),
-      this.prisma.user.count({ where: { staffRole: { not: StaffRole.NONE } } }),
-      this.prisma.user.count({
-        where: { staffRole: { not: StaffRole.NONE }, twoFactorEnabled: true },
-      }),
-      this.prisma.project.count(),
-      this.prisma.project.groupBy({ by: ['status'], _count: { _all: true } }),
-      this.prisma.event.count(),
-      this.prisma.event.count({ where: { startDate: { gte: now } } }),
-      this.prisma.event.groupBy({ by: ['type'], _count: { _all: true } }),
-      this.prisma.researchPaper.count(),
-      this.prisma.publication.count(),
-      this.prisma.publication.groupBy({ by: ['type'], _count: { _all: true } }),
-      this.prisma.communityPost.count(),
-      this.prisma.refreshToken.findMany({
-        where: { revoked: false, expiresAt: { gt: now } },
-        distinct: ['sessionId'],
-        select: { sessionId: true },
-      }),
-    ]);
+    } = row;
 
     return {
       users: {
@@ -112,38 +150,26 @@ export class AdminService {
         last7Days,
         last30Days,
         blocked,
-        byRole: countBy(
-          Object.values(UserRole),
-          usersByRole.map((row) => ({ key: row.role, count: row._count._all })),
-        ),
+        byRole: countBy(Object.values(UserRole), usersByRole),
       },
       staff: { admins, withTwoFactor: staffWithTwoFactor },
       projects: {
         total: totalProjects,
-        byStatus: countBy(
-          Object.values(ProjectStatus),
-          projectsByStatus.map((row) => ({ key: row.status, count: row._count._all })),
-        ),
+        byStatus: countBy(Object.values(ProjectStatus), projectsByStatus),
       },
       events: {
         total: totalEvents,
         upcoming: upcomingEvents,
         past: totalEvents - upcomingEvents,
-        byType: countBy(
-          Object.values(EventType),
-          eventsByType.map((row) => ({ key: row.type, count: row._count._all })),
-        ),
+        byType: countBy(Object.values(EventType), eventsByType),
       },
       research: { papers },
       publications: {
         total: totalPublications,
-        byType: countBy(
-          Object.values(PublicationType),
-          publicationsByType.map((row) => ({ key: row.type, count: row._count._all })),
-        ),
+        byType: countBy(Object.values(PublicationType), publicationsByType),
       },
       community: { posts },
-      sessions: { active: activeSessions.length },
+      sessions: { active: activeSessions },
       generatedAt: now.toISOString(),
     };
   }

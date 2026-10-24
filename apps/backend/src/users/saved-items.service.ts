@@ -33,22 +33,23 @@ export class SavedItemsService {
   }
 
   async save(userId: string, { kind, refId }: SavedItemDto) {
-    if (kind === SavedItemKind.PROJECT) {
-      const project = await this.prisma.project.findUnique({
-        where: { id: refId },
+    const [projectExists, existing, count] = await Promise.all([
+      kind === SavedItemKind.PROJECT
+        ? this.prisma.project
+            .findUnique({ where: { id: refId }, select: { id: true } })
+            .then(Boolean)
+        : true,
+      this.prisma.savedItem.findUnique({
+        where: { userId_kind_refId: { userId, kind, refId } },
         select: { id: true },
-      });
-      if (!project) {
-        throw new NotFoundException('Project not found');
-      }
+      }),
+      this.prisma.savedItem.count({ where: { userId } }),
+    ]);
+    if (!projectExists) {
+      throw new NotFoundException('Project not found');
     }
 
-    const existing = await this.prisma.savedItem.findUnique({
-      where: { userId_kind_refId: { userId, kind, refId } },
-      select: { id: true },
-    });
     if (!existing) {
-      const count = await this.prisma.savedItem.count({ where: { userId } });
       if (count >= SAVED_ITEMS_MAX) {
         throw new BadRequestException(`You can save up to ${SAVED_ITEMS_MAX} items`);
       }

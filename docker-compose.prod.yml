@@ -16,6 +16,20 @@ services:
       - 'work_mem=8MB'
       - '-c'
       - 'max_connections=100'
+      - '-c'
+      - 'effective_cache_size=384MB'
+      - '-c'
+      - 'maintenance_work_mem=64MB'
+      - '-c'
+      - 'random_page_cost=1.1'
+      - '-c'
+      - 'effective_io_concurrency=200'
+      - '-c'
+      - 'wal_compression=on'
+      - '-c'
+      - 'shared_preload_libraries=pg_stat_statements'
+      - '-c'
+      - 'log_min_duration_statement=500ms'
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
     healthcheck:
