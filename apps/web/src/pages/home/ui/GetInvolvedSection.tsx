@@ -3,6 +3,7 @@ import { LinkButton } from '@/shared/ui/link-button';
 import { useLocalized } from '@/shared/i18n';
 import { HOME_CONTENT } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
+import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import auroraSrc from '../assets/hero-background.webp';
 
 export function GetInvolvedSection() {
@@ -12,8 +13,9 @@ export function GetInvolvedSection() {
     <section aria-labelledby="get-involved-title" className="bg-viratec-bg">
       <div className="mx-auto max-w-[1440px] px-5 pt-20 pb-20 lg:px-[85px] lg:pt-32 lg:pb-32">
         <div className="relative isolate overflow-hidden rounded-[28px] border border-white/10 lg:rounded-[40px]">
-          <img
+          <ResponsiveImage
             src={auroraSrc}
+            sizes="(min-width: 1440px) 1270px, 100vw"
             alt=""
             loading="lazy"
             className="absolute inset-0 -z-20 size-full object-cover object-[70%_center]"

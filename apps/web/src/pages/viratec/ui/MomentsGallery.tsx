@@ -1,4 +1,5 @@
 import { cn } from '@/shared/lib';
+import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import certificateCeremony from '@/shared/assets/photos/certificate-ceremony-2025.webp';
 import coilSeriesTalk from '@/shared/assets/photos/coil-series-2025-talk.webp';
 import studentSpeaker from '@/shared/assets/photos/student-speaker-knu.webp';
@@ -44,8 +45,11 @@ export function MomentsGallery({ moments }: MomentsGalleryProps) {
           )}
         >
           <figure className="reveal-frame size-full">
-            <img
+            <ResponsiveImage
               src={MOMENT_PHOTOS[moment.photo]}
+              sizes={
+                index === 0 ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 25vw, 50vw'
+              }
               alt={moment.caption}
               loading="lazy"
               decoding="async"

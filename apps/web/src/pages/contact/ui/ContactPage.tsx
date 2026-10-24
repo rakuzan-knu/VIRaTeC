@@ -4,6 +4,7 @@ import { CONTACT_EMAIL, SOCIAL_LINKS } from '@/shared/config/navigation';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { OptionalLink } from '@/shared/ui/optional-link';
 import { CardLinkLabel } from '@/shared/ui/card-link-label';
+import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import { ButtonArrow, linkButtonClassName } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
@@ -218,8 +219,9 @@ export function ContactPage() {
           <article className={CARD_CLASS}>
             <h3 className="text-[15px] leading-5 text-viratec-subtle">{content.chairTitle}</h3>
             <div className="flex items-center gap-[18px]">
-              <img
+              <ResponsiveImage
                 src={larysaPhoto}
+                sizes="64px"
                 alt=""
                 width={64}
                 height={64}

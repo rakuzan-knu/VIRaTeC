@@ -120,6 +120,7 @@ function PublicationBody({ publication }: { publication: Publication }) {
         <MediaPlaceholder
           src={publication.image}
           label={typeLabel}
+          sizes="(min-width: 1440px) 1270px, 100vw"
           className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]"
         />
         {detail ? (

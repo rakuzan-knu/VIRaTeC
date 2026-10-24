@@ -1,4 +1,5 @@
 import { useCommonMessages } from '@/shared/i18n';
+import { ResponsiveImage } from './responsive-image';
 
 interface PersonCardProps {
   name: string;
@@ -21,8 +22,9 @@ export function PersonCard({ name, role, photo }: PersonCardProps) {
   return (
     <article className="atlas-card flex h-full items-center gap-4 rounded-[28px] border border-transparent p-4 lg:flex-col lg:items-stretch lg:gap-5 lg:p-3 lg:pb-6">
       {photo ? (
-        <img
+        <ResponsiveImage
           src={photo}
+          sizes="(min-width: 1024px) 320px, 64px"
           alt=""
           width={320}
           height={400}

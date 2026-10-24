@@ -6,6 +6,7 @@ import { InfoCard } from '@/shared/ui/info-card';
 import { StepsList } from '@/shared/ui/steps-list';
 import { PersonCard } from '@/shared/ui/person-card';
 import { CtaSection } from '@/shared/ui/cta-section';
+import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
@@ -77,8 +78,9 @@ export function AboutInitiativePage() {
 
       <PageSection tone="surface" aria-labelledby="founder-title">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-16">
-          <img
+          <ResponsiveImage
             src={FOUNDER_PHOTO}
+            sizes="(min-width: 1024px) 320px, 160px"
             alt={content.founderName}
             width={320}
             height={320}

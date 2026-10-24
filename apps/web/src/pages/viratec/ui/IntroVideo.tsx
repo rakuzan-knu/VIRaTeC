@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import playIcon from '@/shared/assets/icons/play.svg';
+import { ResponsiveImage } from '@/shared/ui/responsive-image';
 
 export interface VideoSource {
   src: string;
@@ -53,8 +54,9 @@ export function IntroVideo({ title, duration, sources, poster }: IntroVideoProps
     >
       {poster && (
         <>
-          <img
+          <ResponsiveImage
             src={poster}
+            sizes="(min-width: 1440px) 1270px, 100vw"
             alt=""
             loading="lazy"
             className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"

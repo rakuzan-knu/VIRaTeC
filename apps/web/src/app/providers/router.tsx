@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import {
   createBrowserRouter,
+  matchRoutes,
   RouterProvider,
+  type RouteObject,
   type RouterNavigateOptions,
   type To,
 } from 'react-router-dom';
@@ -8,8 +11,9 @@ import { GuestRoute } from './GuestRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootLayout, RouteError, RouteFallback } from './RootLayout';
 import { ROUTES } from '@/shared/config/routes';
+import { endHydration } from '@/shared/lib';
 
-const router = createBrowserRouter([
+export const routes: RouteObject[] = [
   {
     element: <RootLayout />,
     hydrateFallbackElement: <RouteFallback />,
@@ -204,15 +208,72 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
 
-const baseNavigate = router.navigate.bind(router);
+type NavigatorWithConnection = Navigator & { connection?: { saveData?: boolean } };
 
-router.navigate = ((to: To | number | null, opts?: RouterNavigateOptions) =>
-  typeof to === 'number'
-    ? baseNavigate(to)
-    : baseNavigate(to, { viewTransition: true, ...opts })) as typeof router.navigate;
+type BrowserRouter = ReturnType<typeof createBrowserRouter>;
 
-export function AppRouter() {
+const prefetchedPaths = new Set<string>();
+
+function prefetchRoute(pathname: string) {
+  if (prefetchedPaths.has(pathname)) return;
+  prefetchedPaths.add(pathname);
+
+  for (const { route } of matchRoutes(routes, pathname) ?? []) {
+    if (typeof route.lazy === 'function') {
+      route.lazy().catch(() => prefetchedPaths.delete(pathname));
+    }
+  }
+}
+
+function handleNavigationIntent(event: Event) {
+  if (!(event.target instanceof Element)) return;
+  const anchor = event.target.closest('a[href]');
+  if (!(anchor instanceof HTMLAnchorElement) || anchor.origin !== window.location.origin) return;
+  if (anchor.pathname === window.location.pathname) return;
+  prefetchRoute(anchor.pathname);
+}
+
+async function resolveLazyMatches(pathname: string) {
+  await Promise.all(
+    (matchRoutes(routes, pathname) ?? []).map(async ({ route }) => {
+      if (typeof route.lazy !== 'function') return;
+      Object.assign(route, await route.lazy(), { lazy: undefined });
+    }),
+  );
+}
+
+export async function createAppRouter({ hydrate }: { hydrate: boolean }): Promise<BrowserRouter> {
+  if (hydrate) await resolveLazyMatches(window.location.pathname);
+
+  const router = createBrowserRouter(routes);
+  const baseNavigate = router.navigate.bind(router);
+
+  router.navigate = ((to: To | number | null, opts?: RouterNavigateOptions) =>
+    typeof to === 'number'
+      ? baseNavigate(to)
+      : baseNavigate(to, { viewTransition: true, ...opts })) as typeof router.navigate;
+
+  return router;
+}
+
+interface AppRouterProps {
+  router: BrowserRouter;
+}
+
+export function AppRouter({ router }: AppRouterProps) {
+  useEffect(() => {
+    endHydration();
+    if ((navigator as NavigatorWithConnection).connection?.saveData === true) return;
+
+    document.addEventListener('pointerover', handleNavigationIntent, { passive: true });
+    document.addEventListener('focusin', handleNavigationIntent);
+    return () => {
+      document.removeEventListener('pointerover', handleNavigationIntent);
+      document.removeEventListener('focusin', handleNavigationIntent);
+    };
+  }, []);
+
   return <RouterProvider router={router} />;
 }

@@ -1,4 +1,5 @@
 import { useLayoutEffect, type RefObject } from 'react';
+import { isHydrating } from './hydration';
 
 const ITEM_SELECTOR = 'ul > li, ol > li';
 const BLOCK_SELECTOR = 'section > div > *';
@@ -7,6 +8,11 @@ const MAX_STAGGER_STEPS = 6;
 
 function isOptedOut(element: Element): boolean {
   return element.closest('[data-reveal="off"]') !== null;
+}
+
+function isInViewport(element: HTMLElement): boolean {
+  const { top, bottom } = element.getBoundingClientRect();
+  return top < window.innerHeight && bottom > 0;
 }
 
 function collectTargets(root: HTMLElement): HTMLElement[] {
@@ -59,7 +65,12 @@ export function useScrollReveal(rootRef: RefObject<HTMLElement | null>) {
     );
 
     const scan = () => {
+      const keepServerRenderedInView = isHydrating();
       for (const element of collectTargets(root)) {
+        if (keepServerRenderedInView && isInViewport(element)) {
+          element.dataset.reveal = 'done';
+          continue;
+        }
         element.dataset.reveal = 'pending';
         intersection.observe(element);
       }

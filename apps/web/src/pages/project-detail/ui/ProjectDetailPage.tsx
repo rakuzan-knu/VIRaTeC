@@ -99,6 +99,7 @@ function ProjectBody({ project }: { project: Project }) {
       <div className="flex flex-1 flex-col gap-5">
         <MediaPlaceholder
           src={getProjectCover(project)}
+          sizes="(min-width: 1440px) 1270px, 100vw"
           className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]"
         />
         <h2 className="font-display text-2xl leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">

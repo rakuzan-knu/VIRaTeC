@@ -1,18 +1,29 @@
 import { cn } from '@/shared/lib';
+import { ResponsiveImage } from './responsive-image';
+
+const CARD_IMAGE_SIZES = '(min-width: 1024px) 420px, 100vw';
 
 interface MediaPlaceholderProps {
   className?: string;
   src?: string;
   alt?: string;
   label?: string;
+  sizes?: string;
 }
 
-export function MediaPlaceholder({ className, src, alt = '', label }: MediaPlaceholderProps) {
+export function MediaPlaceholder({
+  className,
+  src,
+  alt = '',
+  label,
+  sizes = CARD_IMAGE_SIZES,
+}: MediaPlaceholderProps) {
   if (src) {
     return (
       <span className={cn('reveal-frame block w-full shrink-0 overflow-hidden', className)}>
-        <img
+        <ResponsiveImage
           src={src}
+          sizes={sizes}
           alt={alt}
           loading="lazy"
           decoding="async"

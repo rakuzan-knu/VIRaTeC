@@ -15,6 +15,7 @@ import { HOME_CONTENT } from '../model/content';
 const HERO_BUTTON_CLASS =
   'w-full lg:w-auto lg:min-w-[220px] lg:px-8 lg:py-[clamp(12px,2svh,18px)] lg:text-[clamp(17px,2.4svh,19px)]';
 const HERO_REVEAL_CLASS = 'motion-safe:animate-hero-reveal motion-reduce:animate-hero-fade';
+const HERO_TEXT_CLASS = 'motion-safe:animate-hero-rise motion-reduce:animate-hero-fade';
 
 function revealDelay(ms: number): CSSProperties {
   return { animationDelay: `${ms}ms` };
@@ -58,17 +59,17 @@ export function HeroSection() {
         </div>
 
         <h1 className="font-display text-[42px] leading-[44px] font-medium tracking-[-0.035em] text-viratec-light lg:text-[clamp(56px,9svh,96px)] lg:leading-[0.98] lg:tracking-[-0.045em]">
-          <span className={`inline-block ${HERO_REVEAL_CLASS}`} style={revealDelay(300)}>
+          <span className={`inline-block ${HERO_TEXT_CLASS}`} style={revealDelay(300)}>
             {hero.titleLine}
           </span>
           <br />
-          <span className={`inline-block ${HERO_REVEAL_CLASS}`} style={revealDelay(450)}>
-            <span className="hero-shimmer-text animate-hero-shimmer">{hero.titleAccent}</span>
+          <span className={`inline-block ${HERO_TEXT_CLASS}`} style={revealDelay(450)}>
+            <span className="hero-shimmer-text lg:animate-hero-shimmer">{hero.titleAccent}</span>
           </span>
         </h1>
 
         <ExpandableText
-          className={`${HERO_REVEAL_CLASS} [animation-delay:650ms]! max-w-[62ch] text-[17px] leading-[27px] text-viratec-muted lg:max-w-[760px] lg:text-[clamp(18px,2.7svh,22px)] lg:leading-[1.55] lg:tracking-[-0.01em]`}
+          className={`${HERO_TEXT_CLASS} [animation-delay:650ms]! max-w-[62ch] text-[17px] leading-[27px] text-viratec-muted lg:max-w-[760px] lg:text-[clamp(18px,2.7svh,22px)] lg:leading-[1.55] lg:tracking-[-0.01em]`}
         >
           {hero.description}
         </ExpandableText>

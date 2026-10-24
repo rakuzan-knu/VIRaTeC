@@ -12,6 +12,7 @@ import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import { VIRATEC_CONTENT } from '../model/content';
 import { IntroVideo } from './IntroVideo';
+import introVideoAv1 from '../assets/what-is-viratec.av1.mp4';
 import introVideoWebm from '../assets/what-is-viratec.webm';
 import introVideoMp4 from '../assets/what-is-viratec.mp4';
 import introVideoPoster from '../assets/what-is-viratec-poster.webp';
@@ -51,6 +52,7 @@ export function ViratecPage() {
           duration="1:30"
           poster={introVideoPoster}
           sources={[
+            { src: introVideoAv1, type: 'video/mp4; codecs="av01.0.08M.08"' },
             { src: introVideoWebm, type: 'video/webm' },
             { src: introVideoMp4, type: 'video/mp4' },
           ]}

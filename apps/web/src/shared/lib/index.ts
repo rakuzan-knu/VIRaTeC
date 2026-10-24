@@ -7,3 +7,4 @@ export { useScrollReveal } from './useScrollReveal';
 export { usePauseOffscreen } from './usePauseOffscreen';
 export { trackSpotlight } from './trackSpotlight';
 export { isStaleChunkError, reloadForStaleChunk } from './staleChunk';
+export { beginHydration, endHydration, isHydrating } from './hydration';

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { cn } from '@/shared/lib';
 import posterSrc from '../assets/hero-background.webp';
+import av1Src from '../assets/hero-background.av1.mp4';
 import webmSrc from '../assets/hero-background.webm';
 import mp4Src from '../assets/hero-background.mp4';
 
@@ -23,6 +24,31 @@ function getServerCanPlayVideo() {
   return false;
 }
 
+function whenPageSettled(callback: () => void): () => void {
+  let cancelIdle = () => {};
+
+  const scheduleIdle = () => {
+    if (typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(callback, { timeout: 2000 });
+      cancelIdle = () => window.cancelIdleCallback(idleId);
+    } else {
+      const timeoutId = window.setTimeout(callback, 200);
+      cancelIdle = () => window.clearTimeout(timeoutId);
+    }
+  };
+
+  if (document.readyState === 'complete') {
+    scheduleIdle();
+  } else {
+    window.addEventListener('load', scheduleIdle, { once: true });
+  }
+
+  return () => {
+    window.removeEventListener('load', scheduleIdle);
+    cancelIdle();
+  };
+}
+
 export function HeroBackgroundVideo() {
   const canPlayVideo = useSyncExternalStore(
     subscribeToMediaQuery,
@@ -31,10 +57,17 @@ export function HeroBackgroundVideo() {
   );
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPageSettled, setIsPageSettled] = useState(false);
+  const shouldRenderVideo = canPlayVideo && isPageSettled;
+
+  useEffect(() => {
+    if (!canPlayVideo) return;
+    return whenPageSettled(() => setIsPageSettled(true));
+  }, [canPlayVideo]);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!canPlayVideo || !video) return;
+    if (!shouldRenderVideo || !video) return;
 
     let isInView = false;
 
@@ -57,7 +90,7 @@ export function HeroBackgroundVideo() {
       observer.disconnect();
       document.removeEventListener('visibilitychange', sync);
     };
-  }, [canPlayVideo]);
+  }, [shouldRenderVideo]);
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden lg:block">
@@ -65,7 +98,7 @@ export function HeroBackgroundVideo() {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${posterSrc})` }}
       />
-      {canPlayVideo && (
+      {shouldRenderVideo && (
         <video
           ref={videoRef}
           muted
@@ -80,6 +113,7 @@ export function HeroBackgroundVideo() {
             isPlaying ? 'opacity-100' : 'opacity-0',
           )}
         >
+          <source src={av1Src} type='video/mp4; codecs="av01.0.05M.08"' />
           <source src={webmSrc} type="video/webm" />
           <source src={mp4Src} type="video/mp4" />
         </video>

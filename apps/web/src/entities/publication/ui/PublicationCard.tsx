@@ -42,6 +42,7 @@ export function FeaturedPublicationCard({ publication }: PublicationCardProps) {
       <MediaPlaceholder
         src={publication.image}
         label={labels.type[publication.type]}
+        sizes="(min-width: 1024px) 560px, 100vw"
         className="h-[190px] rounded-[14px] lg:h-80 lg:w-[560px] lg:rounded-[18px]"
       />
       <div className="flex flex-col gap-3.5">
