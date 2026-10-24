@@ -52,6 +52,9 @@ const SWAY_PERIOD_SECONDS = 28;
 const POINTER_LON_DEGREES = 10;
 const POINTER_TILT_DEGREES = 6;
 const POINTER_EASING = 0.045;
+const EASING_FRAME_MS = 1000 / 60;
+const IDLE_FRAME_MS = 1000 / 30;
+const POINTER_ACTIVE_MS = 1000;
 
 const HUB: City = { lat: 50.45, lon: 30.52 };
 
@@ -112,9 +115,21 @@ const PARALLEL_LATS = range(-60, 75, 15);
 const PARALLEL_LONS = range(-180, 180, 3);
 const ARC_STEPS = range(0, 1, 1 / 64);
 
-function toVector({ lat, lon }: City, view: View): Vector {
+interface Camera {
+  cosLon: number;
+  sinLon: number;
+  cosTilt: number;
+  sinTilt: number;
+}
+
+interface LiftedVector {
+  vector: Vector;
+  lift: number;
+}
+
+function toVector({ lat, lon }: City): Vector {
   const phi = lat * DEG;
-  const lambda = (lon - view.centerLon) * DEG;
+  const lambda = lon * DEG;
   return {
     x: Math.cos(phi) * Math.sin(lambda),
     y: Math.sin(phi),
@@ -122,10 +137,22 @@ function toVector({ lat, lon }: City, view: View): Vector {
   };
 }
 
-function project(vector: Vector, view: View, lift = 1): ProjectedPoint {
-  const y = vector.y * Math.cos(view.tilt) - vector.z * Math.sin(view.tilt);
-  const z = vector.y * Math.sin(view.tilt) + vector.z * Math.cos(view.tilt);
-  const x = vector.x * RADIUS * lift;
+function toCamera(view: View): Camera {
+  const lon = view.centerLon * DEG;
+  return {
+    cosLon: Math.cos(lon),
+    sinLon: Math.sin(lon),
+    cosTilt: Math.cos(view.tilt),
+    sinTilt: Math.sin(view.tilt),
+  };
+}
+
+function project(vector: Vector, camera: Camera, lift = 1): ProjectedPoint {
+  const rotatedX = vector.x * camera.cosLon - vector.z * camera.sinLon;
+  const rotatedZ = vector.z * camera.cosLon + vector.x * camera.sinLon;
+  const y = vector.y * camera.cosTilt - rotatedZ * camera.sinTilt;
+  const z = vector.y * camera.sinTilt + rotatedZ * camera.cosTilt;
+  const x = rotatedX * RADIUS * lift;
   const screenY = -y * RADIUS * lift;
   return {
     x,
@@ -153,39 +180,47 @@ function toPath(points: ProjectedPoint[]): string {
   return path || 'M0 0';
 }
 
-function arcBetween(from: City, to: City, view: View): string {
-  const a = toVector(from, view);
-  const b = toVector(to, view);
+function arcBetween(from: City, to: City): LiftedVector[] {
+  const a = toVector(from);
+  const b = toVector(to);
   const omega = Math.acos(Math.min(1, a.x * b.x + a.y * b.y + a.z * b.z));
   const height = 0.22 * Math.min(1, omega / 1.1);
-  const points = ARC_STEPS.map((s) => {
+  return ARC_STEPS.map((s) => {
     const wa = Math.sin((1 - s) * omega) / Math.sin(omega);
     const wb = Math.sin(s * omega) / Math.sin(omega);
-    const vector = { x: wa * a.x + wb * b.x, y: wa * a.y + wb * b.y, z: wa * a.z + wb * b.z };
-    return project(vector, view, 1 + height * Math.sin(Math.PI * s));
+    return {
+      vector: { x: wa * a.x + wb * b.x, y: wa * a.y + wb * b.y, z: wa * a.z + wb * b.z },
+      lift: 1 + height * Math.sin(Math.PI * s),
+    };
   });
-  return toPath(points);
 }
 
+const GRID_LINES = [
+  ...MERIDIAN_LONS.map((lon) => MERIDIAN_LATS.map((lat) => toVector({ lat, lon }))),
+  ...PARALLEL_LATS.map((lat) => PARALLEL_LONS.map((lon) => toVector({ lat, lon }))),
+];
+const HUB_VECTOR = toVector(HUB);
+const PARTNER_VECTORS = PARTNERS.map(toVector);
+const ARC_TARGET_VECTORS = ARC_TARGETS.map(toVector);
+const LINK_VECTORS = LINKS.map((link) => ({ from: toVector(link.from), to: toVector(link.to) }));
+const ARC_LINES = ARC_TARGETS.map((city) => arcBetween(HUB, city));
+const LINK_LINES = LINKS.map((link) => arcBetween(link.from, link.to));
+
 function renderGlobe(view: View): GlobeFrame {
-  const meridians = MERIDIAN_LONS.map((lon) =>
-    toPath(MERIDIAN_LATS.map((lat) => project(toVector({ lat, lon }, view), view))),
-  );
-  const parallels = PARALLEL_LATS.map((lat) =>
-    toPath(PARALLEL_LONS.map((lon) => project(toVector({ lat, lon }, view), view))),
-  );
-  const partners = PARTNERS.map((city) => project(toVector(city, view), view));
-  const depthOf = (city: City) => project(toVector(city, view), view).depth;
+  const camera = toCamera(view);
+  const depthOf = (vector: Vector) => project(vector, camera).depth;
+  const traceLine = (line: LiftedVector[]) =>
+    toPath(line.map(({ vector, lift }) => project(vector, camera, lift)));
   return {
-    grid: [...meridians, ...parallels],
-    arcs: ARC_TARGETS.map((city) => arcBetween(HUB, city, view)),
-    arcOpacity: ARC_TARGETS.map((city) => fadeByDepth(depthOf(city))),
-    links: LINKS.map((link) => arcBetween(link.from, link.to, view)),
-    linkOpacity: LINKS.map((link) =>
-      Math.min(fadeByDepth(depthOf(link.from)), fadeByDepth(depthOf(link.to))),
+    grid: GRID_LINES.map((line) => toPath(line.map((vector) => project(vector, camera)))),
+    arcs: ARC_LINES.map(traceLine),
+    arcOpacity: ARC_TARGET_VECTORS.map((vector) => fadeByDepth(depthOf(vector))),
+    links: LINK_LINES.map(traceLine),
+    linkOpacity: LINK_VECTORS.map(({ from, to }) =>
+      Math.min(fadeByDepth(depthOf(from)), fadeByDepth(depthOf(to))),
     ),
-    hub: project(toVector(HUB, view), view),
-    partners,
+    hub: project(HUB_VECTOR, camera),
+    partners: PARTNER_VECTORS.map((vector) => project(vector, camera)),
   };
 }
 
@@ -224,9 +259,13 @@ export function IntroGlobe() {
     const pointer = { x: 0, y: 0 };
     const eased = { x: 0, y: 0 };
     const start = performance.now();
+    const tracksPointer = window.matchMedia('(pointer: fine)').matches;
     let frameId = 0;
     let running = false;
     let inView = true;
+    let lastFrame = start;
+    let lastRender = -Infinity;
+    let lastPointerMove = -Infinity;
 
     const applyFrame = (frame: GlobeFrame) => {
       const setPaths = (group: SVGGElement | null, paths: string[]) => {
@@ -253,8 +292,15 @@ export function IntroGlobe() {
     };
 
     const tick = (now: number) => {
-      eased.x += (pointer.x - eased.x) * POINTER_EASING;
-      eased.y += (pointer.y - eased.y) * POINTER_EASING;
+      frameId = requestAnimationFrame(tick);
+      const pointerActive = now - lastPointerMove < POINTER_ACTIVE_MS;
+      if (!pointerActive && now - lastRender < IDLE_FRAME_MS) return;
+
+      const easing = 1 - (1 - POINTER_EASING) ** ((now - lastFrame) / EASING_FRAME_MS);
+      lastFrame = now;
+      lastRender = now;
+      eased.x += (pointer.x - eased.x) * easing;
+      eased.y += (pointer.y - eased.y) * easing;
       const seconds = (now - start) / 1000;
       const sway = Math.sin((seconds / SWAY_PERIOD_SECONDS) * Math.PI * 2) * SWAY_DEGREES;
       applyFrame(
@@ -263,12 +309,12 @@ export function IntroGlobe() {
           tilt: BASE_VIEW.tilt + eased.y * POINTER_TILT_DEGREES * DEG,
         }),
       );
-      frameId = requestAnimationFrame(tick);
     };
 
     const play = () => {
       if (running || !inView || document.hidden) return;
       running = true;
+      lastFrame = performance.now();
       frameId = requestAnimationFrame(tick);
     };
 
@@ -280,6 +326,7 @@ export function IntroGlobe() {
     const handlePointerMove = (event: PointerEvent) => {
       pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
       pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+      lastPointerMove = event.timeStamp;
     };
 
     const handleVisibilityChange = () => {
@@ -292,6 +339,7 @@ export function IntroGlobe() {
 
     const observer = new IntersectionObserver(([entry]) => {
       inView = entry?.isIntersecting ?? false;
+      root.toggleAttribute('data-offscreen', !inView);
       if (inView) {
         play();
       } else {
@@ -300,13 +348,16 @@ export function IntroGlobe() {
     });
 
     observer.observe(root);
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    if (tracksPointer) {
+      window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    }
     document.addEventListener('visibilitychange', handleVisibilityChange);
     play();
 
     return () => {
       pause();
       observer.disconnect();
+      root.removeAttribute('data-offscreen');
       window.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };

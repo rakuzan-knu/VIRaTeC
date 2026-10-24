@@ -1,5 +1,5 @@
 import { useRef, type ReactNode } from 'react';
-import { useScrollReveal } from '@/shared/lib';
+import { usePauseOffscreen, useScrollReveal } from '@/shared/lib';
 import { SiteFooter } from '@/widgets/site-footer';
 
 interface PageLayoutProps {
@@ -9,11 +9,13 @@ interface PageLayoutProps {
 
 export function PageLayout({ intro, children }: PageLayoutProps) {
   const mainRef = useRef<HTMLElement>(null);
+  const skyRef = useRef<HTMLDivElement>(null);
   useScrollReveal(mainRef);
+  usePauseOffscreen(skyRef);
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-viratec-bg font-viratec">
-      <div aria-hidden="true" className="page-sky">
+      <div ref={skyRef} aria-hidden="true" className="page-sky">
         <span className="page-sky-aurora" />
         <span className="page-sky-stars page-sky-far" />
         <span className="page-sky-stars page-sky-mid" />

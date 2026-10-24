@@ -4,5 +4,6 @@ export { useBodyScrollLock } from './useBodyScrollLock';
 export { useFocusTrap } from './useFocusTrap';
 export { useSeo } from './useSeo';
 export { useScrollReveal } from './useScrollReveal';
+export { usePauseOffscreen } from './usePauseOffscreen';
 export { trackSpotlight } from './trackSpotlight';
 export { isStaleChunkError, reloadForStaleChunk } from './staleChunk';
