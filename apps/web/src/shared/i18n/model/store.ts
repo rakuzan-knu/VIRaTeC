@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { PRERENDER_LOCALE } from '@/shared/config/prerender';
 import { LOCALE_STORAGE_KEY as STORAGE_KEY } from '@/shared/config/storageKeys';
 import { DEFAULT_LOCALE, isLocale, type Locale } from './types';
 
@@ -28,6 +29,7 @@ export const clearStoredLocale = () => {
 };
 
 const detectLocale = (): Locale => {
+  if (import.meta.env.SSR) return PRERENDER_LOCALE;
   const stored = readStoredLocale();
   if (stored) return stored;
   return navigator.language.toLowerCase().startsWith('uk') ? 'uk' : DEFAULT_LOCALE;
