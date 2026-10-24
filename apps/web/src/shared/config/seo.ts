@@ -5,10 +5,10 @@ export const SITE_NAME = 'VIRaTeC';
 export const DEFAULT_TITLE = 'VIRaTeC — Virtual Innovating Research & Technology Community (КНУ)';
 
 export const OG_IMAGE = {
-  path: '/og-image.png',
+  path: '/og-image.jpg',
   width: 1200,
   height: 630,
-  type: 'image/png',
+  type: 'image/jpeg',
   alt: 'VIRaTeC — Virtual Innovative Research & Technology Community, КНУ імені Тараса Шевченка',
 } as const;
 

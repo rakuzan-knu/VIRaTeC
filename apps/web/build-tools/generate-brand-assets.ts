@@ -141,11 +141,19 @@ const buildIconHtml = (size: number, padding: number, radius: number) =>
     .mark{display:block;width:${size - padding * 2}px;height:${size - padding * 2}px}
   </style></head><body><div class="tile"><svg class="mark" viewBox="0 0 ${BRAND_MARK.size} ${BRAND_MARK.size}">${buildMarkShapes()}</svg></div></body></html>`;
 
-const render = async (page: Page, html: string, width: number, height: number) => {
+const render = async (
+  page: Page,
+  html: string,
+  width: number,
+  height: number,
+  type: 'png' | 'jpeg' = 'png',
+) => {
   await page.setViewportSize({ width, height });
   await page.setContent(html, { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
-  return page.screenshot({ type: 'png', omitBackground: true });
+  return type === 'jpeg'
+    ? page.screenshot({ type, quality: 85 })
+    : page.screenshot({ type, omitBackground: true });
 };
 
 const buildIco = (images: { size: number; png: Buffer }[]) => {
@@ -188,8 +196,8 @@ const main = async () => {
 
   try {
     await writeFile(
-      path.join(PUBLIC_DIR, 'og-image.png'),
-      await render(page, await buildOgHtml(), 1200, 630),
+      path.join(PUBLIC_DIR, 'og-image.jpg'),
+      await render(page, await buildOgHtml(), 1200, 630, 'jpeg'),
     );
 
     for (const { file, size, padding, radius } of ICONS) {
