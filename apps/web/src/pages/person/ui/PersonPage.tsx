@@ -11,7 +11,6 @@ import {
   Lock,
   Mail,
   Pencil,
-  Sparkles,
 } from 'lucide-react';
 import { PROFILE_LINK_KEYS, buildProfileLinkUrl, type PublicProfileDto } from '@viratec/contracts';
 import { usePublicProfile } from '@/entities/person';
@@ -182,7 +181,6 @@ function ProfileContent({ profile, t }: { profile: PublicProfileDto; t: PersonMe
                       key={option}
                       className="inline-flex items-center gap-1.5 rounded-full border border-viratec-lime/40 bg-viratec-lime/12 px-3.5 py-1.5 text-sm font-medium text-viratec-accent"
                     >
-                      <Sparkles aria-hidden="true" className="size-3.5" />
                       {labels.openTo[option]}
                     </li>
                   ))}

@@ -399,7 +399,7 @@ export function ProfileForm({ account }: ProfileFormProps) {
         </p>
       )}
 
-      <div className="sticky bottom-4 z-10 -mx-2 flex flex-col gap-3 rounded-[20px] border border-white/10 bg-viratec-deep/90 p-3 shadow-[0_20px_50px_-20px_rgba(0,5,26,0.9)] backdrop-blur-xl sm:flex-row sm:items-center">
+      <div className="sticky bottom-4 z-10 -mx-2 flex flex-col gap-3 rounded-[20px] border border-white/10 bg-viratec-deep/90 p-3 shadow-[0_20px_50px_-20px_rgba(0,5,26,0.9)] sm:flex-row sm:items-center">
         <Button
           type="submit"
           label={t.save}

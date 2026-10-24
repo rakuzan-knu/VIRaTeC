@@ -48,7 +48,7 @@ export function DesktopNavDropdown({
           isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
         )}
       >
-        <ul className="flex flex-col gap-0.5 rounded-[24px] border border-white/10 bg-viratec-dropdown/88 p-2 shadow-[0_30px_80px_-20px_rgba(0,5,26,0.8)] backdrop-blur-2xl backdrop-saturate-150">
+        <ul className="flex flex-col gap-0.5 rounded-[24px] border border-white/10 bg-viratec-dropdown p-2 shadow-[0_30px_80px_-20px_rgba(0,5,26,0.8)]">
           {group.items.map((item) => (
             <li key={item.to}>
               <Link

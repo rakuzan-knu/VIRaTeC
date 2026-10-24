@@ -82,7 +82,7 @@ export function AuthLayout({
           </div>
 
           {/* Bottom Badge */}
-          <div className="relative z-10 mt-12 bg-auth-overlay/40 backdrop-blur-md rounded-[14px] p-[10px] pr-[18px] border border-white/20 flex items-center gap-[14px] w-fit shadow-lg">
+          <div className="relative z-10 mt-12 bg-auth-overlay rounded-[14px] p-[10px] pr-[18px] border border-white/20 flex items-center gap-[14px] w-fit shadow-lg">
             <div className="w-12 h-12 rounded-[10px] bg-auth-banner border border-white/10 flex items-center justify-center p-1.5 shrink-0">
               <LogoMark className="size-full" />
             </div>
