@@ -25,7 +25,7 @@ export function linkButtonClassName({
     size === 'md' && 'gap-2 px-5 py-3 text-base',
     variant === 'primary' && 'bg-viratec-lime text-viratec-ink hover:bg-viratec-lime-hover',
     variant === 'secondary' &&
-      'border-[1.5px] border-white/22 bg-white/4 text-white backdrop-blur-md hover:border-white/40 hover:bg-white/10',
+      'border-[1.5px] border-white/22 bg-white/4 text-white hover:border-white/40 hover:bg-white/10',
     variant === 'ink' &&
       'bg-viratec-ink text-white hover:bg-viratec-deep focus-visible:outline-viratec-ink',
     className,

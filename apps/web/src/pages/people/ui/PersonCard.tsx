@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import type { PersonSummaryDto } from '@viratec/contracts';
 import { UserAvatar, useAccountLabels } from '@/entities/session';
 import { buildPersonPath } from '@/shared/config/routes';
@@ -73,7 +72,6 @@ export function PersonCard({ person, isViewer = false, viewerLabel }: PersonCard
               key={option}
               className="inline-flex items-center gap-1 rounded-full bg-viratec-lime/12 px-2.5 py-1 text-xs font-medium text-viratec-accent"
             >
-              <Sparkles aria-hidden="true" className="size-3" />
               {labels.openTo[option]}
             </li>
           ))}

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LoaderCircle, Lock, SlidersHorizontal, Sparkles, Users } from 'lucide-react';
+import { LoaderCircle, Lock, SlidersHorizontal, Users } from 'lucide-react';
 import { FacultyDivision, OpenToOption, StudyLevel } from '@viratec/contracts';
 import { PEOPLE_PAGE_SIZE } from '@/entities/person';
 import { useAccountLabels, useSessionStore } from '@/entities/session';
@@ -235,7 +235,6 @@ export function PeoplePage() {
 
           <div className="hidden flex-col gap-2.5 lg:flex">
             <span className="flex items-center gap-1.5 text-[13px] font-medium text-viratec-subtle">
-              <Sparkles aria-hidden="true" className="size-3.5" />
               {t.openTo}
             </span>
             {openToChips}
@@ -277,10 +276,7 @@ export function PeoplePage() {
           )}
           {showHints && directory.isSignedIn && (
             <div className="flex flex-col gap-3 rounded-[20px] border border-viratec-lime/20 bg-viratec-lime/6 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="flex items-center gap-2 text-sm text-viratec-soft">
-                <Sparkles aria-hidden="true" className="size-4 shrink-0 text-viratec-accent" />
-                {t.memberHint}
-              </p>
+              <p className="flex items-center gap-2 text-sm text-viratec-soft">{t.memberHint}</p>
               <Link
                 to={ROUTES.ACCOUNT}
                 className={linkButtonClassName({
