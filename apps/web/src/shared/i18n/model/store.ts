@@ -1,7 +1,6 @@
 import { create } from 'zustand';
+import { LOCALE_STORAGE_KEY as STORAGE_KEY } from '@/shared/config/storageKeys';
 import { DEFAULT_LOCALE, isLocale, type Locale } from './types';
-
-const STORAGE_KEY = 'viratec_locale';
 
 const readStoredLocale = (): Locale | null => {
   try {

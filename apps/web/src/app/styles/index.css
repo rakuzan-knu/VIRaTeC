@@ -123,6 +123,7 @@
 
   --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-hero-reveal: hero-reveal 1.2s var(--ease-apple) both;
+  --animate-hero-rise: hero-rise 1.2s var(--ease-apple) both;
   --animate-hero-settle: hero-settle 2.4s var(--ease-apple) both;
   --animate-hero-shimmer: hero-shimmer 2.6s var(--ease-apple) 1.3s both;
   --animate-hero-drift: hero-drift 14s ease-in-out infinite alternate;
@@ -131,6 +132,19 @@
   @keyframes hero-reveal {
     from {
       opacity: 0;
+      transform: translate3d(0, 28px, 0) scale(0.98);
+      filter: blur(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0.35;
       transform: translate3d(0, 28px, 0) scale(0.98);
       filter: blur(12px);
     }
@@ -364,6 +378,10 @@
 @utility intro-cascade {
   & > :not(h1) {
     animation: var(--animate-hero-reveal);
+  }
+
+  & > p {
+    animation-name: hero-rise;
   }
 
   & > :nth-child(2) {

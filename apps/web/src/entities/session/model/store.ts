@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import type { AccountDto } from '@viratec/contracts';
+import {
+  LEGACY_TOKEN_STORAGE_KEYS as LEGACY_TOKEN_KEYS,
+  SESSION_HINT_STORAGE_KEY as SESSION_HINT_KEY,
+} from '@/shared/config/storageKeys';
 import { rememberAccount } from './knownAccounts';
-
-const SESSION_HINT_KEY = 'viratec_session';
-const LEGACY_TOKEN_KEYS = ['viratec_token', 'viratec_refresh_token'];
 
 const readStorage = (key: string): string | null => {
   try {
