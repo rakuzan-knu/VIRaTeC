@@ -1,20 +1,30 @@
+import { lazy, Suspense } from 'react';
 import { PageLayout } from '@/widgets/page-layout';
 import { HeroSection } from './HeroSection';
-import { AboutSection } from './AboutSection';
-import { ResearchSection } from './ResearchSection';
-import { PublicationsSection } from './PublicationsSection';
-import { GetInvolvedSection } from './GetInvolvedSection';
 import { useSeo } from '@/shared/lib';
+
+const AboutSection = lazy(async () => ({ default: (await import('./AboutSection')).AboutSection }));
+const ResearchSection = lazy(async () => ({
+  default: (await import('./ResearchSection')).ResearchSection,
+}));
+const PublicationsSection = lazy(async () => ({
+  default: (await import('./PublicationsSection')).PublicationsSection,
+}));
+const GetInvolvedSection = lazy(async () => ({
+  default: (await import('./GetInvolvedSection')).GetInvolvedSection,
+}));
 
 export function HomePage() {
   useSeo();
 
   return (
     <PageLayout intro={<HeroSection />}>
-      <AboutSection />
-      <ResearchSection />
-      <PublicationsSection />
-      <GetInvolvedSection />
+      <Suspense fallback={<div className="min-h-screen" />}>
+        <AboutSection />
+        <ResearchSection />
+        <PublicationsSection />
+        <GetInvolvedSection />
+      </Suspense>
     </PageLayout>
   );
 }

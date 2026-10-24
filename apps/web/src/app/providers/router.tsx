@@ -4,8 +4,6 @@ import {
   type RouterNavigateOptions,
   type To,
 } from 'react-router-dom';
-import { HomePage } from '@/pages/home';
-import { RegisterPage } from '@/pages/register';
 import { GuestRoute } from './GuestRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootLayout, RouteError, RouteFallback } from './RootLayout';
@@ -19,15 +17,20 @@ const router = createBrowserRouter([
     children: [
       {
         path: ROUTES.HOME,
-        element: <HomePage />,
+        lazy: async () => ({ Component: (await import('@/pages/home')).HomePage }),
       },
       {
         path: ROUTES.REGISTER,
-        element: (
-          <GuestRoute>
-            <RegisterPage />
-          </GuestRoute>
-        ),
+        lazy: async () => {
+          const { RegisterPage } = await import('@/pages/register');
+          return {
+            element: (
+              <GuestRoute>
+                <RegisterPage />
+              </GuestRoute>
+            ),
+          };
+        },
       },
       {
         path: ROUTES.LOGIN,
