@@ -1,6 +1,7 @@
-import type { CSSProperties } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { ROUTES } from '@/shared/config/routes';
 import { useLocalized } from '@/shared/i18n';
+import { usePauseOffscreen } from '@/shared/lib';
 import { LinkButton } from '@/shared/ui/link-button';
 import { SiteHeader } from '@/widgets/site-header';
 import glowTop from '../assets/glow-top.svg';
@@ -21,10 +22,16 @@ function revealDelay(ms: number): CSSProperties {
 
 export function HeroSection() {
   const { hero } = useLocalized(HOME_CONTENT);
+  const glowsRef = useRef<HTMLDivElement>(null);
+  usePauseOffscreen(glowsRef);
 
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(140.73deg,#03122e_0%,#051b40_45.83%,#094285_83.33%)] lg:bg-[linear-gradient(110.26deg,#03122e_0%,#051b40_63%,#094285_100%)]">
-      <div aria-hidden="true" className="pointer-events-none lg:hidden">
+      <div
+        ref={glowsRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 lg:hidden"
+      >
         <div className="absolute top-[-80px] left-[120px] size-[420px] motion-safe:animate-hero-drift">
           <div className="absolute inset-[-14.29%]">
             <img src={glowTop} alt="" className="block size-full max-w-none" />
