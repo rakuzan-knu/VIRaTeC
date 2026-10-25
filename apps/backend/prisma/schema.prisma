@@ -121,6 +121,7 @@ model User {
   papers        ResearchPaper[]
   projects      Project[]
   posts         CommunityPost[]
+  postLikes     PostLike[]
   refreshTokens RefreshToken[]
   avatar        UserAvatar?
   savedItems    SavedItem[]
@@ -324,12 +325,26 @@ model CommunityPost {
   content    String
   tags       String[] @default([])
   authorId   String
-  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  likesCount Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likesCount Int        @default(0)
+  likes      PostLike[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@index([authorId])
   @@index([createdAt])
   @@map("community_posts")
+}
+
+model PostLike {
+  id        String        @id @default(uuid())
+  userId    String
+  postId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("post_likes")
 }
