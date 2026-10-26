@@ -12,7 +12,6 @@ import { resolveSiteUrl } from './build-tools/site-url';
 const VENDOR_CHUNK = /\/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom)\//;
 const QUERY_CHUNK = /\/node_modules\/(@tanstack\/query-core|@tanstack\/react-query|zustand)\//;
 
-// https://vite.dev/config/
 export default defineConfig(({ mode, isSsrBuild }) => {
   const siteUrl = resolveSiteUrl(loadEnv(mode, __dirname, 'VITE_').VITE_SITE_URL);
   process.env.VITE_SITE_URL = siteUrl;

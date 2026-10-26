@@ -61,7 +61,7 @@ export function AccountMenu() {
           isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
         )}
       >
-        <div className="flex max-h-[calc(100svh-96px)] flex-col overflow-y-auto rounded-[24px] border border-white/10 bg-viratec-dropdown p-2 shadow-[0_30px_80px_-20px_rgba(0,5,26,0.8)]">
+        <div className="flex max-h-[calc(100svh-96px)] flex-col overflow-y-auto rounded-[24px] border border-white/10 bg-viratec-dropdown p-2 shadow-overlay">
           {user && (
             <div className="flex items-center gap-3 border-b border-white/8 px-3.5 pt-2 pb-3.5">
               <UserAvatar name={user.name} avatarUrl={user.avatarUrl} className="size-10" />

@@ -91,7 +91,7 @@ export function IntroVideo({
             loading="lazy"
             className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           />
-          <span aria-hidden="true" className="absolute inset-0 bg-[rgba(3,18,46,0.45)]" />
+          <span aria-hidden="true" className="absolute inset-0 bg-viratec-bg/45" />
         </>
       )}
       <span className="relative flex size-16 items-center justify-center rounded-full bg-white transition-transform group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100 lg:size-24">

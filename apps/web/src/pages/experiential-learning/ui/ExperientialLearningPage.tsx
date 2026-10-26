@@ -6,7 +6,9 @@ import { InfoCard } from '@/shared/ui/info-card';
 import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useSeo } from '@/shared/lib';
 import { useExperientialLearningContent } from '../model/content';
 
@@ -17,8 +19,10 @@ export function ExperientialLearningPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={content.breadcrumb}
           title={content.title}
           accent={content.accent}

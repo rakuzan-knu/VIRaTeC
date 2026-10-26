@@ -3,10 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import type { FastifyRequest } from 'fastify';
-import type { AdminPermission, StaffRole } from '@viratec/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
 import { cookieNames, readCookie } from '../session-cookies';
 import { effectiveStaff } from '../../security/staff';
+import type { AuthenticatedUser } from '../../security/authenticated-user';
 
 export interface JwtPayload {
   sub: string;
@@ -14,20 +14,6 @@ export interface JwtPayload {
   role: string;
   faculty: string;
   sid?: string;
-}
-
-export interface AuthenticatedUser {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  faculty: string;
-  sessionId?: string;
-  staffRole: StaffRole;
-  permissions: AdminPermission[];
-  twoFactorEnabled: boolean;
-  mfaVerifiedAt: Date | null;
-  elevatedUntil: Date | null;
 }
 
 @Injectable()

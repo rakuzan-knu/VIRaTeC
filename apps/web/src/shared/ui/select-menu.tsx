@@ -115,7 +115,7 @@ export function SelectMenu<TValue extends string>({
           role="listbox"
           aria-label={label}
           onKeyDown={handleListKeyDown}
-          className="absolute top-full right-0 z-30 mt-2 flex min-w-full flex-col gap-1 rounded-[14px] border border-white/14 bg-viratec-dropdown p-1.5 shadow-[0px_24px_60px_0px_rgba(0,5,26,0.55)]"
+          className="absolute top-full right-0 z-30 mt-2 flex min-w-full flex-col gap-1 rounded-[14px] border border-white/14 bg-viratec-dropdown p-1.5 shadow-menu"
         >
           {options.map((option, index) => {
             const isSelected = option.value === value;

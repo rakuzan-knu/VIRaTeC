@@ -1,6 +1,7 @@
-const assert = require('node:assert/strict');
-const { test } = require('node:test');
-const { AuthService } = require('../dist/auth/auth.service.js');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { hasStatus } from './support.ts';
+import { AuthService } from '../dist/auth/auth.service.js';
 
 const payload = {
   sub: 'google-subject',
@@ -9,16 +10,30 @@ const payload = {
   picture: 'https://example.invalid/avatar.png',
 };
 
-function setup(users) {
+interface LinkUser {
+  id: string;
+  email?: string;
+  passwordHash: string | null;
+  googleId: string | null;
+  avatarUrl?: string | null;
+}
+
+interface UserWhere {
+  id?: string;
+  googleId?: string;
+}
+
+function setup(users: LinkUser[]) {
   const service = new AuthService(
     {
       user: {
-        findUnique: async ({ where }) =>
+        findUnique: async ({ where }: { where: UserWhere }) =>
           users.find((user) =>
             where.id !== undefined ? user.id === where.id : user.googleId === where.googleId,
           ) ?? null,
-        update: async ({ where, data }) => {
+        update: async ({ where, data }: { where: UserWhere; data: Partial<LinkUser> }) => {
           const user = users.find((item) => item.id === where.id);
+          assert.ok(user);
           Object.assign(user, data);
           return user;
         },
@@ -31,7 +46,7 @@ function setup(users) {
   return service;
 }
 
-const passwordUser = () => ({
+const passwordUser = (): LinkUser => ({
   id: 'password-user',
   email: 'student@example.invalid',
   passwordHash: 'hash',
@@ -55,7 +70,7 @@ test('linking refuses a Google account owned by another user', async () => {
 
   await assert.rejects(
     setup(users).linkGoogle('password-user', { credential: 'token' }),
-    (error) => error.getStatus() === 409,
+    hasStatus(409),
   );
   assert.equal(users[0].googleId, null);
 });
@@ -65,7 +80,7 @@ test('linking refuses when Google is already connected', async () => {
 
   await assert.rejects(
     setup(users).linkGoogle('password-user', { credential: 'token' }),
-    (error) => error.getStatus() === 409,
+    hasStatus(409),
   );
   assert.equal(users[0].googleId, 'existing-subject');
 });
@@ -73,10 +88,7 @@ test('linking refuses when Google is already connected', async () => {
 test('unlinking keeps accounts that would lose their only sign-in method', async () => {
   const users = [{ ...passwordUser(), passwordHash: null, googleId: 'google-subject' }];
 
-  await assert.rejects(
-    setup(users).unlinkGoogle('password-user'),
-    (error) => error.getStatus() === 400,
-  );
+  await assert.rejects(setup(users).unlinkGoogle('password-user'), hasStatus(400));
   assert.equal(users[0].googleId, 'google-subject');
 });
 
@@ -99,7 +111,7 @@ test('linking reports an invalid Google credential as a bad request', async () =
 
   await assert.rejects(
     service.linkGoogle('password-user', { credential: 'token' }),
-    (error) => error.getStatus() === 400,
+    hasStatus(400),
   );
   assert.equal(users[0].googleId, null);
 });

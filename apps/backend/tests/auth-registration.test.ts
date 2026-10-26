@@ -1,6 +1,20 @@
-const assert = require('node:assert/strict');
-const { test } = require('node:test');
-const { AuthService } = require('../dist/auth/auth.service.js');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { hasStatus } from './support.ts';
+import { AuthService } from '../dist/auth/auth.service.js';
+
+interface CreatedUserData {
+  email: string;
+  role?: string;
+  passwordHash: string;
+  termsVersion: string;
+  termsAcceptedAt: Date;
+}
+
+interface StoredUser extends CreatedUserData {
+  id: string;
+  role: string;
+}
 
 for (const role of ['ADMIN', 'PROFESSOR', 'RESEARCHER']) {
   test(`public registration cannot grant ${role} privileges`, async () => {
@@ -26,7 +40,7 @@ for (const role of ['ADMIN', 'PROFESSOR', 'RESEARCHER']) {
         role,
         acceptTerms: true,
       }),
-      (error) => error.getStatus() === 403,
+      hasStatus(403),
     );
     assert.equal(databaseCalls, 0);
   });
@@ -34,13 +48,13 @@ for (const role of ['ADMIN', 'PROFESSOR', 'RESEARCHER']) {
 
 for (const role of [undefined, 'STUDENT', 'PARTNER']) {
   test(`public registration preserves the ${role ?? 'default student'} account flow`, async () => {
-    let storedUser;
+    let storedUser: StoredUser | undefined;
     let tokenCount = 0;
     const service = new AuthService(
       {
         user: {
           findUnique: async () => null,
-          create: async ({ data }) => {
+          create: async ({ data }: { data: CreatedUserData }) => {
             storedUser = { ...data, id: 'registration-test', role: data.role ?? 'STUDENT' };
             return storedUser;
           },
@@ -59,6 +73,7 @@ for (const role of [undefined, 'STUDENT', 'PARTNER']) {
       acceptTerms: true,
     });
 
+    assert.ok(storedUser);
     assert.equal(storedUser.email, 'registration@example.invalid');
     assert.equal(storedUser.termsVersion, '1.1');
     assert.ok(storedUser.termsAcceptedAt instanceof Date);
@@ -91,7 +106,7 @@ test('public registration requires accepting the terms', async () => {
       password: 'RegistrationTest123!',
       name: 'Registration Test',
     }),
-    (error) => error.getStatus() === 400,
+    hasStatus(400),
   );
   assert.equal(databaseCalls, 0);
 });

@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@
 import { Reflector } from '@nestjs/core';
 import { AdminPermission, StaffRole } from '@viratec/contracts';
 import { OWNER_ONLY_KEY, PERMISSIONS_KEY, STEP_UP_KEY } from '../decorators/staff.decorator';
-import type { AuthenticatedUser } from '../../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../../security/authenticated-user';
 
 export const STAFF_SESSION_MAX_AGE_MS = 12 * 60 * 60_000;
 

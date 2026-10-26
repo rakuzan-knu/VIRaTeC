@@ -6,7 +6,9 @@ import { defineMessages, INTL_LOCALE, useLocale, useLocalized } from '@/shared/i
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageSection } from '@/shared/ui/page-section';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import {
   LEGAL_DOCUMENT_ORDER,
   LEGAL_ROUTES,
@@ -64,8 +66,10 @@ export function LegalPage({ kind }: LegalPageProps) {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           eyebrow={t.eyebrow}
           title={content.title}
           accent={content.accent}

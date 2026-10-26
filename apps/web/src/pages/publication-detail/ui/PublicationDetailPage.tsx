@@ -16,7 +16,9 @@ import {
   type PublicationBlock,
 } from '@/entities/publication';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useSeo } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { ListFeedback } from '@/shared/ui/list-feedback';
@@ -199,8 +201,10 @@ export function PublicationDetailPage() {
   if (!publication) {
     return (
       <PageLayout
+        footer={<SiteFooter />}
         intro={
           <PageIntro
+            header={<SiteHeader />}
             breadcrumb={breadcrumbRoot}
             title={isPending ? t.loadingTitle : isError ? t.loadError : t.notFoundTitle}
             description={isPending ? t.loadingDescription : t.notFoundDescription}
@@ -231,8 +235,10 @@ export function PublicationDetailPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={[...breadcrumbRoot, labels.type[publication.type]]}
           title={publication.detail?.heroTitle ?? publication.title}
           accent={publication.detail?.heroAccent}

@@ -11,7 +11,9 @@ import { CtaSection } from '@/shared/ui/cta-section';
 import { linkButtonClassName } from '@/shared/ui/link-button';
 import { ProjectCard, ProjectCardSkeleton } from '@/entities/project';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { PAGE_SIZE, useFilterOptions } from '../model/filters';
 import { useProjectListing } from '../model/useProjectListing';
 
@@ -71,8 +73,10 @@ export function ProjectsPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={t.breadcrumb}
           title={t.title}
           accent={t.accent}

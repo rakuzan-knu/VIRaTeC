@@ -12,7 +12,13 @@ import {
   type AdminUsersQuery,
 } from '../api/adminApi';
 
-export const ADMIN_QUERY_KEY = ['admin'] as const;
+export const adminKeys = {
+  all: ['admin'] as const,
+  capabilities: () => [...adminKeys.all, 'me'] as const,
+  metrics: () => [...adminKeys.all, 'metrics'] as const,
+  users: (query: AdminUsersQuery) => [...adminKeys.all, 'users', query] as const,
+  audit: (page: number, action: string) => [...adminKeys.all, 'audit', page, action] as const,
+};
 
 const noRetryOnAuthErrors = (failureCount: number, error: unknown) =>
   failureCount < 2 &&
@@ -20,14 +26,14 @@ const noRetryOnAuthErrors = (failureCount: number, error: unknown) =>
 
 export const useAdminCapabilities = () =>
   useQuery({
-    queryKey: [...ADMIN_QUERY_KEY, 'me'],
+    queryKey: adminKeys.capabilities(),
     queryFn: fetchAdminCapabilities,
     retry: noRetryOnAuthErrors,
   });
 
 export const useAdminMetrics = () =>
   useQuery({
-    queryKey: [...ADMIN_QUERY_KEY, 'metrics'],
+    queryKey: adminKeys.metrics(),
     queryFn: fetchAdminMetrics,
     retry: noRetryOnAuthErrors,
     refetchInterval: 60_000,
@@ -35,7 +41,7 @@ export const useAdminMetrics = () =>
 
 export const useAdminUsers = (query: AdminUsersQuery) =>
   useQuery({
-    queryKey: [...ADMIN_QUERY_KEY, 'users', query],
+    queryKey: adminKeys.users(query),
     queryFn: () => fetchAdminUsers(query),
     retry: noRetryOnAuthErrors,
     placeholderData: keepPreviousData,
@@ -43,7 +49,7 @@ export const useAdminUsers = (query: AdminUsersQuery) =>
 
 export const useAuditLog = (page: number, action: string) =>
   useQuery({
-    queryKey: [...ADMIN_QUERY_KEY, 'audit', page, action],
+    queryKey: adminKeys.audit(page, action),
     queryFn: () => fetchAuditLog(page, action),
     retry: noRetryOnAuthErrors,
     placeholderData: keepPreviousData,
@@ -55,7 +61,7 @@ function useAdminMutation<TVariables, TResult>(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn,
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: adminKeys.all }),
   });
 }
 

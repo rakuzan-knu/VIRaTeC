@@ -5,6 +5,11 @@ import { INTL_LOCALE, defineMessages, useLocale, type Locale } from '@/shared/i1
 import { fetchEvents, type EventResponse } from '../api/eventsApi';
 import type { Opportunity } from './content';
 
+const eventKeys = {
+  all: ['events'] as const,
+  upcoming: () => [...eventKeys.all, 'upcoming'] as const,
+};
+
 const FALLBACK_ACTION = defineMessages({ en: 'Ask to join', uk: 'Долучитися' });
 
 const NO_EVENTS: Opportunity[] = [];
@@ -37,7 +42,7 @@ export function useUpcomingEvents() {
     [locale],
   );
   const query = useQuery({
-    queryKey: ['events', 'upcoming'],
+    queryKey: eventKeys.upcoming(),
     queryFn: fetchEvents,
     select,
     staleTime: 5 * 60_000,

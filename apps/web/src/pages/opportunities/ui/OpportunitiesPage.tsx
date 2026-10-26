@@ -5,7 +5,9 @@ import { LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import {
   AUDIENCE_SECTION_IDS,
   useOpportunitiesContent,
@@ -162,8 +164,10 @@ export function OpportunitiesPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           tone="teal"
           eyebrow={content.eyebrow}
           title={content.title}

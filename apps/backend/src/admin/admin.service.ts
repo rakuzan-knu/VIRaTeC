@@ -23,7 +23,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../security/audit.service';
 import { effectiveStaff } from '../security/staff';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
-import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../security/authenticated-user';
 import type { AuditQueryDto, ListUsersQueryDto, UpdateStaffAccessDto } from './dto/admin.dto';
 
 const DAY_MS = 24 * 60 * 60_000;
