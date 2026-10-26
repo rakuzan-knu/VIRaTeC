@@ -1,69 +1,69 @@
-# Frontend — обзор
+# Frontend — overview
 
-## Стек
+## Stack
 
-- React 19 + React Compiler (`babel-plugin-react-compiler` подключён в `@vitejs/plugin-react` в `vite.config.ts`) — не добавляй `useMemo`/`useCallback`/`React.memo` без явной причины, компилятор мемоизирует сам. Существующие `useCallback` для стабильного `select` в query-хуках не трогай.
-- TypeScript, строгий режим, без `any`.
-- Vite 6 — сборка и dev-сервер, плюс SSR-сборка для пререндера.
-- React Router 7 (`react-router-dom`) — роутинг SPA, конфиг в `app/providers/router.tsx`.
-- TanStack Query 5 — серверное состояние. Zustand 5 — клиентское состояние (сессия, язык). Разделение — [state-management.md](state-management.md).
-- Tailwind CSS v4 (`@tailwindcss/vite`) — стили, токены в `app/styles/index.css`.
-- react-hook-form + `@hookform/resolvers` + zod — формы. Floating UI — позиционирование оверлеев. `lucide-react` — иконки.
-- pnpm workspaces + Turborepo — монорепо.
+- React 19 + React Compiler (`babel-plugin-react-compiler` is wired into `@vitejs/plugin-react` in `vite.config.ts`) — do not add `useMemo`/`useCallback`/`React.memo` without a concrete reason, the compiler memoizes on its own. Leave existing `useCallback`s used for a stable `select` in query hooks alone.
+- TypeScript, strict mode, no `any`.
+- Vite 6 — build and dev server, plus an SSR build for prerendering.
+- React Router 7 (`react-router-dom`) — SPA routing, config in `app/providers/router.tsx`.
+- TanStack Query 5 — server state. Zustand 5 — client state (session, language). The split — [state-management.md](state-management.md).
+- Tailwind CSS v4 (`@tailwindcss/vite`) — styles, tokens in `app/styles/index.css`.
+- react-hook-form + `@hookform/resolvers` + zod — forms. Floating UI — overlay positioning. `lucide-react` — icons.
+- pnpm workspaces + Turborepo — monorepo.
 
-## Структура монорепо
+## Monorepo layout
 
 ```
 apps/
-├── web/                # @viratec/web — сайт и платформа, FSD
-│   ├── src/            # код приложения, см. fsd.md
-│   ├── build-tools/    # Vite-плагины (пререндер, SEO, адаптивные картинки, прелоад шрифтов и маршрутов) и пайплайн Contentful
-│   ├── tests/          # Playwright-проверки UI-кита, см. testing.md
+├── web/                # @viratec/web — site and platform, FSD
+│   ├── src/            # application code, see fsd.md
+│   ├── build-tools/    # Vite plugins (prerender, SEO, responsive images, font and route preload) and the Contentful pipeline
+│   ├── tests/          # Playwright UI kit checks, see testing.md
 │   └── public/
-└── backend/            # @viratec/backend — NestJS, см. backend/overview.md
+└── backend/            # @viratec/backend — NestJS, see backend/overview.md
 packages/
-├── contracts/          # @viratec/contracts — enum'ы, типы и zod-схемы, общие с бэкендом
-├── utils/              # @viratec/utils — date/string-хелперы
-├── ui/                 # @viratec/ui — пока пустой, UI-кит живёт в apps/web/src/shared/ui
-└── tsconfig/           # @viratec/tsconfig — базовые tsconfig
+├── contracts/          # @viratec/contracts — enums, types and zod schemas shared with the backend
+├── utils/              # @viratec/utils — date/string helpers
+├── ui/                 # @viratec/ui — still empty, the UI kit lives in apps/web/src/shared/ui
+└── tsconfig/           # @viratec/tsconfig — base tsconfigs
 ```
 
-Внутри `apps/web` алиас `@/` указывает на `src/`. Общие с бэкендом типы импортируются из `@viratec/contracts`, а не копируются в `entities`.
+Inside `apps/web` the `@/` alias points to `src/`. Types shared with the backend are imported from `@viratec/contracts`, not copied into `entities`.
 
-## Сборка, пререндер и контент
+## Build, prerender and content
 
-`pnpm --filter @viratec/web build` = `tsc -b` → клиентская `vite build` → SSR-сборка `src/entry-server.tsx`, после которой `prerender-plugin` раскладывает статический HTML по маршрутам. Поэтому код страниц обязан рендериться в Node без `window`/`document`/`localStorage` на верхнем уровне модуля: обращения к браузерным API — в эффектах или за проверкой `import.meta.env.SSR`, как в `shared/i18n/model/store.ts`.
+`pnpm --filter @viratec/web build` = `tsc -b` → client `vite build` → SSR build of `src/entry-server.tsx`, after which `prerender-plugin` writes static HTML per route. So page code must render in Node without `window`/`document`/`localStorage` at module top level: browser APIs go into effects or behind an `import.meta.env.SSR` check, as in `shared/i18n/model/store.ts`.
 
-Контент маркетинговых страниц приходит из Contentful (`build-tools/contentful`):
+Marketing page content comes from Contentful (`build-tools/contentful`):
 
-- `content:pull` тянет записи и картинки в закоммиченные модули (`pages/*/model/page.generated.ts`, `shared/config/site.generated.ts`, `shared/config/seo.generated.ts`, `shared/assets/contentful/`). Эти файлы руками не правим — только через Contentful и `content:pull`.
-- `content:model` описывает модель контента в Contentful, `content:webhooks` — вебхуки деплоя.
-- После загрузки страница освежает контент через `GET /api/v1/content/entries` и `useLiveContent` (`shared/lib/useLiveContent.ts`) тем же доменным кодом (`build-tools/contentful/runtime.ts`). Сбой API — остаётся снапшот.
-- Подробности и окружения — `docs/deployment/contentful.md`. Токены — только в `apps/web/.env.local`.
+- `content:pull` fetches entries and images into committed modules (`pages/*/model/page.generated.ts`, `shared/config/site.generated.ts`, `shared/config/seo.generated.ts`, `shared/assets/contentful/`). Do not edit these files by hand — only through Contentful and `content:pull`.
+- `content:model` describes the content model in Contentful, `content:webhooks` — deploy webhooks.
+- After load, a page refreshes its content through `GET /api/v1/content/entries` and `useLiveContent` (`shared/lib/useLiveContent.ts`) using the same domain code (`build-tools/contentful/runtime.ts`). If the API fails, the snapshot stays.
+- Details and environments — `docs/deployment/contentful.md`. Tokens live only in `apps/web/.env.local`.
 
-Деплой — Vercel (`vercel.json`): сервис `web` собирает контракты, `content:pull --fallback` и `build`; сервис `api` — бэкенд.
+Deployment — Vercel (`vercel.json`): the `web` service builds the contracts, runs `content:pull --fallback` and `build`; the `api` service is the backend.
 
-## Единый кодстайл
+## Shared code style
 
-- **Prettier** (`.prettierrc.json`): 100 символов, одинарные кавычки, точки с запятой, висячие запятые, LF.
-- **Oxlint** — линтер на весь репозиторий из корня (`pnpm lint` = `oxlint --deny-warnings`), отдельного конфига нет. Границы слоёв FSD линтер не проверяет — их держит ревью, см. [fsd.md](fsd.md).
-- **Knip** (`knip.json`) — неразрешённые импорты.
-- **EditorConfig** (`.editorconfig`) — 2 пробела, LF, финальный перевод строки.
-- **Husky**: `pre-commit` — `lint-staged` (oxlint `--fix` + prettier по изменённым файлам), `pre-push` — `pnpm typecheck`, `commit-msg` — commitlint.
+- **Prettier** (`.prettierrc.json`): 100 characters, single quotes, semicolons, trailing commas, LF.
+- **Oxlint** — the linter for the whole repo from the root (`pnpm lint` = `oxlint --deny-warnings`), no separate config. It does not check FSD layer boundaries — review does, see [fsd.md](fsd.md).
+- **Knip** (`knip.json`) — unresolved imports.
+- **EditorConfig** (`.editorconfig`) — 2 spaces, LF, final newline.
+- **Husky**: `pre-commit` — `lint-staged` (oxlint `--fix` + prettier on changed files), `pre-push` — `pnpm typecheck`, `commit-msg` — commitlint.
 
-## Команды
+## Commands
 
-Из корня репозитория:
+From the repository root:
 
-- `pnpm install` — зависимости всего workspace (заодно `prisma generate` через `postinstall`)
-- `pnpm dev:web` — `apps/web` в dev-режиме на 5173 (`pnpm dev` — все приложения через Turbo)
-- `pnpm build` — прод-сборка всего через Turbo
+- `pnpm install` — dependencies for the whole workspace (also `prisma generate` via `postinstall`)
+- `pnpm dev:web` — `apps/web` in dev mode on 5173 (`pnpm dev` — all apps through Turbo)
+- `pnpm build` — production build of everything through Turbo
 - `pnpm lint` / `pnpm lint:fix` — Oxlint
 - `pnpm format` / `pnpm format:check` — Prettier
-- `pnpm typecheck` — `tsc` по пакетам через Turbo
-- `pnpm knip` — неразрешённые импорты
-- **`pnpm validate`** — EOL + шаблон env + типы + линт + knip одной командой (то, что стоит гонять перед пушем)
-- `pnpm --filter @viratec/web test:ui` — Playwright-проверки UI-кита
-- `pnpm --filter @viratec/web content:pull` — обновить снапшот контента из Contentful
+- `pnpm typecheck` — `tsc` per package through Turbo
+- `pnpm knip` — unresolved imports
+- **`pnpm validate`** — EOL + env template + types + lint + knip in one command (what to run before pushing)
+- `pnpm --filter @viratec/web test:ui` — Playwright UI kit checks
+- `pnpm --filter @viratec/web content:pull` — refresh the content snapshot from Contentful
 
-Превью в Claude Code — через локальный `.claude/launch.json` (в git не попадает): dev-сервер web на 5173, `vite preview` на 4173, бэкенд на 3000. Если файла нет — создай его с этими командами (`pnpm --filter @viratec/web dev`, `pnpm --filter @viratec/web preview`, `pnpm --filter @viratec/backend start`).
+Previews in Claude Code use a local `.claude/launch.json` (not committed): web dev server on 5173, `vite preview` on 4173, backend on 3000. If the file is missing, create it with these commands (`pnpm --filter @viratec/web dev`, `pnpm --filter @viratec/web preview`, `pnpm --filter @viratec/backend start`).

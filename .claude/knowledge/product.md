@@ -1,60 +1,60 @@
-# Продукт
+# Product
 
-Источник: `README.md`, код `apps/web` и `apps/backend`, `docs/`. Ниже — выжимка, актуальная на момент переноса правил.
+Sources: `README.md`, the code in `apps/web` and `apps/backend`, `docs/`. Below is a summary that was accurate when the rules were ported.
 
-## Что делаем
+## What we build
 
-Сайт и платформа VIRaTeC — международной научно-образовательной сети на базе факультета информационных технологий (ФИТ) КНУ имени Тараса Шевченко при участии Учебно-научного института филологии (ННИФ). Аудитория — исследователи, преподаватели, студенты и международные партнёры.
+The website and platform of VIRaTeC — an international research and education network based at the Faculty of Information Technology (FIT) of Taras Shevchenko National University of Kyiv, with the Educational and Scientific Institute of Philology (NNIF). The audience is researchers, faculty, students and international partners.
 
-Две части:
+Two parts:
 
-- **Публичный сайт** — об инициативе, направления исследований, проекты, публикации, люди, возможности, контакты, юридические страницы. Страницы пререндерятся при сборке, тексты маркетинговых страниц приходят из Contentful.
-- **Платформа для участников** — регистрация и вход (email + пароль, Google), 2FA, сессии, профиль и приватность, аватар, экспорт данных и удаление аккаунта, сохранённые публикации и проекты, сообщество (посты, лайки), админка для сотрудников.
+- **Public site** — about the initiative, research areas, projects, publications, people, opportunities, contacts, legal pages. Pages are prerendered at build time; marketing page copy comes from Contentful.
+- **Member platform** — registration and sign-in (email + password, Google), 2FA, sessions, profile and privacy, avatar, data export and account deletion, saved publications and projects, community (posts, likes), an admin panel for staff.
 
-Интерфейс двуязычный: `en` (по умолчанию) и `uk` (`apps/web/src/shared/i18n`). Пререндер идёт на украинском.
+The interface is bilingual: `en` (default) and `uk` (`apps/web/src/shared/i18n`). Prerendering uses Ukrainian.
 
-## Страницы
+## Pages
 
-Маршруты — `apps/web/src/shared/config/routes.ts` (`ROUTES`), конфиг роутера — `apps/web/src/app/providers/router.tsx`. Ссылки с параметрами строятся хелперами оттуда же (`buildProjectPath`, `buildPublicationPath`, `buildPersonPath`, `buildAccountPath`) — не собирай URL строкой вручную.
+Routes — `apps/web/src/shared/config/routes.ts` (`ROUTES`), router config — `apps/web/src/app/providers/router.tsx`. Links with parameters are built with helpers from the same file (`buildProjectPath`, `buildPublicationPath`, `buildPersonPath`, `buildAccountPath`) — never build URLs by hand with string concatenation.
 
-| Маршрут                                                                  | Страница (`pages/…`)                                                        |
-| ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `/`                                                                      | `home`                                                                      |
-| `/about`, `/about/viratec`, `/about/global-collaboration-framework`      | `about-initiative`, `viratec`, `global-collaboration`                       |
-| `/research/areas`, `/research/projects`, `/research/projects/:projectId` | `research-areas`, `projects`, `project-detail`                              |
-| `/research/experiential-learning`, `/research/student-research`          | `experiential-learning`, `student-research`                                 |
-| `/publications`, `/publications/:slug`                                   | `publications`, `publication-detail`                                        |
-| `/people`, `/people/:userId`                                             | `people`, `person`                                                          |
-| `/opportunities`, `/contact`                                             | `opportunities`, `contact`                                                  |
-| `/terms`, `/privacy`, `/cookies`, `/community-guidelines`                | `legal`                                                                     |
-| `/login`, `/register`, `/forgot-password`                                | `login`, `register`, `forgot-password` (гостевые маршруты, `GuestRoute`)    |
-| `/account`                                                               | `account` (защищённый, `ProtectedRoute`; раздел — query-параметр `section`) |
-| `/admin`, `/admin/users`, `/admin/audit`                                 | `admin` (`ProtectedRoute`; права сотрудника проверяет API — `StaffGuard`)   |
-| `*`                                                                      | `not-found`                                                                 |
+| Route                                                                    | Page (`pages/…`)                                                                    |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `/`                                                                      | `home`                                                                              |
+| `/about`, `/about/viratec`, `/about/global-collaboration-framework`      | `about-initiative`, `viratec`, `global-collaboration`                               |
+| `/research/areas`, `/research/projects`, `/research/projects/:projectId` | `research-areas`, `projects`, `project-detail`                                      |
+| `/research/experiential-learning`, `/research/student-research`          | `experiential-learning`, `student-research`                                         |
+| `/publications`, `/publications/:slug`                                   | `publications`, `publication-detail`                                                |
+| `/people`, `/people/:userId`                                             | `people`, `person`                                                                  |
+| `/opportunities`, `/contact`                                             | `opportunities`, `contact`                                                          |
+| `/terms`, `/privacy`, `/cookies`, `/community-guidelines`                | `legal`                                                                             |
+| `/login`, `/register`, `/forgot-password`                                | `login`, `register`, `forgot-password` (guest routes, `GuestRoute`)                 |
+| `/account`                                                               | `account` (protected, `ProtectedRoute`; the section is the `section` query)         |
+| `/admin`, `/admin/users`, `/admin/audit`                                 | `admin` (`ProtectedRoute`; staff permissions are checked by the API — `StaffGuard`) |
+| `*`                                                                      | `not-found`                                                                         |
 
-## Модель данных
+## Data model
 
-Схема — `apps/backend/prisma/schema.prisma`, миграции — `apps/backend/prisma/migrations`. Enum'ы Prisma продублированы в `packages/contracts/src/enums.ts` — это контракт с фронтом (там же есть enum'ы только для API, например `OpenToOption`, `LanguageLevel`).
+Schema — `apps/backend/prisma/schema.prisma`, migrations — `apps/backend/prisma/migrations`. Prisma enums are mirrored in `packages/contracts/src/enums.ts` — that is the contract with the frontend (it also holds API-only enums such as `OpenToOption`, `LanguageLevel`).
 
-| Модель                                       | Что хранит                                                                                                                                                                        |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `User`                                       | аккаунт: роль (`UserRole`), роль сотрудника (`StaffRole`) и права (`AdminPermission`), факультет, уровень обучения, видимость профиля (`ProfileVisibility`), Google-привязка, 2FA |
-| `UserAvatar`                                 | аватар пользователя (бинарные данные + MIME)                                                                                                                                      |
-| `RefreshToken`, `BackupCode`, `MfaChallenge` | сессии, резервные коды и вызовы 2FA                                                                                                                                               |
-| `AuditLog`, `RateLimitBucket`                | аудит действий и rate limit, оба в Postgres                                                                                                                                       |
-| `SavedItem`                                  | сохранённое пользователем: `PUBLICATION` или `PROJECT` по `refId`                                                                                                                 |
-| `ResearchPaper`                              | научные работы                                                                                                                                                                    |
-| `Project`                                    | проекты (статус `ProjectStatus`, факультеты, теги, ссылки, `translations` в JSON)                                                                                                 |
-| `Event`                                      | события (`EventType`, даты, место, онлайн)                                                                                                                                        |
-| `Publication`                                | публикации и новости по `slug`, контент в JSON                                                                                                                                    |
-| `CommunityPost`, `PostLike`                  | посты сообщества и лайки (уникальный лайк на пользователя)                                                                                                                        |
+| Model                                        | What it stores                                                                                                                                                             |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `User`                                       | account: role (`UserRole`), staff role (`StaffRole`) and permissions (`AdminPermission`), faculty, study level, profile visibility (`ProfileVisibility`), Google link, 2FA |
+| `UserAvatar`                                 | user avatar (binary data + MIME type)                                                                                                                                      |
+| `RefreshToken`, `BackupCode`, `MfaChallenge` | sessions, backup codes and 2FA challenges                                                                                                                                  |
+| `AuditLog`, `RateLimitBucket`                | action audit and rate limiting, both in Postgres                                                                                                                           |
+| `SavedItem`                                  | a user's saved item: `PUBLICATION` or `PROJECT` by `refId`                                                                                                                 |
+| `ResearchPaper`                              | research papers                                                                                                                                                            |
+| `Project`                                    | projects (`ProjectStatus`, faculties, tags, links, `translations` as JSON)                                                                                                 |
+| `Event`                                      | events (`EventType`, dates, venue, online)                                                                                                                                 |
+| `Publication`                                | publications and news by `slug`, content as JSON                                                                                                                           |
+| `CommunityPost`, `PostLike`                  | community posts and likes (one like per user)                                                                                                                              |
 
-## Откуда берётся контент
+## Where content comes from
 
-- **Contentful** — тексты страниц, партнёры, команда, таймлайн, галерея, возможности, юридические документы, SEO и настройки сайта. Подтягиваются при сборке (`content:pull`) в типизированные модули, закоммиченные в репозиторий, после загрузки страницы освежаются через `GET /api/v1/content/entries`. Подробно — `docs/deployment/contentful.md` и [frontend/overview.md](frontend/overview.md).
-- **База данных** — проекты, публикации, события, пользователи, сообщество. Это не Contentful и туда не переносится.
+- **Contentful** — page copy, partners, team, timeline, gallery, opportunities, legal documents, SEO and site settings. Pulled at build time (`content:pull`) into typed modules committed to the repository, then refreshed after page load through `GET /api/v1/content/entries`. Details — `docs/deployment/contentful.md` and [frontend/overview.md](frontend/overview.md).
+- **Database** — projects, publications, events, users, community. This is not Contentful and is not moved there.
 
-## Открытые вопросы
+## Open questions
 
-- `README.md` и `CONTRIBUTING.md` упоминают Redis, MinIO и Kubernetes — в коде бэкенда Redis только объявлен в конфиге (`redis.url`), MinIO и k8s не используются. Не опирайся на них, пока задача явно этого не требует.
-- `packages/ui` пока пустой — UI-кит живёт в `apps/web/src/shared/ui`. Переносить его в пакет без явной задачи не нужно.
+- `README.md` and `CONTRIBUTING.md` mention Redis, MinIO and Kubernetes — in the backend code Redis is only declared in config (`redis.url`), MinIO and k8s are unused. Do not rely on them unless a task explicitly requires it.
+- `packages/ui` is still empty — the UI kit lives in `apps/web/src/shared/ui`. Do not move it into the package without an explicit task.

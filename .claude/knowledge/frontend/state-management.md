@@ -1,30 +1,30 @@
 # State management
 
-Два разных вида состояния, две разных библиотеки — не смешивай их зоны ответственности.
+Two different kinds of state, two different libraries — do not mix their responsibilities.
 
-## TanStack Query — серверное состояние
+## TanStack Query — server state
 
-Всё, что приходит с бэкенда и туда уходит: проекты, публикации, люди, сохранённое, профиль, сессии, админка. Устройство по слайсам:
+Everything that comes from and goes to the backend: projects, publications, people, saved items, profile, sessions, admin. Per-slice layout:
 
-- функции запросов — в `api/` слайса поверх `api` из `@/shared/api/apiClient` (`entities/project/api/projectApi.ts`);
-- query-хуки и фабрика ключей — в `model/queries.ts` или `model/use<Something>.ts` (`projectKeys`, `savedKeys`). Ключи строятся от корневого массива (`['projects']`, `['saved-items']`) — по нему же идёт инвалидация. Строки ключей вручную по коду не разбрасывай;
-- мутации (`useMutation`) живут рядом с query-хуками своей фичи и сами обновляют или инвалидируют кеш через `useQueryClient()`.
+- request functions — in the slice's `api/` on top of `api` from `@/shared/api/apiClient` (`entities/project/api/projectApi.ts`);
+- query hooks and the key factory — in `model/queries.ts` or `model/use<Something>.ts` (`projectKeys`, `savedKeys`, `adminKeys`). Keys are built from a root array (`['projects']`, `['saved-items']`), and invalidation targets that root. Do not scatter hand-written key arrays across the code;
+- mutations (`useMutation`) live next to their feature's query hooks and update or invalidate the cache themselves through `useQueryClient()`.
 
-`QueryClient` создаётся один раз в `app/App.tsx` (`retry: 1`, `refetchOnWindowFocus: false`). `staleTime` задаётся в хуке, обычно `60_000`. Для списков с фильтрами — `placeholderData: keepPreviousData`, локализация данных — через `select` (`useProjects`).
+`QueryClient` is created once in `app/App.tsx` (`retry: 1`, `refetchOnWindowFocus: false`). `staleTime` is set in the hook, usually `60_000`. Filtered lists use `placeholderData: keepPreviousData`; data localization goes through `select` (`useProjects`).
 
-Не держи копию серверных данных в Zustand или `useState` «для скорости» — источник истины один, кеш TanStack Query.
+Do not keep a copy of server data in Zustand or `useState` "for speed" — there is one source of truth, the TanStack Query cache.
 
-## Zustand — клиентское состояние
+## Zustand — client state
 
-То, чего на бэке нет или что нужно синхронно до ответа сервера:
+What the backend does not have, or what is needed synchronously before the server responds:
 
-- **`entities/session/model/store.ts` (`useSessionStore`)** — текущий пользователь (`AccountDto` из контрактов), флаги восстановления сессии, ожидание второго фактора, выход. Наружу — через селекторы и хуки слайса (`useIsAuthenticated`). Список известных аккаунтов для переключения — `entities/session/model/knownAccounts.ts`.
-- **`shared/i18n/model/store.ts` (`useLocaleStore`)** — выбранный язык с сохранением в `localStorage`; при пререндере всегда `PRERENDER_LOCALE`.
+- **`entities/session/model/store.ts` (`useSessionStore`)** — the current user (`AccountDto` from contracts), session restore flags, pending second factor, sign-out. Exposed through selectors and slice hooks (`useIsAuthenticated`). The list of known accounts for switching — `entities/session/model/knownAccounts.ts`.
+- **`shared/i18n/model/store.ts` (`useLocaleStore`)** — the selected language, persisted to `localStorage`; during prerender it is always `PRERENDER_LOCALE`.
 
-Подписывайся селектором на нужное поле (`useSessionStore((state) => state.user?.id ?? null)`), а не на весь стор — иначе лишние ререндеры. Ключи `localStorage` — только из `shared/config/storageKeys.ts`, доступ к хранилищу — в `try/catch`, как в существующих сторах (оно может быть недоступно).
+Subscribe with a selector to the field you need (`useSessionStore((state) => state.user?.id ?? null)`), not to the whole store — otherwise you get extra rerenders. `localStorage` keys come only from `shared/config/storageKeys.ts`, and storage access is wrapped in `try/catch`, as in the existing stores (it can be unavailable).
 
-Новый глобальный стор заводи, только если состояние действительно нужно нескольким не связанным слайсам. Состояние одного виджета или формы (открыт ли диалог, черновик ввода, шаг мастера) держи рядом с ним — в `useState` или в `model/`-хуке слайса. Формы — `react-hook-form` со схемой zod в `model/schema.ts`, не Zustand.
+Create a new global store only if the state is genuinely needed by several unrelated slices. State of a single widget or form (whether a dialog is open, an input draft, a wizard step) stays next to it — in `useState` or in the slice's `model/` hook. Forms use `react-hook-form` with a zod schema in `model/schema.ts`, not Zustand.
 
-## Где стык
+## Where they meet
 
-Ответ сервера о сессии (`/auth/me`, логин, refresh) кладётся в `useSessionStore` — это единственное место, где серверные данные сознательно дублируются в Zustand, потому что от них синхронно зависят роутинг (`ProtectedRoute`, `GuestRoute`) и HTTP-клиент. Ключи запросов, зависящих от пользователя, включают его `id` (`savedKeys.list(userId)`), чтобы смена аккаунта не показывала чужой кеш.
+The server's session response (`/auth/me`, sign-in, refresh) is put into `useSessionStore` — the only place where server data is deliberately duplicated in Zustand, because routing (`ProtectedRoute`, `GuestRoute`) and the HTTP client depend on it synchronously. Keys of user-dependent queries include the user's `id` (`savedKeys.list(userId)`) so switching accounts never shows someone else's cache.

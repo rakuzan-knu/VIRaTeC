@@ -1,45 +1,45 @@
-# Тесты фронтенда
+# Frontend tests
 
-Как запускать тесты, где они лежат и что из этого гоняет CI.
+How to run tests, where they live and which of them CI runs.
 
-## Команды
+## Commands
 
-Из корня репозитория:
+From the repository root:
 
-- `pnpm --filter @viratec/web test:ui` — Playwright-проверки UI-кита. Поднимает dev-сервер сам (`pnpm dev --port 5183 --strictPort --host 127.0.0.1`) и переиспользует уже запущенный вне CI. Из свежего клона один раз: `pnpm --filter @viratec/web exec playwright install chromium`.
-- `pnpm --filter @viratec/web exec playwright test --ui` — интерактивный режим для отладки.
-- `pnpm typecheck` — типы, в том числе тестов: `apps/web/tsconfig.tests.json` включает `tests/` и `playwright.config.ts`.
+- `pnpm --filter @viratec/web test:ui` — Playwright UI kit checks. Starts the dev server itself (`pnpm dev --port 5183 --strictPort --host 127.0.0.1`) and reuses an already running one outside CI. From a fresh clone, once: `pnpm --filter @viratec/web exec playwright install chromium`.
+- `pnpm --filter @viratec/web exec playwright test --ui` — interactive mode for debugging.
+- `pnpm typecheck` — types, including tests: `apps/web/tsconfig.tests.json` includes `tests/` and `playwright.config.ts`.
 
-CI (`.github/workflows/ci.yml`, джоб `validate` в контейнере Playwright) гоняет EOL, шаблон env, `format:check`, `lint`, `typecheck`, `test:ui` и `knip`, затем отдельный джоб `build` — `pnpm build`. Версия образа Playwright в CI закреплена и обязана совпадать с `@playwright/test` в `apps/web/package.json` — обновляешь одно, обновляй и другое.
+CI (`.github/workflows/ci.yml`, the `validate` job in a Playwright container) runs EOL, env template, `format:check`, `lint`, `typecheck`, `test:ui` and `knip`, then a separate `build` job — `pnpm build`. The Playwright image version in CI is pinned and must match `@playwright/test` in `apps/web/package.json` — when you update one, update the other.
 
-## Стек
+## Stack
 
-- **Playwright** (`@playwright/test`, Chromium) — браузерные проверки.
-- **`@axe-core/playwright`** — автоматические проверки доступности WCAG 2.2 AA.
+- **Playwright** (`@playwright/test`, Chromium) — browser checks.
+- **`@axe-core/playwright`** — automated WCAG 2.2 AA accessibility checks.
 
-Юнит- и компонентного раннера (Vitest, RTL) во фронте нет. Не добавляй его без явной просьбы — это новая зависимость и новый тулинг.
+There is no unit or component test runner (Vitest, RTL) in the frontend. Do not add one without an explicit request — it is a new dependency and new tooling.
 
-## Где лежат тесты
+## Where tests live
 
-- `apps/web/tests/*.spec.ts` — спеки. Сейчас одна: `ui-kit.spec.ts`.
-- `apps/web/tests/fixtures/ui-kit.html` + `ui-kit.tsx` — тестовая страница с состояниями кит-компонентов. Открывается dev-сервером по `/tests/fixtures/ui-kit.html` и в прод-сборку не входит.
+- `apps/web/tests/*.spec.ts` — specs. Currently one: `ui-kit.spec.ts`.
+- `apps/web/tests/fixtures/ui-kit.html` + `ui-kit.tsx` — a test page with kit component states. Served by the dev server at `/tests/fixtures/ui-kit.html` and not part of the production build.
 
-Конфиг — `apps/web/playwright.config.ts`: два проекта, `desktop` и `mobile` (375×812), ретрай 1 и один воркер в CI, трейс при падении.
+Config — `apps/web/playwright.config.ts`: two projects, `desktop` and `mobile` (375×812), one retry and one worker in CI, trace on failure.
 
-Что покрыто сейчас (`ui-kit.spec.ts`):
+What is covered now (`ui-kit.spec.ts`):
 
-| Проверка                | Что проверяет                                                                                               |
+| Check                   | What it verifies                                                                                            |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------- |
-| типографика и геометрия | значения из Figma, загрузка шрифтов, размеры кнопок                                                         |
-| `Tooltip`               | ховер по содержимому, сохранение активации триггера, описания и ref, открытие по фокусу, закрытие по Escape |
-| `Button`                | busy/disabled блокируют повторную активацию без изменения размеров                                          |
-| `Input`                 | связь label, helper-текста и ошибки                                                                         |
-| `NavItem`               | ссылки для маршрутов, кнопка с клавиатурой для раскрытия                                                    |
-| `Card`                  | длинный контент не выходит за вьюпорт, CTA выровнены по ряду                                                |
-| доступность             | axe без нарушений в обычном и открытом состоянии тултипа                                                    |
+| typography and geometry | values from Figma, font loading, button sizes                                                               |
+| `Tooltip`               | hover over content, trigger activation preserved, descriptions and ref, opening on focus, closing on Escape |
+| `Button`                | busy/disabled block repeated activation without changing size                                               |
+| `Input`                 | label, helper text and error are associated                                                                 |
+| `NavItem`               | links for routes, a keyboard-operable button for expanding                                                  |
+| `Card`                  | long content does not overflow the viewport, CTAs align across a row                                        |
+| accessibility           | axe reports no violations in the default and open tooltip states                                            |
 
-Меняешь кит-компонент из `UX-CONTRACT.md` — прогони `test:ui` и, если меняется контракт, обнови спеку и фикстуру. Новый кит-компонент или состояние — добавь его в фикстуру и спеку.
+When you change a kit component from `UX-CONTRACT.md`, run `test:ui` and, if the contract changes, update the spec and the fixture. A new kit component or state — add it to the fixture and the spec.
 
-## Ручная проверка в браузере
+## Manual browser check
 
-Изменения, которые видны в интерфейсе, проверяй на живом dev-сервере (`pnpm dev:web`, порт 5173): консоль без ошибок, обе локали, ширина 375 и десктоп, клавиатурная навигация. Страницы с контентом из Contentful проверяй и после `pnpm --filter @viratec/web build` + `pnpm --filter @viratec/web preview`, потому что пререндер рендерит их в Node.
+Changes visible in the UI are checked on a live dev server (`pnpm dev:web`, port 5173): no console errors, both locales, 375 width and desktop, keyboard navigation. Pages with Contentful content are also checked after `pnpm --filter @viratec/web build` + `pnpm --filter @viratec/web preview`, because the prerender renders them in Node.
