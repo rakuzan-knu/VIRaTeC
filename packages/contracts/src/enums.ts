@@ -7,8 +7,8 @@ export enum UserRole {
 }
 
 export enum FacultyDivision {
-  FIT = 'FIT', // Faculty of Information Technologies
-  NNIF = 'NNIF', // Educational and Scientific Institute of Philology
+  FIT = 'FIT',
+  NNIF = 'NNIF',
   OTHER = 'OTHER',
 }
 

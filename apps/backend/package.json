@@ -13,7 +13,7 @@
     "start:prod": "node dist/main",
     "typecheck": "prisma generate && tsc --noEmit",
     "lint": "oxlint",
-    "test": "pnpm build && node --test tests/*.test.cjs",
+    "test": "pnpm build && tsc -p tsconfig.tests.json && node --test tests/*.test.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio",
