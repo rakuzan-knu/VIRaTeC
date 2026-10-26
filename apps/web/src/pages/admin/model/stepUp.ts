@@ -1,10 +1,8 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getApiErrorCode } from '@/shared/api/apiClient';
-import { CodePrompt, useStepUp } from '@/features/manage-two-factor';
-import { Dialog } from '@/shared/ui/dialog';
-import { useAdminMessages } from './messages';
-import { ADMIN_QUERY_KEY } from './queries';
+import { useStepUp } from '@/features/manage-two-factor';
+import { adminKeys } from './queries';
 
 const STEP_UP_CODES = new Set(['STEP_UP_REQUIRED', 'MFA_REVERIFY_REQUIRED']);
 
@@ -12,10 +10,9 @@ export const needsStepUp = (error: unknown) => STEP_UP_CODES.has(getApiErrorCode
 
 type RunWithStepUp = <T>(action: () => Promise<T>) => Promise<T>;
 
-const StepUpContext = createContext<RunWithStepUp | null>(null);
+export const StepUpContext = createContext<RunWithStepUp | null>(null);
 
-export function StepUpProvider({ children }: { children: ReactNode }) {
-  const t = useAdminMessages();
+export function useStepUpController() {
   const queryClient = useQueryClient();
   const stepUp = useStepUp();
   const [isOpen, setIsOpen] = useState(false);
@@ -49,33 +46,22 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
     [requestStepUp],
   );
 
-  return (
-    <StepUpContext.Provider value={runWithStepUp}>
-      {children}
-      <Dialog
-        open={isOpen}
-        title={t.stepUp.title}
-        description={t.stepUp.description}
-        closeLabel={t.close}
-        onClose={() => settle(false)}
-      >
-        <CodePrompt
-          submitLabel={t.stepUp.confirm}
-          isPending={stepUp.isPending}
-          error={stepUp.error}
-          onCancel={() => settle(false)}
-          onSubmit={(code) =>
-            stepUp.mutate(code, {
-              onSuccess: () => {
-                void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY });
-                settle(true);
-              },
-            })
-          }
-        />
-      </Dialog>
-    </StepUpContext.Provider>
-  );
+  const confirm = (code: string) =>
+    stepUp.mutate(code, {
+      onSuccess: () => {
+        void queryClient.invalidateQueries({ queryKey: adminKeys.all });
+        settle(true);
+      },
+    });
+
+  return {
+    isOpen,
+    isPending: stepUp.isPending,
+    error: stepUp.error,
+    runWithStepUp,
+    confirm,
+    cancel: () => settle(false),
+  };
 }
 
 export function useRunWithStepUp() {

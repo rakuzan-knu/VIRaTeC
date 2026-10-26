@@ -31,6 +31,11 @@ const withSnapshotFallback = (snapshot: unknown, live: unknown): unknown => {
   return merged;
 };
 
+const liveContentKeys = {
+  all: ['live-content'] as const,
+  domain: (domainId: string) => [...liveContentKeys.all, domainId] as const,
+};
+
 const fetchLiveExports = async (domainId: string): Promise<LiveExports> => {
   const { buildLiveExports, contentTypesFor } =
     await import('../../../build-tools/contentful/runtime.ts');
@@ -44,7 +49,7 @@ const fetchLiveExports = async (domainId: string): Promise<LiveExports> => {
 
 export const useLiveContent = <T>(domainId: string, exportName: string, snapshot: T): T => {
   const { data } = useQuery({
-    queryKey: ['live-content', domainId],
+    queryKey: liveContentKeys.domain(domainId),
     queryFn: () => fetchLiveExports(domainId),
     enabled: typeof window !== 'undefined',
     staleTime: LIVE_CONTENT_STALE_MS,

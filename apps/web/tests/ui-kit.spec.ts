@@ -12,7 +12,6 @@ test('Figma typography, font loading and geometry are applied', async ({ page },
   await expect(page.getByTestId('primary-lg')).toHaveCSS('height', '58px');
   await expect(page.getByTestId('primary-lg')).toHaveCSS('padding-left', '26px');
   await expect(page.getByTestId('primary-md')).toHaveCSS('height', '47px');
-  // Chromium rounds a 1.5px stroke to physical pixels at deviceScaleFactor=1.
   await expect(page.getByTestId('secondary-lg')).toHaveCSS('height', /^(60|61)px$/);
   await expect(page.getByTestId('secondary-md')).toHaveCSS('height', /^(49|50)px$/);
   await expect(page.getByRole('heading', { name: 'Card title', exact: true })).toHaveCSS(

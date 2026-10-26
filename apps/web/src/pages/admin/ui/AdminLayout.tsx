@@ -9,10 +9,12 @@ import { cn, useSeo } from '@/shared/lib';
 import { linkButtonClassName } from '@/shared/ui/link-button';
 import { CodePrompt, useStepUp } from '@/features/manage-two-factor';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useAdminMessages, type AdminMessages } from '../model/messages';
-import { ADMIN_QUERY_KEY, useAdminCapabilities } from '../model/queries';
-import { StepUpProvider } from '../model/stepUp';
+import { adminKeys, useAdminCapabilities } from '../model/queries';
+import { StepUpProvider } from './StepUpProvider';
 
 export const ADMIN_CARD_CLASS =
   'rounded-[28px] border border-white/10 bg-viratec-deep/80 p-6 lg:p-8';
@@ -69,7 +71,7 @@ function Reverify({ t }: { t: AdminMessages }) {
         error={stepUp.error}
         onSubmit={(code) =>
           stepUp.mutate(code, {
-            onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEY }),
+            onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.all }),
           })
         }
       />
@@ -151,8 +153,10 @@ export function AdminLayout() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={[{ label: 'VIRaTeC', to: ROUTES.HOME }, t.panel]}
           title={t.panel}
           description={t.description}

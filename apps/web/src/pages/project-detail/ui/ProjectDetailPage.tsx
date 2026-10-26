@@ -20,7 +20,9 @@ import {
   type Project,
 } from '@/entities/project';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useSeo } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 
@@ -201,6 +203,7 @@ export function ProjectDetailPage() {
 
   const intro = project ? (
     <PageIntro
+      header={<SiteHeader />}
       breadcrumb={[...breadcrumbRoot, project.title]}
       title={project.title}
       description={`${labels.status[project.status]} · ${getProjectYear(project)}`}
@@ -211,6 +214,7 @@ export function ProjectDetailPage() {
     </PageIntro>
   ) : (
     <PageIntro
+      header={<SiteHeader />}
       breadcrumb={breadcrumbRoot}
       title={isPending ? t.loadingTitle : t.notFoundTitle}
       description={isPending ? t.loadingDescription : t.notFoundDescription}
@@ -219,7 +223,7 @@ export function ProjectDetailPage() {
   );
 
   return (
-    <PageLayout intro={intro}>
+    <PageLayout footer={<SiteFooter />} intro={intro}>
       {project && (
         <>
           <ProjectBody project={project} />

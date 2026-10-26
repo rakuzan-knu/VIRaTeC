@@ -28,7 +28,7 @@ export function MomentsGallery({ moments }: MomentsGalleryProps) {
               decoding="async"
               className="reveal-media size-full object-cover"
             />
-            <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-[#03122e]/90 to-transparent px-3 pt-8 pb-3 text-xs leading-4 text-white/90 lg:px-4 lg:pb-4 lg:text-sm lg:leading-5">
+            <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-viratec-bg/90 to-transparent px-3 pt-8 pb-3 text-xs leading-4 text-white/90 lg:px-4 lg:pb-4 lg:text-sm lg:leading-5">
               {moment.caption}
             </figcaption>
           </figure>

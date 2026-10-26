@@ -36,7 +36,7 @@ export function PersonCard({ name, role, photo }: PersonCardProps) {
           role="img"
           aria-label={placeholderLabel}
           title={placeholderLabel}
-          className="flex size-16 shrink-0 items-center justify-center rounded-[18px] bg-[radial-gradient(120%_120%_at_85%_10%,rgba(3,197,234,0.3)_0%,transparent_55%),linear-gradient(140deg,#0b2f6b_0%,#061a39_60%,#03122e_100%)] font-display text-xl font-medium tracking-[-0.03em] text-white/85 lg:aspect-[4/5] lg:size-auto lg:w-full lg:rounded-[22px] lg:text-[56px]"
+          className="flex size-16 shrink-0 items-center justify-center rounded-[18px] person-card-fill font-display text-xl font-medium tracking-[-0.03em] text-white/85 lg:aspect-[4/5] lg:size-auto lg:w-full lg:rounded-[22px] lg:text-[56px]"
         >
           {getInitials(name)}
         </span>

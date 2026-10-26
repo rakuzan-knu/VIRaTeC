@@ -77,7 +77,7 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
         <span className="absolute inset-0 bg-white/15" />
         <span
           ref={barRef}
-          className="absolute inset-0 origin-top [transform:scaleY(0)] bg-linear-to-b from-[rgba(181,250,102,0.2)] to-[#b5fa66] will-change-transform"
+          className="absolute inset-0 origin-top [transform:scaleY(0)] bg-linear-to-b from-viratec-lime/20 to-viratec-lime will-change-transform"
         />
       </div>
 
@@ -88,7 +88,7 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
 
           return (
             <li
-              key={milestone.date}
+              key={`${milestone.date}-${milestone.title}`}
               className={cn(
                 'relative pl-10 lg:grid lg:grid-cols-[1fr_80px_1fr] lg:items-center lg:pl-0',
                 !isLast && 'lg:-mb-[60px]',

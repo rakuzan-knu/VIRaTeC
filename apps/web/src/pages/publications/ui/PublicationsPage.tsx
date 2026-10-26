@@ -12,7 +12,9 @@ import {
   PublicationCardSkeleton,
 } from '@/entities/publication';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import {
   PAGE_SIZE,
   useListingOptions,
@@ -68,8 +70,10 @@ export function PublicationsPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           eyebrow={t.eyebrow}
           title={t.title}
           accent={t.accent}

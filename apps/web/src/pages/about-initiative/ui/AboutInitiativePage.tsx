@@ -8,7 +8,9 @@ import { CtaSection } from '@/shared/ui/cta-section';
 import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useAboutInitiativeContent } from '../model/content';
 import { useSeo } from '@/shared/lib';
 
@@ -18,8 +20,10 @@ export function AboutInitiativePage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={content.breadcrumb}
           title={content.title}
           accent={content.accent}
