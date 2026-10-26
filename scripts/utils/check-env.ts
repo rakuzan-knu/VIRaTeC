@@ -14,7 +14,7 @@ if (!fs.existsSync(exampleEnvPath)) {
 
 const content = fs.readFileSync(exampleEnvPath, 'utf8');
 const lines = content.split('\n');
-const keys = new Set();
+const keys = new Set<string>();
 let errorCount = 0;
 
 for (const line of lines) {
