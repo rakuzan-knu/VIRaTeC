@@ -18,6 +18,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from './auth.service';
 import { TwoFactorService } from './two-factor.service';
+import { SessionsService } from './sessions.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
@@ -45,6 +46,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private twoFactorService: TwoFactorService,
+    private sessionsService: SessionsService,
     private configService: ConfigService,
   ) {}
 
@@ -185,7 +187,7 @@ export class AuthController {
     const refreshToken = readCookie(request, cookieNames(this.secure).refresh);
     clearSessionCookies(reply, this.secure);
     if (!refreshToken) return { success: true };
-    return this.authService.logout(refreshToken);
+    return this.sessionsService.logout(refreshToken);
   }
 
   @Post('logout-all')
@@ -198,7 +200,7 @@ export class AuthController {
     @Res({ passthrough: true }) reply: FastifyReply,
   ) {
     clearSessionCookies(reply, this.secure);
-    return this.authService.logoutAll(userId);
+    return this.sessionsService.logoutAll(userId);
   }
 
   @Post('change-password')
@@ -291,7 +293,7 @@ export class AuthController {
     @CurrentUser('id') userId: string,
     @CurrentUser('sessionId') sessionId: string | undefined,
   ) {
-    return this.authService.listSessions(userId, sessionId);
+    return this.sessionsService.listSessions(userId, sessionId);
   }
 
   @Delete('sessions')
@@ -304,7 +306,7 @@ export class AuthController {
     @CurrentUser('id') userId: string,
     @CurrentUser('sessionId') sessionId: string | undefined,
   ) {
-    return this.authService.eraseOtherSessions(userId, sessionId);
+    return this.sessionsService.eraseOtherSessions(userId, sessionId);
   }
 
   @Delete('sessions/:sessionId')
@@ -316,7 +318,7 @@ export class AuthController {
     @CurrentUser('id') userId: string,
     @Param('sessionId', ParseUUIDPipe) sessionId: string,
   ) {
-    return this.authService.revokeSession(userId, sessionId);
+    return this.sessionsService.revokeSession(userId, sessionId);
   }
 
   @Get('me')

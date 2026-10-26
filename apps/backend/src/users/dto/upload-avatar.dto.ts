@@ -12,5 +12,5 @@ export class UploadAvatarDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(Math.ceil(AVATAR_LIMITS.maxBytes / 3) * 4 + DATA_URL_OVERHEAD)
-  image: string;
+  image!: string;
 }

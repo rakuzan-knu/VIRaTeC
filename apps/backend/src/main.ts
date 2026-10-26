@@ -96,7 +96,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      logger: false, // delegated to nestjs-pino
+      logger: false,
       trustProxy: resolveTrustProxy(process.env.TRUST_PROXY),
     }),
     { bufferLogs: true },
@@ -104,8 +104,6 @@ async function bootstrap() {
 
   const logger = app.get(Logger);
   app.useLogger(logger);
-
-  // Security & Performance Plugins
   const fastify = app.getHttpAdapter().getInstance();
   fastify.addHook('onSend', setEtag);
   fastify.addHook('onRoute', (route) => {
@@ -117,8 +115,6 @@ async function bootstrap() {
   await app.register(compress, { encodings: ['gzip', 'deflate'] });
   await app.register(cookie);
   fastify.addHook('preValidation', verifyCsrf);
-
-  // CORS configuration
   const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',')
     : ['http://localhost:5173', 'http://localhost:3000'];
@@ -129,8 +125,6 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-CSRF-Token'],
   });
-
-  // Global prefixes and pipes
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(
     new ValidationPipe({
@@ -141,8 +135,6 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
-
-  // Swagger OpenAPI Documentation
   const swaggerEnabled = !isProduction || process.env.SWAGGER_ENABLED === 'true';
   if (swaggerEnabled) {
     const config = new DocumentBuilder()

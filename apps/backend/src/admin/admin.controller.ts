@@ -12,14 +12,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@viratec/contracts';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { StaffGuard } from '../common/guards/staff.guard';
 import { OwnerOnly, RequirePermissions, RequireStepUp } from '../common/decorators/staff.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
-import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../security/authenticated-user';
 import { AdminService } from './admin.service';
 import {
   AuditQueryDto,
@@ -31,6 +31,11 @@ import {
 
 @ApiTags('Administration')
 @ApiBearerAuth()
+@ApiResponse({ status: 401, description: 'Not signed in' })
+@ApiResponse({
+  status: 403,
+  description: 'Staff access, permission, ownership or step-up required',
+})
 @UseGuards(JwtAuthGuard, StaffGuard)
 @Controller('admin')
 export class AdminController {
@@ -64,6 +69,8 @@ export class AdminController {
   @OwnerOnly()
   @RequireStepUp()
   @ApiOperation({ summary: 'Grant or change administrator access (owner only)' })
+  @ApiResponse({ status: 400, description: 'Invalid permissions or expiry date' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   updateAccess(
     @CurrentUser() actor: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
@@ -76,6 +83,7 @@ export class AdminController {
   @Delete('users/:id/access')
   @OwnerOnly()
   @ApiOperation({ summary: 'Revoke administrator access immediately (owner only)' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   revokeAccess(
     @CurrentUser() actor: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
@@ -89,6 +97,7 @@ export class AdminController {
   @RequirePermissions(AdminPermission.USERS_MANAGE)
   @RequireStepUp()
   @ApiOperation({ summary: 'Suspend or restore a user' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   setBlocked(
     @CurrentUser() actor: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
@@ -102,6 +111,7 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   @RequirePermissions(AdminPermission.USERS_MANAGE)
   @ApiOperation({ summary: 'Sign a user out of every device' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   revokeSessions(
     @CurrentUser() actor: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
@@ -115,6 +125,9 @@ export class AdminController {
   @OwnerOnly()
   @RequireStepUp()
   @ApiOperation({ summary: 'Transfer site ownership (owner only)' })
+  @ApiResponse({ status: 400, description: 'Target is the current owner or suspended' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 409, description: 'Target has no two-factor authentication' })
   transferOwnership(
     @CurrentUser() actor: AuthenticatedUser,
     @Body() dto: TransferOwnershipDto,

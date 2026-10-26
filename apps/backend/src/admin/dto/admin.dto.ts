@@ -19,13 +19,13 @@ import { AdminPermission, StaffRole } from '@viratec/contracts';
 export class UpdateStaffAccessDto {
   @ApiProperty({ enum: [StaffRole.NONE, StaffRole.ADMIN] })
   @IsIn([StaffRole.NONE, StaffRole.ADMIN])
-  staffRole: StaffRole.NONE | StaffRole.ADMIN;
+  staffRole!: StaffRole.NONE | StaffRole.ADMIN;
 
   @ApiProperty({ enum: AdminPermission, isArray: true })
   @IsArray()
   @ArrayUnique()
   @IsEnum(AdminPermission, { each: true })
-  permissions: AdminPermission[];
+  permissions!: AdminPermission[];
 
   @ApiPropertyOptional({ description: 'ISO date when the access expires automatically' })
   @IsOptional()
@@ -36,13 +36,13 @@ export class UpdateStaffAccessDto {
 export class BlockUserDto {
   @ApiProperty()
   @IsBoolean()
-  blocked: boolean;
+  blocked!: boolean;
 }
 
 export class TransferOwnershipDto {
   @ApiProperty()
   @IsUUID()
-  userId: string;
+  userId!: string;
 }
 
 export class ListUsersQueryDto {

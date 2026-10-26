@@ -102,6 +102,15 @@
   --color-viratec-paper-line: #e2e8f0;
   --color-viratec-paper-line-strong: #c5d0dc;
   --color-viratec-graphite: #475467;
+  --color-viratec-globe-core: #0f3f7d;
+  --color-viratec-globe-mid: #06204a;
+  --color-viratec-comet: #e9ffd0;
+  --color-viratec-sheet: #0b1d3d;
+  --color-viratec-backdrop: rgba(1, 6, 18, 0.72);
+
+  --shadow-overlay: 0 30px 80px -20px rgba(0, 5, 26, 0.8);
+  --shadow-menu: 0 24px 60px 0 rgba(0, 5, 26, 0.55);
+  --shadow-sticky-bar: 0 20px 50px -20px rgba(0, 5, 26, 0.9);
 
   --font-display: 'Instrument Sans', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 
@@ -127,6 +136,7 @@
   --animate-hero-settle: hero-settle 2.4s var(--ease-apple) both;
   --animate-hero-shimmer: hero-shimmer 2.6s var(--ease-apple) 1.3s both;
   --animate-hero-drift: hero-drift 14s ease-in-out infinite alternate;
+  --animate-hero-drift-reverse: hero-drift 14s ease-in-out -7s infinite alternate-reverse;
   --animate-hero-fade: hero-fade 1.4s var(--ease-apple) both;
 
   @keyframes hero-reveal {
@@ -477,6 +487,64 @@
       background: Canvas;
     }
   }
+}
+
+@utility media-placeholder-fill {
+  background-image:
+    radial-gradient(120% 120% at 88% 8%, rgba(3, 197, 234, 0.32) 0%, transparent 55%),
+    linear-gradient(
+      135deg,
+      #0b2f6b 0%,
+      var(--color-viratec-surface) 58%,
+      var(--color-viratec-bg) 100%
+    );
+}
+
+@utility person-card-fill {
+  background-image:
+    radial-gradient(120% 120% at 85% 10%, rgba(3, 197, 234, 0.3) 0%, transparent 55%),
+    linear-gradient(
+      140deg,
+      #0b2f6b 0%,
+      var(--color-viratec-surface) 60%,
+      var(--color-viratec-bg) 100%
+    );
+}
+
+@utility hero-backdrop {
+  background-image: linear-gradient(
+    140.73deg,
+    var(--color-viratec-bg) 0%,
+    #051b40 45.83%,
+    #094285 83.33%
+  );
+}
+
+@utility hero-backdrop-wide {
+  background-image: linear-gradient(
+    110.26deg,
+    var(--color-viratec-bg) 0%,
+    #051b40 63%,
+    #094285 100%
+  );
+}
+
+@utility get-involved-scrim {
+  background-image: linear-gradient(
+    180deg,
+    rgba(3, 18, 46, 0.92) 0%,
+    rgba(3, 18, 46, 0.7) 55%,
+    rgba(3, 18, 46, 0.88) 100%
+  );
+}
+
+@utility get-involved-scrim-wide {
+  background-image: linear-gradient(
+    90deg,
+    rgba(3, 18, 46, 0.94) 0%,
+    rgba(3, 18, 46, 0.72) 50%,
+    rgba(3, 18, 46, 0.35) 100%
+  );
 }
 
 @utility font-viratec {

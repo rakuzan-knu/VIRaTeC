@@ -21,7 +21,7 @@ export function GetInvolvedSection() {
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(3,18,46,0.92)_0%,rgba(3,18,46,0.7)_55%,rgba(3,18,46,0.88)_100%)] lg:bg-[linear-gradient(90deg,rgba(3,18,46,0.94)_0%,rgba(3,18,46,0.72)_50%,rgba(3,18,46,0.35)_100%)]"
+            className="absolute inset-0 -z-10 get-involved-scrim lg:get-involved-scrim-wide"
           />
 
           <div className="flex flex-col gap-10 px-6 py-10 lg:gap-20 lg:px-16 lg:py-20">

@@ -1,9 +1,31 @@
-const assert = require('node:assert/strict');
-const { test } = require('node:test');
-const { UsersService } = require('../dist/users/users.service.js');
-const { AuthService } = require('../dist/auth/auth.service.js');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { hasStatus } from './support.ts';
+import { UsersService } from '../dist/users/users.service.js';
+import { AuthService } from '../dist/auth/auth.service.js';
+import { SessionsService } from '../dist/auth/sessions.service.js';
 
-const profile = (visibility, overrides = {}) => ({
+type Visibility = 'PUBLIC' | 'MEMBERS' | 'PRIVATE';
+
+interface RefreshTokenRecord {
+  id: string;
+  sessionId: string;
+  revoked: boolean;
+  expiresAt: Date;
+  user: Record<string, string | null>;
+}
+
+interface CreatedToken {
+  sessionId: string;
+  userAgent?: string;
+  ipAddress?: string;
+}
+
+interface DirectoryWhere {
+  AND: unknown[];
+}
+
+const profile = (visibility: Visibility, overrides: Record<string, unknown> = {}) => ({
   id: 'owner',
   name: 'Profile Owner',
   email: 'owner@example.invalid',
@@ -14,20 +36,21 @@ const profile = (visibility, overrides = {}) => ({
   ...overrides,
 });
 
-const usersService = (user) => new UsersService({ user: { findUnique: async () => user } });
+const usersService = (user: ReturnType<typeof profile>) =>
+  new UsersService({ user: { findUnique: async () => user } });
 
 test('private profiles are hidden from everyone except the owner', async () => {
   const service = usersService(profile('PRIVATE'));
 
-  await assert.rejects(service.findPublicProfile('owner', null), (e) => e.getStatus() === 404);
-  await assert.rejects(service.findPublicProfile('owner', 'member'), (e) => e.getStatus() === 404);
+  await assert.rejects(service.findPublicProfile('owner', null), hasStatus(404));
+  await assert.rejects(service.findPublicProfile('owner', 'member'), hasStatus(404));
   assert.equal((await service.findPublicProfile('owner', 'owner')).isOwner, true);
 });
 
 test('members-only profiles require a signed-in viewer', async () => {
   const service = usersService(profile('MEMBERS'));
 
-  await assert.rejects(service.findPublicProfile('owner', null), (e) => e.getStatus() === 401);
+  await assert.rejects(service.findPublicProfile('owner', null), hasStatus(401));
   assert.equal((await service.findPublicProfile('owner', 'member')).isOwner, false);
 });
 
@@ -55,13 +78,13 @@ test('profile updates reject malformed academic links', async () => {
 
   await assert.rejects(
     service.updateProfile('owner', { links: { orcid: 'not-an-orcid' } }),
-    (e) => e.getStatus() === 400,
+    hasStatus(400),
   );
   assert.equal(updated, false);
 });
 
-function authWithToken(record) {
-  const created = [];
+function authWithToken(record: RefreshTokenRecord) {
+  const created: CreatedToken[] = [];
   const service = new AuthService(
     {
       refreshToken: {
@@ -72,7 +95,7 @@ function authWithToken(record) {
           record.revoked = true;
           return { count: wasActive ? 1 : 0 };
         },
-        create: async ({ data }) => created.push(data),
+        create: async ({ data }: { data: CreatedToken }) => created.push(data),
       },
     },
     { signAsync: async () => `token-${created.length}-${Math.random()}` },
@@ -81,7 +104,7 @@ function authWithToken(record) {
   return { service, created };
 }
 
-const tokenRecord = () => ({
+const tokenRecord = (): RefreshTokenRecord => ({
   id: 'token-row',
   sessionId: 'session-1',
   revoked: false,
@@ -111,16 +134,16 @@ test('a refresh token cannot be used twice', async () => {
   const { service, created } = authWithToken(tokenRecord());
 
   await service.refreshToken('refresh');
-  await assert.rejects(service.refreshToken('refresh'), (e) => e.getStatus() === 401);
+  await assert.rejects(service.refreshToken('refresh'), hasStatus(401));
   assert.equal(created.length, 1);
 });
 
 function directoryService() {
-  const calls = [];
+  const calls: DirectoryWhere[] = [];
   const service = new UsersService({
-    $transaction: async (queries) => Promise.all(queries),
+    $transaction: async (queries: Promise<unknown>[]) => Promise.all(queries),
     user: {
-      count: async (args) => {
+      count: async (args: { where: DirectoryWhere }) => {
         calls.push(args.where);
         return 0;
       },
@@ -150,19 +173,15 @@ test('the directory never lists private profiles of other members', async () => 
 });
 
 test('erasing other sessions keeps only the current device', async () => {
-  let where;
-  const service = new AuthService(
-    {
-      refreshToken: {
-        deleteMany: async (args) => {
-          where = args.where;
-          return { count: 3 };
-        },
+  let where: unknown;
+  const service = new SessionsService({
+    refreshToken: {
+      deleteMany: async (args: { where: unknown }) => {
+        where = args.where;
+        return { count: 3 };
       },
     },
-    {},
-    { get: () => undefined },
-  );
+  });
 
   const result = await service.eraseOtherSessions('owner', 'session-1');
 

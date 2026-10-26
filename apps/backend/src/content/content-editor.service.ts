@@ -19,7 +19,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../security/audit.service';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
-import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../security/authenticated-user';
 import { ContentService } from './content.service';
 import { ContentfulClient, ContentfulRequestError } from './contentful.client';
 import {

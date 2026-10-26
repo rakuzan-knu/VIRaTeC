@@ -58,7 +58,7 @@ export function BottomSheet({
         type="button"
         aria-label={common.close}
         onClick={onClose}
-        className="absolute inset-0 cursor-default bg-[rgba(1,6,18,0.72)]"
+        className="absolute inset-0 cursor-default bg-viratec-backdrop"
       />
       <div
         ref={dialogRef}
@@ -66,7 +66,7 @@ export function BottomSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative flex max-h-[85vh] w-full flex-col rounded-t-[22px] border-t border-white/10 bg-[#0b1d3d] px-5 pt-3 pb-8"
+        className="relative flex max-h-[85vh] w-full flex-col rounded-t-[22px] border-t border-white/10 bg-viratec-sheet px-5 pt-3 pb-8"
       >
         <span aria-hidden="true" className="mx-auto h-1 w-10 shrink-0 rounded-full bg-white/25" />
         <div className="flex items-center justify-between pt-5 pb-4">

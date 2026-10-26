@@ -38,7 +38,7 @@ export function MediaPlaceholder({
       role="img"
       aria-label={label ?? 'VIRaTeC'}
       className={cn(
-        'reveal-frame relative flex w-full shrink-0 overflow-hidden bg-[radial-gradient(120%_120%_at_88%_8%,rgba(3,197,234,0.32)_0%,transparent_55%),linear-gradient(135deg,#0b2f6b_0%,#061a39_58%,#03122e_100%)] ring-1 ring-white/8 ring-inset',
+        'reveal-frame relative flex w-full shrink-0 overflow-hidden media-placeholder-fill ring-1 ring-white/8 ring-inset',
         className,
       )}
     >

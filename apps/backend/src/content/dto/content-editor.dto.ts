@@ -23,11 +23,11 @@ export class SaveContentEntryDto {
   @ApiProperty({ description: 'Version of the entry the edit is based on' })
   @IsInt()
   @Min(1)
-  version: number;
+  version!: number;
 
   @ApiProperty({ description: 'All fields of the entry, keyed by field id and locale' })
   @IsObject()
-  fields: ContentFields;
+  fields!: ContentFields;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -39,11 +39,11 @@ export class SaveContentEntryDto {
 export class CreateContentEntryDto {
   @ApiProperty({ example: 'card' })
   @Matches(CONTENTFUL_ID_PATTERN)
-  contentTypeId: string;
+  contentTypeId!: string;
 
   @ApiProperty()
   @IsObject()
-  fields: ContentFields;
+  fields!: ContentFields;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -57,19 +57,19 @@ export class UploadContentAssetDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)
-  fileName: string;
+  fileName!: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)
-  title: string;
+  title!: string;
 
   @ApiProperty({ description: 'Image as a base64 data URL' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(Math.ceil(CONTENT_EDITOR_LIMITS.maxAssetBytes / 3) * 4 + DATA_URL_OVERHEAD)
-  data: string;
+  data!: string;
 }
 
 export class PublishContentDto {

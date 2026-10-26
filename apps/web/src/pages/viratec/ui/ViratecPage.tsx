@@ -6,8 +6,10 @@ import { InfoCard } from '@/shared/ui/info-card';
 import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
 import { PageSections } from '@/widgets/page-sections';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useViratecContent } from '../model/content';
 import { IntroVideo } from './IntroVideo';
 import introVideoAv1 from '../assets/what-is-viratec.av1.mp4';
@@ -25,8 +27,10 @@ export function ViratecPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={content.breadcrumb}
           title={content.title}
           accent={content.accent}
@@ -62,7 +66,7 @@ export function ViratecPage() {
               <ul className="grid grid-cols-2 gap-x-4 gap-y-6 lg:flex lg:justify-between">
                 {content.stats.map((stat) => (
                   <li key={stat.label} className="flex flex-col gap-1">
-                    <span className="text-[36px] leading-[42px] text-[#b5fa66] lg:text-5xl lg:leading-[54px]">
+                    <span className="text-[36px] leading-[42px] text-viratec-lime lg:text-5xl lg:leading-[54px]">
                       {stat.value}
                     </span>
                     <span className="text-sm leading-5 text-viratec-soft">{stat.label}</span>

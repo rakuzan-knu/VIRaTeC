@@ -8,8 +8,10 @@ import { StepsList } from '@/shared/ui/steps-list';
 import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
 import { PageSections } from '@/widgets/page-sections';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useGlobalCollaborationContent } from '../model/content';
 import { useSeo } from '@/shared/lib';
 
@@ -21,8 +23,10 @@ export function GlobalCollaborationPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           breadcrumb={content.breadcrumb}
           title={content.title}
           accent={content.accent}

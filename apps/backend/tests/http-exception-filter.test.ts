@@ -1,20 +1,24 @@
-const assert = require('node:assert/strict');
-const { test } = require('node:test');
-const { UnauthorizedException } = require('@nestjs/common');
-const { AllExceptionsFilter } = require('../dist/common/filters/http-exception.filter.js');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { UnauthorizedException } from '@nestjs/common';
+import { AllExceptionsFilter } from '../dist/common/filters/http-exception.filter.js';
 
-function captureResponse(exception) {
+interface FilterBody {
+  statusCode: number;
+  error: { message: string };
+}
+
+function captureResponse(exception: unknown) {
   const filter = new AllExceptionsFilter();
   filter.logger = { error() {} };
-  let statusCode;
-  let body;
+  const captured: { statusCode?: number; body?: FilterBody } = {};
   const reply = {
-    status(value) {
-      statusCode = value;
+    status(value: number) {
+      captured.statusCode = value;
       return this;
     },
-    send(value) {
-      body = value;
+    send(value: FilterBody) {
+      captured.body = value;
     },
   };
   filter.catch(exception, {
@@ -23,6 +27,8 @@ function captureResponse(exception) {
       getRequest: () => ({ method: 'GET', url: '/api/v1/auth/me' }),
     }),
   });
+  const { statusCode, body } = captured;
+  assert.ok(body);
   return { statusCode, body };
 }
 

@@ -12,7 +12,6 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
     return next.handle().pipe(
       map((data) => {
-        // If data is already wrapped with meta, preserve it
         if (data && typeof data === 'object' && 'data' in data && 'meta' in data) {
           return data;
         }

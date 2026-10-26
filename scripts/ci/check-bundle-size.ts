@@ -7,15 +7,15 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../..');
 const distPath = path.join(rootDir, 'apps/web/dist');
 
-const MAX_TOTAL_BUNDLE_KB = 3500; // 3.5MB budget
-const MAX_SINGLE_FILE_KB = 1200; // 1.2MB for single chunk
+const MAX_TOTAL_BUNDLE_KB = 3500;
+const MAX_SINGLE_FILE_KB = 1200;
 
 if (!fs.existsSync(distPath)) {
   console.log('ℹ️ Frontend dist directory does not exist yet. Skipping bundle size check.');
   process.exit(0);
 }
 
-function getFiles(dir, files = []) {
+function getFiles(dir: string, files: string[] = []): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);

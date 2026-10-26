@@ -6,7 +6,7 @@ import { StaffGuard } from '../common/guards/staff.guard';
 import { RequirePermissions } from '../common/decorators/staff.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
-import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../security/authenticated-user';
 import { CreateRecordDto, DeleteRecordDto, SaveRecordDto } from './dto/record-editor.dto';
 import { RecordKeyPipe, RecordResourcePipe } from './record.pipes';
 import { RecordEditorService } from './record-editor.service';

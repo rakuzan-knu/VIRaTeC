@@ -20,7 +20,7 @@ import { StaffGuard } from '../common/guards/staff.guard';
 import { RequirePermissions, RequireStepUp } from '../common/decorators/staff.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
-import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../security/authenticated-user';
 import { parseContentTypes } from './content.controller';
 import { ContentService } from './content.service';
 import { ContentEditorService } from './content-editor.service';

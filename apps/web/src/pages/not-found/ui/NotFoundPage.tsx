@@ -2,7 +2,9 @@ import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import { LinkButton } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import { useSeo } from '@/shared/lib';
 
 const NOT_FOUND_MESSAGES = defineMessages({
@@ -26,8 +28,10 @@ export function NotFoundPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           eyebrow="404"
           title={t.title}
           accent={t.accent}

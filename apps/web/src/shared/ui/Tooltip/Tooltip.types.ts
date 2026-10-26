@@ -8,6 +8,5 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'chi
   placement?: TooltipPlacement;
   shortcut?: Shortcut;
   floatingClassName?: string;
-  /** One focusable trigger forwarding DOM props and its ref (React 19). */
   children: ReactElement<HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement> }>;
 }

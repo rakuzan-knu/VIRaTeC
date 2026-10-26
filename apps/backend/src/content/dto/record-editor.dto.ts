@@ -5,12 +5,12 @@ import type { RecordData } from '@viratec/contracts';
 export class SaveRecordDto {
   @ApiProperty({ description: 'Editable data of the record' })
   @IsObject()
-  data: RecordData;
+  data!: RecordData;
 
   @ApiPropertyOptional({ description: 'updatedAt of the published record the edit is based on' })
   @IsOptional()
   @IsISO8601()
-  baseUpdatedAt: string | null;
+  baseUpdatedAt!: string | null;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -22,7 +22,7 @@ export class SaveRecordDto {
 export class CreateRecordDto {
   @ApiProperty()
   @IsObject()
-  data: RecordData;
+  data!: RecordData;
 
   @ApiPropertyOptional()
   @IsOptional()

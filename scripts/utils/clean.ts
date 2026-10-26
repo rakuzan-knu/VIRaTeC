@@ -12,14 +12,14 @@ if (isPrune) {
   targets.push('node_modules');
 }
 
-function removeRecursive(dir) {
+function removeRecursive(dir: string) {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true, force: true });
     console.log(`[CLEANED] ${path.relative(rootDir, dir) || dir}`);
   }
 }
 
-function cleanFolder(dir) {
+function cleanFolder(dir: string) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.name === '.git') continue;

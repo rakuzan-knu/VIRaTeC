@@ -33,7 +33,7 @@ import { ProjectsService } from '../projects/projects.service';
 import { EventsService } from '../events/events.service';
 import { PublicationsService } from '../publications/publications.service';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
-import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
+import type { AuthenticatedUser } from '../security/authenticated-user';
 import type { CreateRecordDto, SaveRecordDto } from './dto/record-editor.dto';
 
 export const RECORD_RESOURCE_TYPES: Record<RecordResource, ContentResourceType> = {
