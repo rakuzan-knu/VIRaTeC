@@ -1,0 +1,13 @@
+{
+  "extends": "@viratec/tsconfig/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["tests/**/*.ts"]
+}

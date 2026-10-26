@@ -7,6 +7,7 @@ import { SavedItemsService } from './saved-items.service';
 
 @ApiTags('Users')
 @ApiBearerAuth()
+@ApiResponse({ status: 401, description: 'Not signed in' })
 @UseGuards(JwtAuthGuard)
 @Controller('users/me/saved')
 export class SavedItemsController {
@@ -20,6 +21,7 @@ export class SavedItemsController {
 
   @Put()
   @ApiOperation({ summary: 'Save a publication or project' })
+  @ApiResponse({ status: 400, description: 'Saved items limit reached' })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async save(@CurrentUser('id') userId: string, @Body() dto: SavedItemDto) {
     return this.savedItemsService.save(userId, dto);

@@ -1,5 +1,5 @@
 import type { User } from '@prisma/client';
-import { effectiveStaff } from '../security/staff';
+import { effectiveStaff } from './staff';
 
 const PRIVATE_FIELDS = [
   'passwordHash',

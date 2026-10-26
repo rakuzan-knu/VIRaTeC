@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   ConflictException,
-  NotFoundException,
   ForbiddenException,
   ServiceUnavailableException,
   UnauthorizedException,
@@ -18,13 +17,14 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
 import { TERMS_VERSION, UserRole } from '@viratec/contracts';
-import { toAccount } from '../users/account';
+import { toAccount } from '../security/account';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
 import { AuditService } from '../security/audit.service';
 import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
 import { randomToken, sha256Hex } from '../security/crypto';
 import { TwoFactorService } from './two-factor.service';
+import { SessionsService } from './sessions.service';
 
 const MFA_CHALLENGE_TTL_MS = 5 * 60_000;
 const MFA_CHALLENGE_MAX_ATTEMPTS = 5;
@@ -63,6 +63,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private sessions: SessionsService,
     private audit?: AuditService,
     private rateLimit?: RateLimitService,
     private twoFactor?: TwoFactorService,
@@ -241,8 +242,6 @@ export class AuthService {
         if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
           throw error;
         }
-        // A concurrent sign-in may have created this Google account. Email alone
-        // never authorizes linking an existing account or issuing its tokens.
         user = await this.prisma.user.findUnique({ where: { googleId: payload.sub } });
         if (!user) {
           throw new ConflictException(
@@ -307,8 +306,6 @@ export class AuthService {
     if (tokenRecord.user.isBlocked) {
       throw new ForbiddenException('This account has been suspended');
     }
-
-    // Revoke old token and issue new pair (rotation)
     const { count } = await this.prisma.refreshToken.updateMany({
       where: { id: tokenRecord.id, revoked: false },
       data: { revoked: true },
@@ -430,19 +427,6 @@ export class AuthService {
     return toAccount(user);
   }
 
-  async logout(refreshToken: string) {
-    await this.prisma.refreshToken.updateMany({
-      where: { token: sha256Hex(refreshToken), revoked: false },
-      data: { revoked: true },
-    });
-    return { success: true };
-  }
-
-  async logoutAll(userId: string) {
-    await this.revokeAllSessions(userId);
-    return { success: true };
-  }
-
   async changePassword(
     userId: string,
     dto: ChangePasswordDto,
@@ -466,64 +450,12 @@ export class AuthService {
       where: { id: userId },
       data: { passwordHash: await argon2.hash(dto.newPassword) },
     });
-    await this.revokeAllSessions(userId);
+    await this.sessions.revokeAll(userId);
 
     const tokens = await this.generateTokens(updated, client, sessionId);
     return {
       user: toAccount(updated),
       ...tokens,
     };
-  }
-
-  private async revokeAllSessions(userId: string) {
-    await this.prisma.refreshToken.updateMany({
-      where: { userId, revoked: false },
-      data: { revoked: true },
-    });
-  }
-
-  async listSessions(userId: string, currentSessionId?: string) {
-    const tokens = await this.prisma.refreshToken.findMany({
-      where: { userId, revoked: false, expiresAt: { gt: new Date() } },
-      select: {
-        sessionId: true,
-        userAgent: true,
-        ipAddress: true,
-        createdAt: true,
-        lastUsedAt: true,
-      },
-      orderBy: { lastUsedAt: 'desc' },
-    });
-
-    const sessions = new Map<string, (typeof tokens)[number]>();
-    for (const token of tokens) {
-      if (!sessions.has(token.sessionId)) sessions.set(token.sessionId, token);
-    }
-
-    return [...sessions.values()].map(({ sessionId, ...session }) => ({
-      id: sessionId,
-      ...session,
-      isCurrent: sessionId === currentSessionId,
-    }));
-  }
-
-  async eraseOtherSessions(userId: string, currentSessionId?: string) {
-    const { count } = await this.prisma.refreshToken.deleteMany({
-      where: currentSessionId
-        ? { userId, sessionId: { not: currentSessionId } }
-        : { userId, OR: [{ revoked: true }, { expiresAt: { lt: new Date() } }] },
-    });
-    return { removed: count };
-  }
-
-  async revokeSession(userId: string, sessionId: string) {
-    const { count } = await this.prisma.refreshToken.updateMany({
-      where: { userId, sessionId, revoked: false },
-      data: { revoked: true },
-    });
-    if (count === 0) {
-      throw new NotFoundException('Session not found');
-    }
-    return { success: true };
   }
 }

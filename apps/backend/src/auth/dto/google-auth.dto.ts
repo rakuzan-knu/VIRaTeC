@@ -1,11 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Equals, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Equals, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+
+const GOOGLE_CREDENTIAL_MAX = 4096;
 
 export class GoogleAuthDto {
   @ApiProperty({ description: 'Google Identity Services ID token (credential)' })
   @IsString()
   @IsNotEmpty()
-  credential: string;
+  @MaxLength(GOOGLE_CREDENTIAL_MAX)
+  credential!: string;
 
   @ApiProperty({
     required: false,

@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, type JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TwoFactorService } from './two-factor.service';
+import { SessionsService } from './sessions.service';
 
 @Module({
   imports: [
@@ -15,14 +16,15 @@ import { TwoFactorService } from './two-factor.service';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('jwt.accessSecret'),
         signOptions: {
-          expiresIn: (configService.get<string>('jwt.accessTtl') || '15m') as any,
+          expiresIn: (configService.get<string>('jwt.accessTtl') ||
+            '15m') as JwtSignOptions['expiresIn'],
         },
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, TwoFactorService, JwtStrategy],
+  providers: [AuthService, SessionsService, TwoFactorService, JwtStrategy],
   exports: [AuthService, TwoFactorService, JwtModule, PassportModule],
 })
 export class AuthModule {}

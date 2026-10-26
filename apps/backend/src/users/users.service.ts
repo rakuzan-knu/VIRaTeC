@@ -10,7 +10,7 @@ import { ProfileLanguagesSchema, ProfileLinksSchema } from '@viratec/contracts';
 import type { ZodType } from 'zod';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
-import { toAccount } from './account';
+import { toAccount } from '../security/account';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';

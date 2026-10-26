@@ -1,7 +1,8 @@
-const assert = require('node:assert/strict');
-const { test } = require('node:test');
-const { Prisma } = require('@prisma/client');
-const { AuthService } = require('../dist/auth/auth.service.js');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { hasStatus } from './support.ts';
+import { Prisma } from '@prisma/client';
+import { AuthService } from '../dist/auth/auth.service.js';
 
 const payload = {
   sub: 'google-subject',
@@ -11,23 +12,52 @@ const payload = {
   picture: 'https://example.invalid/avatar.png',
 };
 
+interface GoogleUser {
+  id: string;
+  email?: string;
+  googleId?: string | null;
+  passwordHash?: string | null;
+  role?: string;
+  faculty?: string;
+  name?: string;
+  termsVersion?: string;
+  termsAcceptedAt?: Date;
+}
+
+interface CreateUserArgs {
+  data: Omit<GoogleUser, 'id'>;
+}
+
+interface VerifyOptions {
+  idToken: string;
+  audience: string;
+}
+
+interface SetupOptions {
+  users?: GoogleUser[];
+  tokenPayload?: typeof payload;
+  configured?: boolean;
+  verifyError?: Error;
+  createError?: Error;
+}
+
 function setup({
   users = [],
   tokenPayload = payload,
   configured = true,
   verifyError,
   createError,
-} = {}) {
+}: SetupOptions = {}) {
   const calls = { reads: 0, creates: 0, tokens: 0, refreshTokens: 0 };
-  let verifiedOptions;
+  let verifiedOptions: VerifyOptions | undefined;
   const service = new AuthService(
     {
       user: {
-        findUnique: async ({ where }) => {
+        findUnique: async ({ where }: { where: { googleId?: string } }) => {
           calls.reads++;
           return users.find((user) => user.googleId === where.googleId) ?? null;
         },
-        create: async ({ data }) => {
+        create: async ({ data }: CreateUserArgs) => {
           calls.creates++;
           if (createError) throw createError;
           if (users.some((user) => user.email === data.email)) {
@@ -36,7 +66,7 @@ function setup({
               clientVersion: 'test',
             });
           }
-          const user = {
+          const user: GoogleUser = {
             id: 'new-user',
             passwordHash: null,
             role: 'STUDENT',
@@ -58,7 +88,7 @@ function setup({
     { get: () => (configured ? 'expected-client-id' : undefined) },
   );
   service.googleClient = {
-    verifyIdToken: async (options) => {
+    verifyIdToken: async (options: VerifyOptions) => {
       verifiedOptions = options;
       if (verifyError) throw verifyError;
       return { getPayload: () => tokenPayload };
@@ -86,10 +116,7 @@ test('Google registration verifies the configured audience and returns a sanitiz
 
 test('new Google account is not created without accepting the terms', async () => {
   const { service, calls } = setup();
-  await assert.rejects(
-    service.googleAuth({ credential: 'token' }),
-    (error) => error.getStatus() === 400,
-  );
+  await assert.rejects(service.googleAuth({ credential: 'token' }), hasStatus(400));
   assert.equal(calls.creates, 0);
   assert.equal(calls.tokens, 0);
 });
@@ -129,7 +156,7 @@ for (const googleId of [null, 'another-google-subject']) {
     const { service, users, calls } = setup({ users: [user] });
     await assert.rejects(
       service.googleAuth({ credential: 'token', acceptTerms: true }),
-      (error) => error.getStatus() === 409,
+      hasStatus(409),
     );
     assert.deepEqual(users, [before]);
     assert.equal(calls.tokens, 0);
@@ -148,7 +175,7 @@ for (const tokenPayload of [
     service.googleClient = { verifyIdToken: async () => ({ getPayload: () => tokenPayload }) };
     await assert.rejects(
       service.googleAuth({ credential: 'token', acceptTerms: true }),
-      (error) => error.getStatus() === 401,
+      hasStatus(401),
     );
     assert.equal(calls.reads, 0);
     assert.equal(calls.creates, 0);
@@ -160,7 +187,7 @@ test('invalid, expired or wrong-audience token is rejected before database acces
   const { service, calls } = setup({ verifyError: new Error('Token verification failed') });
   await assert.rejects(
     service.googleAuth({ credential: 'token', acceptTerms: true }),
-    (error) => error.getStatus() === 401,
+    hasStatus(401),
   );
   assert.equal(calls.reads, 0);
   assert.equal(calls.tokens, 0);
@@ -170,7 +197,7 @@ test('missing Google configuration returns 503 without database access', async (
   const { service, calls, options } = setup({ configured: false });
   await assert.rejects(
     service.googleAuth({ credential: 'token', acceptTerms: true }),
-    (error) => error.getStatus() === 503,
+    hasStatus(503),
   );
   assert.equal(options(), undefined);
   assert.equal(calls.reads, 0);
@@ -178,7 +205,7 @@ test('missing Google configuration returns 503 without database access', async (
 
 test('concurrent creation recovers only the same Google subject', async () => {
   const { service, users, calls } = setup();
-  service.prisma.user.create = async ({ data }) => {
+  service.prisma.user.create = async ({ data }: CreateUserArgs) => {
     users.push({ id: 'concurrently-created', role: 'STUDENT', ...data });
     throw new Prisma.PrismaClientKnownRequestError('Unique Google subject', {
       code: 'P2002',
@@ -202,7 +229,7 @@ test('Google-only accounts cannot sign in with a password', async () => {
   service.prisma.user.findUnique = async () => ({ passwordHash: null });
   await assert.rejects(
     service.login({ email: 'google@example.invalid', password: 'anything' }),
-    (error) => error.getStatus() === 401,
+    hasStatus(401),
   );
   assert.equal(calls.tokens, 0);
 });

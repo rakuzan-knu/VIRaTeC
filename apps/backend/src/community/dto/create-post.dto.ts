@@ -16,7 +16,7 @@ export class CreatePostDto {
   @IsNotEmpty()
   @MinLength(COMMUNITY_POST_LIMITS.titleMin)
   @MaxLength(COMMUNITY_POST_LIMITS.titleMax)
-  title: string;
+  title!: string;
 
   @ApiProperty({
     example: 'Our laboratory at FIT is seeking partners from NNIF with expertise in phonetics...',
@@ -25,7 +25,7 @@ export class CreatePostDto {
   @IsNotEmpty()
   @MinLength(COMMUNITY_POST_LIMITS.contentMin)
   @MaxLength(COMMUNITY_POST_LIMITS.contentMax)
-  content: string;
+  content!: string;
 
   @ApiProperty({ example: ['Collaboration', 'NLP', 'Phonetics', 'FIT', 'NNIF'], required: false })
   @IsArray()

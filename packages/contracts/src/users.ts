@@ -60,6 +60,7 @@ export const PROFILE_LIMITS = {
   skillMax: 32,
   skillsMax: 12,
   passwordMin: 8,
+  passwordMax: 128,
 } as const;
 
 export const UpdateProfileRequestSchema = z.object({

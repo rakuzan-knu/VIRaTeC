@@ -6,5 +6,5 @@ export class TwoFactorCodeDto {
   @IsString()
   @Length(6, 20)
   @Matches(/^[A-Za-z0-9\s-]+$/)
-  code: string;
+  code!: string;
 }
