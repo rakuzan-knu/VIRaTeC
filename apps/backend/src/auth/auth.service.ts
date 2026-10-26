@@ -17,7 +17,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
-import { UserRole } from '@viratec/contracts';
+import { TERMS_VERSION, UserRole } from '@viratec/contracts';
 import { toAccount } from '../users/account';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
@@ -47,6 +47,14 @@ interface TokenSubject {
   faculty: string;
 }
 
+function assertTermsAccepted(acceptTerms: boolean | undefined) {
+  if (acceptTerms !== true) {
+    throw new BadRequestException('You must accept the Terms of Service and Privacy Policy');
+  }
+}
+
+const termsAcceptance = () => ({ termsAcceptedAt: new Date(), termsVersion: TERMS_VERSION });
+
 @Injectable()
 export class AuthService {
   private googleClient = new OAuth2Client();
@@ -67,6 +75,7 @@ export class AuthService {
     if (dto.role && dto.role !== UserRole.STUDENT && dto.role !== UserRole.PARTNER) {
       throw new ForbiddenException('Privileged roles cannot be selected during registration');
     }
+    assertTermsAccepted(dto.acceptTerms);
 
     const [existing, passwordHash] = await Promise.all([
       this.prisma.user.findUnique({
@@ -88,6 +97,7 @@ export class AuthService {
         role: dto.role,
         faculty: dto.faculty,
         department: dto.department,
+        ...termsAcceptance(),
       },
     });
 
@@ -216,6 +226,7 @@ export class AuthService {
     });
 
     if (!user) {
+      assertTermsAccepted(dto.acceptTerms);
       try {
         user = await this.prisma.user.create({
           data: {
@@ -223,6 +234,7 @@ export class AuthService {
             googleId: payload.sub,
             name: payload.name || email.split('@')[0],
             avatarUrl: payload.picture,
+            ...termsAcceptance(),
           },
         });
       } catch (error) {
