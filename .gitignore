@@ -62,5 +62,9 @@ minio_data
 *[Cc]laude*
 *[Cc][Oo][Dd][Ee][Xx]*
 *CLAUDE*
+!/CLAUDE.md
+!/.claude/
+/.claude/*
+!/.claude/knowledge/
 
 .vercel
