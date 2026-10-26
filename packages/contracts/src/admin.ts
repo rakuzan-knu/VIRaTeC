@@ -105,7 +105,7 @@ export const AuditLogEntrySchema = z.object({
   actor: z.object({ id: z.string(), name: z.string(), email: z.string() }).nullable(),
   targetType: z.string().nullable(),
   targetId: z.string().nullable(),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   ipAddress: z.string().nullable(),
   userAgent: z.string().nullable(),
   createdAt: z.string(),

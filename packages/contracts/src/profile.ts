@@ -158,7 +158,7 @@ export const PublicProfileSchema = z.object({
   institution: z.string().nullable(),
   country: z.string().nullable(),
   languages: z.array(ProfileLanguageSchema),
-  links: z.record(z.string()),
+  links: z.record(z.string(), z.string()),
   openTo: z.array(z.nativeEnum(OpenToOption)),
   visibility: z.nativeEnum(ProfileVisibility),
   createdAt: z.string(),

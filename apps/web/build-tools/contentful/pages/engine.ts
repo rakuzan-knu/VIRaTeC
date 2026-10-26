@@ -36,6 +36,7 @@ export interface CardMapping {
 type FieldKind =
   | { kind: 'symbol' | 'text'; optional?: boolean }
   | { kind: 'symbols' }
+  | { kind: 'paragraphs' }
   | { kind: 'stats' }
   | { kind: 'steps' }
   | { kind: 'cards'; card: CardMapping }
@@ -52,6 +53,8 @@ export interface PageSpec {
 }
 
 type Json = Record<string, unknown>;
+
+const PARAGRAPH_SEPARATOR = /\n\s*\n/;
 
 const fieldId = (fieldPath: string) =>
   fieldPath
@@ -95,6 +98,8 @@ const toDefinition = (spec: PageField): FieldDefinition => {
         ...options,
         items: { type: 'Symbol', validations: [] },
       });
+    case 'paragraphs':
+      return localizedField(id, name, 'Text', options);
     case 'stats':
       return entryListField(id, name, [STAT_TYPE_ID], options);
     case 'steps':
@@ -148,6 +153,11 @@ const pullPage = (spec: PageSpec, context: PullContext) => {
           : reader.require(id, nonEmpty, locale);
       } else if (item.kind === 'symbols') {
         value = reader.require(id, z.array(nonEmpty), locale);
+      } else if (item.kind === 'paragraphs') {
+        value = reader
+          .require(id, nonEmpty, locale)
+          ?.split(PARAGRAPH_SEPARATOR)
+          .map((paragraph) => paragraph.trim());
       } else if (item.kind === 'image') {
         const imageId = reader.require(id, assetLinkSchema)?.sys.id;
         value = imageId && context.assets.reference(imageId);

@@ -38,7 +38,7 @@ export const AccountSchema = UserSchema.extend({
   institution: z.string().nullable(),
   country: z.string().nullable(),
   languages: z.array(ProfileLanguageSchema),
-  links: z.record(z.string()),
+  links: z.record(z.string(), z.string()),
   openTo: z.array(z.nativeEnum(OpenToOption)),
   visibility: z.nativeEnum(ProfileVisibility),
   showEmail: z.boolean(),
@@ -124,8 +124,11 @@ export const LoginRequestSchema = z.object({
 
 export type LoginRequestDto = z.infer<typeof LoginRequestSchema>;
 
+export const TERMS_VERSION = '1.1';
+
 export const GoogleAuthRequestSchema = z.object({
   credential: z.string().min(1),
+  acceptTerms: z.literal(true).optional(),
 });
 
 export type GoogleAuthRequestDto = z.infer<typeof GoogleAuthRequestSchema>;
@@ -137,6 +140,7 @@ export const RegisterRequestSchema = z.object({
   role: z.nativeEnum(UserRole).default(UserRole.STUDENT),
   faculty: z.nativeEnum(FacultyDivision).default(FacultyDivision.FIT),
   department: z.string().optional(),
+  acceptTerms: z.literal(true),
 });
 
 export type RegisterRequestDto = z.infer<typeof RegisterRequestSchema>;

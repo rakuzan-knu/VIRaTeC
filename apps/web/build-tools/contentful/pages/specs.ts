@@ -3,6 +3,11 @@ import type { PageField, PageSpec } from './engine.ts';
 const symbol = (path: string, help?: string): PageField => ({ kind: 'symbol', path, help });
 const text = (path: string, help?: string): PageField => ({ kind: 'text', path, help });
 const symbols = (path: string, help?: string): PageField => ({ kind: 'symbols', path, help });
+const paragraphs = (path: string, help?: string): PageField => ({
+  kind: 'paragraphs',
+  path,
+  help,
+});
 const stats = (path: string): PageField => ({ kind: 'stats', path });
 const steps = (path: string): PageField => ({ kind: 'steps', path });
 const image = (path: string, help?: string): PageField => ({ kind: 'image', path, help });
@@ -100,6 +105,11 @@ export const PAGE_SPECS: readonly PageSpec[] = [
     symbol('whatIsTitle'),
     text('whatIsDescription'),
     symbol('videoTitle'),
+    symbol('videoTranscriptLabel', 'Title of the collapsible text version under the video.'),
+    paragraphs(
+      'videoTranscript',
+      'Text version of the video. Separate paragraphs with an empty line.',
+    ),
     stats('stats'),
     symbol('journeyEyebrow'),
     symbol('journeyTitle'),

@@ -24,6 +24,7 @@ for (const role of ['ADMIN', 'PROFESSOR', 'RESEARCHER']) {
         password: 'RegistrationTest123!',
         name: 'Registration Test',
         role,
+        acceptTerms: true,
       }),
       (error) => error.getStatus() === 403,
     );
@@ -55,9 +56,12 @@ for (const role of [undefined, 'STUDENT', 'PARTNER']) {
       password: 'RegistrationTest123!',
       name: 'Registration Test',
       role,
+      acceptTerms: true,
     });
 
     assert.equal(storedUser.email, 'registration@example.invalid');
+    assert.equal(storedUser.termsVersion, '1.1');
+    assert.ok(storedUser.termsAcceptedAt instanceof Date);
     assert.equal(result.user.role, role ?? 'STUDENT');
     assert.equal(result.user.passwordHash, undefined);
     assert.ok(storedUser.passwordHash.startsWith('$argon2'));
@@ -65,3 +69,29 @@ for (const role of [undefined, 'STUDENT', 'PARTNER']) {
     assert.ok(result.refreshToken);
   });
 }
+
+test('public registration requires accepting the terms', async () => {
+  let databaseCalls = 0;
+  const service = new AuthService(
+    {
+      user: {
+        findUnique: async () => {
+          databaseCalls++;
+          return null;
+        },
+      },
+    },
+    {},
+    {},
+  );
+
+  await assert.rejects(
+    service.register({
+      email: 'registration@example.invalid',
+      password: 'RegistrationTest123!',
+      name: 'Registration Test',
+    }),
+    (error) => error.getStatus() === 400,
+  );
+  assert.equal(databaseCalls, 0);
+});

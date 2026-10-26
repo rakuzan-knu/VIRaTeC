@@ -19,6 +19,7 @@ export function useRegister() {
         password: values.password,
         role: UserRole.STUDENT,
         faculty: FacultyDivision.FIT,
+        acceptTerms: true,
       });
     },
     onSuccess: (data) => {

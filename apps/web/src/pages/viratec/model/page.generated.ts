@@ -18,6 +18,17 @@ export const PAGE_TEXT: Localized<ViratecText> = {
     whatIsDescription:
       'Watch how students, educators and researchers from partner universities in 10 countries learn and do research together, online and across borders.',
     videoTitle: 'What is VIRaTeC?',
+    videoTranscriptLabel: 'Text version of the video (the video has no sound)',
+    videoTranscript: [
+      'VIRaTeC — Virtual Innovative Research & Technology Community, Taras Shevchenko National University of Kyiv.',
+      'One community, many countries. Students, educators, researchers and innovators connected through AI, EdTech and international collaboration.',
+      'Learning and research across borders: 500+ students worldwide, 15+ partner universities, 10 partner countries, 5 industry and research partners.',
+      'Research that crosses borders and disciplines. Since 2019 VIRaTeC has been building inclusive virtual environments where students from different countries work together on joint projects and research using AI, EdTech and COIL.',
+      'From an idea to a global community: 2019 — where it started; April 2025 — VIRaTeC Global Community; 2025 — COIL + CyberBridge Talks; February 2026 — Foundations of NLP; May 2026 — student research published; June 2026 — Digital Narratives 2026; September 2026 — workshops with Johns Hopkins; October 2026 — international conference at KNU.',
+      'How we work: 1. Idea → outcome: every project starts with a student idea and ends with a tangible research result. 2. Challenge → collaboration: mixed international teams solve real problems across cultures and time zones. 3. Knowledge → implementation: workshops and mentoring turn what students learn into applied solutions.',
+      '15+ partner universities in 10 countries, including Johns Hopkins University, Coventry University, Georgia State University, the University of Florida, Karunya Institute of Technology and École Nationale Polytechnique.',
+      'Become part of the VIRaTeC network: coil.knu@gmail.com.',
+    ],
     stats: [
       { value: '500+', label: 'students from the Americas, Europe, Africa and Asia' },
       { value: '15+', label: 'partner universities worldwide' },
@@ -105,6 +116,17 @@ export const PAGE_TEXT: Localized<ViratecText> = {
     whatIsDescription:
       'Подивіться, як студенти, викладачі та дослідники з університетів-партнерів у 10 країнах разом навчаються й досліджують — онлайн і без кордонів.',
     videoTitle: 'Що таке VIRaTeC?',
+    videoTranscriptLabel: 'Текстова версія відео (відео без звуку)',
+    videoTranscript: [
+      'VIRaTeC — Virtual Innovative Research & Technology Community, Київський національний університет імені Тараса Шевченка.',
+      'Одна спільнота, багато країн. Студенти, викладачі, дослідники та інноватори, об’єднані завдяки ШІ, EdTech і міжнародній співпраці.',
+      'Навчання й дослідження без кордонів: 500+ студентів у світі, 15+ університетів-партнерів, 10 країн-партнерів, 5 індустріальних і дослідницьких партнерів.',
+      'Дослідження, що перетинають кордони й дисципліни. З 2019 року VIRaTeC створює інклюзивні віртуальні середовища, де студенти з різних країн разом працюють над спільними проєктами й дослідженнями за допомогою ШІ, EdTech і COIL.',
+      'Від ідеї до глобальної спільноти: 2019 — з чого все почалося; квітень 2025 — VIRaTeC Global Community; 2025 — COIL + CyberBridge Talks; лютий 2026 — Foundations of NLP; травень 2026 — опубліковано студентські дослідження; червень 2026 — Digital Narratives 2026; вересень 2026 — воркшопи з Johns Hopkins; жовтень 2026 — міжнародна конференція в КНУ.',
+      'Як ми працюємо: 1. Ідея → результат: кожен проєкт починається зі студентської ідеї й завершується відчутним дослідницьким результатом. 2. Виклик → співпраця: змішані міжнародні команди розв’язують реальні задачі в різних культурах і часових поясах. 3. Знання → впровадження: воркшопи й менторство перетворюють здобуті знання на прикладні рішення.',
+      '15+ університетів-партнерів у 10 країнах, серед них Університет Джонса Гопкінса, Ковентрійський університет, Університет штату Джорджія, Університет Флориди, Інститут технологій Каруньї та Національна політехнічна школа.',
+      'Долучайтеся до мережі VIRaTeC: coil.knu@gmail.com.',
+    ],
     stats: [
       { value: '500+', label: 'студентів з Америки, Європи, Африки та Азії' },
       { value: '15+', label: 'університетів-партнерів у світі' },
