@@ -1,40 +1,40 @@
-# Backend — архитектура и правила написания кода
+# Backend — architecture and coding rules
 
-Рабочий документ для того, кто пишет бэкенд VIRaTeC (человек или ИИ). Читается сверху вниз: сначала что строим, потом жёсткие правила, потом скелеты кода, которые можно копировать.
+A working document for whoever writes the VIRaTeC backend (human or AI). Read it top to bottom: first what we build, then the hard rules, then code skeletons you can copy.
 
-Продукт описан в [`../product.md`](../product.md), контракт с фронтендом — в [`../api-contract.md`](../api-contract.md). Здесь **не дублируются** формы запросов и ответов: что отдаёт `GET /api/v1/projects`, смотри в DTO, контрактах и Swagger.
-
----
-
-## 0. За 30 секунд
-
-API платформы VIRaTeC: аккаунты и безопасность (сессии в куках, 2FA, Google, аудит, rate limit), каталоги проектов, исследований, событий и публикаций, сохранённое, сообщество, админка и прокси к Contentful.
-
-Почти всё — синхронный CRUD поверх Postgres через Prisma. Фоновых очередей нет; единственная периодическая работа — `CleanupService` (чистка истёкших токенов и бакетов) на `setInterval`.
+The product is described in [`../product.md`](../product.md), the contract with the frontend in [`../api-contract.md`](../api-contract.md). Request and response shapes are **not duplicated** here: what `GET /api/v1/projects` returns lives in DTOs, contracts and Swagger.
 
 ---
 
-## 1. Стек (зафиксирован)
+## 0. In 30 seconds
 
-| Что                  | Чем                                                                  |
-| -------------------- | -------------------------------------------------------------------- |
-| HTTP                 | NestJS 11 + `@nestjs/platform-fastify` (Fastify 5)                   |
-| Валидация входа      | `class-validator` + `class-transformer`, глобальный `ValidationPipe` |
-| Общие схемы и enum'ы | `@viratec/contracts` (zod)                                           |
-| БД                   | PostgreSQL (прод — Neon)                                             |
-| ORM и миграции       | Prisma 6                                                             |
-| Конфиг               | `@nestjs/config` + `src/config/configuration.ts`                     |
-| Аутентификация       | `@nestjs/jwt`, Passport JWT, `argon2`, `google-auth-library`         |
-| Логи                 | `nestjs-pino`                                                        |
-| Документация         | `@nestjs/swagger`                                                    |
+The VIRaTeC platform API: accounts and security (cookie sessions, 2FA, Google, audit, rate limiting), catalogs of projects, research, events and publications, saved items, community, the admin panel and a Contentful proxy.
 
-Всё, что ходит в сеть или в БД, — `async`. Синхронные блокирующие вызовы (`fs.*Sync`, `crypto.*Sync` на больших данных, `execSync`) в обработчиках запросов не появляются.
+Almost everything is synchronous CRUD over Postgres through Prisma. There are no background queues; the only periodic work is `CleanupService` (removing expired tokens and buckets) on `setInterval`.
 
 ---
 
-## 2. Три правила, которые не обсуждаются
+## 1. Stack (fixed)
 
-### 2.1 Слои и направление зависимостей
+| What                     | With                                                             |
+| ------------------------ | ---------------------------------------------------------------- |
+| HTTP                     | NestJS 11 + `@nestjs/platform-fastify` (Fastify 5)               |
+| Input validation         | `class-validator` + `class-transformer`, global `ValidationPipe` |
+| Shared schemas and enums | `@viratec/contracts` (zod)                                       |
+| Database                 | PostgreSQL (production — Neon)                                   |
+| ORM and migrations       | Prisma 6                                                         |
+| Config                   | `@nestjs/config` + `src/config/configuration.ts`                 |
+| Authentication           | `@nestjs/jwt`, Passport JWT, `argon2`, `google-auth-library`     |
+| Logging                  | `nestjs-pino`                                                    |
+| Documentation            | `@nestjs/swagger`                                                |
+
+Everything that touches the network or the database is `async`. Synchronous blocking calls (`fs.*Sync`, `crypto.*Sync` on large data, `execSync`) never appear in request handlers.
+
+---
+
+## 2. Three non-negotiable rules
+
+### 2.1 Layers and dependency direction
 
 ```
 Controller  →  Service  →  PrismaService (@prisma/client)
@@ -42,55 +42,55 @@ Controller  →  Service  →  PrismaService (@prisma/client)
     DTO (class-validator)        Guards / Interceptors / Filters — src/common
 ```
 
-- **Controller** знает про HTTP: маршрут, метод, guard'ы, декораторы параметров, DTO, Swagger. Не содержит бизнес-логики и не обращается к `PrismaService` (единственное исключение — `health.controller.ts`, где `SELECT 1` и есть проверка готовности).
-- **Service** знает про бизнес-правила и данные: запросы Prisma, проверки, кэш, аудит. Не знает про Fastify `request`/`reply` — всё нужное из запроса (id пользователя, `ClientContext`) приходит аргументами через декораторы контроллера.
-- **PrismaService** — единственная точка доступа к БД, инжектится через DI. `new PrismaClient()` в коде приложения не создаётся (исключение — CLI-скрипт `src/cli/assign-owner.ts`, который работает вне Nest).
+- **Controller** knows about HTTP: route, method, guards, parameter decorators, DTOs, Swagger. It contains no business logic and does not touch `PrismaService` (the only exception is `health.controller.ts`, where `SELECT 1` is the readiness check itself).
+- **Service** knows business rules and data: Prisma queries, checks, cache, audit. It knows nothing about Fastify `request`/`reply` — everything it needs from the request (user id, `ClientContext`) arrives as arguments through controller decorators.
+- **PrismaService** is the only access point to the database, injected through DI. Application code never creates `new PrismaClient()` (the exception is the CLI script `src/cli/assign-owner.ts`, which runs outside Nest).
 
-Отдельного слоя репозиториев в проекте нет: сервис работает с `PrismaService` напрямую. Не вводи его ради одной задачи — это новый паттерн на весь бэкенд. Повторяющиеся `select`/`include` выносятся в константы модуля с `satisfies Prisma.<Model>Select` (`LEAD_SELECT` в `projects.service.ts`), повторяющиеся куски логики — в функции рядом с сервисом (`users/public-profile.ts`); то, что нужно нескольким доменам, — в `security/` или `common/` (`security/account.ts`).
+The project has no repository layer: services use `PrismaService` directly. Do not introduce one for a single task — it would be a new pattern for the whole backend. Repeated `select`/`include` objects become module constants with `satisfies Prisma.<Model>Select` (`LEAD_SELECT` in `projects.service.ts`), repeated logic becomes functions next to the service (`users/public-profile.ts`); anything several domains need goes into `security/` or `common/` (`security/account.ts`).
 
-### 2.2 Модуль = домен
+### 2.2 Module = domain
 
-Каждый домен — модуль NestJS со своими контроллерами, сервисами и DTO. Модуль экспортирует только то, что реально нужно другим модулям (`exports: [ProjectsService]`). Чужой сервис используется только через импорт его модуля в `imports`, а не через `new` и не через прямой импорт приватных файлов. Глобальные модули — только инфраструктура: `PrismaModule`, `SecurityModule`, `ConfigModule`.
+Each domain is a NestJS module with its own controllers, services and DTOs. A module exports only what other modules actually need (`exports: [ProjectsService]`). Another domain's service is used only by importing its module into `imports`, never through `new` or by importing private files directly. Global modules are infrastructure only: `PrismaModule`, `SecurityModule`, `ConfigModule`.
 
 ### 2.3 SOLID
 
-Не как мантра, а как проверка при ревью — конкретно для этого проекта, см. раздел 5.
+Not as a mantra but as a review check — specifically for this project, see section 5.
 
 ---
 
-## 3. Структура каталогов
+## 3. Directory structure
 
 ```
 apps/backend/
 ├── prisma/
-│   ├── schema.prisma            # модель данных
-│   └── migrations/              # миграции Prisma, по одной папке на изменение
-├── prisma.config.ts             # путь к схеме и миграциям, загрузка .env
+│   ├── schema.prisma            # data model
+│   └── migrations/              # Prisma migrations, one folder per change
+├── prisma.config.ts             # schema and migrations path, .env loading
 ├── src/
-│   ├── main.ts                  # сборка Fastify-приложения: плагины, CSRF, CORS, префикс, pipes, filter, interceptor, Swagger
-│   ├── app.module.ts            # корневой модуль: Config, Logger, все домены
-│   ├── config/configuration.ts  # чтение и проверка env
-│   ├── prisma/                  # НЕ домен: PrismaModule (@Global) + PrismaService
-│   ├── security/                # НЕ домен: @Global — AuditService, RateLimitService, CleanupService, crypto, staff, account (toAccount), authenticated-user
-│   ├── common/                  # НЕ домен: общая инфраструктура HTTP
+│   ├── main.ts                  # Fastify app assembly: plugins, CSRF, CORS, prefix, pipes, filter, interceptor, Swagger
+│   ├── app.module.ts            # root module: Config, Logger, all domains
+│   ├── config/configuration.ts  # reading and validating env
+│   ├── prisma/                  # NOT a domain: PrismaModule (@Global) + PrismaService
+│   ├── security/                # NOT a domain: @Global — AuditService, RateLimitService, CleanupService, crypto, staff, account (toAccount), authenticated-user
+│   ├── common/                  # NOT a domain: shared HTTP infrastructure
 │   │   ├── guards/              # JwtAuthGuard, OptionalJwtAuthGuard, RolesGuard, StaffGuard
 │   │   ├── decorators/          # @CurrentUser, @Roles, @RequirePermissions/@OwnerOnly/@RequireStepUp, @Client
 │   │   ├── filters/             # AllExceptionsFilter
 │   │   ├── interceptors/        # TransformInterceptor, PublicCacheInterceptor
-│   │   ├── pagination/          # курсорная пагинация
+│   │   ├── pagination/          # cursor pagination
 │   │   ├── dto/                 # CursorQueryDto
 │   │   └── cache/               # TtlCache
-│   ├── auth/                    # ДОМЕН: вход, регистрация, сессии, 2FA, Google
-│   ├── users/                   # ДОМЕН: профиль, приватность, аватар, экспорт, сохранённое
+│   ├── auth/                    # DOMAIN: sign-in, registration, sessions, 2FA, Google
+│   ├── users/                   # DOMAIN: profile, privacy, avatar, export, saved items
 │   ├── projects/ research/ events/ publications/ community/
-│   ├── content/                 # ДОМЕН: прокси Contentful Delivery API
-│   ├── admin/                   # ДОМЕН: админка сотрудников
-│   ├── health/                  # health-checks
-│   └── cli/                     # разовые скрипты вне HTTP (assign-owner)
-└── tests/                       # node:test по собранному dist, см. § 13
+│   ├── content/                 # DOMAIN: Contentful Delivery API proxy
+│   ├── admin/                   # DOMAIN: staff admin panel
+│   ├── health/                  # health checks
+│   └── cli/                     # one-off scripts outside HTTP (assign-owner)
+└── tests/                       # node:test against the built dist, see § 13
 ```
 
-Внутри домена:
+Inside a domain:
 
 ```
 projects/
@@ -102,13 +102,13 @@ projects/
 └── projects.module.ts
 ```
 
-Файлы — kebab-case с суффиксом роли (`*.controller.ts`, `*.service.ts`, `*.module.ts`, `*.dto.ts`, `*.guard.ts`, `*.decorator.ts`), классы — PascalCase с тем же суффиксом.
+Files are kebab-case with a role suffix (`*.controller.ts`, `*.service.ts`, `*.module.ts`, `*.dto.ts`, `*.guard.ts`, `*.decorator.ts`), classes are PascalCase with the same suffix.
 
-**Правило междоменных импортов:** домен берёт у другого домена только его экспортированный сервис (через модуль) или его DTO/типы. Общее для нескольких доменов уходит в `common/`, `security/` или `@viratec/contracts`, а не импортируется из чужой папки.
+**Cross-domain import rule:** a domain takes from another domain only its exported service (through the module) or its DTOs/types. Anything shared by several domains goes into `common/`, `security/` or `@viratec/contracts`, not imported from someone else's folder.
 
 ---
 
-## 4. Скелет модуля — для копирования
+## 4. Module skeleton — for copying
 
 ### 4.1 DTO
 
@@ -122,7 +122,7 @@ export class CreateThingDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)
-  title: string;
+  title!: string;
 
   @ApiProperty({ enum: EventType, required: false })
   @IsEnum(EventType)
@@ -131,11 +131,11 @@ export class CreateThingDto {
 }
 ```
 
-Список с пагинацией расширяет `CursorQueryDto` из `common/dto/cursor-query.dto.ts`, а не объявляет `limit`/`cursor` заново.
+A paginated list extends `CursorQueryDto` from `common/dto/cursor-query.dto.ts` instead of declaring `limit`/`cursor` again.
 
-### 4.2 Сервис
+### 4.2 Service
 
-`Thing` — плейсхолдер модели Prisma, подставь свою.
+`Thing` is a placeholder Prisma model; substitute your own.
 
 ```ts
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -186,7 +186,7 @@ export class ThingsService {
 }
 ```
 
-### 4.3 Контроллер
+### 4.3 Controller
 
 ```ts
 import {
@@ -238,7 +238,7 @@ export class ThingsController {
 }
 ```
 
-### 4.4 Модуль и регистрация
+### 4.4 Module and registration
 
 ```ts
 import { Module } from '@nestjs/common';
@@ -253,64 +253,64 @@ import { ThingsService } from './things.service';
 export class ThingsModule {}
 ```
 
-Новый модуль добавляется в `imports` `AppModule`. `PrismaService`, `AuditService` и `RateLimitService` глобальные — их модули импортировать не нужно.
+A new module is added to `AppModule`'s `imports`. `PrismaService`, `AuditService` and `RateLimitService` are global — their modules do not need to be imported.
 
 ---
 
-## 5. SOLID применительно к этому коду
+## 5. SOLID applied to this code
 
-Не абстрактно, а что конкретно считается нарушением на ревью.
+Not abstract — what concretely counts as a violation in review.
 
-**S — Single Responsibility.** Контроллер меняется, когда меняется HTTP-контракт; сервис — когда меняются бизнес-правила. Контроллер, который сам зовёт `this.prisma…` или собирает ответ из нескольких запросов, нарушает правило, даже если код короткий. Сервис-«бог» на всё подряд дробится на сервисы внутри модуля (`auth.service.ts` + `sessions.service.ts` + `two-factor.service.ts`, `users.service.ts` + `saved-items.service.ts`).
+**S — Single Responsibility.** A controller changes when the HTTP contract changes; a service changes when business rules change. A controller that calls `this.prisma…` itself or assembles a response from several queries breaks the rule, even if the code is short. A "god" service is split into services within its module (`auth.service.ts` + `sessions.service.ts` + `two-factor.service.ts`, `users.service.ts` + `saved-items.service.ts`).
 
-**O — Open/Closed.** Новый способ входа или новая проверка доступа добавляется новой стратегией Passport, guard'ом или декоратором, а не `if (provider === 'google')` внутри существующего метода.
+**O — Open/Closed.** A new sign-in method or a new access check is added as a new Passport strategy, guard or decorator, not as `if (provider === 'google')` inside an existing method.
 
-**L — Liskov.** Guard'ы и interceptor'ы честно реализуют интерфейсы Nest (`CanActivate`, `NestInterceptor`) и не меняют смысл ответа неожиданным образом: interceptor не глотает ошибки, guard не пишет в ответ сам — он отказывает исключением.
+**L — Liskov.** Guards and interceptors implement the Nest interfaces (`CanActivate`, `NestInterceptor`) faithfully and do not change the meaning of a response unexpectedly: an interceptor does not swallow errors, a guard does not write to the response itself — it refuses with an exception.
 
-**I — Interface Segregation.** Модуль экспортирует только нужные другим сервисы, а не всё подряд. В сервис передаются узкие аргументы (`userId`, `ClientContext`), а не весь `request`.
+**I — Interface Segregation.** A module exports only the services others need, not everything. Services receive narrow arguments (`userId`, `ClientContext`), not the whole `request`.
 
-**D — Dependency Inversion.** Зависимости приходят через конструктор и DI-контейнер Nest. `new SomeService()` внутри другого сервиса, чтение `process.env` в бизнес-коде мимо `ConfigService` (сейчас `process.env` читают только `main.ts`, `configuration.ts` и инфраструктура — `app.module.ts`, `prisma.service.ts`), обращение к БД мимо `PrismaService` — нарушения.
+**D — Dependency Inversion.** Dependencies arrive through the constructor and the Nest DI container. `new SomeService()` inside another service, reading `process.env` in business code bypassing `ConfigService` (currently `process.env` is read only by `main.ts`, `configuration.ts` and infrastructure — `app.module.ts`, `prisma.service.ts`), or accessing the database bypassing `PrismaService` are violations.
 
-### 5.1 Что из этого проверяет машина, а что — ревью
+### 5.1 What a machine checks and what review checks
 
-| Принцип                       | Чем проверяется                                           |
-| ----------------------------- | --------------------------------------------------------- |
-| Типы, несовместимые сигнатуры | `pnpm typecheck` (`tsc --noEmit` после `prisma generate`) |
-| Неразрешённые импорты         | `pnpm knip`                                               |
-| Валидация входа               | рантайм: `ValidationPipe` с `forbidNonWhitelisted`        |
-| Слои и границы доменов        | **только ревью** — архитектурного линтера в проекте нет   |
-| **S**, **O**, **I**           | только ревью                                              |
+| Principle                      | Checked by                                                |
+| ------------------------------ | --------------------------------------------------------- |
+| Types, incompatible signatures | `pnpm typecheck` (`tsc --noEmit` after `prisma generate`) |
+| Unresolved imports             | `pnpm knip`                                               |
+| Input validation               | runtime: `ValidationPipe` with `forbidNonWhitelisted`     |
+| Layers and domain boundaries   | **review only** — the project has no architecture linter  |
+| **S**, **O**, **I**            | review only                                               |
 
-`apps/backend/tsconfig.json` наследует `strict: true` из `@viratec/tsconfig` — ничего из строгого режима не отключай. Обязательные поля DTO объявляются с `!:` (`title!: string`): их заполняет `ValidationPipe`, а не конструктор.
-
----
-
-## 6. Модель данных
-
-Схема — `prisma/schema.prisma`. Таблицы называются в snake_case через `@@map`, поля — camelCase, первичные ключи — `String @id @default(uuid())`, у сущностей есть `createdAt`/`updatedAt`. Индексы — под реальные запросы списков (`@@index([createdAt])`, `@@index([authorId])`); уникальность пар — `@@unique` (`SavedItem`, `PostLike`).
-
-- Enum'ы Prisma зеркалятся в `packages/contracts/src/enums.ts` — менять синхронно.
-- Переводы и составной контент лежат в `Json`-полях (`Project.translations`, `Event.translations`, `Publication.content`). При чтении JSON валидируется zod-схемой из контрактов (`ProjectTranslationsSchema.parse` в `projects.service.ts`), а не приводится через `as`.
-- Тип строки с `include` выводится из Prisma: `Prisma.ProjectGetPayload<{ include: … }>`, а не описывается вручную.
-- Связанные записи, которые должны меняться атомарно, — в `this.prisma.$transaction(...)`.
-- Наружу не отдаются секреты и служебные поля (хеши паролей, токены, TOTP): аккаунт — только через `toAccount` из `security/account.ts`, публичный профиль — через `PUBLIC_PROFILE_SELECT` в `users/public-profile.ts`, остальное — через явный `select`.
+`apps/backend/tsconfig.json` inherits `strict: true` from `@viratec/tsconfig` — do not disable anything from strict mode. Required DTO fields are declared with `!:` (`title!: string`): `ValidationPipe` fills them, not a constructor.
 
 ---
 
-## 7. DTO и валидация
+## 6. Data model
 
-- Тело, query и параметры описываются DTO-классами с `class-validator` и `@ApiProperty`/`@ApiPropertyOptional`. Числа из query — через `@Type(() => Number)`.
-- UUID-параметры — `ParseUUIDPipe`.
-- Ограничения длины и количества (`@MaxLength`, `@ArrayMaxSize`) обязательны для любого пользовательского текста и массивов.
-- Глобальный `ValidationPipe` уже настроен (`whitelist`, `forbidNonWhitelisted`, `transform`) — не создавай локальные pipes с другим поведением.
-- Произвольный JSON от клиента (ссылки, языки профиля) дополнительно проверяется zod-схемой из `@viratec/contracts` (`parseWith` в `users.service.ts`) — одна схема на фронт и бэк.
-- Форма, которую видят оба конца, описывается в `@viratec/contracts`; DTO бэкенда ей соответствует, а не расходится молча.
+Schema — `prisma/schema.prisma`. Tables are snake_case via `@@map`, fields are camelCase, primary keys are `String @id @default(uuid())`, entities have `createdAt`/`updatedAt`. Indexes match real list queries (`@@index([createdAt])`, `@@index([authorId])`); pair uniqueness uses `@@unique` (`SavedItem`, `PostLike`).
+
+- Prisma enums are mirrored in `packages/contracts/src/enums.ts` — change them together.
+- Translations and composite content live in `Json` fields (`Project.translations`, `Event.translations`, `Publication.content`). When read, JSON is validated with a zod schema from contracts (`ProjectTranslationsSchema.parse` in `projects.service.ts`), not cast with `as`.
+- The type of a row with `include` is derived from Prisma: `Prisma.ProjectGetPayload<{ include: … }>`, not written by hand.
+- Related records that must change atomically go into `this.prisma.$transaction(...)`.
+- Secrets and internal fields (password hashes, tokens, TOTP) never leave the API: an account goes out only through `toAccount` from `security/account.ts`, a public profile through `PUBLIC_PROFILE_SELECT` in `users/public-profile.ts`, everything else through an explicit `select`.
 
 ---
 
-## 8. Ошибки
+## 7. DTOs and validation
 
-Бросай стандартные исключения NestJS из сервисов и guard'ов. Их ловит `AllExceptionsFilter` и отдаёт в форме `{ statusCode, timestamp, path, error }` — см. [`../api-contract.md`](../api-contract.md#ошибки).
+- Body, query and params are described by DTO classes with `class-validator` and `@ApiProperty`/`@ApiPropertyOptional`. Numbers from the query use `@Type(() => Number)`.
+- UUID params use `ParseUUIDPipe`.
+- Length and count limits (`@MaxLength`, `@ArrayMaxSize`) are mandatory for any user text and array.
+- The global `ValidationPipe` is already configured (`whitelist`, `forbidNonWhitelisted`, `transform`) — do not create local pipes with different behavior.
+- Arbitrary JSON from the client (links, profile languages) is additionally checked with a zod schema from `@viratec/contracts` (`parseWith` in `users.service.ts`) — one schema for frontend and backend.
+- A shape both ends see is described in `@viratec/contracts`; the backend DTO matches it rather than silently diverging.
+
+---
+
+## 8. Errors
+
+Throw standard NestJS exceptions from services and guards. `AllExceptionsFilter` catches them and returns `{ statusCode, timestamp, path, error }` — see [`../api-contract.md`](../api-contract.md#errors).
 
 ```ts
 throw new NotFoundException(`Project with ID ${id} not found`);
@@ -320,80 +320,80 @@ throw new ForbiddenException({
 });
 ```
 
-- Когда фронт должен различать причину отказа, передавай `{ message, code }` с кодом в `UPPER_SNAKE_CASE` и заводи union-тип кодов рядом (`StaffAccessErrorCode` в `staff.guard.ts`).
-- Не отдавай клиенту текст внутренних исключений, стек и детали Prisma: неизвестная ошибка — 500 с `Internal server error`, подробности — только в лог.
-- `try/catch` ради того, чтобы вернуть `null` вместо ошибки, — нет. Ловить имеет смысл известные ошибки Prisma (например, `P2002` уникальности) и переводить их в осмысленный 4xx.
+- When the frontend must distinguish the reason for a refusal, pass `{ message, code }` with an `UPPER_SNAKE_CASE` code and declare a union type of codes next to it (`StaffAccessErrorCode` in `staff.guard.ts`).
+- Never return internal exception text, stack traces or Prisma details to the client: an unknown error is a 500 with `Internal server error`, details go only to the log.
+- No `try/catch` just to return `null` instead of an error. Catching makes sense for known Prisma errors (for example `P2002` uniqueness) to turn them into a meaningful 4xx.
 
 ---
 
-## 9. Безопасность
+## 9. Security
 
-- **Аутентификация** — `JwtAuthGuard` / `OptionalJwtAuthGuard`, пользователь — `@CurrentUser()` (тип `AuthenticatedUser` — `security/authenticated-user.ts`).
-- **Роли и права** — `RolesGuard` + `@Roles(...)` для `UserRole`; админка — `StaffGuard` + `@RequirePermissions(...)` (`AdminPermission`), `@OwnerOnly()`, `@RequireStepUp()` из `common/decorators/staff.decorator.ts`.
-- **CSRF** — проверка в `main.ts` для небезопасных методов при наличии сессионных кук. Новые мутирующие эндпоинты ничего дополнительно не делают, но и не должны обходить проверку.
-- **Куки сессии** — только через хелперы `auth/session-cookies.ts`.
-- **Rate limit** — `RateLimitService.consume(key, { limit, windowMs })` на чувствительных действиях (вход, регистрация, 2FA, step-up). Правила — в `RATE_LIMITS` (`security/rate-limit.service.ts`), новое правило добавляется туда же. Хранится в Postgres.
-- **Аудит** — `AuditService.record({ action, actorId, targetType, targetId, metadata, client })` на действиях с аккаунтом и админских действиях. `client` (`ClientContext`) — из декоратора `@Client()` в контроллере.
-- **Секреты** — только из env через `configuration.ts`; в проде отсутствие секрета — ошибка старта, а не тихий фолбэк. В логах заголовки запроса и `set-cookie` замаскированы (`redact` в `app.module.ts`), не логируй токены и пароли вручную.
-- **Сравнение секретов** — `safeEqual` из `security/crypto.ts`, не `===`.
-
----
-
-## 10. Кэширование
-
-- Публичные `GET` списков и карточек — `TtlCache` в сервисе (30 секунд) + `PublicCacheInterceptor` на маршруте.
-- Любая мутация, влияющая на закэшированные данные, сбрасывает кэш этого сервиса (`listCache.clear()`, `itemCache.clear()`).
-- Ответы, зависящие от пользователя, не кэшируются в `TtlCache` и не помечаются `PublicCacheInterceptor`.
-- Кэш живёт в памяти одного инстанса (на Vercel их несколько) — это ускорение, а не источник правды.
+- **Authentication** — `JwtAuthGuard` / `OptionalJwtAuthGuard`, the user via `@CurrentUser()` (type `AuthenticatedUser` — `security/authenticated-user.ts`).
+- **Roles and permissions** — `RolesGuard` + `@Roles(...)` for `UserRole`; the admin panel — `StaffGuard` + `@RequirePermissions(...)` (`AdminPermission`), `@OwnerOnly()`, `@RequireStepUp()` from `common/decorators/staff.decorator.ts`.
+- **CSRF** — checked in `main.ts` for unsafe methods when session cookies are present. New mutating endpoints do nothing extra, but must not bypass the check.
+- **Session cookies** — only through the helpers in `auth/session-cookies.ts`.
+- **Rate limiting** — `RateLimitService.consume(key, { limit, windowMs })` on sensitive actions (sign-in, registration, 2FA, step-up). Rules live in `RATE_LIMITS` (`security/rate-limit.service.ts`); a new rule is added there. Stored in Postgres.
+- **Audit** — `AuditService.record({ action, actorId, targetType, targetId, metadata, client })` on account actions and admin actions. `client` (`ClientContext`) comes from the `@Client()` decorator in the controller.
+- **Secrets** — only from env through `configuration.ts`; in production a missing secret is a startup error, not a silent fallback. Request headers and `set-cookie` are masked in logs (`redact` in `app.module.ts`); never log tokens or passwords by hand.
+- **Comparing secrets** — `safeEqual` from `security/crypto.ts`, not `===`.
 
 ---
 
-## 11. Миграции
+## 10. Caching
 
-Каждое изменение `schema.prisma` — новая миграция в `prisma/migrations/<timestamp>_<name>/migration.sql`. Сгенерированный SQL читается глазами до коммита: Prisma не видит переименований и предлагает `DROP` + `ADD` вместо `ALTER ... RENAME`, что теряет данные. Data-миграции (заполнение, перенос значений) пишутся в SQL той же миграции или отдельной миграцией, как `content_seed`.
-
-- Применение — `pnpm --filter @viratec/backend db:migrate` (`prisma migrate deploy`); на Vercel выполняется при сборке API.
-- После правки схемы — `pnpm --filter @viratec/backend db:generate`, иначе типы `@prisma/client` устарели.
-- Уже применённые миграции не редактируются.
+- Public list and detail `GET`s — `TtlCache` in the service (30 seconds) + `PublicCacheInterceptor` on the route.
+- Any mutation that affects cached data clears that service's cache (`listCache.clear()`, `itemCache.clear()`).
+- User-dependent responses are not cached in `TtlCache` and are not marked with `PublicCacheInterceptor`.
+- The cache lives in the memory of a single instance (Vercel runs several) — it is a speed-up, not a source of truth.
 
 ---
 
-## 12. Кодстайл и инструменты
+## 11. Migrations
 
-Инструменты общие с фронтендом и запускаются из корня:
+Every `schema.prisma` change is a new migration in `prisma/migrations/<timestamp>_<name>/migration.sql`. Read the generated SQL before committing: Prisma does not see renames and proposes `DROP` + `ADD` instead of `ALTER ... RENAME`, which loses data. Data migrations (backfills, value moves) are written in the SQL of the same migration or as a separate migration, like `content_seed`.
+
+- Applying — `pnpm --filter @viratec/backend db:migrate` (`prisma migrate deploy`); on Vercel it runs during the API build.
+- After editing the schema — `pnpm --filter @viratec/backend db:generate`, otherwise the `@prisma/client` types are stale.
+- Already applied migrations are never edited.
+
+---
+
+## 12. Code style and tooling
+
+The tooling is shared with the frontend and runs from the root:
 
 ```bash
-pnpm validate   # EOL + шаблон env + типы + линт + knip — перед пушем
-pnpm lint:fix   # починить автоисправимое Oxlint
+pnpm validate   # EOL + env template + types + lint + knip — before pushing
+pnpm lint:fix   # fix auto-fixable Oxlint issues
 pnpm format     # Prettier
 ```
 
-По отдельности для бэкенда:
+Backend-only:
 
 ```bash
 pnpm --filter @viratec/backend typecheck   # prisma generate + tsc --noEmit
 pnpm --filter @viratec/backend lint        # oxlint
 pnpm --filter @viratec/backend build       # contracts + prisma generate + nest build
-pnpm dev:backend                           # nest start --watch, порт 3000
+pnpm dev:backend                           # nest start --watch, port 3000
 ```
 
-- **Oxlint** — линтер, **Prettier** — форматирование (100 символов, одинарные кавычки, точки с запятой, висячие запятые).
-- Модули бэкенда — CommonJS (`module: commonjs`), импорт `@viratec/contracts` идёт из собранного `dist` контрактов, поэтому после правки контрактов нужна их сборка (`pnpm --filter @viratec/contracts build`; `build` бэкенда делает это сам).
-- Swagger: `@ApiTags` на контроллер, `@ApiOperation` на каждый эндпоинт, `@ApiResponse` для кодов кроме 200 (404, 401, 403…), `@ApiProperty`/`@ApiPropertyOptional` на каждое поле DTO, `@ApiBearerAuth()` на защищённые маршруты.
-- Логирование — `new Logger(ClassName.name)` из `@nestjs/common` (под капотом pino), не `console.log`.
+- **Oxlint** — linter, **Prettier** — formatting (100 characters, single quotes, semicolons, trailing commas).
+- Backend modules are CommonJS (`module: commonjs`); `@viratec/contracts` is imported from the contracts' built `dist`, so after changing contracts they must be built (`pnpm --filter @viratec/contracts build`; the backend `build` does this itself).
+- Swagger: `@ApiTags` on the controller, `@ApiOperation` on every endpoint, `@ApiResponse` for codes other than 200 (404, 401, 403…), `@ApiProperty`/`@ApiPropertyOptional` on every DTO field, `@ApiBearerAuth()` on protected routes.
+- Logging — `new Logger(ClassName.name)` from `@nestjs/common` (pino under the hood), not `console.log`.
 
 ---
 
-## 13. Тесты
+## 13. Tests
 
-`pnpm --filter @viratec/backend test` = `pnpm build` + `tsc -p tsconfig.tests.json` + `node --test tests/*.test.ts`. Тесты на TypeScript запускаются Node напрямую (type stripping, нужен Node 22.18+), типы проверяет `tsconfig.tests.json` (`allowJs` выводит типы из собранного `dist`, поэтому проверка идёт после сборки, а не в `pnpm typecheck`). Встроенный `node:test` + `node:assert/strict`, импортируют модули из собранного `dist` и проверяют чистые функции и отдельные классы (аватар, фильтр исключений, Google-вход, регистрация, приватность профиля, безопасность админки). Реальная БД в тестах не поднимается. В CI бэкенд-тесты сейчас не запускаются — гоняй их локально, если трогаешь покрытый код.
+`pnpm --filter @viratec/backend test` = `pnpm build` + `tsc -p tsconfig.tests.json` + `node --test tests/*.test.ts`. TypeScript tests run directly in Node (type stripping, requires Node 22.18+); types are checked by `tsconfig.tests.json` (`allowJs` infers types from the built `dist`, so the check runs after the build, not in `pnpm typecheck`). Built-in `node:test` + `node:assert/strict`; tests import modules from the built `dist` and check pure functions and individual classes (avatar, exception filter, Google sign-in, registration, profile privacy, admin security). No real database is started in tests. Backend tests are not run in CI yet — run them locally if you touch covered code.
 
-Импорты — ESM с явным расширением (`../dist/users/avatar.js`, `./support.ts`). Проверки HTTP-ошибок — через `hasStatus` и `hasCode` из `tests/support.ts`, фейки Prisma описываются локальными интерфейсами, без `any`.
+Imports are ESM with an explicit extension (`../dist/users/avatar.js`, `./support.ts`). HTTP error checks use `hasStatus` and `hasCode` from `tests/support.ts`; Prisma fakes are described with local interfaces, no `any`.
 
 ---
 
-## 14. Что ещё не решено
+## 14. Still undecided
 
-- Redis объявлен в конфиге и в `docker-compose.*`, но не используется; MinIO и Kubernetes упоминаются только в документации. Решение о них — отдельная задача.
-- Хранилище файлов, кроме аватаров в Postgres, не выбрано.
-- Архитектурного линтера (границы модулей) нет — держится ревью.
+- Redis is declared in config and in `docker-compose.*` but unused; MinIO and Kubernetes are mentioned only in docs. A decision about them is a separate task.
+- Storage for files other than avatars in Postgres has not been chosen.
+- There is no architecture linter (module boundaries) — review holds them.

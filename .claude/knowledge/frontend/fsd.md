@@ -1,67 +1,69 @@
-# Feature-Sliced Design — правила для `apps/web`
+# Feature-Sliced Design — rules for `apps/web`
 
-FSD применяется внутри `apps/web/src`. `packages/contracts` и `packages/utils` — не ФСД-слои, это внешняя основа под всеми слоями (см. [overview.md](overview.md)). Краткая версия тех же правил для людей — `docs/architecture/frontend-fsd.md`.
+FSD applies inside `apps/web/src`. `packages/contracts` and `packages/utils` are not FSD layers; they are an external foundation below all layers (see [overview.md](overview.md)). A short human-oriented version of the same rules — `docs/architecture/frontend-fsd.md`.
 
-## Слои, сверху вниз
+## Layers, top to bottom
 
 ```
 app → pages → widgets → features → entities → shared
 ```
 
-Правило одно и неизменное: **слой может импортировать только из слоёв строго ниже себя.** Не из соседних слайсов своего слоя, не сверху. `shared` не знает ни о чём, `entities` не знает про `features`/`widgets`/`pages`, и так далее. Линтер это не проверяет — проверяй сам перед каждым новым импортом. Слоя `processes` нет (устарел в FSD, не создавай).
+One rule that never changes: **a layer may import only from layers strictly below it.** Not from sibling slices of its own layer, not from above. `shared` knows about nothing, `entities` knows nothing about `features`/`widgets`/`pages`, and so on. The linter does not check this — check it yourself before every new import. There is no `processes` layer (deprecated in FSD, do not create it).
 
-- **`app`** — `App.tsx` (`QueryClientProvider`, `SessionProvider`), `providers/router.tsx` и обёртки маршрутов (`RootLayout`, `ProtectedRoute`, `GuestRoute`, `Redirect`), глобальные стили и токены (`app/styles/index.css`). Точки входа — `src/main.tsx` и `src/entry-server.tsx` (пререндер).
-- **`pages`** — компоненты маршрутов: `home`, `projects`, `project-detail`, `publications`, `publication-detail`, `people`, `person`, `account`, `admin`, `login`, `register`, `legal` и т.д. Тонкие — собирают виджеты, фичи и сущности. Контент из Contentful живёт в `pages/*/model/page.generated.ts` (генерируется, не правится руками) и `model/content.ts`.
-- **`widgets`** — самостоятельные композитные блоки: `site-header`, `site-footer`, `page-layout`, `page-intro`, `auth-layout`. Виджет не импортирует другой виджет: если обёртке нужен соседний виджет, он приходит слотом-пропсом из страницы (`<PageLayout footer={<SiteFooter />}>`, `<PageIntro header={<SiteHeader />}>`).
-- **`features`** — конкретное пользовательское действие, у которого есть глагол: `login-by-email`, `login-by-google`, `register-by-email`, `logout`, `reset-password`, `verify-two-factor`, `manage-two-factor`, `manage-sessions`, `switch-account`, `change-password`, `update-profile`, `update-avatar`, `update-privacy`, `link-google`, `save-item`, `export-data`, `delete-account`. Одна фича — одно действие, не «раздел UI».
-- **`entities`** — бизнес-сущности со своим отображением и запросами: `project`, `publication`, `person`, `partner`, `session` (Zustand-стор текущего пользователя и известных аккаунтов).
-- **`shared`** — UI-кит (`shared/ui`, см. [design-system.md](../design-system.md)), HTTP-клиент (`shared/api/apiClient.ts`), конфиг (`shared/config`: `routes.ts`, `env.ts`, `navigation.ts`, `storageKeys.ts`, SEO), i18n (`shared/i18n`: `useLocale`, `useLocalized`, `defineMessages`, `useCommonMessages`, `pluralUk` и стор языка), хуки и утилиты (`shared/lib`: `cn`, `useDismiss`, `useFocusTrap`, `useBodyScrollLock`, `useSeo`, `useLiveContent`, …), ассеты.
+- **`app`** — `App.tsx` (`QueryClientProvider`, `SessionProvider`), `providers/router.tsx` and route wrappers (`RootLayout`, `ProtectedRoute`, `GuestRoute`, `Redirect`), global styles and tokens (`app/styles/index.css`). Entry points — `src/main.tsx` and `src/entry-server.tsx` (prerender).
+- **`pages`** — route components: `home`, `projects`, `project-detail`, `publications`, `publication-detail`, `people`, `person`, `account`, `admin`, `login`, `register`, `legal`, etc. Thin — they assemble widgets, features and entities. Contentful content lives in `pages/*/model/page.generated.ts` (generated, never edited by hand) and `model/content.ts`.
+- **`widgets`** — self-contained composite blocks: `site-header`, `site-footer`, `page-layout`, `page-intro`, `auth-layout`. A widget does not import another widget: if a wrapper needs a sibling widget, the page passes it in as a slot prop (`<PageLayout footer={<SiteFooter />}>`, `<PageIntro header={<SiteHeader />}>`).
+- **`features`** — a concrete user action with a verb: `login-by-email`, `login-by-google`, `register-by-email`, `logout`, `reset-password`, `verify-two-factor`, `manage-two-factor`, `manage-sessions`, `switch-account`, `change-password`, `update-profile`, `update-avatar`, `update-privacy`, `link-google`, `save-item`, `export-data`, `delete-account`. One feature — one action, not a "UI section".
+- **`entities`** — business entities with their own display and queries: `project`, `publication`, `person`, `partner`, `session` (Zustand store of the current user and known accounts).
+- **`shared`** — the UI kit (`shared/ui`, see [design-system.md](../design-system.md)), HTTP client (`shared/api/apiClient.ts`), config (`shared/config`: `routes.ts`, `env.ts`, `navigation.ts`, `storageKeys.ts`, SEO), i18n (`shared/i18n`: `useLocale`, `useLocalized`, `defineMessages`, `useCommonMessages`, `pluralUk` and the language store), hooks and utilities (`shared/lib`: `cn`, `useDismiss`, `useFocusTrap`, `useBodyScrollLock`, `useSeo`, `useLiveContent`, …), assets.
 
-## Сегменты внутри слайса
+## Segments inside a slice
 
-Каждый слайс может иметь сегменты: `ui/`, `model/`, `api/`, `lib/` (у страниц ещё `assets/`; `config/` допустим, но пока не используется). Не создавай пустой сегмент — если фиче не нужен свой `api`, сегмента `api/` не будет.
+Each slice may have segments: `ui/`, `model/`, `api/`, `lib/` (pages also have `assets/`; `config/` is allowed but not used yet). Do not create an empty segment — if a feature needs no `api` of its own, there is no `api/` segment.
 
-- `api/` — функции запросов поверх `api` из `@/shared/api/apiClient` (`fetchProjects`, `saveItemRequest`), без хуков.
-- `model/` — типы (`types.ts`), query-хуки и ключи (`queries.ts`), сторы, zod-схемы форм (`schema.ts`), хуки оркестрации (`useLogin.ts`, `useProjectListing.ts`).
-- `lib/` — чистые функции слайса (`format.ts`, `localize.ts`).
-- `ui/` — компоненты.
+- `api/` — request functions on top of `api` from `@/shared/api/apiClient` (`fetchProjects`, `saveItemRequest`), no hooks.
+- `model/` — types (`types.ts`), query hooks and keys (`queries.ts`), stores, form zod schemas (`schema.ts`), localized messages (`messages.ts` with a `use<Slice>Messages` hook), orchestration hooks (`useLogin.ts`, `useProjectListing.ts`). No JSX in `model/` — providers and dialogs belong in `ui/`.
+- `lib/` — pure slice functions (`format.ts`, `localize.ts`).
+- `ui/` — components.
 
-## Компонент — файл
+## One component per file
 
-**Новый компонент — новый файл.** Как только из UI выделен отдельный функциональный компонент (`<Child/>`), он живёт в своём файле и импортируется, даже если приватный и нужен одному родителю. В существующем коде есть файлы с несколькими компонентами (`ProjectCard` + `ProjectCardSkeleton`, страницы `opportunities`, `admin`) — без задачи их не дробим, но новые компоненты туда не добавляем.
+**A new component means a new file.** As soon as a separate function component (`<Child/>`) is extracted from UI, it lives in its own file and is imported, even if it is private and used by a single parent. The existing code still has files with several components (`ProjectCard` + `ProjectCardSkeleton`, the `opportunities` and `admin` pages) — do not split them without a task, but do not add new components to them.
 
-Речь о компонентах, а не о разметке: инлайновый JSX внутри `return` — норма.
+This is about components, not markup: inline JSX inside `return` is fine.
 
-Родитель композирует дочерние и прокидывает данные/колбэки пропсами, дочерние — презентационные. Из `index.ts` наружу торчит только публичная точка входа слайса; приватные под-компоненты в barrel не экспортируются, внутри слайса импортируются относительным путём.
+The parent composes children and passes data/callbacks as props; children are presentational. A slice's `index.ts` exposes only its public entry point; private sub-components are not exported from the barrel and are imported by relative path inside the slice.
 
-## Хуки и логика
+## Hooks and logic
 
-**Хук или компонент никогда не объявляется в теле другого компонента.** Иначе он пересоздаётся на каждый рендер и теряет идентичность — React Compiler это оптимизирует неправильно. Всё на верхнем уровне модуля или в своём файле.
+**A hook or component is never declared inside another component's body.** Otherwise it is recreated on every render and loses its identity — React Compiler optimizes it incorrectly. Everything goes at module top level or in its own file.
 
-**Нетривиальную логику слайса выноси в хук в `model/`, а не размазывай по `ui/`.** Состояние, обработчики, мутации и оркестрацию запросов собирает `model/use<Something>.ts` (`features/login-by-email/model/useLogin.ts`, `pages/projects/model/useProjectListing.ts`), а `ui/`-компонент зовёт хук и раскладывает результат по разметке. Если компонент просто дёргает готовый `useProjects()` и рендерит — отдельный хук лишний.
+**Move non-trivial slice logic into a hook in `model/`, do not spread it across `ui/`.** State, handlers, mutations and query orchestration are assembled by `model/use<Something>.ts` (`features/login-by-email/model/useLogin.ts`, `pages/projects/model/useProjectListing.ts`), and the `ui/` component calls the hook and lays the result out in markup. If a component just calls a ready `useProjects()` and renders — a separate hook is unnecessary.
 
-### Чек-лист «когда выносить»
+When a form is split into section components, pass `control` and `register` down and read errors and watched values with `useFormState` / `useWatch` inside the section, not from the parent's `formState` (`features/update-profile`).
 
-Сработал хотя бы один пункт — компонент перегружен, дели его (логику в `model/`-хук, куски UI в свои файлы):
+### "When to split" checklist
 
-- **JSX длиннее ~100 строк**.
-- **Больше 4–5 `useState` в одном месте**.
-- **Больше двух `useEffect`, следящих за разными вещами**.
-- **Разные уровни абстракции в одном файле** — каркас страницы рядом с мелкой вёрсткой иконки.
-- **Смешаны бизнес-логика и UI** — компонент знает URL запроса, как валидировать поле и в какой цвет красить границу.
-- **Copy-paste** разметки или обработчика в другой файл (→ `shared` или общий компонент).
-- **Prop drilling** через 3 уровня ради одной строки внизу.
+If at least one item fires, the component is overloaded — split it (logic into a `model/` hook, UI pieces into their own files):
 
-## Публичный API слайса
+- **JSX longer than ~100 lines**.
+- **More than 4–5 `useState` in one place**.
+- **More than two `useEffect`s watching different things**.
+- **Different levels of abstraction in one file** — page scaffolding next to the markup of a small icon.
+- **Business logic mixed with UI** — the component knows the request URL, how to validate a field and what color the border should be.
+- **Copy-paste** of markup or a handler into another file (→ `shared` or a common component).
+- **Prop drilling** through 3 levels for a single line at the bottom.
 
-Импортировать слайс — всегда через его `index.ts`: `@/entities/project`, не `@/entities/project/ui/ProjectCard`. В `shared` то же для папок с `index.ts` (`@/shared/i18n`, `@/shared/lib`, `@/shared/ui/Button`); плоские файлы `shared/ui/*.tsx` и `shared/config/*.ts` импортируются по прямому пути, как в существующем коде.
+## Slice public API
 
-## Стили
+Always import a slice through its `index.ts`: `@/entities/project`, not `@/entities/project/ui/ProjectCard`. The same applies in `shared` for folders with an `index.ts` (`@/shared/i18n`, `@/shared/lib`, `@/shared/ui/Button`); flat files `shared/ui/*.tsx` and `shared/config/*.ts` are imported by direct path, as the existing code does.
 
-**Tailwind CSS v4** — утилитарными классами прямо в `className`, склейка через `cn()` из `@/shared/lib`. Токены объявлены в `@theme` в `app/styles/index.css`. CSS Modules в проекте нет — не заводи их. Повторяющиеся наборы классов одной страницы выносятся в константы `ui/styles.ts` (как в `pages/home/ui/styles.ts`).
+## Styles
 
-Цвета — только токены или белый с прозрачностью по `DESIGN.md` (`bg-white/5`, `border-white/10`); сырой hex в классе — нарушение. Arbitrary-значения допустимы для геометрии и типографики, у которых токена нет.
+**Tailwind CSS v4** — utility classes directly in `className`, merged with `cn()` from `@/shared/lib`. Tokens are declared in `@theme` in `app/styles/index.css`. There are no CSS Modules in the project — do not introduce them. Repeated class sets of one page go into `ui/styles.ts` constants (as in `pages/home/ui/styles.ts`).
 
-Инлайн-стили (`style={{…}}`) — только для по-настоящему динамических величин (позиция, прогресс, вычисленный размер). Ховеры, фокусы и состояния — через Tailwind-варианты (`hover:`, `focus-visible:`, `aria-[…]:`, `data-[…]:`), а не через JS-обработчики.
+Colors are tokens only, or white with opacity per `DESIGN.md` (`bg-white/5`, `border-white/10`); a raw hex in a class is a violation. Arbitrary values are allowed for geometry and typography that have no token.
 
-Тексты интерфейса не хардкодятся строкой в компоненте: они идут из i18n (`shared/i18n`) или из Contentful-контента страницы, в двух локалях `en` и `uk`.
+Inline styles (`style={{…}}`) only for truly dynamic values (position, progress, computed size). Hovers, focus and states go through Tailwind variants (`hover:`, `focus-visible:`, `aria-[…]:`, `data-[…]:`), not JS handlers.
+
+UI copy is never hardcoded as a string in a component: it comes from i18n (`shared/i18n`) or from the page's Contentful content, in two locales, `en` and `uk`.

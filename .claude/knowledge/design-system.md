@@ -1,30 +1,30 @@
-# Дизайн-система — как применять в коде
+# Design system — applying it in code
 
-Значения дизайн-системы здесь не дублируются. Источники правды:
+Design system values are not duplicated here. Sources of truth:
 
-| Что                                                                        | Где                                                |
-| -------------------------------------------------------------------------- | -------------------------------------------------- |
-| Цвета, типографика, геометрия, компоненты, правила сайта, do's and don'ts  | [`DESIGN.md`](../../DESIGN.md) в корне репозитория |
-| Контракт общих компонентов: владелец, допустимые варианты, чем проверяется | [`UX-CONTRACT.md`](../../UX-CONTRACT.md)           |
-| Рабочие токены Tailwind v4                                                 | `@theme` в `apps/web/src/app/styles/index.css`     |
+| What                                                                   | Where                                                 |
+| ---------------------------------------------------------------------- | ----------------------------------------------------- |
+| Colors, typography, geometry, components, site rules, do's and don'ts  | [`DESIGN.md`](../../DESIGN.md) at the repository root |
+| Shared component contract: owner, allowed variants, how it is verified | [`UX-CONTRACT.md`](../../UX-CONTRACT.md)              |
+| Working Tailwind v4 tokens                                             | `@theme` in `apps/web/src/app/styles/index.css`       |
 
-Владение — «Model B» из `DESIGN.md`: каноничен вручную поддерживаемый `@theme` в `index.css`, `DESIGN.md` документирует принятые значения. Меняешь токен — меняй оба места. Генерируемых адаптеров темы нет и не заводи.
+Ownership follows "Model B" from `DESIGN.md`: the hand-maintained `@theme` in `index.css` is canonical, `DESIGN.md` documents the accepted values. When you change a token, change both places. There are no generated theme adapters — do not add any.
 
-## Правила, которые нельзя нарушать
+## Non-negotiable rules
 
-- **Только токены.** Цвет в компоненте — утилита от токена (`bg-bg-card`, `text-text-muted`, `border-border-default`, `text-brand-cyan`, `bg-viratec-deep` и т.д.). Белый с прозрачностью из `DESIGN.md` (`bg-white/5`, `border-white/10`) тоже допустим. Сырой hex или `rgba` в классе (`text-[#b8becf]`) — нарушение: нет токена под значение из дизайн-системы — сначала заведи его в `@theme`. Arbitrary-значения Tailwind допустимы только для геометрии и типографики, у которых токена нет. Исключение — `shared/config/brand.ts`: из него `build-tools/generate-brand-assets.ts` в Node генерирует иконки и OG-картинки, где CSS-переменные недоступны; значения держи равными токенам.
-- **Роли цветов.** Лайм — главное действие и ключевые цифры. Циан — ссылки, интерактивный текст и фокус. Ошибка — `state-error` плюс видимый текст и `aria-invalid`, никогда только цветом.
-- **Без декоративных теней и градиентов.** Иерархия — тональными поверхностями и тонкими границами. Ховер на карточках меняет только границу и заливку.
-- **Типографика.** Заголовки — `font-display` (Instrument Sans 500, отрицательный трекинг), текст — DM Sans; кириллический фолбэк — self-hosted Inter. Шрифты self-hosted через `@fontsource`, запросов к Google Fonts нет. Капс с трекингом — только у кит-компонента `Tag`.
-- **Карточки в ряду одной высоты**, CTA прижат к низу. Текст переносится, заголовки и идентификаторы не обрезаются молча.
-- **Движение** уважает `prefers-reduced-motion`. Одна оркестрованная анимация героя на главной, никаких анимаций появления по секциям.
-- **Доступность.** Нативная семантика, видимый фокус (в том числе в forced-colors), цели навигации не меньше 24px, тултип — только дополнительная информация без интерактивных элементов, причина недоступности действия — в видимом helper-тексте.
+- **Tokens only.** A color in a component is a token utility (`bg-bg-card`, `text-text-muted`, `border-border-default`, `text-brand-cyan`, `bg-viratec-deep`, etc.). White with opacity from `DESIGN.md` (`bg-white/5`, `border-white/10`) is also allowed. A raw hex or `rgba` in a class (`text-[#b8becf]`) is a violation: if a design-system value has no token, add one to `@theme` first. Shadows and gradients follow the same rule: shadows are `--shadow-*` tokens, gradients are named `@utility` classes in `index.css`. Tailwind arbitrary values are allowed only for geometry and typography that have no token. Exception — `shared/config/brand.ts`: `build-tools/generate-brand-assets.ts` uses it in Node to generate icons and OG images where CSS variables are unavailable; keep its values equal to the tokens.
+- **Color roles.** Lime is the primary action and key figures. Cyan is links, interactive text and focus. An error is `state-error` plus visible text and `aria-invalid`, never color alone.
+- **No decorative shadows or gradients.** Hierarchy comes from tonal surfaces and thin borders. Card hover changes only the border and fill.
+- **Typography.** Headings use `font-display` (Instrument Sans 500, negative tracking), body text uses DM Sans; the Cyrillic fallback is self-hosted Inter. Fonts are self-hosted via `@fontsource`, there are no requests to Google Fonts. Uppercase with tracking only in the `Tag` kit component.
+- **Cards in a row have equal height**, the CTA is pinned to the bottom. Text wraps; titles and identifiers are never silently truncated.
+- **Motion** respects `prefers-reduced-motion`. One orchestrated hero animation on the home page, no per-section reveal animations.
+- **Accessibility.** Native semantics, visible focus (including in forced-colors mode), navigation targets at least 24px, a tooltip carries only supplementary information with no interactive elements, the reason an action is unavailable goes in visible helper text.
 
-## Общие компоненты
+## Shared components
 
-Шесть кит-компонентов из `UX-CONTRACT.md` — `Button`, `Card`, `Input`, `NavItem`, `Tag`, `Tooltip` — лежат в `apps/web/src/shared/ui/<Name>/` (папка с `index.ts`, компонентом и `*.types.ts`). Их значения сверены с Figma и закреплены тестами — менять геометрию и API без задачи нельзя. В той же раскладке лежат `Select` и `Textarea`, но в `UX-CONTRACT.md` и спеку они не входят. Остальные примитивы сайта (`link-button`, `section-header`, `info-card`, `cta-section`, `dialog`, …) — файлы в `shared/ui` в kebab-case.
+The six kit components from `UX-CONTRACT.md` — `Button`, `Card`, `Input`, `NavItem`, `Tag`, `Tooltip` — live in `apps/web/src/shared/ui/<Name>/` (a folder with `index.ts`, the component and `*.types.ts`). Their values are verified against Figma and locked in by tests — do not change their geometry or API without a task. `Select` and `Textarea` use the same layout but are not part of `UX-CONTRACT.md` or the spec. Other site primitives (`link-button`, `section-header`, `info-card`, `cta-section`, `dialog`, …) are kebab-case files in `shared/ui`.
 
-- Не дублируй примитивы: прежде чем вёрстать кнопку, поле или карточку, найди готовый компонент в `shared/ui`.
-- Компоненты кита не содержат бизнес-логики и текстов: локализованные подписи и ошибки передаёт потребитель.
-- Классы склеиваются через `cn()` из `@/shared/lib` (clsx + tailwind-merge с кастомными утилитами).
-- Floating UI отвечает только за координаты оверлеев, вся презентация — Tailwind.
+- Do not duplicate primitives: before building a button, field or card, look for a ready component in `shared/ui`.
+- Kit components contain no business logic and no copy: localized labels and errors are passed in by the consumer.
+- Classes are merged with `cn()` from `@/shared/lib` (clsx + tailwind-merge with custom utilities).
+- Floating UI only computes overlay coordinates; all presentation is Tailwind.

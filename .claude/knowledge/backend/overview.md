@@ -1,31 +1,31 @@
-# Backend — обзор
+# Backend — overview
 
-Бэкенд лежит в `apps/backend` (`@viratec/backend`). **Фронтенд-агент код здесь не пишет и не меняет без явной просьбы пользователя** — этот файл нужен, чтобы понимать, с чем интегрируется фронт, и не проектировать контракт вслепую.
+The backend lives in `apps/backend` (`@viratec/backend`). **A frontend agent does not write or change code here without an explicit request from the user** — this file exists so you understand what the frontend integrates with and do not design the contract blindly.
 
-Если ты пишешь бэкенд — тебе сюда: [**architecture.md**](architecture.md). Там модули NestJS, слои, DI, DTO, ошибки, Prisma и скелеты для копирования. Краткая версия для людей — `docs/architecture/backend-modular.md`.
+If you are writing backend code, go here: [**architecture.md**](architecture.md). It covers NestJS modules, layers, DI, DTOs, errors, Prisma and copyable skeletons. A short human-oriented version — `docs/architecture/backend-modular.md`.
 
-## Стек
+## Stack
 
-- NestJS 11 на Fastify-адаптере (`@nestjs/platform-fastify`, Fastify 5)
-- `class-validator` + `class-transformer` — валидация DTO через глобальный `ValidationPipe`; zod из `@viratec/contracts` — для JSON-полей и общих схем
-- PostgreSQL + Prisma 6 (`prisma/schema.prisma`, миграции `prisma/migrations`, `prisma.config.ts`)
-- `@nestjs/config` — конфиг из env (`src/config/configuration.ts`)
-- `@nestjs/jwt` + Passport (`passport-jwt`) — аутентификация, `argon2` — хеши паролей, `google-auth-library` — вход через Google
-- `nestjs-pino` — логирование, `@nestjs/swagger` — OpenAPI на `/docs`, `@nestjs/terminus` — health-checks
+- NestJS 11 on the Fastify adapter (`@nestjs/platform-fastify`, Fastify 5)
+- `class-validator` + `class-transformer` — DTO validation through a global `ValidationPipe`; zod from `@viratec/contracts` — for JSON fields and shared schemas
+- PostgreSQL + Prisma 6 (`prisma/schema.prisma`, migrations in `prisma/migrations`, `prisma.config.ts`)
+- `@nestjs/config` — config from env (`src/config/configuration.ts`)
+- `@nestjs/jwt` + Passport (`passport-jwt`) — authentication, `argon2` — password hashes, `google-auth-library` — Google sign-in
+- `nestjs-pino` — logging, `@nestjs/swagger` — OpenAPI at `/docs`, `@nestjs/terminus` — health checks
 - `@fastify/helmet`, `@fastify/compress`, `@fastify/cookie`
 
-## Где работает
+## Where it runs
 
-- **Прод** — Vercel (сервис `api` в `vercel.json`, `framework: nestjs`) и Neon Postgres, регион Франкфурт. При сборке выполняется `prisma migrate deploy`. Neon создаёт отдельную ветку базы на каждое превью. Подробно — `docs/deployment/vercel.md`.
-- **Локально** — `pnpm docker:dev:up` поднимает Postgres (и Redis) из `docker-compose.dev.yml`, потом `pnpm dev:backend` (`nest start --watch`) на порту 3000. Env — `.env` в корне (шаблон `.env.example`).
+- **Production** — Vercel (the `api` service in `vercel.json`, `framework: nestjs`) and Neon Postgres, Frankfurt region. `prisma migrate deploy` runs during the build. Neon creates a separate database branch for every preview. Details — `docs/deployment/vercel.md`.
+- **Locally** — `pnpm docker:dev:up` starts Postgres (and Redis) from `docker-compose.dev.yml`, then `pnpm dev:backend` (`nest start --watch`) on port 3000. Env — `.env` at the root (template `.env.example`).
 
-Из-за Vercel бэкенд фактически stateless между запросами: in-memory кэш (`TtlCache`) и таймеры живут только в рамках одного инстанса. Rate limit и аудит поэтому хранятся в Postgres (`RateLimitBucket`, `AuditLog`), а не в памяти.
+Because of Vercel the backend is effectively stateless between requests: the in-memory cache (`TtlCache`) and timers live only within a single instance. That is why rate limits and audit are stored in Postgres (`RateLimitBucket`, `AuditLog`), not in memory.
 
-## Архитектура в двух словах
+## Architecture in a nutshell
 
-Модульный монолит: один модуль NestJS на домен (`auth`, `users`, `projects`, `research`, `events`, `publications`, `community`, `content`, `admin`, `health`), инфраструктура — в глобальных `PrismaModule` и `SecurityModule` и в `src/common`. Все ответы — в конверте `{ data }`, все ошибки — в форме `AllExceptionsFilter`. Контракт с фронтом — [`../api-contract.md`](../api-contract.md), модель данных — [`../product.md`](../product.md#модель-данных).
+A modular monolith: one NestJS module per domain (`auth`, `users`, `projects`, `research`, `events`, `publications`, `community`, `content`, `admin`, `health`), infrastructure in the global `PrismaModule` and `SecurityModule` and in `src/common`. All responses use the `{ data }` envelope, all errors use the `AllExceptionsFilter` shape. The contract with the frontend — [`../api-contract.md`](../api-contract.md), the data model — [`../product.md`](../product.md#data-model).
 
-## Что не специфицировано
+## Not specified
 
-- Redis, MinIO и Kubernetes упоминаются в `README.md`, `CONTRIBUTING.md` и `docker-compose.*`, но кодом бэкенда не используются (Redis только объявлен в конфиге). Не вводи их в код без задачи.
-- Загрузка файлов, кроме аватара (он хранится в Postgres, `UserAvatar`), не реализована.
+- Redis, MinIO and Kubernetes are mentioned in `README.md`, `CONTRIBUTING.md` and `docker-compose.*`, but the backend code does not use them (Redis is only declared in config). Do not introduce them into code without a task.
+- File uploads other than the avatar (stored in Postgres, `UserAvatar`) are not implemented.
