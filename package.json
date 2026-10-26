@@ -16,7 +16,7 @@
     "format": "prettier --write . --ignore-unknown --no-error-on-unmatched-pattern",
     "format:check": "prettier --check . --ignore-unknown --no-error-on-unmatched-pattern",
     "typecheck": "turbo run typecheck",
-    "clean": "node scripts/utils/clean.js",
+    "clean": "node scripts/utils/clean.ts",
     "prepare": "node -e \"process.env.CI || require('child_process').execSync('husky', { stdio: 'inherit' })\"",
     "postinstall": "pnpm --filter @viratec/backend db:generate",
     "docker:dev": "docker compose -f docker-compose.dev.yml",
@@ -32,8 +32,8 @@
     "docker:clean": "docker compose -f docker-compose.dev.yml down -v --remove-orphans && docker compose -f docker-compose.prod.yml down -v --remove-orphans",
     "lhci": "lhci autorun",
     "knip": "knip",
-    "validate:eol": "node scripts/ci/validate-eol.js",
-    "validate:env": "node scripts/utils/check-env.js",
+    "validate:eol": "node scripts/ci/validate-eol.ts",
+    "validate:env": "node scripts/utils/check-env.ts",
     "validate": "pnpm validate:eol && pnpm validate:env && pnpm typecheck && pnpm lint && pnpm knip"
   },
   "devDependencies": {

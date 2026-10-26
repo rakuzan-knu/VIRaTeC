@@ -13,7 +13,7 @@
   },
   "workspaces": {
     ".": {
-      "entry": ["scripts/**/*.js"]
+      "entry": ["scripts/**/*.ts"]
     },
     "apps/backend": {
       "entry": ["src/main.ts"],

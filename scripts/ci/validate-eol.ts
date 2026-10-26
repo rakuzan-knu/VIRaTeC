@@ -45,7 +45,7 @@ const IGNORED_DIRS = new Set([
 
 const isFixMode = process.argv.includes('--fix');
 
-function scanDir(dir, files = []) {
+function scanDir(dir: string, files: string[] = []): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (IGNORED_DIRS.has(entry.name)) continue;
@@ -83,7 +83,7 @@ for (const file of allFiles) {
 
 if (invalidFiles > 0) {
   console.error(
-    `\n❌ Total files with CRLF endings: ${invalidFiles}. Run 'node scripts/ci/validate-eol.js --fix' to convert to LF.`,
+    `\n❌ Total files with CRLF endings: ${invalidFiles}. Run 'node scripts/ci/validate-eol.ts --fix' to convert to LF.`,
   );
   process.exit(1);
 } else {
