@@ -1,3 +1,5 @@
+import type { Localized } from '@/shared/i18n/model/types';
+
 export type LegalDocument = 'terms' | 'privacy' | 'cookies' | 'guidelines';
 
 export interface LegalTable {
@@ -20,4 +22,10 @@ export interface LegalDocumentContent {
   accent: string;
   description: string;
   sections: LegalSection[];
+}
+
+export interface LegalDocumentData {
+  version: string;
+  updatedAt: string;
+  content: Localized<LegalDocumentContent>;
 }

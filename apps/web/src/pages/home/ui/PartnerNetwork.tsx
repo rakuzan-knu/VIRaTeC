@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
-import { useLocalized } from '@/shared/i18n';
-import { HOME_CONTENT, PARTNERS } from '../model/content';
+import { useHomePartners, type HomePartner } from '@/entities/partner';
+import { useHomeContent } from '../model/content';
 
 const REVEAL_DELAY_MS = 1080;
 const REVEAL_STAGGER_MS = 70;
@@ -10,8 +10,16 @@ function delay(ms: number): CSSProperties {
   return { animationDelay: `${ms}ms` };
 }
 
+function logoSize(partner: HomePartner): CSSProperties {
+  return {
+    '--logo-h': `${partner.logoHeight}px`,
+    '--logo-h-lg': `${partner.logoHeightLg}px`,
+  } as CSSProperties;
+}
+
 export function PartnerNetwork() {
-  const { hero } = useLocalized(HOME_CONTENT);
+  const { hero } = useHomeContent();
+  const partners = useHomePartners();
 
   return (
     <div className="flex flex-col items-center gap-8 lg:gap-10">
@@ -23,7 +31,7 @@ export function PartnerNetwork() {
       </p>
 
       <ul className="grid w-full grid-cols-2 items-center gap-x-6 gap-y-9 sm:grid-cols-3 lg:flex lg:justify-between lg:gap-8">
-        {PARTNERS.map((partner, index) => (
+        {partners.map((partner, index) => (
           <li
             key={partner.name}
             className={`flex h-[60px] items-center justify-center gap-2 opacity-80 transition-opacity duration-300 hover:opacity-100 lg:gap-3 ${REVEAL_CLASS}`}
@@ -33,7 +41,8 @@ export function PartnerNetwork() {
               src={partner.logo}
               alt={partner.caption ? '' : partner.name}
               loading="lazy"
-              className={`object-contain brightness-0 invert ${partner.logoClassName}`}
+              style={logoSize(partner)}
+              className="h-(--logo-h) w-auto object-contain brightness-0 invert lg:h-(--logo-h-lg)"
             />
             {partner.caption && (
               <span className="text-xs leading-[15px] font-semibold whitespace-nowrap text-white lg:text-[15px] lg:leading-[18px]">

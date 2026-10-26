@@ -1,6 +1,5 @@
 import { useRef, type CSSProperties } from 'react';
 import { ROUTES } from '@/shared/config/routes';
-import { useLocalized } from '@/shared/i18n';
 import { usePauseOffscreen } from '@/shared/lib';
 import { LinkButton } from '@/shared/ui/link-button';
 import { SiteHeader } from '@/widgets/site-header';
@@ -10,7 +9,7 @@ import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { HeroBackgroundVideo } from './HeroBackgroundVideo';
 import { PartnerNetwork } from './PartnerNetwork';
-import { HOME_CONTENT } from '../model/content';
+import { useHomeContent } from '../model/content';
 
 const HERO_BUTTON_CLASS =
   'w-full lg:w-auto lg:min-w-[220px] lg:px-8 lg:py-[clamp(12px,2svh,18px)] lg:text-[clamp(17px,2.4svh,19px)]';
@@ -22,7 +21,7 @@ function revealDelay(ms: number): CSSProperties {
 }
 
 export function HeroSection() {
-  const { hero } = useLocalized(HOME_CONTENT);
+  const { hero } = useHomeContent();
   const glowsRef = useRef<HTMLDivElement>(null);
   usePauseOffscreen(glowsRef);
 

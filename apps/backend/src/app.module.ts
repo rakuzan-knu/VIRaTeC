@@ -13,6 +13,7 @@ import { PublicationsModule } from './publications/publications.module';
 import { CommunityModule } from './community/community.module';
 import { SecurityModule } from './security/security.module';
 import { AdminModule } from './admin/admin.module';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AdminModule } from './admin/admin.module';
     PublicationsModule,
     CommunityModule,
     AdminModule,
+    ContentModule,
   ],
 })
 export class AppModule {}

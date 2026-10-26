@@ -1,8 +1,5 @@
 import { ROUTES } from '@/shared/config/routes';
-import ideaPhoto from '@/shared/assets/photos/student-podium.webp';
-import collaborationPhoto from '@/shared/assets/photos/global-coil-meeting.webp';
-import implementationPhoto from '@/shared/assets/photos/workshop-drawing.webp';
-import { useCommonMessages, useLocalized } from '@/shared/i18n';
+import { useCommonMessages } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { InfoCard } from '@/shared/ui/info-card';
@@ -10,7 +7,7 @@ import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { VIRATEC_CONTENT } from '../model/content';
+import { useViratecContent } from '../model/content';
 import { IntroVideo } from './IntroVideo';
 import introVideoAv1 from '../assets/what-is-viratec.av1.mp4';
 import introVideoWebm from '../assets/what-is-viratec.webm';
@@ -20,10 +17,8 @@ import { JourneyTimeline } from './JourneyTimeline';
 import { MomentsGallery } from './MomentsGallery';
 import { useSeo } from '@/shared/lib';
 
-const PRINCIPLE_PHOTOS = [ideaPhoto, collaborationPhoto, implementationPhoto];
-
 export function ViratecPage() {
-  const content = useLocalized(VIRATEC_CONTENT);
+  const content = useViratecContent();
   const common = useCommonMessages();
   useSeo(content.documentTitle);
 
@@ -106,10 +101,10 @@ export function ViratecPage() {
           description={content.coilDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {content.principles.map((principle, index) => (
+          {content.principles.map((principle) => (
             <li key={principle.title}>
               <InfoCard
-                image={PRINCIPLE_PHOTOS[index]}
+                image={principle.image}
                 title={principle.title}
                 description={principle.description}
                 linkLabel={common.learnMore}
