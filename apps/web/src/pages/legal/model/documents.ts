@@ -1,20 +1,12 @@
-import { TERMS_VERSION } from '@viratec/contracts';
 import { ROUTES } from '@/shared/config/routes';
-import type { Localized } from '@/shared/i18n';
-import { COOKIES_CONTENT } from './cookies';
-import { GUIDELINES_CONTENT } from './guidelines';
-import { PRIVACY_CONTENT } from './privacy';
-import { TERMS_CONTENT } from './terms';
-import type { LegalDocument, LegalDocumentContent, LegalSection } from './types';
+import { useLiveContent } from '@/shared/lib';
+import { LEGAL_DOCUMENT_DATA } from './documents.generated';
+import type { LegalDocument, LegalDocumentContent, LegalDocumentData, LegalSection } from './types';
 
 export const LEGAL_DOCUMENT_ORDER: LegalDocument[] = ['terms', 'privacy', 'cookies', 'guidelines'];
 
-export const LEGAL_DOCUMENTS: Record<LegalDocument, Localized<LegalDocumentContent>> = {
-  terms: TERMS_CONTENT,
-  privacy: PRIVACY_CONTENT,
-  cookies: COOKIES_CONTENT,
-  guidelines: GUIDELINES_CONTENT,
-};
+export const useLegalDocuments = () =>
+  useLiveContent('legalDocument', 'LEGAL_DOCUMENT_DATA', LEGAL_DOCUMENT_DATA);
 
 export const LEGAL_ROUTES: Record<LegalDocument, string> = {
   terms: ROUTES.TERMS,
@@ -23,9 +15,10 @@ export const LEGAL_ROUTES: Record<LegalDocument, string> = {
   guidelines: ROUTES.GUIDELINES,
 };
 
-export const LEGAL_UPDATED_AT = new Date(2026, 9, 26);
-
-export const LEGAL_VERSION = TERMS_VERSION;
+export const legalMeta = ({ version, updatedAt }: LegalDocumentData) => {
+  const [year = 0, month = 1, day = 1] = updatedAt.split('-').map(Number);
+  return { version, updatedAt: new Date(year, month - 1, day) };
+};
 
 const WORDS_PER_MINUTE = 200;
 

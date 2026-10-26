@@ -1,7 +1,6 @@
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { useLocalized } from '@/shared/i18n';
-import { HOME_CONTENT } from '../model/content';
+import { useHomeContent } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
@@ -9,7 +8,7 @@ import { SplitWords, countWords } from '@/shared/ui/split-words';
 import { CountUp } from '@/shared/ui/count-up';
 
 export function AboutSection() {
-  const { about } = useLocalized(HOME_CONTENT);
+  const { about } = useHomeContent();
 
   return (
     <section aria-labelledby="about-title">

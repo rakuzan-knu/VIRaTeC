@@ -1,6 +1,6 @@
 import { ROUTES } from '@/shared/config/routes';
 import { cn, useSeo } from '@/shared/lib';
-import { useCommonMessages, useLocalized } from '@/shared/i18n';
+import { useCommonMessages } from '@/shared/i18n';
 import { LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
@@ -8,7 +8,7 @@ import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import {
   AUDIENCE_SECTION_IDS,
-  OPPORTUNITIES_CONTENT,
+  useOpportunitiesContent,
   type AudienceGroup,
   type Opportunity,
 } from '../model/content';
@@ -155,7 +155,7 @@ function AudienceSection({ group }: { group: AudienceGroup }) {
 }
 
 export function OpportunitiesPage() {
-  const content = useLocalized(OPPORTUNITIES_CONTENT);
+  const content = useOpportunitiesContent();
   const common = useCommonMessages();
   const events = useUpcomingEvents();
   useSeo(content.documentTitle);

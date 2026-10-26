@@ -1,13 +1,12 @@
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { useLocalized } from '@/shared/i18n';
-import { HOME_CONTENT } from '../model/content';
+import { useHomeContent } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import auroraSrc from '../assets/hero-background.webp';
 
 export function GetInvolvedSection() {
-  const { getInvolved } = useLocalized(HOME_CONTENT);
+  const { getInvolved } = useHomeContent();
 
   return (
     <section aria-labelledby="get-involved-title" className="bg-viratec-bg">

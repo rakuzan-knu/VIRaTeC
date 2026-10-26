@@ -3,8 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { useLocalized } from '@/shared/i18n';
-import { HOME_CONTENT } from '../model/content';
+import { useHomeContent } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
 
@@ -12,7 +11,7 @@ const PAPER_CARD_CLASS =
   'group/card flex h-full flex-col gap-4 rounded-[24px] border bg-white p-6 transition-colors duration-200 hover:border-viratec-paper-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-ink lg:min-h-[300px] lg:gap-5 lg:rounded-[28px] lg:p-8';
 
 export function PublicationsSection() {
-  const { publications } = useLocalized(HOME_CONTENT);
+  const { publications } = useHomeContent();
 
   return (
     <section aria-labelledby="publications-title" className="bg-viratec-paper text-viratec-ink">

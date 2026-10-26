@@ -1,5 +1,6 @@
 import { defineMessages, mapLocalized, useLocalized } from '@/shared/i18n';
 import { ROUTES } from './routes';
+import { SITE_SETTINGS } from './site';
 
 export interface NavLinkItem {
   label: string;
@@ -155,16 +156,8 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
 
 export const useNavigation = () => useLocalized(NAVIGATION);
 
-export const CONTACT_EMAIL = 'coil.knu@gmail.com';
+export type { SocialLinkKey } from './site';
 
-export type SocialLinkKey =
-  'linkedinGroup' | 'linkedinChair' | 'orcid' | 'facebookGroup' | 'scopus' | 'googleScholar';
+export const CONTACT_EMAIL = SITE_SETTINGS.contactEmail;
 
-export const SOCIAL_LINKS: Record<SocialLinkKey, string | null> = {
-  linkedinGroup: 'https://www.linkedin.com/groups/13199033/',
-  linkedinChair: 'https://www.linkedin.com/in/dr-larysa-liashenko-aa382990/',
-  orcid: 'https://orcid.org/0009-0008-6464-3167',
-  facebookGroup: 'https://www.facebook.com/groups/1654374395202463/',
-  scopus: 'https://www.scopus.com/authid/detail.uri?authorId=57224363587',
-  googleScholar: 'https://scholar.google.com/citations?user=7zimYMcAAAAJ',
-};
+export const SOCIAL_LINKS = SITE_SETTINGS.socialLinks;
