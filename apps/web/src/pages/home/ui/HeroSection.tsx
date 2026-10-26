@@ -26,7 +26,7 @@ export function HeroSection() {
   usePauseOffscreen(glowsRef);
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(140.73deg,#03122e_0%,#051b40_45.83%,#094285_83.33%)] lg:bg-[linear-gradient(110.26deg,#03122e_0%,#051b40_63%,#094285_100%)]">
+    <section className="relative overflow-hidden hero-backdrop lg:hero-backdrop-wide">
       <div
         ref={glowsRef}
         aria-hidden="true"
@@ -37,10 +37,7 @@ export function HeroSection() {
             <img src={glowTop} alt="" className="block size-full max-w-none" />
           </div>
         </div>
-        <div
-          className="absolute top-[420px] left-[-160px] h-[380px] w-[420px] motion-safe:animate-hero-drift"
-          style={{ animationDelay: '-7s', animationDirection: 'alternate-reverse' }}
-        >
+        <div className="absolute top-[420px] left-[-160px] h-[380px] w-[420px] motion-safe:animate-hero-drift-reverse">
           <div className="absolute inset-x-[-14.29%] inset-y-[-15.79%]">
             <img src={glowBottom} alt="" className="block size-full max-w-none" />
           </div>

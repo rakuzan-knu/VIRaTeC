@@ -1,0 +1,88 @@
+import { countUk, defineMessages, useLocalized } from '@/shared/i18n';
+
+const PEOPLE_MESSAGES = defineMessages({
+  en: {
+    documentTitle: 'Community members',
+    breadcrumb: 'Community',
+    home: 'Home',
+    title: 'Find your',
+    accent: 'next collaborator.',
+    description:
+      'Students, researchers and faculty from KNU and partner universities. Filter by what people are open to — a COIL project, mentoring, co-authorship or an internship.',
+    sectionLabel: 'Members',
+    searchLabel: 'Search members',
+    searchPlaceholder: 'Search by name, interest or university',
+    openTo: 'Open to',
+    anyone: 'Anyone',
+    faculty: 'Faculty',
+    allFaculties: 'All faculties',
+    studyLevel: 'Academic status',
+    allLevels: 'Any status',
+    country: 'Country',
+    allCountries: 'All countries',
+    language: 'Language',
+    allLanguages: 'Any language',
+    count: (count: number) => `${count} ${count === 1 ? 'member' : 'members'}`,
+    showCount: (count: number) => `Show ${count} ${count === 1 ? 'member' : 'members'}`,
+    loading: 'Loading members…',
+    loadError: 'We couldn’t load the member directory right now.',
+    empty: 'No members match these filters yet.',
+    emptyDirectoryTitle: 'No public profiles yet',
+    emptyDirectoryGuest:
+      'The community is just getting started. Join VIRaTeC and be one of the first members others can find.',
+    emptyDirectoryMember:
+      'You could be the first: fill in your interests, choose who can see your profile, and others will find you here.',
+    join: 'Join the community',
+    fillProfile: 'Fill in my profile',
+    loadMore: 'Show more members',
+    you: 'You',
+    guestHint: 'Some members share their profiles only with the community.',
+    signIn: 'Sign in to see everyone',
+    memberHint: 'Add your interests and what you are open to so others can find you.',
+    completeProfile: 'Update my profile',
+  },
+  uk: {
+    documentTitle: 'Учасники спільноти',
+    breadcrumb: 'Спільнота',
+    home: 'Головна',
+    title: 'Знайдіть свого',
+    accent: 'наступного партнера.',
+    description:
+      'Студенти, дослідники та викладачі КНУ й університетів-партнерів. Фільтруйте за тим, до чого люди відкриті, — COIL-проєкт, менторство, співавторство чи стажування.',
+    sectionLabel: 'Учасники',
+    searchLabel: 'Пошук учасників',
+    searchPlaceholder: 'Пошук за ім’ям, інтересами чи університетом',
+    openTo: 'Відкриті до',
+    anyone: 'Усі',
+    faculty: 'Факультет',
+    allFaculties: 'Усі факультети',
+    studyLevel: 'Академічний статус',
+    allLevels: 'Будь-який статус',
+    country: 'Країна',
+    allCountries: 'Усі країни',
+    language: 'Мова',
+    allLanguages: 'Будь-яка мова',
+    count: (count: number) =>
+      countUk(count, { one: 'учасник', few: 'учасники', many: 'учасників' }),
+    showCount: (count: number) =>
+      `Показати ${countUk(count, { one: 'учасника', few: 'учасників', many: 'учасників' })}`,
+    loading: 'Завантаження учасників…',
+    loadError: 'Не вдалося завантажити список учасників. Спробуйте пізніше.',
+    empty: 'Поки немає учасників, які відповідають цим фільтрам.',
+    emptyDirectoryTitle: 'Поки що немає відкритих профілів',
+    emptyDirectoryGuest:
+      'Спільнота лише формується. Приєднуйтеся до VIRaTeC і станьте одним із перших учасників, яких знайдуть інші.',
+    emptyDirectoryMember:
+      'Ви можете бути першими: додайте свої інтереси, оберіть, хто бачить профіль, — і вас знайдуть тут.',
+    join: 'Приєднатися до спільноти',
+    fillProfile: 'Заповнити профіль',
+    loadMore: 'Показати ще учасників',
+    you: 'Ви',
+    guestHint: 'Частина учасників показує профіль лише спільноті.',
+    signIn: 'Увійти, щоб бачити всіх',
+    memberHint: 'Додайте інтереси та те, до чого ви відкриті, — так вас знайдуть.',
+    completeProfile: 'Оновити профіль',
+  },
+});
+
+export const usePeopleMessages = () => useLocalized(PEOPLE_MESSAGES);

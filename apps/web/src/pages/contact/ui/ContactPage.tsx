@@ -6,7 +6,9 @@ import { CardLinkLabel } from '@/shared/ui/card-link-label';
 import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import { ButtonArrow, linkButtonClassName } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
+import { SiteFooter } from '@/widgets/site-footer';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
 import { useSeo } from '@/shared/lib';
 import { useContactContent, type SocialKey } from '../model/content';
@@ -36,8 +38,10 @@ export function ContactPage() {
 
   return (
     <PageLayout
+      footer={<SiteFooter />}
       intro={
         <PageIntro
+          header={<SiteHeader />}
           tone="glow"
           eyebrow={content.eyebrow}
           title={content.title}

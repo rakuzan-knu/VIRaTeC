@@ -19,6 +19,11 @@ colors:
   paperLine: '#e2e8f0'
   paperLineStrong: '#c5d0dc'
   graphite: '#475467'
+  globeCore: '#0f3f7d'
+  globeMid: '#06204a'
+  comet: '#e9ffd0'
+  sheet: '#0b1d3d'
+  backdrop: 'rgba(1, 6, 18, 0.72)'
 typography:
   sans:
     fontFamily: 'DM Sans, Inter, ui-sans-serif, system-ui, sans-serif'

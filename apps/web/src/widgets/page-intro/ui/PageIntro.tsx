@@ -4,7 +4,6 @@ import { cn } from '@/shared/lib';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { SplitWords, countWords } from '@/shared/ui/split-words';
 import { defineMessages, useLocalized } from '@/shared/i18n';
-import { SiteHeader } from '@/widgets/site-header';
 import contactGlow from '@/shared/assets/icons/contact-glow.svg';
 import { IntroGlobe } from './IntroGlobe';
 
@@ -13,6 +12,7 @@ export type PageIntroTone = 'blue' | 'teal' | 'glow';
 export type BreadcrumbItem = string | { label: string; to: string };
 
 interface PageIntroProps {
+  header: ReactNode;
   breadcrumb?: BreadcrumbItem[];
   eyebrow?: string;
   title: string;
@@ -30,6 +30,7 @@ const PAGE_INTRO_MESSAGES = defineMessages({
 });
 
 export function PageIntro({
+  header,
   breadcrumb,
   eyebrow,
   title,
@@ -56,7 +57,7 @@ export function PageIntro({
         </div>
       )}
 
-      <SiteHeader />
+      {header}
 
       <div
         className={cn(

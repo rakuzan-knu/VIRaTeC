@@ -1,0 +1,58 @@
+import { defineMessages, useLocalized } from '@/shared/i18n';
+
+const PERSON_MESSAGES = defineMessages({
+  en: {
+    home: 'Home',
+    community: 'Community',
+    loading: 'Loading profile…',
+    about: 'About',
+    noBio: 'This member hasn’t written a bio yet.',
+    interests: 'Research interests',
+    languages: 'Languages',
+    profiles: 'Academic profiles',
+    projects: 'Projects',
+    papers: 'Papers',
+    openTo: 'Open to',
+    contact: 'Contact',
+    memberSince: (date: string) => `Member since ${date}`,
+    editProfile: 'Edit profile',
+    ownerHint: (audience: string) =>
+      `You are viewing your profile as others see it · Visible to: ${audience}`,
+    membersOnlyTitle: 'Members-only profile',
+    membersOnlyDescription: 'Sign in to the VIRaTeC community to see this profile.',
+    signIn: 'Sign in',
+    notFoundTitle: 'Profile not found',
+    notFoundDescription: 'This profile doesn’t exist or its owner keeps it private.',
+    errorTitle: 'Profile unavailable',
+    errorDescription: 'We could not load this profile. Please try again later.',
+    backHome: 'Back to home',
+  },
+  uk: {
+    home: 'Головна',
+    community: 'Спільнота',
+    loading: 'Завантажуємо профіль…',
+    about: 'Про себе',
+    noBio: 'Учасник ще не додав опис.',
+    interests: 'Дослідницькі інтереси',
+    languages: 'Мови',
+    profiles: 'Академічні профілі',
+    projects: 'Проєкти',
+    papers: 'Публікації',
+    openTo: 'Відкритий до',
+    contact: 'Контакт',
+    memberSince: (date: string) => `У спільноті з ${date}`,
+    editProfile: 'Редагувати профіль',
+    ownerHint: (audience: string) =>
+      `Ви бачите свій профіль так, як його бачать інші · Видимість: ${audience}`,
+    membersOnlyTitle: 'Профіль лише для учасників',
+    membersOnlyDescription: 'Увійдіть до спільноти VIRaTeC, щоб переглянути цей профіль.',
+    signIn: 'Увійти',
+    notFoundTitle: 'Профіль не знайдено',
+    notFoundDescription: 'Такого профілю немає або власник зробив його приватним.',
+    errorTitle: 'Профіль недоступний',
+    errorDescription: 'Не вдалося завантажити профіль. Спробуйте пізніше.',
+    backHome: 'На головну',
+  },
+});
+
+export const usePersonMessages = () => useLocalized(PERSON_MESSAGES);

@@ -101,3 +101,5 @@ export function useDirectory() {
     retry: () => void result.refetch(),
   };
 }
+
+export type Directory = ReturnType<typeof useDirectory>;

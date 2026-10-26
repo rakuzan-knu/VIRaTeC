@@ -1,4 +1,5 @@
-const RELOAD_KEY = 'viratec_stale_chunk_reload';
+import { STALE_CHUNK_RELOAD_STORAGE_KEY as RELOAD_KEY } from '../config/storageKeys';
+
 const RELOAD_COOLDOWN_MS = 10_000;
 const STALE_CHUNK_PATTERN =
   /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed|Unable to preload CSS/i;

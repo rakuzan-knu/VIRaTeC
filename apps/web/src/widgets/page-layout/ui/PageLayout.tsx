@@ -1,13 +1,13 @@
 import { useRef, type ReactNode } from 'react';
 import { usePauseOffscreen, useScrollReveal } from '@/shared/lib';
-import { SiteFooter } from '@/widgets/site-footer';
 
 interface PageLayoutProps {
   intro: ReactNode;
+  footer: ReactNode;
   children: ReactNode;
 }
 
-export function PageLayout({ intro, children }: PageLayoutProps) {
+export function PageLayout({ intro, footer, children }: PageLayoutProps) {
   const mainRef = useRef<HTMLElement>(null);
   const skyRef = useRef<HTMLDivElement>(null);
   useScrollReveal(mainRef);
@@ -26,7 +26,7 @@ export function PageLayout({ intro, children }: PageLayoutProps) {
       <div aria-hidden="true" className="page-ambient" />
       {intro}
       <main ref={mainRef}>{children}</main>
-      <SiteFooter />
+      {footer}
       <div aria-hidden="true" className="field-grain" />
     </div>
   );

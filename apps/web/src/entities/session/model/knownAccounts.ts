@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { AccountDto } from '@viratec/contracts';
+import { KNOWN_ACCOUNTS_STORAGE_KEY as STORAGE_KEY } from '@/shared/config/storageKeys';
 
-const STORAGE_KEY = 'viratec_known_accounts';
 const MAX_KNOWN_ACCOUNTS = 5;
 
 export interface KnownAccount {
