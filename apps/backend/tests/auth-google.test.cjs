@@ -69,17 +69,37 @@ function setup({
 
 test('Google registration verifies the configured audience and returns a sanitized student session', async () => {
   const { service, users, calls, options } = setup();
-  const result = await service.googleAuth({ credential: 'google-id-token' });
+  const result = await service.googleAuth({ credential: 'google-id-token', acceptTerms: true });
   assert.deepEqual(options(), { idToken: 'google-id-token', audience: 'expected-client-id' });
   assert.equal(users[0].email, 'google@example.invalid');
   assert.equal(users[0].googleId, payload.sub);
   assert.equal(users[0].name, payload.name);
+  assert.equal(users[0].termsVersion, '1.1');
+  assert.ok(users[0].termsAcceptedAt instanceof Date);
   assert.equal(result.user.role, 'STUDENT');
   assert.equal(result.user.googleId, undefined);
   assert.equal(result.user.passwordHash, undefined);
   assert.equal(calls.refreshTokens, 1);
   assert.ok(result.accessToken);
   assert.ok(result.refreshToken);
+});
+
+test('new Google account is not created without accepting the terms', async () => {
+  const { service, calls } = setup();
+  await assert.rejects(
+    service.googleAuth({ credential: 'token' }),
+    (error) => error.getStatus() === 400,
+  );
+  assert.equal(calls.creates, 0);
+  assert.equal(calls.tokens, 0);
+});
+
+test('returning Google user signs in without re-sending terms acceptance', async () => {
+  const user = { id: 'existing', email: 'google@example.invalid', googleId: payload.sub };
+  const { service, calls } = setup({ users: [user] });
+  const result = await service.googleAuth({ credential: 'token' });
+  assert.equal(result.user.id, user.id);
+  assert.equal(calls.creates, 0);
 });
 
 test('returning Google user is identified by subject even if their Google email changed', async () => {
@@ -90,7 +110,7 @@ test('returning Google user is identified by subject even if their Google email 
     role: 'PARTNER',
   };
   const { service, calls } = setup({ users: [user] });
-  const result = await service.googleAuth({ credential: 'token' });
+  const result = await service.googleAuth({ credential: 'token', acceptTerms: true });
   assert.equal(result.user.id, user.id);
   assert.equal(result.user.role, 'PARTNER');
   assert.equal(calls.creates, 0);
@@ -108,7 +128,7 @@ for (const googleId of [null, 'another-google-subject']) {
     const before = { ...user };
     const { service, users, calls } = setup({ users: [user] });
     await assert.rejects(
-      service.googleAuth({ credential: 'token' }),
+      service.googleAuth({ credential: 'token', acceptTerms: true }),
       (error) => error.getStatus() === 409,
     );
     assert.deepEqual(users, [before]);
@@ -127,7 +147,7 @@ for (const tokenPayload of [
     const { service, calls } = setup();
     service.googleClient = { verifyIdToken: async () => ({ getPayload: () => tokenPayload }) };
     await assert.rejects(
-      service.googleAuth({ credential: 'token' }),
+      service.googleAuth({ credential: 'token', acceptTerms: true }),
       (error) => error.getStatus() === 401,
     );
     assert.equal(calls.reads, 0);
@@ -139,7 +159,7 @@ for (const tokenPayload of [
 test('invalid, expired or wrong-audience token is rejected before database access', async () => {
   const { service, calls } = setup({ verifyError: new Error('Token verification failed') });
   await assert.rejects(
-    service.googleAuth({ credential: 'token' }),
+    service.googleAuth({ credential: 'token', acceptTerms: true }),
     (error) => error.getStatus() === 401,
   );
   assert.equal(calls.reads, 0);
@@ -149,7 +169,7 @@ test('invalid, expired or wrong-audience token is rejected before database acces
 test('missing Google configuration returns 503 without database access', async () => {
   const { service, calls, options } = setup({ configured: false });
   await assert.rejects(
-    service.googleAuth({ credential: 'token' }),
+    service.googleAuth({ credential: 'token', acceptTerms: true }),
     (error) => error.getStatus() === 503,
   );
   assert.equal(options(), undefined);
@@ -165,7 +185,7 @@ test('concurrent creation recovers only the same Google subject', async () => {
       clientVersion: 'test',
     });
   };
-  const result = await service.googleAuth({ credential: 'token' });
+  const result = await service.googleAuth({ credential: 'token', acceptTerms: true });
   assert.equal(result.user.id, 'concurrently-created');
   assert.equal(calls.refreshTokens, 1);
 });
@@ -173,7 +193,7 @@ test('concurrent creation recovers only the same Google subject', async () => {
 test('database failures propagate without issuing a session', async () => {
   const error = new Error('Database unavailable');
   const { service, calls } = setup({ createError: error });
-  await assert.rejects(service.googleAuth({ credential: 'token' }), error);
+  await assert.rejects(service.googleAuth({ credential: 'token', acceptTerms: true }), error);
   assert.equal(calls.tokens, 0);
 });
 

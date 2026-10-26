@@ -51,9 +51,10 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
       {
         id: 'local-storage',
         title: 'What we store in your browser',
-        summary: 'Three entries in your browser’s local storage. They never leave your device.',
+        summary:
+          'Three entries in your browser’s local storage and one in session storage. They never leave your device.',
         paragraphs: [
-          'We use your browser’s local storage — a similar technology that stays on your device and is not sent with every request. Here is the full list:',
+          'We use your browser’s local and session storage — similar technologies that stay on your device and are not sent with every request. Here is the full list:',
         ],
         table: {
           columns: ['Key', 'Purpose', 'Type', 'Kept until'],
@@ -75,6 +76,12 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
               'Names and emails of accounts used on this device, for quick account switching (no passwords)',
               'Preference, functional',
               'You remove the account from the list or clear site data',
+            ],
+            [
+              'viratec_stale_chunk_reload (session storage)',
+              'The time of the last automatic reload after a site update, so the page never reloads in a loop',
+              'Technical, strictly necessary',
+              'You close the tab',
             ],
           ],
         },
@@ -163,9 +170,10 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
       {
         id: 'local-storage',
         title: 'Що ми зберігаємо в браузері',
-        summary: 'Три записи в локальному сховищі браузера. Вони не залишають ваш пристрій.',
+        summary:
+          'Три записи в локальному сховищі браузера й один у сховищі сеансу. Вони не залишають ваш пристрій.',
         paragraphs: [
-          'Ми використовуємо локальне сховище браузера (local storage) — схожу технологію, дані якої залишаються на вашому пристрої та не надсилаються з кожним запитом. Ось повний перелік:',
+          'Ми використовуємо локальне сховище (local storage) і сховище сеансу (session storage) браузера — схожі технології, дані яких залишаються на вашому пристрої та не надсилаються з кожним запитом. Ось повний перелік:',
         ],
         table: {
           columns: ['Ключ', 'Призначення', 'Тип', 'Зберігається до'],
@@ -187,6 +195,12 @@ export const COOKIES_CONTENT = defineMessages<LegalDocumentContent>({
               'Імена та адреси облікових записів, використаних на цьому пристрої, для швидкого перемикання (без паролів)',
               'Налаштування, функціональне',
               'Видалення запису зі списку або очищення даних сайту',
+            ],
+            [
+              'viratec_stale_chunk_reload (session storage)',
+              'Час останнього автоматичного перезавантаження після оновлення сайту, щоб сторінка не перезавантажувалася по колу',
+              'Технічне, суворо необхідне',
+              'Закриття вкладки',
             ],
           ],
         },

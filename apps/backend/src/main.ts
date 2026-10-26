@@ -17,10 +17,21 @@ import { safeEqual } from './security/crypto';
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const isProduction = process.env.NODE_ENV === 'production';
 
-function resolveTrustProxy(value = isProduction ? '1' : 'false'): boolean | number | string {
+const PRIVATE_PROXY_RANGES = 'loopback,linklocal,uniquelocal';
+
+function defaultTrustProxy() {
+  if (!isProduction) return 'false';
+  return process.env.VERCEL ? 'true' : PRIVATE_PROXY_RANGES;
+}
+
+function resolveTrustProxy(value = defaultTrustProxy()): boolean | string {
   if (value === 'true') return true;
   if (value === 'false') return false;
-  if (/^\d+$/.test(value)) return Number(value);
+  if (/^\d+$/.test(value)) {
+    throw new Error(
+      'TRUST_PROXY hop counts are unsafe; use true, false or a list of proxy IP/CIDR',
+    );
+  }
   return value;
 }
 

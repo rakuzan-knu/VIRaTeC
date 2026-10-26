@@ -1,3 +1,4 @@
+import { TERMS_VERSION } from '@viratec/contracts';
 import { ROUTES } from '@/shared/config/routes';
 import type { Localized } from '@/shared/i18n';
 import { COOKIES_CONTENT } from './cookies';
@@ -22,9 +23,9 @@ export const LEGAL_ROUTES: Record<LegalDocument, string> = {
   guidelines: ROUTES.GUIDELINES,
 };
 
-export const LEGAL_UPDATED_AT = new Date(2026, 9, 22);
+export const LEGAL_UPDATED_AT = new Date(2026, 9, 26);
 
-export const LEGAL_VERSION = '1.0';
+export const LEGAL_VERSION = TERMS_VERSION;
 
 const WORDS_PER_MINUTE = 200;
 

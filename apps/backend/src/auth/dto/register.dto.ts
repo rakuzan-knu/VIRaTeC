@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  Equals,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { UserRole, FacultyDivision } from '@viratec/contracts';
 
 export class RegisterDto {
@@ -32,4 +40,11 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   department?: string;
+
+  @ApiProperty({
+    example: true,
+    description: 'Acceptance of the Terms of Service and Privacy Policy',
+  })
+  @Equals(true)
+  acceptTerms: true;
 }

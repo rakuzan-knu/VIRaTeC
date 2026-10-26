@@ -32,7 +32,7 @@ export const PRIVACY_CONTENT = defineMessages<LegalDocumentContent>({
           rows: [
             [
               'Account data',
-              'Email address, name, password (stored only as an Argon2 hash)',
+              'Email address, name, password (stored only as an Argon2 hash), the date and version of the Terms you accepted',
               'You, at registration',
             ],
             [
@@ -74,6 +74,10 @@ export const PRIVACY_CONTENT = defineMessages<LegalDocumentContent>({
             [
               'Creating and running your account, signing you in',
               'Performance of our agreement with you (Terms of Service); GDPR Art. 6(1)(b)',
+            ],
+            [
+              'Keeping a record that you accepted the Terms of Service and this Policy',
+              'Our legal obligation and legitimate interest in proving the agreement; GDPR Art. 6(1)(c) and (f)',
             ],
             [
               'Publishing your profile, papers and projects to the community',
@@ -118,7 +122,7 @@ export const PRIVACY_CONTENT = defineMessages<LegalDocumentContent>({
         paragraphs: ['We share personal data only when necessary and only with:'],
         list: [
           'Google — to verify your identity if you choose Google sign-in (Google acts as an independent controller under its own privacy policy);',
-          'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement;',
+          'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement: Vercel Inc. (website and API hosting, Frankfurt, Germany region) and Neon Inc. (database hosting, Frankfurt, Germany region);',
           'partner universities and project co-participants — only the profile information and content you make visible within a joint project;',
           'public authorities — only when we are legally required to do so.',
         ],
@@ -229,7 +233,7 @@ export const PRIVACY_CONTENT = defineMessages<LegalDocumentContent>({
           rows: [
             [
               'Дані облікового запису',
-              'Електронна пошта, ім’я, пароль (зберігається лише як хеш Argon2)',
+              'Електронна пошта, ім’я, пароль (зберігається лише як хеш Argon2), дата та версія прийнятих Умов',
               'Ви, під час реєстрації',
             ],
             [
@@ -271,6 +275,10 @@ export const PRIVACY_CONTENT = defineMessages<LegalDocumentContent>({
             [
               'Створення й обслуговування облікового запису, вхід',
               'Виконання угоди з вами (Умови використання); ст. 6(1)(b) GDPR',
+            ],
+            [
+              'Підтвердження того, що ви прийняли Умови використання та цю Політику',
+              'Наш юридичний обов’язок і законний інтерес у підтвердженні угоди; ст. 6(1)(c) і (f) GDPR',
             ],
             [
               'Публікація профілю, статей і проєктів у спільноті',
@@ -315,7 +323,7 @@ export const PRIVACY_CONTENT = defineMessages<LegalDocumentContent>({
         paragraphs: ['Ми передаємо персональні дані лише за потреби й лише таким отримувачам:'],
         list: [
           'Google — для перевірки особи, якщо ви обираєте вхід через Google (Google діє як самостійний володілець даних згідно з власною політикою конфіденційності);',
-          'постачальникам хостингу та інфраструктури, які зберігають і обробляють дані від нашого імені на підставі договору про обробку даних;',
+          'постачальникам хостингу та інфраструктури, які зберігають і обробляють дані від нашого імені на підставі договору про обробку даних: Vercel Inc. (хостинг сайту та API, регіон Франкфурт, Німеччина) і Neon Inc. (хостинг бази даних, регіон Франкфурт, Німеччина);',
           'університетам-партнерам і учасникам спільних проєктів — лише ту інформацію профілю та контент, які ви робите видимими в межах проєкту;',
           'державним органам — лише у випадках, передбачених законом.',
         ],

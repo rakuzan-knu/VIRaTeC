@@ -164,6 +164,8 @@ services:
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-${GOOGLE_CLIENT_ID:-}}
     image: ${DOCKER_REGISTRY:-viratec}/web:${IMAGE_TAG:-latest}
     restart: unless-stopped
+    environment:
+      CSP_CONNECT_SRC: ${CSP_CONNECT_SRC:-http://localhost:3000}
     ports:
       - '80:80'
     depends_on:
