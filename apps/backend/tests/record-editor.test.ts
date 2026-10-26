@@ -1,14 +1,59 @@
-const assert = require('node:assert/strict');
-const { test } = require('node:test');
-const {
-  RecordEditorService,
-  RecordPublishError,
-} = require('../dist/content/record-editor.service.js');
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { hasStatus } from './support.ts';
+import { RecordEditorService, RecordPublishError } from '../dist/content/record-editor.service.js';
+
+interface Translation {
+  title: string;
+  description: string;
+}
+
+interface ProjectData {
+  status: string;
+  faculties: string[];
+  tags: string[];
+  repositoryUrl: string | null;
+  demoUrl: string | null;
+  translations: Record<'en' | 'uk', Translation>;
+}
+
+interface ProjectRow extends Omit<ProjectData, 'translations'> {
+  id: string;
+  title: string;
+  description: string;
+  translations: Record<'en' | 'uk', Translation>;
+  updatedAt: Date;
+}
+
+interface DraftChange {
+  id: string;
+  resourceType: string;
+  resourceId: string;
+  isNew: boolean;
+  isDeleted: boolean;
+  draft: ProjectData;
+  baseUpdatedAt: Date;
+}
+
+interface UpsertArgs {
+  create: { fieldIds: string[] };
+}
+
+interface UpdateArgs {
+  data: Record<string, unknown>;
+}
+
+interface Calls {
+  upserts: UpsertArgs[];
+  deletes: unknown[];
+  updates: UpdateArgs[];
+  cleared: number;
+}
 
 const PROJECT_ID = '0b6f8a52-8d5c-4d1f-9b8e-2f3a4c5d6e7f';
 const UPDATED_AT = new Date('2026-10-20T10:00:00.000Z');
 
-const projectRow = (overrides = {}) => ({
+const projectRow = (overrides: Partial<ProjectRow> = {}): ProjectRow => ({
   id: PROJECT_ID,
   title: 'Old title',
   description: 'Old description',
@@ -25,7 +70,7 @@ const projectRow = (overrides = {}) => ({
   ...overrides,
 });
 
-const projectData = (overrides = {}) => ({
+const projectData = (overrides: Partial<ProjectData> = {}): ProjectData => ({
   status: 'IN_PROGRESS',
   faculties: ['FIT'],
   tags: ['ai'],
@@ -42,25 +87,31 @@ const editor = { id: 'editor', permissions: ['CONTENT_VIEW', 'CONTENT_EDIT'] };
 const viewer = { id: 'viewer', permissions: ['CONTENT_VIEW'] };
 const eventsModerator = { id: 'moderator', permissions: ['CONTENT_VIEW', 'EVENTS_MANAGE'] };
 
-const setup = ({ project = projectRow(), change = null } = {}) => {
-  const calls = { upserts: [], deletes: [], updates: [], cleared: 0 };
-  const prisma = {
+const setup = ({
+  project = projectRow(),
+  change = null,
+}: { project?: ProjectRow; change?: DraftChange | null } = {}) => {
+  const calls: Calls = { upserts: [], deletes: [], updates: [], cleared: 0 };
+  const client = {
     contentChange: {
       findUnique: async () => change,
-      upsert: async (args) => calls.upserts.push(args),
-      delete: async (args) => calls.deletes.push(args),
+      upsert: async (args: UpsertArgs) => calls.upserts.push(args),
+      delete: async (args: unknown) => calls.deletes.push(args),
       create: async () => undefined,
     },
     project: {
       findUnique: async () => project,
-      update: async (args) => calls.updates.push(args),
+      update: async (args: UpdateArgs) => calls.updates.push(args),
       create: async () => undefined,
       delete: async () => undefined,
     },
     event: { findUnique: async () => null },
     publication: { findUnique: async () => null },
   };
-  prisma.$transaction = async (run) => run(prisma);
+  const prisma = {
+    ...client,
+    $transaction: async <T>(run: (tx: typeof client) => Promise<T>) => run(client),
+  };
   const cache = { clearCache: () => (calls.cleared += 1) };
   const service = new RecordEditorService(
     prisma,
@@ -86,7 +137,7 @@ test('saving a record draft needs the edit permission', async () => {
       },
       {},
     ),
-    (e) => e.getStatus() === 403,
+    hasStatus(403),
   );
   assert.equal(calls.upserts.length, 0);
 });
@@ -105,11 +156,11 @@ test('events managers can draft events but not projects', async () => {
       },
       {},
     ),
-    (e) => e.getStatus() === 403,
+    hasStatus(403),
   );
   await assert.rejects(
     service.saveRecord(eventsModerator, 'event', PROJECT_ID, { data: {}, baseUpdatedAt: null }, {}),
-    (e) => e.getStatus() === 400,
+    hasStatus(400),
   );
 });
 
@@ -127,7 +178,7 @@ test('a draft based on an outdated record is rejected as a conflict', async () =
       },
       {},
     ),
-    (e) => e.getStatus() === 409,
+    hasStatus(409),
   );
   assert.equal(calls.upserts.length, 0);
 });
@@ -146,7 +197,7 @@ test('a draft stores only the changed paths', async () => {
     {},
   );
 
-  assert.deepEqual(calls.upserts[0].create.fieldIds.sort(), [
+  assert.deepEqual(calls.upserts[0]?.create.fieldIds.sort(), [
     'translations.en.description',
     'translations.en.title',
     'translations.uk.description',
@@ -168,12 +219,12 @@ test('invalid record data never reaches the database', async () => {
       },
       {},
     ),
-    (e) => e.getStatus() === 400,
+    hasStatus(400),
   );
   assert.equal(calls.upserts.length, 0);
 });
 
-const draftChange = (overrides = {}) => ({
+const draftChange = (overrides: Partial<DraftChange> = {}): DraftChange => ({
   id: 'change',
   resourceType: 'PROJECT',
   resourceId: PROJECT_ID,
@@ -189,9 +240,9 @@ test('publishing a draft writes the English text to the base columns', async () 
 
   await service.applyChange(draftChange());
 
-  assert.equal(calls.updates[0].data.title, 'New title');
-  assert.equal(calls.updates[0].data.description, 'New description');
-  assert.equal(calls.updates[0].data.status, 'IN_PROGRESS');
+  assert.equal(calls.updates[0]?.data.title, 'New title');
+  assert.equal(calls.updates[0]?.data.description, 'New description');
+  assert.equal(calls.updates[0]?.data.status, 'IN_PROGRESS');
   assert.equal(calls.deletes.length, 1);
   assert.equal(calls.cleared, 1);
 });
@@ -213,7 +264,8 @@ test('publishing refuses drafts with empty required fields', async () => {
 
   await assert.rejects(
     service.applyChange(draftChange({ draft: data })),
-    (e) => e instanceof RecordPublishError && e.message.includes('translations.uk.title'),
+    (error: unknown) =>
+      error instanceof RecordPublishError && error.message.includes('translations.uk.title'),
   );
   assert.equal(calls.updates.length, 0);
 });
