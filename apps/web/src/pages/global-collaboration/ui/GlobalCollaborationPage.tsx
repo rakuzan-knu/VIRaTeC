@@ -1,8 +1,6 @@
+import { useNetworkPartners } from '@/entities/partner';
 import { ROUTES } from '@/shared/config/routes';
-import coilTeamsPhoto from '@/shared/assets/photos/coil-online-teams.webp';
-import talksPhoto from '@/shared/assets/photos/conference-audience-knu.webp';
-import rolePlayPhoto from '@/shared/assets/photos/jhu-role-play-online.webp';
-import { useCommonMessages, useLocalized } from '@/shared/i18n';
+import { useCommonMessages } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { InfoCard } from '@/shared/ui/info-card';
@@ -11,13 +9,12 @@ import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { GLOBAL_COLLABORATION_CONTENT } from '../model/content';
+import { useGlobalCollaborationContent } from '../model/content';
 import { useSeo } from '@/shared/lib';
 
-const FORMAT_PHOTOS = [coilTeamsPhoto, talksPhoto, rolePlayPhoto];
-
 export function GlobalCollaborationPage() {
-  const content = useLocalized(GLOBAL_COLLABORATION_CONTENT);
+  const content = useGlobalCollaborationContent();
+  const partners = useNetworkPartners();
   const common = useCommonMessages();
   useSeo(content.documentTitle);
 
@@ -39,7 +36,7 @@ export function GlobalCollaborationPage() {
           title={content.partnersTitle}
         />
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {content.partners.map((partner) => (
+          {partners.map((partner) => (
             <li key={partner.name}>
               <InfoCard
                 index={partner.code}
@@ -79,10 +76,10 @@ export function GlobalCollaborationPage() {
           description={content.formatsDescription}
         />
         <ul className="grid gap-6 lg:grid-cols-3">
-          {content.formats.map((format, index) => (
+          {content.formats.map((format) => (
             <li key={format.title}>
               <InfoCard
-                image={FORMAT_PHOTOS[index]}
+                image={format.image}
                 title={format.title}
                 description={format.description}
                 linkLabel={common.learnMore}

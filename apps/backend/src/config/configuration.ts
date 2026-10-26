@@ -77,6 +77,15 @@ export default () => {
     redis: {
       url: process.env.REDIS_URL || 'redis://localhost:6379',
     },
+    contentful: {
+      spaceId: process.env.CONTENTFUL_SPACE_ID?.trim() || '',
+      environment: process.env.CONTENTFUL_ENVIRONMENT?.trim() || 'master',
+      deliveryToken: process.env.CONTENTFUL_DELIVERY_TOKEN?.trim() || '',
+      locales: {
+        en: process.env.CONTENTFUL_LOCALE_EN?.trim() || 'en',
+        uk: process.env.CONTENTFUL_LOCALE_UK?.trim() || 'uk',
+      },
+    },
     s3: {
       endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
       accessKey: process.env.S3_ACCESS_KEY || 'minioadmin',

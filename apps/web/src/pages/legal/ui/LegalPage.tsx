@@ -9,11 +9,10 @@ import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
 import {
   LEGAL_DOCUMENT_ORDER,
-  LEGAL_DOCUMENTS,
   LEGAL_ROUTES,
-  LEGAL_UPDATED_AT,
-  LEGAL_VERSION,
+  legalMeta,
   readingMinutes,
+  useLegalDocuments,
 } from '../model/documents';
 import type { LegalDocument } from '../model/types';
 import { ClearStorageCard } from './ClearStorageCard';
@@ -54,10 +53,12 @@ interface LegalPageProps {
 export function LegalPage({ kind }: LegalPageProps) {
   const t = useLocalized(LEGAL_MESSAGES);
   const locale = useLocale();
-  const content = LEGAL_DOCUMENTS[kind][locale];
+  const documents = useLegalDocuments();
+  const content = documents[kind].content[locale];
   const minutes = useMemo(() => readingMinutes(content), [content]);
+  const meta = legalMeta(documents[kind]);
   const updatedAt = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long' }).format(
-    LEGAL_UPDATED_AT,
+    meta.updatedAt,
   );
   useSeo(content.title);
 
@@ -71,7 +72,7 @@ export function LegalPage({ kind }: LegalPageProps) {
           description={content.description}
           tone="teal"
         >
-          <p className="text-sm text-viratec-subtle">{t.meta(updatedAt, LEGAL_VERSION, minutes)}</p>
+          <p className="text-sm text-viratec-subtle">{t.meta(updatedAt, meta.version, minutes)}</p>
           <nav aria-label={t.documents} className="mt-2 lg:mt-4">
             <ul className="flex flex-wrap gap-2">
               {LEGAL_DOCUMENT_ORDER.map((documentKind) => {
@@ -88,7 +89,7 @@ export function LegalPage({ kind }: LegalPageProps) {
                           : 'border border-white/14 bg-white/4 text-white hover:border-white/30 hover:bg-white/10',
                       )}
                     >
-                      {LEGAL_DOCUMENTS[documentKind][locale].title}
+                      {documents[documentKind].content[locale].title}
                     </Link>
                   </li>
                 );

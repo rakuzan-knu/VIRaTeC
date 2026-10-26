@@ -9,7 +9,6 @@ import {
   type NavGroup,
 } from '@/shared/config/navigation';
 import {
-  defineMessages,
   isLocale,
   useCommonMessages,
   useLocaleStore,
@@ -22,30 +21,12 @@ import languageGlobe from '@/shared/assets/icons/language-globe.svg';
 import chevronDown from '@/shared/assets/icons/chevron-down.svg';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
 import scholarIcon from '@/shared/assets/icons/google-scholar.svg';
+import { FOOTER_MESSAGES } from '../model/messages';
 
 const LANGUAGES: { value: Locale; label: string }[] = [
   { value: 'en', label: 'English' },
   { value: 'uk', label: 'Українська' },
 ];
-
-const FOOTER_MESSAGES = defineMessages({
-  en: {
-    tagline:
-      'Virtual Innovative Research & Technology (VIRaTeC) Global Community at Taras Shevchenko National University of Kyiv.',
-    language: 'Language',
-    followUs: 'Follow us',
-    contact: 'Contact',
-    copyright: '© 2026 VIRaTeC KNU. All rights reserved.',
-  },
-  uk: {
-    tagline:
-      'Глобальна спільнота Virtual Innovative Research & Technology (VIRaTeC) при Київському національному університеті імені Тараса Шевченка.',
-    language: 'Мова',
-    followUs: 'Ми в соцмережах',
-    contact: 'Контакти',
-    copyright: '© 2026 VIRaTeC КНУ. Усі права захищено.',
-  },
-});
 
 const CONTACT_SECTION_ID = 'contact';
 

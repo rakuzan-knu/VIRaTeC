@@ -1,5 +1,4 @@
 import { ROUTES } from '@/shared/config/routes';
-import { useLocalized } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { InfoCard } from '@/shared/ui/info-card';
@@ -10,11 +9,11 @@ import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
-import { ABOUT_INITIATIVE_CONTENT, FOUNDER_PHOTO } from '../model/content';
+import { useAboutInitiativeContent } from '../model/content';
 import { useSeo } from '@/shared/lib';
 
 export function AboutInitiativePage() {
-  const content = useLocalized(ABOUT_INITIATIVE_CONTENT);
+  const content = useAboutInitiativeContent();
   useSeo(content.documentTitle);
 
   return (
@@ -79,7 +78,7 @@ export function AboutInitiativePage() {
       <PageSection tone="surface" aria-labelledby="founder-title">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-16">
           <ResponsiveImage
-            src={FOUNDER_PHOTO}
+            src={content.founderPhoto}
             sizes="(min-width: 1024px) 320px, 160px"
             alt={content.founderName}
             width={320}
