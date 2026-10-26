@@ -6,11 +6,13 @@ const FOOTER_LABELS = defineMessages({
     language: 'Language',
     followUs: 'Follow us',
     contact: 'Contact',
+    keyboardShortcuts: 'Keyboard shortcuts',
   },
   uk: {
     language: 'Мова',
     followUs: 'Ми в соцмережах',
     contact: 'Контакти',
+    keyboardShortcuts: 'Гарячі клавіші',
   },
 });
 

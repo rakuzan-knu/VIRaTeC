@@ -7,6 +7,7 @@ import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { PageSections } from '@/widgets/page-sections';
 import { useSeo } from '@/shared/lib';
 import { useExperientialLearningContent } from '../model/content';
 
@@ -26,61 +27,71 @@ export function ExperientialLearningPage() {
         />
       }
     >
-      <PageSection aria-labelledby="formats-title">
-        <SectionHeader
-          id="formats-title"
-          eyebrow={content.formatsEyebrow}
-          title={content.formatsTitle}
-        />
-        <ul className="grid gap-6 lg:grid-cols-3">
-          {content.formats.map((format) => (
-            <li key={format.title}>
-              <InfoCard
-                title={format.title}
-                description={format.description}
-                linkLabel={format.linkLabel}
-                to={format.to}
-                className="lg:min-h-[221px]"
+      <PageSections
+        page="EXPERIENTIAL_LEARNING"
+        sections={{
+          formats: (
+            <PageSection aria-labelledby="formats-title">
+              <SectionHeader
+                id="formats-title"
+                eyebrow={content.formatsEyebrow}
+                title={content.formatsTitle}
               />
-            </li>
-          ))}
-        </ul>
-      </PageSection>
-
-      <PageSection tone="surface" aria-labelledby="approach-title">
-        <SectionHeader
-          id="approach-title"
-          eyebrow={content.approachEyebrow}
-          title={content.approachTitle}
-          accent={content.approachAccent}
-        />
-        <StepsList steps={content.principles} />
-      </PageSection>
-
-      <PageSection aria-labelledby="outcomes-title">
-        <SectionHeader
-          id="outcomes-title"
-          eyebrow={content.outcomesEyebrow}
-          title={content.outcomesTitle}
-        />
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {content.outcomes.map((outcome) => (
-            <li key={outcome.title}>
-              <InfoCard
-                title={outcome.title}
-                description={outcome.description}
-                className="lg:min-h-[232px]"
+              <ul className="grid gap-6 lg:grid-cols-3">
+                {content.formats.map((format) => (
+                  <li key={format.title}>
+                    <InfoCard
+                      title={format.title}
+                      description={format.description}
+                      linkLabel={format.linkLabel}
+                      to={format.to}
+                      className="lg:min-h-[221px]"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </PageSection>
+          ),
+          approach: (
+            <PageSection tone="surface" aria-labelledby="approach-title">
+              <SectionHeader
+                id="approach-title"
+                eyebrow={content.approachEyebrow}
+                title={content.approachTitle}
+                accent={content.approachAccent}
               />
-            </li>
-          ))}
-        </ul>
-      </PageSection>
-
-      <CtaSection
-        tone="surface"
-        title={content.ctaTitle}
-        description={content.ctaDescription}
-        action={{ label: common.seeOpportunities, to: ROUTES.OPPORTUNITIES }}
+              <StepsList steps={content.principles} />
+            </PageSection>
+          ),
+          outcomes: (
+            <PageSection aria-labelledby="outcomes-title">
+              <SectionHeader
+                id="outcomes-title"
+                eyebrow={content.outcomesEyebrow}
+                title={content.outcomesTitle}
+              />
+              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {content.outcomes.map((outcome) => (
+                  <li key={outcome.title}>
+                    <InfoCard
+                      title={outcome.title}
+                      description={outcome.description}
+                      className="lg:min-h-[232px]"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </PageSection>
+          ),
+          cta: (
+            <CtaSection
+              tone="surface"
+              title={content.ctaTitle}
+              description={content.ctaDescription}
+              action={{ label: common.seeOpportunities, to: ROUTES.OPPORTUNITIES }}
+            />
+          ),
+        }}
       />
     </PageLayout>
   );

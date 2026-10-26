@@ -4,7 +4,8 @@ import type { SavedItemRequestDto } from '@viratec/contracts';
 import { useIsAuthenticated } from '@/entities/session';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useLocalized } from '@/shared/i18n';
-import { cn } from '@/shared/lib';
+import { HOTKEYS, cn, useHotkey } from '@/shared/lib';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { isItemSaved, useSavedItems, useToggleSaved } from '../model/useSavedItems';
 
 const SAVE_MESSAGES = defineMessages({
@@ -12,12 +13,16 @@ const SAVE_MESSAGES = defineMessages({
     save: 'Save',
     saved: 'Saved',
     signInToSave: 'Sign in to save',
+    saveHint: 'Save to your account',
+    unsaveHint: 'Remove from saved',
     error: 'Could not update. Try again.',
   },
   uk: {
     save: 'Зберегти',
     saved: 'Збережено',
     signInToSave: 'Увійдіть, щоб зберегти',
+    saveHint: 'Зберегти у свій акаунт',
+    unsaveHint: 'Прибрати зі збереженого',
     error: 'Не вдалося оновити. Спробуйте ще раз.',
   },
 });
@@ -37,6 +42,9 @@ export function SaveButton({ item, className }: SaveButtonProps) {
   const { data: items, isPending: isLoading } = useSavedItems();
   const toggle = useToggleSaved();
   const isSaved = isItemSaved(items, item);
+  const toggleSaved = () => toggle.mutate({ item, save: !isSaved });
+
+  useHotkey(HOTKEYS.save, toggleSaved, isAuthenticated && !isLoading && !toggle.isPending);
 
   if (!isAuthenticated) {
     return (
@@ -57,25 +65,27 @@ export function SaveButton({ item, className }: SaveButtonProps) {
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <button
-        type="button"
-        aria-pressed={isSaved}
-        disabled={isLoading}
-        onClick={() => toggle.mutate({ item, save: !isSaved })}
-        className={cn(
-          BUTTON_CLASS,
-          isSaved
-            ? 'border-viratec-lime/60 bg-viratec-lime/14 text-viratec-accent hover:bg-viratec-lime/20'
-            : 'border-white/22 bg-white/4 text-white hover:border-white/40 hover:bg-white/10',
-        )}
-      >
-        {isSaved ? (
-          <BookmarkCheck aria-hidden="true" className="size-[18px]" />
-        ) : (
-          <Bookmark aria-hidden="true" className="size-[18px]" />
-        )}
-        {isSaved ? t.saved : t.save}
-      </button>
+      <Tooltip text={isSaved ? t.unsaveHint : t.saveHint} shortcut={HOTKEYS.save}>
+        <button
+          type="button"
+          aria-pressed={isSaved}
+          disabled={isLoading}
+          onClick={toggleSaved}
+          className={cn(
+            BUTTON_CLASS,
+            isSaved
+              ? 'border-viratec-lime/60 bg-viratec-lime/14 text-viratec-accent hover:bg-viratec-lime/20'
+              : 'border-white/22 bg-white/4 text-white hover:border-white/40 hover:bg-white/10',
+          )}
+        >
+          {isSaved ? (
+            <BookmarkCheck aria-hidden="true" className="size-[18px]" />
+          ) : (
+            <Bookmark aria-hidden="true" className="size-[18px]" />
+          )}
+          {isSaved ? t.saved : t.save}
+        </button>
+      </Tooltip>
       {toggle.isError && (
         <p role="alert" className="text-xs text-state-error">
           {t.error}

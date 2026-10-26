@@ -1,24 +1,13 @@
-import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
 import { TtlCache } from '../common/cache/ttl-cache';
+import { PrismaService } from '../prisma/prisma.service';
+import { ContentfulClient, type ContentfulItem } from './contentful.client';
 
-const DELIVERY_HOST = 'https://cdn.contentful.com';
 const PAGE_SIZE = 100;
 const INCLUDE_DEPTH = 4;
-const REQUEST_TIMEOUT_MS = 8000;
-const CACHE_TTL_MS = 30_000;
-
-interface ContentfulConfig {
-  spaceId: string;
-  environment: string;
-  deliveryToken: string;
-  locales: { en: string; uk: string };
-}
-
-interface ContentfulItem {
-  sys: Record<string, unknown> & { id: string };
-  fields?: Record<string, unknown>;
-}
+const CACHE_TTL_MS = 60 * 60_000;
+const REVISION_TTL_MS = 5_000;
+const CACHE_STATE_ID = 1;
 
 interface ContentfulPage {
   total: number;
@@ -27,7 +16,7 @@ interface ContentfulPage {
 }
 
 export interface ContentEntriesResponse {
-  locales: ContentfulConfig['locales'];
+  locales: { en: string; uk: string };
   items: ContentfulItem[];
   includes: { entries: ContentfulItem[]; assets: ContentfulItem[] };
 }
@@ -47,23 +36,50 @@ const pickSys = ({ sys, fields }: ContentfulItem): ContentfulItem => ({
 export class ContentService {
   private readonly logger = new Logger(ContentService.name);
   private readonly cache = new TtlCache<ContentEntriesResponse>(CACHE_TTL_MS, 100);
+  private readonly revision = new TtlCache<number>(REVISION_TTL_MS, 1);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly contentful: ContentfulClient,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  private get config(): ContentfulConfig {
-    return this.configService.getOrThrow<ContentfulConfig>('contentful');
+  async getEntries(types: readonly string[]): Promise<ContentEntriesResponse> {
+    const revision = await this.revision.get('current', () => this.readRevision());
+    return this.cache.get(`${revision}:${types.join(',')}`, () => this.load('delivery', types));
   }
 
-  getEntries(types: readonly string[]): Promise<ContentEntriesResponse> {
-    const config = this.config;
-    if (!config.spaceId || !config.deliveryToken) {
-      throw new ServiceUnavailableException('Contentful is not configured');
+  getPreviewEntries(types: readonly string[]): Promise<ContentEntriesResponse> {
+    return this.load('preview', types);
+  }
+
+  async invalidate() {
+    try {
+      await this.prisma.contentCacheState.upsert({
+        where: { id: CACHE_STATE_ID },
+        create: { id: CACHE_STATE_ID, revision: 1 },
+        update: { revision: { increment: 1 } },
+      });
+    } catch (error) {
+      this.logger.error('Failed to bump the content revision', error as Error);
     }
-    return this.cache.get(types.join(','), () => this.load(config, types));
+    this.revision.clear();
+    this.cache.clear();
+  }
+
+  private async readRevision() {
+    try {
+      const state = await this.prisma.contentCacheState.findUnique({
+        where: { id: CACHE_STATE_ID },
+      });
+      return state?.revision ?? 0;
+    } catch (error) {
+      this.logger.warn(`Content revision is unavailable: ${String(error)}`);
+      return -1;
+    }
   }
 
   private async load(
-    config: ContentfulConfig,
+    api: 'delivery' | 'preview',
     types: readonly string[],
   ): Promise<ContentEntriesResponse> {
     const items: ContentfulItem[] = [];
@@ -72,7 +88,7 @@ export class ContentService {
 
     for (const type of types) {
       for (let skip = 0; ; skip += PAGE_SIZE) {
-        const page = await this.fetchPage(config, type, skip);
+        const page = await this.fetchPage(api, type, skip);
         items.push(...page.items.map(pickSys));
         page.includes?.Entry?.forEach((entry) => entries.set(entry.sys.id, pickSys(entry)));
         page.includes?.Asset?.forEach((asset) => assets.set(asset.sys.id, pickSys(asset)));
@@ -81,44 +97,30 @@ export class ContentService {
     }
 
     return {
-      locales: config.locales,
+      locales: this.contentful.config.locales,
       items,
       includes: { entries: [...entries.values()], assets: [...assets.values()] },
     };
   }
 
   private async fetchPage(
-    config: ContentfulConfig,
+    api: 'delivery' | 'preview',
     type: string,
     skip: number,
   ): Promise<ContentfulPage> {
-    const url = new URL(
-      `/spaces/${config.spaceId}/environments/${config.environment}/entries`,
-      DELIVERY_HOST,
-    );
-    url.search = new URLSearchParams({
-      content_type: type,
-      locale: '*',
-      include: String(INCLUDE_DEPTH),
-      limit: String(PAGE_SIZE),
-      skip: String(skip),
-      order: 'sys.createdAt',
-    }).toString();
-
-    let response: Response;
     try {
-      response = await fetch(url, {
-        headers: { Authorization: `Bearer ${config.deliveryToken}` },
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      return await this.contentful.request<ContentfulPage>(api, '/entries', {
+        query: {
+          content_type: type,
+          locale: '*',
+          include: String(INCLUDE_DEPTH),
+          limit: String(PAGE_SIZE),
+          skip: String(skip),
+          order: 'sys.createdAt',
+        },
       });
     } catch (error) {
-      this.logger.warn(`Contentful request for ${type} failed: ${String(error)}`);
-      throw new ServiceUnavailableException('Content is temporarily unavailable');
+      throw this.contentful.toHttpError(error, `Entries of ${type}`);
     }
-    if (!response.ok) {
-      this.logger.warn(`Contentful request for ${type} failed with ${response.status}`);
-      throw new ServiceUnavailableException('Content is temporarily unavailable');
-    }
-    return (await response.json()) as ContentfulPage;
   }
 }

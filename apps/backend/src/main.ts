@@ -13,8 +13,11 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { CSRF_HEADER, cookieNames } from './auth/session-cookies';
 import { safeEqual } from './security/crypto';
+import { CONTENT_EDITOR_LIMITS } from '@viratec/contracts';
 
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const CONTENT_ASSET_ROUTE = '/api/v1/admin/content/assets';
+const CONTENT_ASSET_BODY_LIMIT = Math.ceil(CONTENT_EDITOR_LIMITS.maxAssetBytes / 3) * 4 + 4096;
 const isProduction = process.env.NODE_ENV === 'production';
 
 const PRIVATE_PROXY_RANGES = 'loopback,linklocal,uniquelocal';
@@ -105,6 +108,9 @@ async function bootstrap() {
   // Security & Performance Plugins
   const fastify = app.getHttpAdapter().getInstance();
   fastify.addHook('onSend', setEtag);
+  fastify.addHook('onRoute', (route) => {
+    if (route.url === CONTENT_ASSET_ROUTE) route.bodyLimit = CONTENT_ASSET_BODY_LIMIT;
+  });
   await app.register(helmet, {
     contentSecurityPolicy: isProduction,
   });

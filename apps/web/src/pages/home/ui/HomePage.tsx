@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { PageLayout } from '@/widgets/page-layout';
+import { PageSections } from '@/widgets/page-sections';
 import { HeroSection } from './HeroSection';
 import { useSeo } from '@/shared/lib';
 
@@ -20,10 +21,15 @@ export function HomePage() {
   return (
     <PageLayout intro={<HeroSection />}>
       <Suspense fallback={<div className="min-h-screen" />}>
-        <AboutSection />
-        <ResearchSection />
-        <PublicationsSection />
-        <GetInvolvedSection />
+        <PageSections
+          page="HOME"
+          sections={{
+            about: <AboutSection />,
+            research: <ResearchSection />,
+            publications: <PublicationsSection />,
+            getInvolved: <GetInvolvedSection />,
+          }}
+        />
       </Suspense>
     </PageLayout>
   );

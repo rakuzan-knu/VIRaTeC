@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/shared/api/apiClient';
+import { encodeFieldMark, registerAssetAddress, useContentPreviewStore } from './contentPreview';
 
 const LIVE_CONTENT_STALE_MS = 30_000;
 
@@ -42,12 +43,29 @@ const fetchLiveExports = async (domainId: string): Promise<LiveExports> => {
   return buildLiveExports(domainId, payload);
 };
 
+export const PREVIEW_CONTENT_QUERY_KEY = ['live-content', 'preview'] as const;
+
+const fetchPreviewExports = async (domainId: string): Promise<LiveExports> => {
+  const { buildLiveExports, contentTypesFor, markPreviewPayload } =
+    await import('../../../build-tools/contentful/runtime.ts');
+  const types = contentTypesFor(domainId).join(',');
+  const payload = await api.get<Parameters<typeof buildLiveExports>[1]>(
+    `/admin/content/preview?types=${encodeURIComponent(types)}`,
+  );
+  const marked = markPreviewPayload(payload, encodeFieldMark, registerAssetAddress);
+  return buildLiveExports(domainId, marked, {
+    strict: false,
+    onIssues: (issues) => useContentPreviewStore.getState().setIssues(domainId, issues),
+  });
+};
+
 export const useLiveContent = <T>(domainId: string, exportName: string, snapshot: T): T => {
+  const isPreview = useContentPreviewStore((state) => state.enabled);
   const { data } = useQuery({
-    queryKey: ['live-content', domainId],
-    queryFn: () => fetchLiveExports(domainId),
+    queryKey: isPreview ? [...PREVIEW_CONTENT_QUERY_KEY, domainId] : ['live-content', domainId],
+    queryFn: () => (isPreview ? fetchPreviewExports(domainId) : fetchLiveExports(domainId)),
     enabled: typeof window !== 'undefined',
-    staleTime: LIVE_CONTENT_STALE_MS,
+    staleTime: isPreview ? Infinity : LIVE_CONTENT_STALE_MS,
     retry: false,
   });
   const live = data?.[exportName];

@@ -6,6 +6,7 @@ import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { PageSections } from '@/widgets/page-sections';
 import {
   AUDIENCE_SECTION_IDS,
   useOpportunitiesContent,
@@ -176,31 +177,37 @@ export function OpportunitiesPage() {
         </PageIntro>
       }
     >
-      {events.length > 0 && (
-        <EventsSection
-          title={content.eventsTitle}
-          description={content.eventsDescription}
-          events={events}
-        />
-      )}
-
-      {content.audienceGroups.map((group) => (
-        <AudienceSection key={group.id} group={group} />
-      ))}
-
-      <section aria-labelledby="how-it-works-title">
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-16 pb-12 lg:gap-10 lg:px-[85px] lg:pt-[120px] lg:pb-16">
-          <h2 id="how-it-works-title" className={SECTION_TITLE_CLASS}>
-            {content.howItWorksTitle}
-          </h2>
-          <StepsList steps={content.howItWorks} />
-        </div>
-      </section>
-
-      <CtaSection
-        title={content.ctaTitle}
-        description={content.ctaDescription}
-        action={{ label: common.contactCollaborate, to: ROUTES.CONTACT }}
+      <PageSections
+        page="OPPORTUNITIES"
+        sections={{
+          events: events.length > 0 && (
+            <EventsSection
+              title={content.eventsTitle}
+              description={content.eventsDescription}
+              events={events}
+            />
+          ),
+          audiences: content.audienceGroups.map((group) => (
+            <AudienceSection key={group.id} group={group} />
+          )),
+          howItWorks: (
+            <section aria-labelledby="how-it-works-title">
+              <div className="mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-16 pb-12 lg:gap-10 lg:px-[85px] lg:pt-[120px] lg:pb-16">
+                <h2 id="how-it-works-title" className={SECTION_TITLE_CLASS}>
+                  {content.howItWorksTitle}
+                </h2>
+                <StepsList steps={content.howItWorks} />
+              </div>
+            </section>
+          ),
+          cta: (
+            <CtaSection
+              title={content.ctaTitle}
+              description={content.ctaDescription}
+              action={{ label: common.contactCollaborate, to: ROUTES.CONTACT }}
+            />
+          ),
+        }}
       />
     </PageLayout>
   );

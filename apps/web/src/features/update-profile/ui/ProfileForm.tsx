@@ -13,6 +13,7 @@ import {
 import { useAccountLabels } from '@/entities/session';
 import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
+import { HOTKEYS } from '@/shared/lib';
 import { useIntlNames } from '@/shared/lib/intlNames';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
@@ -405,8 +406,15 @@ export function ProfileForm({ account }: ProfileFormProps) {
           label={t.save}
           loading={isPending}
           disabled={!isDirty}
+          aria-keyshortcuts={HOTKEYS.submit.aria}
           className="sm:self-start"
         />
+        <kbd
+          aria-hidden="true"
+          className="hidden rounded-md border border-white/14 px-1.5 font-sans text-xs leading-5 text-viratec-subtle pointer-fine:sm:inline-block"
+        >
+          {HOTKEYS.submit.label}
+        </kbd>
         <p role="status" className="px-1 text-sm text-viratec-accent">
           {isSuccess && !isDirty ? t.saved : ''}
         </p>

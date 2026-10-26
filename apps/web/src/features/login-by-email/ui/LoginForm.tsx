@@ -9,6 +9,7 @@ import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { readAuthNavigationState } from '@/entities/session';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { createLoginFormSchema, type LoginFormValues } from '../model/schema';
 import { useLogin } from '../model/useLogin';
@@ -146,14 +147,19 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
               aria-describedby={errors.password ? 'login-password-error' : undefined}
               className="h-[54px] lg:h-[clamp(44px,6.5svh,54px)] pr-14 text-base"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
+            <Tooltip
+              text={showPassword ? common.hidePassword : common.showPassword}
+              className="absolute right-2 top-1/2 -translate-y-1/2"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? common.hidePassword : common.showPassword}
+                className="flex size-10 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </Tooltip>
           </div>
           {errors.password && (
             <p id="login-password-error" className="text-xs text-auth-error">

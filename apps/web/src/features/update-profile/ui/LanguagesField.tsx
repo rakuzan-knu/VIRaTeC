@@ -3,6 +3,7 @@ import { LanguageLevel, PROFILE_DETAIL_LIMITS, type ProfileLanguage } from '@vir
 import { useAccountLabels } from '@/entities/session';
 import { useIntlNames } from '@/shared/lib/intlNames';
 import { Select } from '@/shared/ui/Select';
+import { Tooltip } from '@/shared/ui/Tooltip';
 
 const LEVELS = Object.values(LanguageLevel);
 
@@ -69,14 +70,16 @@ export function LanguagesField({
                 onChange={(event) => update(index, { level: event.target.value as LanguageLevel })}
               />
             </div>
-            <button
-              type="button"
-              onClick={() => onChange(value.filter((_, i) => i !== index))}
-              aria-label={removeLabel(name)}
-              className="mt-1.5 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-viratec-subtle transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-viratec-lime"
-            >
-              <X aria-hidden="true" className="size-4" />
-            </button>
+            <Tooltip text={removeLabel(name)} className="mt-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => onChange(value.filter((_, i) => i !== index))}
+                aria-label={removeLabel(name)}
+                className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-viratec-subtle transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-viratec-lime"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
+            </Tooltip>
           </div>
         );
       })}

@@ -26,6 +26,11 @@ export class PublicationsService {
 
   constructor(private prisma: PrismaService) {}
 
+  clearCache() {
+    this.listCache.clear();
+    this.itemCache.clear();
+  }
+
   findAll(type?: PublicationType) {
     return this.listCache.get(type ?? '', async () => {
       const publications = await this.prisma.publication.findMany({

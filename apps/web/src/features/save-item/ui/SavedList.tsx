@@ -4,6 +4,7 @@ import { SavedItemKind, type SavedItemDto } from '@viratec/contracts';
 import { findPublication, usePublications } from '@/entities/publication';
 import { ROUTES, buildProjectPath, buildPublicationPath } from '@/shared/config/routes';
 import { INTL_LOCALE, defineMessages, useLocale, useLocalized } from '@/shared/i18n';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { useSavedItems, useToggleSaved } from '../model/useSavedItems';
 
 const SAVED_MESSAGES = defineMessages({
@@ -20,6 +21,7 @@ const SAVED_MESSAGES = defineMessages({
     unavailable: 'This item is no longer available',
     savedOn: (date: string) => `Saved ${date}`,
     remove: (title: string) => `Remove “${title}” from saved`,
+    removeHint: 'Remove from saved',
   },
   uk: {
     loading: 'Завантажуємо збережене…',
@@ -34,6 +36,7 @@ const SAVED_MESSAGES = defineMessages({
     unavailable: 'Цей матеріал більше недоступний',
     savedOn: (date: string) => `Збережено ${date}`,
     remove: (title: string) => `Прибрати «${title}» зі збереженого`,
+    removeHint: 'Прибрати зі збереженого',
   },
 });
 
@@ -158,16 +161,18 @@ export function SavedList() {
                       .join(' · ')}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    toggle.mutate({ item: { kind: item.kind, refId: item.refId }, save: false })
-                  }
-                  aria-label={t.remove(itemTitle)}
-                  className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-viratec-subtle transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-viratec-lime"
-                >
-                  <BookmarkX aria-hidden="true" className="size-[18px]" />
-                </button>
+                <Tooltip text={t.removeHint} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      toggle.mutate({ item: { kind: item.kind, refId: item.refId }, save: false })
+                    }
+                    aria-label={t.remove(itemTitle)}
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-viratec-subtle transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-viratec-lime"
+                  >
+                    <BookmarkX aria-hidden="true" className="size-[18px]" />
+                  </button>
+                </Tooltip>
               </li>
             ))}
           </ul>

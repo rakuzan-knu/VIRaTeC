@@ -7,7 +7,7 @@ export type FieldValidation =
   | { linkMimetypeGroup: readonly string[] }
   | { linkContentType: readonly string[] };
 
-type ScalarType = 'Symbol' | 'Text' | 'Integer' | 'Boolean' | 'Date';
+type ScalarType = 'Symbol' | 'Text' | 'Integer' | 'Boolean' | 'Date' | 'Object';
 
 export interface FieldDefinition {
   id: string;
@@ -110,5 +110,6 @@ export const widgetFor = (definition: FieldDefinition) => {
     Integer: 'numberEditor',
     Boolean: 'boolean',
     Date: 'datePicker',
+    Object: 'objectEditor',
   }[definition.type];
 };

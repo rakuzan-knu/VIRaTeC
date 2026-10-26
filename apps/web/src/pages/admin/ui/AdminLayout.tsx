@@ -1,10 +1,17 @@
 import type { ReactNode } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { LayoutDashboard, ScrollText, ShieldAlert, ShieldCheck, Users } from 'lucide-react';
+import {
+  LayoutDashboard,
+  PencilRuler,
+  ScrollText,
+  ShieldAlert,
+  ShieldCheck,
+  Users,
+} from 'lucide-react';
 import { AdminPermission } from '@viratec/contracts';
 import { getApiErrorCode } from '@/shared/api/apiClient';
-import { ROUTES, buildAccountPath } from '@/shared/config/routes';
+import { ROUTES, SITE_EDITOR_PATH, buildAccountPath } from '@/shared/config/routes';
 import { cn, useSeo } from '@/shared/lib';
 import { linkButtonClassName } from '@/shared/ui/link-button';
 import { CodePrompt, useStepUp } from '@/features/manage-two-factor';
@@ -30,6 +37,12 @@ const NAV_ITEMS = [
     key: 'audit',
     icon: ScrollText,
     permission: AdminPermission.AUDIT_VIEW,
+  },
+  {
+    to: SITE_EDITOR_PATH,
+    key: 'siteEditor',
+    icon: PencilRuler,
+    permission: AdminPermission.CONTENT_VIEW,
   },
 ] as const;
 

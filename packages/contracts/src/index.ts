@@ -8,3 +8,5 @@ export * from './publications.js';
 export * from './community.js';
 export * from './admin.js';
 export * from './pagination.js';
+export * from './content.js';
+export * from './records.js';

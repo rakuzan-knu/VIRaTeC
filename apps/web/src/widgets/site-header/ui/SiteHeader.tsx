@@ -7,6 +7,7 @@ import { useNavigation } from '@/shared/config/navigation';
 import { useCommonMessages, useLocalized, defineMessages } from '@/shared/i18n';
 import { Logo } from '@/shared/ui/logo';
 import { linkButtonClassName } from '@/shared/ui/link-button';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import burgerIcon from '@/shared/assets/icons/burger.svg';
 import { DesktopNavDropdown } from './DesktopNavDropdown';
 import { MobileMenu } from './MobileMenu';
@@ -156,16 +157,18 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             </Link>
           </div>
 
-          <button
-            type="button"
-            aria-label={t.openMenu}
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="-mr-2 flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-viratec-lime xl:hidden"
-          >
-            <img src={burgerIcon} alt="" />
-          </button>
+          <Tooltip text={t.openMenu} placement="bottom" className="-mr-2 xl:hidden">
+            <button
+              type="button"
+              aria-label={t.openMenu}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-viratec-lime"
+            >
+              <img src={burgerIcon} alt="" />
+            </button>
+          </Tooltip>
         </div>
       </header>
 

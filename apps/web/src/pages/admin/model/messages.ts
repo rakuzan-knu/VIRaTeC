@@ -94,7 +94,13 @@ const ADMIN_MESSAGES = defineMessages({
     panel: 'Admin panel',
     description: 'Manage the VIRaTeC platform: users, access, content, meetings and security.',
     close: 'Close',
-    nav: { dashboard: 'Dashboard', users: 'Users', audit: 'Audit log', label: 'Admin sections' },
+    nav: {
+      dashboard: 'Dashboard',
+      users: 'Users',
+      audit: 'Audit log',
+      siteEditor: 'Edit site',
+      label: 'Admin sections',
+    },
     staffRole: {
       [StaffRole.OWNER]: 'Owner',
       [StaffRole.ADMIN]: 'Administrator',
@@ -266,6 +272,7 @@ const ADMIN_MESSAGES = defineMessages({
       dashboard: 'Дашборд',
       users: 'Користувачі',
       audit: 'Журнал аудиту',
+      siteEditor: 'Редагувати сайт',
       label: 'Розділи адмін-панелі',
     },
     staffRole: {

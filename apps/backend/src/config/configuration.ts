@@ -81,6 +81,9 @@ export default () => {
       spaceId: process.env.CONTENTFUL_SPACE_ID?.trim() || '',
       environment: process.env.CONTENTFUL_ENVIRONMENT?.trim() || 'master',
       deliveryToken: process.env.CONTENTFUL_DELIVERY_TOKEN?.trim() || '',
+      previewToken: process.env.CONTENTFUL_PREVIEW_TOKEN?.trim() || '',
+      managementToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN?.trim() || '',
+      webhookSecret: process.env.CONTENTFUL_WEBHOOK_SECRET?.trim() || '',
       locales: {
         en: process.env.CONTENTFUL_LOCALE_EN?.trim() || 'en',
         uk: process.env.CONTENTFUL_LOCALE_UK?.trim() || 'uk',

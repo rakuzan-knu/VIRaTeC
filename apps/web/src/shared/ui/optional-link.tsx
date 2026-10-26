@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/shared/lib';
 import { useCommonMessages } from '@/shared/i18n';
+import { Tooltip } from './Tooltip';
 
 interface OptionalLinkProps {
   href: string | null;
   label: string;
+  showTooltip?: boolean;
   className?: string;
   unavailableClassName?: string;
   children: ReactNode;
@@ -13,6 +15,7 @@ interface OptionalLinkProps {
 export function OptionalLink({
   href,
   label,
+  showTooltip = false,
   className,
   unavailableClassName,
   children,
@@ -20,7 +23,7 @@ export function OptionalLink({
   const common = useCommonMessages();
 
   if (href) {
-    return (
+    const link = (
       <a
         href={href}
         target="_blank"
@@ -30,6 +33,21 @@ export function OptionalLink({
       >
         {children}
       </a>
+    );
+    return showTooltip ? <Tooltip text={label}>{link}</Tooltip> : link;
+  }
+
+  if (showTooltip) {
+    return (
+      <Tooltip text={common.unavailable(label)}>
+        <span
+          role="img"
+          aria-label={common.unavailable(label)}
+          className={cn(className, 'cursor-not-allowed opacity-45', unavailableClassName)}
+        >
+          {children}
+        </span>
+      </Tooltip>
     );
   }
 

@@ -1,9 +1,14 @@
 import { useMemo } from 'react';
-import { Bookmark, Eye, LayoutDashboard, LogOut, UserRound } from 'lucide-react';
-import { StaffRole } from '@viratec/contracts';
+import { Bookmark, Eye, LayoutDashboard, LogOut, PencilRuler, UserRound } from 'lucide-react';
+import { AdminPermission, StaffRole } from '@viratec/contracts';
 import { useKnownAccounts, useSessionStore } from '@/entities/session';
 import { useLogout } from '@/features/logout';
-import { ROUTES, buildAccountPath, buildPersonPath } from '@/shared/config/routes';
+import {
+  ROUTES,
+  SITE_EDITOR_PATH,
+  buildAccountPath,
+  buildPersonPath,
+} from '@/shared/config/routes';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 
 const ACCOUNT_MENU_MESSAGES = defineMessages({
@@ -15,6 +20,7 @@ const ACCOUNT_MENU_MESSAGES = defineMessages({
     publicProfile: 'My public profile',
     saved: 'Saved',
     adminPanel: 'Admin panel',
+    siteEditor: 'Edit site',
     switchAccount: 'Switch account',
     accountsOnDevice: 'Accounts on this device',
     current: 'Current',
@@ -31,6 +37,7 @@ const ACCOUNT_MENU_MESSAGES = defineMessages({
     publicProfile: 'Мій публічний профіль',
     saved: 'Збережене',
     adminPanel: 'Адмін-панель',
+    siteEditor: 'Редагувати сайт',
     switchAccount: 'Змінити обліковий запис',
     accountsOnDevice: 'Облікові записи на цьому пристрої',
     current: 'Поточний',
@@ -53,6 +60,7 @@ export function useAccountMenu() {
   const knownAccounts = useKnownAccounts();
   const userId = user?.id ?? null;
   const isStaff = Boolean(user && user.staffRole !== StaffRole.NONE);
+  const canEditSite = Boolean(user?.permissions.includes(AdminPermission.CONTENT_VIEW));
   const { mutate: logout, isPending: isSigningOut } = useLogout();
 
   const links = useMemo<AccountMenuLink[]>(
@@ -61,8 +69,9 @@ export function useAccountMenu() {
       ...(userId ? [{ to: buildPersonPath(userId), label: t.publicProfile, icon: Eye }] : []),
       { to: buildAccountPath('saved'), label: t.saved, icon: Bookmark },
       ...(isStaff ? [{ to: ROUTES.ADMIN, label: t.adminPanel, icon: LayoutDashboard }] : []),
+      ...(canEditSite ? [{ to: SITE_EDITOR_PATH, label: t.siteEditor, icon: PencilRuler }] : []),
     ],
-    [t, userId, isStaff],
+    [t, userId, isStaff, canEditSite],
   );
 
   const otherAccounts = useMemo(

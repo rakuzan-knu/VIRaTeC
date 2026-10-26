@@ -1,6 +1,7 @@
 import { useId, useState, type KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
 import { PROFILE_LIMITS } from '@viratec/contracts';
+import { Tooltip } from '@/shared/ui/Tooltip';
 
 interface SkillsFieldProps {
   label: string;
@@ -56,14 +57,16 @@ export function SkillsField({
               className="inline-flex items-center gap-1 rounded-full border border-white/14 bg-white/6 py-1.5 pr-1.5 pl-3.5 text-sm text-white"
             >
               {skill}
-              <button
-                type="button"
-                onClick={() => onChange(value.filter((item) => item !== skill))}
-                aria-label={removeLabel(skill)}
-                className="flex size-6 cursor-pointer items-center justify-center rounded-full text-viratec-muted transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-viratec-lime"
-              >
-                <X aria-hidden="true" className="size-3.5" />
-              </button>
+              <Tooltip text={removeLabel(skill)}>
+                <button
+                  type="button"
+                  onClick={() => onChange(value.filter((item) => item !== skill))}
+                  aria-label={removeLabel(skill)}
+                  className="flex size-6 cursor-pointer items-center justify-center rounded-full text-viratec-muted transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-viratec-lime"
+                >
+                  <X aria-hidden="true" className="size-3.5" />
+                </button>
+              </Tooltip>
             </li>
           ))}
         </ul>

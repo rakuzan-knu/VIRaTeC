@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/shared/lib';
+import { HOTKEYS, cn, useShortcutsHelpStore } from '@/shared/lib';
 import { ROUTES } from '@/shared/config/routes';
 import {
   CONTACT_EMAIL,
@@ -159,6 +159,7 @@ export function SiteFooter() {
   const t = useLocalized(FOOTER_MESSAGES);
   const common = useCommonMessages();
   const navigation = useNavigation();
+  const openShortcutsHelp = useShortcutsHelpStore((state) => state.setOpen);
 
   const linkGroups = [navigation.about, navigation.research, navigation.explore];
   const legalLinks = [
@@ -188,6 +189,7 @@ export function SiteFooter() {
                 <OptionalLink
                   href={SOCIAL_LINKS.linkedinGroup}
                   label="LinkedIn"
+                  showTooltip
                   className={ICON_LINK_CLASS}
                   unavailableClassName="hover:bg-white/6"
                 >
@@ -196,6 +198,7 @@ export function SiteFooter() {
                 <OptionalLink
                   href={SOCIAL_LINKS.orcid}
                   label="ORCID"
+                  showTooltip
                   className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
                   unavailableClassName="hover:bg-white/6"
                 >
@@ -204,6 +207,7 @@ export function SiteFooter() {
                 <OptionalLink
                   href={SOCIAL_LINKS.scopus}
                   label="Scopus"
+                  showTooltip
                   className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
                   unavailableClassName="hover:bg-white/6"
                 >
@@ -212,6 +216,7 @@ export function SiteFooter() {
                 <OptionalLink
                   href={SOCIAL_LINKS.googleScholar}
                   label="Google Scholar"
+                  showTooltip
                   className={ICON_LINK_CLASS}
                   unavailableClassName="hover:bg-white/6"
                 >
@@ -274,6 +279,16 @@ export function SiteFooter() {
                 </Link>
               </li>
             ))}
+            <li className="hidden pointer-fine:list-item">
+              <button
+                type="button"
+                aria-keyshortcuts={HOTKEYS.help.aria}
+                onClick={() => openShortcutsHelp(true)}
+                className="cursor-pointer transition-colors hover:text-white"
+              >
+                {t.keyboardShortcuts}
+              </button>
+            </li>
           </ul>
         </div>
 

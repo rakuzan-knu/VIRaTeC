@@ -4,6 +4,7 @@ import { blocksDomain } from './blocks.ts';
 import { galleryDomain } from './gallery.ts';
 import { legalDomain } from './legal.ts';
 import { milestonesDomain } from './milestones.ts';
+import { pageLayoutsDomain } from './page-layouts.ts';
 import { pageSeoDomain } from './page-seo.ts';
 import { partnersDomain } from './partners.ts';
 import { siteSettingsDomain } from './site-settings.ts';
@@ -21,6 +22,7 @@ export const DOMAINS: readonly ContentDomain[] = [
   audienceGroupsDomain,
   pageSeoDomain,
   legalDomain,
+  pageLayoutsDomain,
   ...PAGE_SPECS.map((spec) => pageDomain(spec)),
 ];
 

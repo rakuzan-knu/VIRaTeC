@@ -22,7 +22,15 @@ export type AuditAction =
   | 'admin.owner_assigned'
   | 'admin.user_blocked'
   | 'admin.user_unblocked'
-  | 'admin.sessions_revoked';
+  | 'admin.sessions_revoked'
+  | 'content.entry_saved'
+  | 'content.entry_created'
+  | 'content.asset_uploaded'
+  | 'content.change_discarded'
+  | 'content.record_saved'
+  | 'content.record_created'
+  | 'content.record_deleted'
+  | 'content.published';
 
 export interface AuditEntry {
   action: AuditAction;

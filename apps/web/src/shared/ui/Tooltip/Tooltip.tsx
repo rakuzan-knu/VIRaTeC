@@ -19,10 +19,18 @@ import { cloneElement, useRef, useState } from 'react';
 import { cn } from '../../lib';
 import type { TooltipProps } from './Tooltip.types';
 
-export function Tooltip({ text, placement = 'top', children, className, ...rest }: TooltipProps) {
+export function Tooltip({
+  text,
+  placement = 'top',
+  shortcut,
+  floatingClassName,
+  children,
+  className,
+  ...rest
+}: TooltipProps) {
   const [open, setOpen] = useState(false);
   const arrowRef = useRef<SVGSVGElement>(null);
-  const { refs, floatingStyles, context } = useFloating({
+  const { refs, elements, floatingStyles, context } = useFloating({
     open,
     onOpenChange: setOpen,
     placement,
@@ -52,17 +60,30 @@ export function Tooltip({ text, placement = 'top', children, className, ...rest 
   return (
     <>
       <span {...rest} className={cn('inline-flex min-w-0', className)}>
-        {cloneElement(children, { ...triggerProps, ref, 'aria-describedby': describedBy })}
+        {cloneElement(children, {
+          ...triggerProps,
+          ref,
+          'aria-describedby': describedBy,
+          'aria-keyshortcuts': shortcut?.aria ?? children.props['aria-keyshortcuts'],
+        })}
       </span>
       {open && (
-        <FloatingPortal>
+        <FloatingPortal root={elements.domReference?.closest('dialog') ?? undefined}>
           <div
             {...getFloatingProps()}
             ref={refs.setFloating}
             style={floatingStyles}
-            className="z-tooltip max-w-tooltip wrap-anywhere rounded-tooltip bg-bg-tooltip px-3 py-2 text-label font-medium text-text-on-light"
+            className={cn(
+              'z-tooltip max-w-tooltip wrap-anywhere rounded-tooltip bg-bg-tooltip px-3 py-2 text-label font-medium text-text-on-light',
+              floatingClassName,
+            )}
           >
             {text}
+            {shortcut && (
+              <kbd className="ml-2 rounded-sm border border-current/25 px-1.5 py-px font-sans text-[11px] leading-4 opacity-70">
+                {shortcut.label}
+              </kbd>
+            )}
             <FloatingArrow
               ref={arrowRef}
               context={context}

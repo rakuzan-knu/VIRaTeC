@@ -9,6 +9,7 @@ import { useCommonMessages } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import {
   PASSWORD_RULES,
   createNewPasswordSchema,
@@ -230,14 +231,19 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
               aria-describedby={cn('new-password-rules', errors.password && 'new-password-error')}
               className={cn(FIELD_INPUT_CLASS, 'pr-14')}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
+            <Tooltip
+              text={showPassword ? common.hidePassword : common.showPassword}
+              className="absolute right-2 top-1/2 -translate-y-1/2"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? common.hidePassword : common.showPassword}
+                className="flex size-10 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </Tooltip>
           </div>
           <ul id="new-password-rules" className="flex flex-wrap gap-2 pt-1">
             {PASSWORD_RULES.map((rule) => {

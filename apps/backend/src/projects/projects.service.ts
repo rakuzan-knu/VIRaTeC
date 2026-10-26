@@ -32,6 +32,11 @@ export class ProjectsService {
 
   constructor(private prisma: PrismaService) {}
 
+  clearCache() {
+    this.listCache.clear();
+    this.itemCache.clear();
+  }
+
   findAll(query: ListProjectsQueryDto) {
     const { tag } = query;
     return this.listCache.get(cursorCacheKey(query, tag), async () => {

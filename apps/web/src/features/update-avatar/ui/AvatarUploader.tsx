@@ -5,6 +5,7 @@ import { UserAvatar } from '@/entities/session';
 import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { ACCEPTED_AVATAR_TYPES, AvatarFileError } from '../lib/prepareAvatar';
 import { useDeleteAvatar, useUploadAvatar } from '../model/useAvatar';
 
@@ -97,37 +98,39 @@ export function AvatarUploader({ name, avatarUrl }: AvatarUploaderProps) {
 
   return (
     <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(event) => {
-          event.preventDefault();
-          setIsDragging(true);
-        }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
-        disabled={isBusy}
-        aria-label={t.choose}
-        className={cn(
-          'group relative size-24 shrink-0 cursor-pointer self-start rounded-full outline-offset-4 transition-shadow focus-visible:outline-2 focus-visible:outline-viratec-lime disabled:cursor-wait',
-          isDragging && 'ring-2 ring-viratec-lime ring-offset-4 ring-offset-viratec-deep',
-        )}
-      >
-        <UserAvatar name={name} avatarUrl={avatarUrl} className="size-24 text-3xl" />
-        <span
-          aria-hidden="true"
+      <Tooltip text={t.choose} className="shrink-0 self-start">
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+          disabled={isBusy}
+          aria-label={t.choose}
           className={cn(
-            'absolute inset-0 flex items-center justify-center rounded-full bg-viratec-ink/60 text-white transition-opacity',
-            isBusy || isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+            'group relative size-24 shrink-0 cursor-pointer rounded-full outline-offset-4 transition-shadow focus-visible:outline-2 focus-visible:outline-viratec-lime disabled:cursor-wait',
+            isDragging && 'ring-2 ring-viratec-lime ring-offset-4 ring-offset-viratec-deep',
           )}
         >
-          {isBusy ? (
-            <LoaderCircle className="size-6 animate-spin motion-reduce:animate-none" />
-          ) : (
-            <Camera className="size-6" />
-          )}
-        </span>
-      </button>
+          <UserAvatar name={name} avatarUrl={avatarUrl} className="size-24 text-3xl" />
+          <span
+            aria-hidden="true"
+            className={cn(
+              'absolute inset-0 flex items-center justify-center rounded-full bg-viratec-ink/60 text-white transition-opacity',
+              isBusy || isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+            )}
+          >
+            {isBusy ? (
+              <LoaderCircle className="size-6 animate-spin motion-reduce:animate-none" />
+            ) : (
+              <Camera className="size-6" />
+            )}
+          </span>
+        </button>
+      </Tooltip>
 
       <div className="flex min-w-0 flex-col gap-3">
         <div className="flex flex-col gap-1">

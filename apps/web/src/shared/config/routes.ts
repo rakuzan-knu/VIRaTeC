@@ -36,6 +36,10 @@ export const buildPublicationPath = (slug: string) =>
 export const buildPersonPath = (userId: string) =>
   ROUTES.PERSON.replace(':userId', encodeURIComponent(userId));
 
+export const SITE_EDITOR_PARAM = 'edit';
+
+export const SITE_EDITOR_PATH = `/?${SITE_EDITOR_PARAM}=1`;
+
 export const ACCOUNT_SECTION_PARAM = 'section';
 
 export const buildAccountPath = (section?: string) =>

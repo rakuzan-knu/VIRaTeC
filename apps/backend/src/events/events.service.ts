@@ -23,6 +23,11 @@ export class EventsService {
 
   constructor(private prisma: PrismaService) {}
 
+  clearCache() {
+    this.listCache.clear();
+    this.itemCache.clear();
+  }
+
   findAll(query: ListEventsQueryDto) {
     const { type } = query;
     return this.listCache.get(cursorCacheKey(query, type), async () => {

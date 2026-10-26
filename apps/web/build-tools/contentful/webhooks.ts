@@ -15,10 +15,49 @@ const TOPICS = [
   'Asset.delete',
 ] as const;
 
-const TARGETS = [
-  { id: 'vercel-production', environment: 'master', variable: 'VERCEL_DEPLOY_HOOK_PRODUCTION' },
-  { id: 'vercel-preview', environment: 'dev', variable: 'VERCEL_DEPLOY_HOOK_PREVIEW' },
-] as const;
+const CACHE_HOOK = /^https:\/\/\S+\/api\/v1\/content\/webhook$/;
+
+interface WebhookTarget {
+  id: string;
+  name: string;
+  environment: 'master' | 'dev';
+  variable: string;
+  pattern: RegExp;
+  secret?: string;
+}
+
+const TARGETS: readonly WebhookTarget[] = [
+  {
+    id: 'vercel-production',
+    name: 'Deploy master to Vercel',
+    environment: 'master',
+    variable: 'VERCEL_DEPLOY_HOOK_PRODUCTION',
+    pattern: VERCEL_HOOK,
+  },
+  {
+    id: 'vercel-preview',
+    name: 'Deploy dev to Vercel',
+    environment: 'dev',
+    variable: 'VERCEL_DEPLOY_HOOK_PREVIEW',
+    pattern: VERCEL_HOOK,
+  },
+  {
+    id: 'api-cache-production',
+    name: 'Refresh master content cache',
+    environment: 'master',
+    variable: 'CONTENT_CACHE_HOOK_PRODUCTION',
+    pattern: CACHE_HOOK,
+    secret: 'CONTENTFUL_WEBHOOK_SECRET',
+  },
+  {
+    id: 'api-cache-preview',
+    name: 'Refresh dev content cache',
+    environment: 'dev',
+    variable: 'CONTENT_CACHE_HOOK_PREVIEW',
+    pattern: CACHE_HOOK,
+    secret: 'CONTENTFUL_WEBHOOK_SECRET',
+  },
+];
 
 const webhookSchema = z.object({ sys: z.object({ version: z.number() }) });
 
@@ -32,8 +71,13 @@ runScript(async () => {
       skipped.push(`${target.environment}: ${target.variable} is not set`);
       continue;
     }
-    if (!VERCEL_HOOK.test(hook)) {
-      throw new Error(`${target.variable} must be a Vercel deploy hook URL`);
+    if (!target.pattern.test(hook)) {
+      throw new Error(`${target.variable} has an unexpected URL format`);
+    }
+    const secret = target.secret ? process.env[target.secret]?.trim() : undefined;
+    if (target.secret && !secret) {
+      skipped.push(`${target.environment}: ${target.secret} is not set`);
+      continue;
     }
 
     const url = new URL(
@@ -53,8 +97,11 @@ runScript(async () => {
       token: config.token,
       headers: existing ? { 'X-Contentful-Version': String(existing.sys.version) } : {},
       body: {
-        name: `Deploy ${target.environment} to Vercel`,
+        name: target.name,
         url: hook,
+        ...(secret && {
+          headers: [{ key: 'Authorization', value: `Bearer ${secret}`, secret: true }],
+        }),
         topics: TOPICS,
         filters: [{ equals: [{ doc: 'sys.environment.sys.id' }, target.environment] }],
         active: true,

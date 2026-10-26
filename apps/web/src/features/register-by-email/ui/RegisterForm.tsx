@@ -8,6 +8,7 @@ import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { Input } from '@/shared/ui/auth-input';
 import { Button } from '@/shared/ui/auth-button';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { createRegisterFormSchema, type RegisterFormValues } from '../model/schema';
@@ -190,14 +191,19 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
               aria-describedby={errors.password ? 'register-password-error' : undefined}
               className="h-[54px] lg:h-[clamp(42px,6svh,54px)] pr-14 text-base"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
+            <Tooltip
+              text={showPassword ? common.hidePassword : common.showPassword}
+              className="absolute right-2 top-1/2 -translate-y-1/2"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? common.hidePassword : common.showPassword}
+                className="flex size-10 cursor-pointer items-center justify-center rounded-md text-auth-muted hover:text-auth-navy"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </Tooltip>
           </div>
           {errors.password && (
             <p id="register-password-error" className={FIELD_ERROR_CLASS}>

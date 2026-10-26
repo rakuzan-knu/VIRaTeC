@@ -7,6 +7,7 @@ import { StepsList } from '@/shared/ui/steps-list';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageIntro } from '@/widgets/page-intro';
 import { PageLayout } from '@/widgets/page-layout';
+import { PageSections } from '@/widgets/page-sections';
 import { useViratecContent } from '../model/content';
 import { IntroVideo } from './IntroVideo';
 import introVideoAv1 from '../assets/what-is-viratec.av1.mp4';
@@ -33,116 +34,129 @@ export function ViratecPage() {
         />
       }
     >
-      <PageSection aria-labelledby="what-is-title">
-        <SectionHeader
-          id="what-is-title"
-          eyebrow={content.whatIsEyebrow}
-          title={content.whatIsTitle}
-        />
-        <p className="text-base leading-6 text-viratec-muted lg:max-w-[760px] lg:text-lg lg:leading-7">
-          {content.whatIsDescription}
-        </p>
-        <IntroVideo
-          title={content.videoTitle}
-          duration="1:30"
-          transcriptLabel={content.videoTranscriptLabel}
-          transcript={content.videoTranscript}
-          poster={introVideoPoster}
-          sources={[
-            { src: introVideoAv1, type: 'video/mp4; codecs="av01.0.08M.08"' },
-            { src: introVideoWebm, type: 'video/webm' },
-            { src: introVideoMp4, type: 'video/mp4' },
-          ]}
-        />
-        <ul className="grid grid-cols-2 gap-x-4 gap-y-6 lg:flex lg:justify-between">
-          {content.stats.map((stat) => (
-            <li key={stat.label} className="flex flex-col gap-1">
-              <span className="text-[36px] leading-[42px] text-[#b5fa66] lg:text-5xl lg:leading-[54px]">
-                {stat.value}
-              </span>
-              <span className="text-sm leading-5 text-viratec-soft">{stat.label}</span>
-            </li>
-          ))}
-        </ul>
-      </PageSection>
-
-      <PageSection tone="surface" aria-labelledby="journey-title">
-        <SectionHeader
-          id="journey-title"
-          eyebrow={content.journeyEyebrow}
-          title={content.journeyTitle}
-          accent={content.journeyAccent}
-        />
-        <JourneyTimeline milestones={content.milestones} />
-      </PageSection>
-
-      <PageSection aria-labelledby="participants-title">
-        <SectionHeader
-          id="participants-title"
-          eyebrow={content.participantsEyebrow}
-          title={content.participantsTitle}
-        />
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {content.participants.map((participant) => (
-            <li key={participant.title}>
-              <InfoCard
-                title={participant.title}
-                description={participant.description}
-                className="lg:min-h-[204px]"
+      <PageSections
+        page="VIRATEC"
+        sections={{
+          whatIs: (
+            <PageSection aria-labelledby="what-is-title">
+              <SectionHeader
+                id="what-is-title"
+                eyebrow={content.whatIsEyebrow}
+                title={content.whatIsTitle}
               />
-            </li>
-          ))}
-        </ul>
-      </PageSection>
-
-      <PageSection tone="surface" aria-labelledby="coil-title">
-        <SectionHeader
-          id="coil-title"
-          eyebrow={content.coilEyebrow}
-          title={content.coilTitle}
-          description={content.coilDescription}
-        />
-        <ul className="grid gap-6 lg:grid-cols-3">
-          {content.principles.map((principle) => (
-            <li key={principle.title}>
-              <InfoCard
-                image={principle.image}
-                title={principle.title}
-                description={principle.description}
-                linkLabel={common.learnMore}
-                to={principle.to}
-                className="lg:min-h-[433px]"
+              <p className="text-base leading-6 text-viratec-muted lg:max-w-[760px] lg:text-lg lg:leading-7">
+                {content.whatIsDescription}
+              </p>
+              <IntroVideo
+                title={content.videoTitle}
+                duration="1:30"
+                transcriptLabel={content.videoTranscriptLabel}
+                transcript={content.videoTranscript}
+                poster={introVideoPoster}
+                sources={[
+                  { src: introVideoAv1, type: 'video/mp4; codecs="av01.0.08M.08"' },
+                  { src: introVideoWebm, type: 'video/webm' },
+                  { src: introVideoMp4, type: 'video/mp4' },
+                ]}
               />
-            </li>
-          ))}
-        </ul>
-      </PageSection>
-
-      <PageSection aria-labelledby="join-title">
-        <SectionHeader
-          id="join-title"
-          eyebrow={content.joinEyebrow}
-          title={content.joinTitle}
-          accent={content.joinAccent}
-        />
-        <StepsList steps={content.joinSteps} />
-      </PageSection>
-
-      <PageSection tone="surface" aria-labelledby="moments-title">
-        <SectionHeader
-          id="moments-title"
-          eyebrow={content.momentsEyebrow}
-          title={content.momentsTitle}
-          accent={content.momentsAccent}
-        />
-        <MomentsGallery moments={content.moments} />
-      </PageSection>
-
-      <CtaSection
-        tone="base"
-        title={content.ctaTitle}
-        description={content.ctaDescription}
-        action={{ label: common.seeOpportunities, to: ROUTES.OPPORTUNITIES }}
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-6 lg:flex lg:justify-between">
+                {content.stats.map((stat) => (
+                  <li key={stat.label} className="flex flex-col gap-1">
+                    <span className="text-[36px] leading-[42px] text-[#b5fa66] lg:text-5xl lg:leading-[54px]">
+                      {stat.value}
+                    </span>
+                    <span className="text-sm leading-5 text-viratec-soft">{stat.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </PageSection>
+          ),
+          journey: (
+            <PageSection tone="surface" aria-labelledby="journey-title">
+              <SectionHeader
+                id="journey-title"
+                eyebrow={content.journeyEyebrow}
+                title={content.journeyTitle}
+                accent={content.journeyAccent}
+              />
+              <JourneyTimeline milestones={content.milestones} />
+            </PageSection>
+          ),
+          participants: (
+            <PageSection aria-labelledby="participants-title">
+              <SectionHeader
+                id="participants-title"
+                eyebrow={content.participantsEyebrow}
+                title={content.participantsTitle}
+              />
+              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {content.participants.map((participant) => (
+                  <li key={participant.title}>
+                    <InfoCard
+                      title={participant.title}
+                      description={participant.description}
+                      className="lg:min-h-[204px]"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </PageSection>
+          ),
+          coil: (
+            <PageSection tone="surface" aria-labelledby="coil-title">
+              <SectionHeader
+                id="coil-title"
+                eyebrow={content.coilEyebrow}
+                title={content.coilTitle}
+                description={content.coilDescription}
+              />
+              <ul className="grid gap-6 lg:grid-cols-3">
+                {content.principles.map((principle) => (
+                  <li key={principle.title}>
+                    <InfoCard
+                      image={principle.image}
+                      title={principle.title}
+                      description={principle.description}
+                      linkLabel={common.learnMore}
+                      to={principle.to}
+                      className="lg:min-h-[433px]"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </PageSection>
+          ),
+          join: (
+            <PageSection aria-labelledby="join-title">
+              <SectionHeader
+                id="join-title"
+                eyebrow={content.joinEyebrow}
+                title={content.joinTitle}
+                accent={content.joinAccent}
+              />
+              <StepsList steps={content.joinSteps} />
+            </PageSection>
+          ),
+          moments: (
+            <PageSection tone="surface" aria-labelledby="moments-title">
+              <SectionHeader
+                id="moments-title"
+                eyebrow={content.momentsEyebrow}
+                title={content.momentsTitle}
+                accent={content.momentsAccent}
+              />
+              <MomentsGallery moments={content.moments} />
+            </PageSection>
+          ),
+          cta: (
+            <CtaSection
+              tone="base"
+              title={content.ctaTitle}
+              description={content.ctaDescription}
+              action={{ label: common.seeOpportunities, to: ROUTES.OPPORTUNITIES }}
+            />
+          ),
+        }}
       />
     </PageLayout>
   );

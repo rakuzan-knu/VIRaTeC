@@ -4,6 +4,8 @@ import { useSessionStore } from '@/entities/session';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import { isStaleChunkError, reloadForStaleChunk } from '@/shared/lib';
 import { linkButtonClassName } from '@/shared/ui/link-button';
+import { KeyboardShortcuts } from '@/widgets/keyboard-shortcuts';
+import { SiteEditorMount } from '@/widgets/site-editor';
 
 const ROUTE_ERROR_MESSAGES = defineMessages({
   en: {
@@ -30,6 +32,8 @@ export function RootLayout() {
     <>
       <Outlet />
       <ScrollRestoration />
+      <KeyboardShortcuts />
+      <SiteEditorMount />
     </>
   );
 }
