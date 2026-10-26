@@ -8,7 +8,13 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"]
   },
   "include": ["vite.config.ts", "build-tools"]
 }

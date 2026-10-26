@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
-import { useLocalized } from '@/shared/i18n';
-import { HOME_CONTENT } from '../model/content';
+import { useHomeContent } from '../model/content';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import {
@@ -17,7 +16,7 @@ import { trackSpotlight } from '@/shared/lib';
 import { CountUp } from '@/shared/ui/count-up';
 
 export function ResearchSection() {
-  const { research } = useLocalized(HOME_CONTENT);
+  const { research } = useHomeContent();
 
   return (
     <section aria-labelledby="research-title" className="bg-viratec-deep">

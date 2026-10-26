@@ -8,6 +8,9 @@
     "build": "tsc -b && vite build && vite build --ssr src/entry-server.tsx",
     "preview": "vite preview",
     "brand:assets": "node build-tools/generate-brand-assets.ts",
+    "content:model": "node --env-file-if-exists=.env.local build-tools/contentful/model.ts",
+    "content:pull": "node --env-file-if-exists=.env.local build-tools/contentful/pull.ts",
+    "content:webhooks": "node --env-file-if-exists=.env.local build-tools/contentful/webhooks.ts",
     "typecheck": "tsc -b && tsc --noEmit -p tsconfig.tests.json",
     "test:ui": "playwright test",
     "lint": "oxlint"

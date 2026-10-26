@@ -17,13 +17,18 @@ clean production builds resolve the same runtime dependencies as preview builds.
 
 Configure these in Vercel for production and preview:
 
-| Variable             | Value                                                                         |
-| -------------------- | ----------------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`  | `/api/v1`                                                                     |
-| `DATABASE_URL`       | Managed by the Neon integration                                               |
-| `JWT_ACCESS_SECRET`  | Random secret, distinct per environment                                       |
-| `JWT_REFRESH_SECRET` | Independent random secret, distinct per environment                           |
-| `CORS_ORIGIN`        | Exact permitted frontend origin; production uses `https://viratec.vercel.app` |
+| Variable                    | Value                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`         | `/api/v1`                                                                     |
+| `DATABASE_URL`              | Managed by the Neon integration                                               |
+| `JWT_ACCESS_SECRET`         | Random secret, distinct per environment                                       |
+| `JWT_REFRESH_SECRET`        | Independent random secret, distinct per environment                           |
+| `CORS_ORIGIN`               | Exact permitted frontend origin; production uses `https://viratec.vercel.app` |
+| `CONTENTFUL_SPACE_ID`       | Contentful space ID                                                           |
+| `CONTENTFUL_ENVIRONMENT`    | `master` for production, `dev` for preview                                    |
+| `CONTENTFUL_DELIVERY_TOKEN` | Content Delivery API token                                                    |
+
+The web build pulls the site content from Contentful first, and the API serves the same variables as live content at `/api/v1/content/entries`; see [Contentful](contentful.md) for the deploy hooks and webhooks.
 
 Neon uses the main database for production and creates an isolated database branch for each preview.
 The API build applies committed Prisma migrations with `prisma migrate deploy` before publishing.

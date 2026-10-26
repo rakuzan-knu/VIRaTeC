@@ -6,7 +6,7 @@
       "root": "apps/web",
       "framework": "vite",
       "installCommand": "pnpm install --frozen-lockfile --node-linker=hoisted",
-      "buildCommand": "pnpm --filter @viratec/contracts build && pnpm build",
+      "buildCommand": "pnpm --filter @viratec/contracts build && pnpm content:pull --fallback && pnpm build",
       "outputDirectory": "dist",
       "routes": [
         {
@@ -45,7 +45,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://*.googleusercontent.com; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://accounts.google.com; connect-src 'self' https://accounts.google.com; frame-src 'self' https://accounts.google.com"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://*.googleusercontent.com https://images.ctfassets.net; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://accounts.google.com; connect-src 'self' https://accounts.google.com; frame-src 'self' https://accounts.google.com"
         }
       ]
     }
