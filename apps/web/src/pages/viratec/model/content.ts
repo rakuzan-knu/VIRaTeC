@@ -34,6 +34,8 @@ export interface ViratecContent {
   whatIsTitle: string;
   whatIsDescription: string;
   videoTitle: string;
+  videoTranscriptLabel: string;
+  videoTranscript: string[];
   stats: Stat[];
   journeyEyebrow: string;
   journeyTitle: string;

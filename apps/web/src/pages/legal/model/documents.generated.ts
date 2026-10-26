@@ -2,8 +2,8 @@ import type { LegalDocument, LegalDocumentData } from './types';
 
 export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
   terms: {
-    version: '1.0',
-    updatedAt: '2026-10-22',
+    version: '1.1',
+    updatedAt: '2026-10-26',
     content: {
       en: {
         title: 'Terms of Service',
@@ -303,8 +303,8 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
     },
   },
   privacy: {
-    version: '1.0',
-    updatedAt: '2026-10-22',
+    version: '1.1',
+    updatedAt: '2026-10-26',
     content: {
       en: {
         title: 'Privacy Policy',
@@ -335,7 +335,7 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
               rows: [
                 [
                   'Account data',
-                  'Email address, name, password (stored only as an Argon2 hash)',
+                  'Email address, name, password (stored only as an Argon2 hash), the date and version of the Terms you accepted',
                   'You, at registration',
                 ],
                 [
@@ -383,6 +383,10 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
                   'Performance of our agreement with you (Terms of Service); GDPR Art. 6(1)(b)',
                 ],
                 [
+                  'Keeping a record that you accepted the Terms of Service and this Policy',
+                  'Our legal obligation and legitimate interest in proving the agreement; GDPR Art. 6(1)(c) and (f)',
+                ],
+                [
                   'Publishing your profile, papers and projects to the community',
                   'Performance of our agreement; your choice to publish',
                 ],
@@ -427,7 +431,7 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
             paragraphs: ['We share personal data only when necessary and only with:'],
             list: [
               'Google — to verify your identity if you choose Google sign-in (Google acts as an independent controller under its own privacy policy);',
-              'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement;',
+              'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement: Vercel Inc. (website and API hosting, Frankfurt, Germany region) and Neon Inc. (database hosting, Frankfurt, Germany region);',
               'partner universities and project co-participants — only the profile information and content you make visible within a joint project;',
               'public authorities — only when we are legally required to do so.',
             ],
@@ -539,7 +543,7 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
               rows: [
                 [
                   'Дані облікового запису',
-                  'Електронна пошта, ім’я, пароль (зберігається лише як хеш Argon2)',
+                  'Електронна пошта, ім’я, пароль (зберігається лише як хеш Argon2), дата та версія прийнятих Умов',
                   'Ви, під час реєстрації',
                 ],
                 [
@@ -587,6 +591,10 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
                   'Виконання угоди з вами (Умови використання); ст. 6(1)(b) GDPR',
                 ],
                 [
+                  'Підтвердження того, що ви прийняли Умови використання та цю Політику',
+                  'Наш юридичний обов’язок і законний інтерес у підтвердженні угоди; ст. 6(1)(c) і (f) GDPR',
+                ],
+                [
                   'Публікація профілю, статей і проєктів у спільноті',
                   'Виконання угоди; ваше рішення опублікувати',
                 ],
@@ -629,7 +637,7 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
             paragraphs: ['Ми передаємо персональні дані лише за потреби й лише таким отримувачам:'],
             list: [
               'Google — для перевірки особи, якщо ви обираєте вхід через Google (Google діє як самостійний володілець даних згідно з власною політикою конфіденційності);',
-              'постачальникам хостингу та інфраструктури, які зберігають і обробляють дані від нашого імені на підставі договору про обробку даних;',
+              'постачальникам хостингу та інфраструктури, які зберігають і обробляють дані від нашого імені на підставі договору про обробку даних: Vercel Inc. (хостинг сайту та API, регіон Франкфурт, Німеччина) і Neon Inc. (хостинг бази даних, регіон Франкфурт, Німеччина);',
               'університетам-партнерам і учасникам спільних проєктів — лише ту інформацію профілю та контент, які ви робите видимими в межах проєкту;',
               'державним органам — лише у випадках, передбачених законом.',
             ],
@@ -716,8 +724,8 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
     },
   },
   cookies: {
-    version: '1.0',
-    updatedAt: '2026-10-22',
+    version: '1.1',
+    updatedAt: '2026-10-26',
     content: {
       en: {
         title: 'Cookie Policy',
@@ -767,9 +775,10 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
           {
             id: 'local-storage',
             title: 'What we store in your browser',
-            summary: 'Three entries in your browser’s local storage. They never leave your device.',
+            summary:
+              'Three entries in your browser’s local storage and one in session storage. They never leave your device.',
             paragraphs: [
-              'We use your browser’s local storage — a similar technology that stays on your device and is not sent with every request. Here is the full list:',
+              'We use your browser’s local and session storage — similar technologies that stay on your device and are not sent with every request. Here is the full list:',
             ],
             table: {
               columns: ['Key', 'Purpose', 'Type', 'Kept until'],
@@ -791,6 +800,12 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
                   'Names and emails of accounts used on this device, for quick account switching (no passwords)',
                   'Preference, functional',
                   'You remove the account from the list or clear site data',
+                ],
+                [
+                  'viratec_stale_chunk_reload (session storage)',
+                  'The time of the last automatic reload after a site update, so the page never reloads in a loop',
+                  'Technical, strictly necessary',
+                  'You close the tab',
                 ],
               ],
             },
@@ -879,9 +894,10 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
           {
             id: 'local-storage',
             title: 'Що ми зберігаємо в браузері',
-            summary: 'Три записи в локальному сховищі браузера. Вони не залишають ваш пристрій.',
+            summary:
+              'Три записи в локальному сховищі браузера й один у сховищі сеансу. Вони не залишають ваш пристрій.',
             paragraphs: [
-              'Ми використовуємо локальне сховище браузера (local storage) — схожу технологію, дані якої залишаються на вашому пристрої та не надсилаються з кожним запитом. Ось повний перелік:',
+              'Ми використовуємо локальне сховище (local storage) і сховище сеансу (session storage) браузера — схожі технології, дані яких залишаються на вашому пристрої та не надсилаються з кожним запитом. Ось повний перелік:',
             ],
             table: {
               columns: ['Ключ', 'Призначення', 'Тип', 'Зберігається до'],
@@ -903,6 +919,12 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
                   'Імена та адреси облікових записів, використаних на цьому пристрої, для швидкого перемикання (без паролів)',
                   'Налаштування, функціональне',
                   'Видалення запису зі списку або очищення даних сайту',
+                ],
+                [
+                  'viratec_stale_chunk_reload (session storage)',
+                  'Час останнього автоматичного перезавантаження після оновлення сайту, щоб сторінка не перезавантажувалася по колу',
+                  'Технічне, суворо необхідне',
+                  'Закриття вкладки',
                 ],
               ],
             },
@@ -947,8 +969,8 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
     },
   },
   guidelines: {
-    version: '1.0',
-    updatedAt: '2026-10-22',
+    version: '1.1',
+    updatedAt: '2026-10-26',
     content: {
       en: {
         title: 'Community Guidelines',

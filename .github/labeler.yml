@@ -11,7 +11,7 @@ infra:
       - any-glob-to-any-file: '.github/**/*'
       - any-glob-to-any-file: 'docker-compose*.yml'
       - any-glob-to-any-file: 'Dockerfile*'
-      - any-glob-to-any-file: 'nginx.conf'
+      - any-glob-to-any-file: 'apps/web/docker/**'
 
 docs:
   - changed-files:

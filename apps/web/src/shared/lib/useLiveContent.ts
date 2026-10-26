@@ -22,6 +22,15 @@ const matchesShape = (snapshot: unknown, live: unknown): boolean => {
   return typeof snapshot === typeof live;
 };
 
+const withSnapshotFallback = (snapshot: unknown, live: unknown): unknown => {
+  if (!isRecord(snapshot) || !isRecord(live)) return live;
+  const merged: Record<string, unknown> = { ...snapshot };
+  for (const [key, value] of Object.entries(live)) {
+    merged[key] = value === undefined ? snapshot[key] : withSnapshotFallback(snapshot[key], value);
+  }
+  return merged;
+};
+
 const fetchLiveExports = async (domainId: string): Promise<LiveExports> => {
   const { buildLiveExports, contentTypesFor } =
     await import('../../../build-tools/contentful/runtime.ts');
@@ -44,7 +53,10 @@ export const useLiveContent = <T>(domainId: string, exportName: string, snapshot
   const live = data?.[exportName];
 
   return useMemo(
-    () => (live !== undefined && matchesShape(snapshot, live) ? (live as T) : snapshot),
+    () =>
+      live !== undefined && matchesShape(snapshot, live)
+        ? (withSnapshotFallback(snapshot, live) as T)
+        : snapshot,
     [live, snapshot],
   );
 };

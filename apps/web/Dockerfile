@@ -31,7 +31,9 @@ RUN apk add --no-cache curl
 RUN rm -rf /usr/share/nginx/html/*
 
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
-COPY apps/web/docker/nginx.conf /etc/nginx/conf.d/default.conf
+ENV CSP_CONNECT_SRC=""
+RUN rm -f /etc/nginx/conf.d/default.conf
+COPY apps/web/docker/default.conf.template apps/web/docker/security-headers.inc.template /etc/nginx/templates/
 
 EXPOSE 80
 

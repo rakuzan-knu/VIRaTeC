@@ -45,6 +45,8 @@ export function ViratecPage() {
         <IntroVideo
           title={content.videoTitle}
           duration="1:30"
+          transcriptLabel={content.videoTranscriptLabel}
+          transcript={content.videoTranscript}
           poster={introVideoPoster}
           sources={[
             { src: introVideoAv1, type: 'video/mp4; codecs="av01.0.08M.08"' },
