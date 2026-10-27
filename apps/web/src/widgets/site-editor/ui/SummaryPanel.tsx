@@ -1,14 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import {
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-  ImageIcon,
-  ListRestart,
-  Redo2,
-  Trash2,
-  Undo2,
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, ImageIcon, ListRestart, Redo2, Trash2, Undo2 } from 'lucide-react';
 import {
   AdminPermission,
   recordTypeId,
@@ -37,10 +28,10 @@ import {
   usePublishContent,
 } from '../model/queries';
 import { SHORTCUTS } from '../model/shortcuts';
-import { useSiteEditorStore } from '../model/store';
+import { useSiteEditorStore, type EditorSelection } from '../model/store';
 import { EDITOR_ROOT_ATTRIBUTE } from '../model/useCanvasTargets';
-import { AddRecordMenu } from './AddRecordMenu';
 import { ConfirmDialog } from './ConfirmDialog';
+import { DraftIssues } from './DraftIssues';
 import { IconButton } from './IconButton';
 
 const RECORD_KINDS: Partial<Record<ContentResourceKind, RecordResource>> = {
@@ -50,6 +41,13 @@ const RECORD_KINDS: Partial<Record<ContentResourceKind, RecordResource>> = {
 };
 
 const STEP_UP_CODES = new Set(['STEP_UP_REQUIRED', 'MFA_REVERIFY_REQUIRED']);
+
+const changeSelection = (change: ContentChangeDto): EditorSelection => {
+  const resource = RECORD_KINDS[change.resourceType];
+  return resource
+    ? { entryId: change.resourceId, contentTypeId: recordTypeId(resource) }
+    : { entryId: change.resourceId };
+};
 
 const changeLabel = (change: ContentChangeDto, t: SiteEditorMessages) => {
   const resource = RECORD_KINDS[change.resourceType];
@@ -74,7 +72,6 @@ function ChangeRow({
   const locale = useLocale();
   const select = useSiteEditorStore((state) => state.select);
   const label = changeLabel(change, t);
-  const resource = RECORD_KINDS[change.resourceType];
   const time = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
     hour: '2-digit',
     minute: '2-digit',
@@ -116,13 +113,7 @@ function ChangeRow({
         {change.resourceType !== 'ASSET' && (
           <button
             type="button"
-            onClick={() =>
-              select(
-                resource
-                  ? { entryId: change.resourceId, contentTypeId: recordTypeId(resource) }
-                  : { entryId: change.resourceId },
-              )
-            }
+            onClick={() => select(changeSelection(change))}
             className="cursor-pointer rounded-lg px-2 py-1.5 text-[13px] text-viratec-cyan hover:bg-white/6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus"
           >
             {t.changes.open}
@@ -147,10 +138,7 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
   const canEdit = permissions.includes(AdminPermission.CONTENT_EDIT);
   const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
   const issuesByDomain = useContentPreviewStore((state) => state.issues);
-  const issues = useMemo(
-    () => [...new Set(Object.values(issuesByDomain).flat())],
-    [issuesByDomain],
-  );
+  const issues = useMemo(() => Object.values(issuesByDomain).flat(), [issuesByDomain]);
   const changes = useContentChanges();
   const discard = useDiscardChange();
   const publish = usePublishContent();
@@ -282,23 +270,7 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
         <p className="rounded-xl bg-white/5 px-3 py-2 text-[13px] leading-5 text-text-muted">
           {t.draftsExplained} {t.hint}
         </p>
-        {issues.length > 0 && (
-          <div
-            role="alert"
-            className="flex flex-col gap-2 rounded-2xl border border-state-error/40 bg-state-error/8 p-3"
-          >
-            <span className="flex items-center gap-2 text-[14px] font-medium text-state-error">
-              <AlertTriangle aria-hidden="true" className="size-4" />
-              {t.changes.issuesTitle}
-            </span>
-            <p className="text-[13px] text-text-muted">{t.changes.issuesText}</p>
-            <ul className="flex list-disc flex-col gap-1 pl-5 text-[13px] text-text-primary">
-              {issues.slice(0, 8).map((issue) => (
-                <li key={issue}>{issue}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {issues.length > 0 && <DraftIssues issues={issues} changes={items} t={t} />}
 
         {changes.isPending && (
           <p role="status" className="text-text-muted">
@@ -311,7 +283,6 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
             <Button label={t.retry} variant="secondary" onClick={() => void changes.refetch()} />
           </div>
         )}
-        <AddRecordMenu t={t} />
         {changes.isSuccess && items.length === 0 && (
           <p className="text-[14px] text-text-muted">{t.changes.empty}</p>
         )}
@@ -392,7 +363,7 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
         onConfirm={() => {
           if (!discarding) return;
           useSiteEditorStore.getState().dropDraft(discarding.resourceId);
-          discard.mutate(discarding.id, { onSettled: () => setDiscarding(null) });
+          discard.mutate(discarding, { onSettled: () => setDiscarding(null) });
         }}
         onClose={() => setDiscarding(null)}
       />

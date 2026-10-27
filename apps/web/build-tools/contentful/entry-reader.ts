@@ -46,19 +46,71 @@ export const entryLinksSchema = z.array(entryLinkSchema);
 
 export const nonEmpty = z.string().trim().min(1);
 
+export type ContentIssueKind =
+  | 'required'
+  | 'invalid'
+  | 'needsPageLink'
+  | 'missingEntry'
+  | 'wrongEntryType'
+  | 'linkBothTargets'
+  | 'unknownPage'
+  | 'linkNoTarget'
+  | 'tooManyStats'
+  | 'duplicateLayout'
+  | 'tableCells'
+  | 'singleEntry'
+  | 'homeSeoMissing'
+  | 'founderCount'
+  | 'contactEmailMissing'
+  | 'legalDocumentsMissing';
+
+export interface ContentIssueTarget {
+  entryId: string;
+  contentTypeId: string;
+  fieldId?: string;
+  locale?: Locale;
+}
+
+export interface ContentIssueDetail {
+  kind: ContentIssueKind;
+  target?: ContentIssueTarget;
+  value?: string;
+  count?: number;
+  locale?: Locale;
+}
+
+export interface ContentIssue extends ContentIssueDetail {
+  message: string;
+}
+
 export interface Diagnostics {
-  report: (issue: string) => void;
+  report: (issue: string, detail: ContentIssueDetail) => void;
   warn: (warning: string) => void;
 }
 
+export const entryTarget = (
+  entry: RawEntry,
+  fieldId?: string,
+  locale?: Locale,
+): ContentIssueTarget => ({
+  entryId: entry.sys.id,
+  contentTypeId: entry.sys.contentType.sys.id,
+  ...(fieldId && { fieldId }),
+  ...(locale && { locale }),
+});
+
 export const createDiagnostics = () => {
   const issues: string[] = [];
+  const details: ContentIssue[] = [];
   const warnings: string[] = [];
   const diagnostics: Diagnostics = {
-    report: (issue) => issues.push(issue),
+    report: (issue, detail) => {
+      issues.push(issue);
+      details.push({ message: issue, ...detail });
+    },
     warn: (warning) => warnings.push(warning),
   };
-  return { issues, warnings, diagnostics };
+  return { issues, details, warnings, diagnostics };
 };
 
 export const createReader = (
@@ -79,7 +131,10 @@ export const createReader = (
 
     const parsed = schema.safeParse(raw);
     if (!parsed.success) {
-      diagnostics.report(`${label}: "${id}" is invalid (${parsed.error.issues[0]?.message})`);
+      diagnostics.report(`${label}: "${id}" is invalid (${parsed.error.issues[0]?.message})`, {
+        kind: 'invalid',
+        target: entryTarget(entry, id, locale),
+      });
       return undefined;
     }
     return parsed.data;
@@ -87,11 +142,16 @@ export const createReader = (
 
   const require = <T>(id: string, schema: z.ZodType<T>, locale: Locale = DEFAULT_LOCALE) => {
     const value = read(id, schema, locale);
-    if (value === undefined) diagnostics.report(`${label}: "${id}" is required (${locale})`);
+    if (value === undefined) {
+      diagnostics.report(`${label}: "${id}" is required (${locale})`, {
+        kind: 'required',
+        target: entryTarget(entry, id, locale),
+      });
+    }
     return value;
   };
 
-  return { read, require };
+  return { entry, read, require };
 };
 
 export type EntryReader = ReturnType<typeof createReader>;

@@ -8,7 +8,13 @@ import {
   localizedField,
   type ContentTypeDefinition,
 } from '../content-types.ts';
-import { createReader, entryLinkSchema, nonEmpty, type RawEntry } from '../entry-reader.ts';
+import {
+  createReader,
+  entryLinkSchema,
+  entryTarget,
+  nonEmpty,
+  type RawEntry,
+} from '../entry-reader.ts';
 import type { ContentDomain, PullContext } from '../domain.ts';
 import { routeToken } from '../tokens.ts';
 
@@ -116,11 +122,18 @@ export const resolveEntry = (
 ): RawEntry | undefined => {
   const entry = context.collection.entries.get(id);
   if (!entry) {
-    context.diagnostics.report(`${label}: linked entry ${id} is missing or unpublished`);
+    context.diagnostics.report(`${label}: linked entry ${id} is missing or unpublished`, {
+      kind: 'missingEntry',
+      value: contentTypeId,
+    });
     return undefined;
   }
   if (entry.sys.contentType.sys.id !== contentTypeId) {
-    context.diagnostics.report(`${label}: linked entry ${id} must be a ${contentTypeId}`);
+    context.diagnostics.report(`${label}: linked entry ${id} must be a ${contentTypeId}`, {
+      kind: 'wrongEntryType',
+      target: entryTarget(entry),
+      value: contentTypeId,
+    });
     return undefined;
   }
   return entry;
@@ -143,17 +156,27 @@ export const readLinkTarget = (
   const route = reader.read('route', nonEmpty);
   const url = reader.read('url', nonEmpty);
   if (route && url) {
-    context.diagnostics.report(`${label} link: fill either the site page or the external URL`);
+    context.diagnostics.report(`${label} link: fill either the site page or the external URL`, {
+      kind: 'linkBothTargets',
+      target: entryTarget(entry, 'url'),
+    });
     return undefined;
   }
   if (route) {
     const routeKey = LINKABLE_ROUTES.find((key) => key === route);
     if (routeKey) return { to: routeToken(routeKey) };
-    context.diagnostics.report(`${label} link: unknown site page ${route}`);
+    context.diagnostics.report(`${label} link: unknown site page ${route}`, {
+      kind: 'unknownPage',
+      target: entryTarget(entry, 'route'),
+      value: route,
+    });
     return undefined;
   }
   if (url) return { href: url };
-  context.diagnostics.report(`${label} link: has neither a site page nor an external URL`);
+  context.diagnostics.report(`${label} link: has neither a site page nor an external URL`, {
+    kind: 'linkNoTarget',
+    target: entryTarget(entry, 'route'),
+  });
   return undefined;
 };
 

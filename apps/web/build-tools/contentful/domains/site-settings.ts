@@ -75,6 +75,7 @@ export const siteSettingsDomain: ContentDomain = {
     if (entries.length !== 1) {
       diagnostics.report(
         `site settings: expected exactly 1 published entry, found ${entries.length}`,
+        { kind: 'singleEntry', value: TYPE_ID, count: entries.length },
       );
       return [];
     }

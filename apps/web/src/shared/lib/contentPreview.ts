@@ -1,7 +1,10 @@
 import { create } from 'zustand';
+import type { ContentIssue } from '../../../build-tools/contentful/entry-reader.ts';
 import type { LayoutPage, PageSectionItem } from '@/shared/config/pageLayout';
 import { SITE_EDITOR_STORAGE_KEY } from '@/shared/config/storageKeys';
 import type { Locale } from '@/shared/i18n';
+
+export type { ContentIssue };
 
 export interface ContentFieldAddress {
   entryId: string;
@@ -88,11 +91,11 @@ export interface PageLayoutOverride {
 
 interface ContentPreviewState {
   enabled: boolean;
-  issues: Record<string, readonly string[]>;
+  issues: Record<string, readonly ContentIssue[]>;
   activeLayout: ActivePageLayout | null;
   layoutOverride: PageLayoutOverride | null;
   setEnabled: (enabled: boolean) => void;
-  setIssues: (domainId: string, issues: readonly string[]) => void;
+  setIssues: (domainId: string, issues: readonly ContentIssue[]) => void;
   setActiveLayout: (layout: ActivePageLayout | null) => void;
   setLayoutOverride: (override: PageLayoutOverride | null) => void;
 }

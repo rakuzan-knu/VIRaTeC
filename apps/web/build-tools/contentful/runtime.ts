@@ -6,6 +6,7 @@ import {
   createDiagnostics,
   rawAssetSchema,
   rawEntrySchema,
+  type ContentIssue,
   type EntryCollection,
 } from './entry-reader.ts';
 import { assetUrl, createAssetRegistry } from './tokens.ts';
@@ -27,7 +28,7 @@ export type FieldMarker = (address: FieldAddress) => string;
 
 export interface LiveExportOptions {
   strict?: boolean;
-  onIssues?: (issues: readonly string[]) => void;
+  onIssues?: (issues: readonly ContentIssue[]) => void;
 }
 
 const isMarkableText = (definition: FieldDefinition) =>
@@ -149,14 +150,14 @@ export const buildLiveExports = (
   { strict = true, onIssues }: LiveExportOptions = {},
 ): Record<string, unknown> => {
   const collection = toCollection(payload);
-  const { issues, diagnostics } = createDiagnostics();
+  const { issues, details, diagnostics } = createDiagnostics();
   const modules = findDomain(domainId).pull({
     collection,
     locales: payload.locales,
     diagnostics,
     assets: createAssetRegistry(),
   });
-  onIssues?.(issues);
+  onIssues?.(details);
   if (strict && issues.length > 0) {
     throw new Error(`Live content ${domainId} is invalid: ${issues[0]}`);
   }

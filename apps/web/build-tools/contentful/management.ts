@@ -80,7 +80,7 @@ export const createManagementClient = (config: ContentfulConfig) => {
       const { id, fields, ...rest } = definition;
       const saved = await put(
         `/content_types/${id}`,
-        { ...rest, fields: fields.map(({ help: _help, ...item }) => item) },
+        { ...rest, fields: fields.map(({ help: _help, source: _source, ...item }) => item) },
         existing ? versionHeader(existing) : {},
       );
       await publish('/content_types', saved);
