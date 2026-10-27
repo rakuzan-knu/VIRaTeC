@@ -8,6 +8,7 @@ import {
   changeLabel,
   entryLabel,
   findContentType,
+  isCollectionType,
   normalizeFields,
   sameFields,
   withFieldValue,
@@ -18,6 +19,7 @@ import type { SiteEditorMessages } from '../model/messages';
 import { useEditorEntry, useEntryReferences, useSaveEntry } from '../model/queries';
 import { useCurrentSelection, useSiteEditorStore } from '../model/store';
 import { SHORTCUTS } from '../model/shortcuts';
+import { AddSiblingEntryButton } from './AddSiblingEntryButton';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
 import { FieldEditor } from './FieldEditor';
 
@@ -49,6 +51,30 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
     setSavedAt(null);
     if (sameFields(next, data.fields)) dropDraft(data.id);
     else setDraft(data.id, { version: draft?.version ?? data.version, fields: next });
+  };
+
+  const persistField = (fieldId: string, localeCode: string, value: unknown) => {
+    if (!data || !type) return;
+    const fieldsToSave = normalizeFields(withFieldValue(data.fields, fieldId, localeCode, value));
+    const label = changeLabel(
+      type.name,
+      entryLabel(data.contentTypeId, fieldsToSave, data.locales, locale),
+    );
+    save.mutate(
+      { id: data.id, dto: { version: data.version, fields: fieldsToSave, label } },
+      {
+        onSuccess: (saved) => {
+          const pending = useSiteEditorStore.getState().drafts[data.id];
+          const rest = pending && withFieldValue(pending.fields, fieldId, localeCode, value);
+          if (rest && !sameFields(rest, saved.fields)) {
+            setDraft(data.id, { version: saved.version, fields: rest });
+          } else {
+            dropDraft(data.id);
+          }
+          announce(t.announce.saved);
+        },
+      },
+    );
   };
 
   const submit = () => {
@@ -191,6 +217,9 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
               })}
             </nav>
           )}
+          {canEdit && isCollectionType(type.id) && (
+            <AddSiblingEntryButton type={type} fields={fields} locales={data.locales} t={t} />
+          )}
           {type.fields.map((field) => (
             <FieldEditor
               key={field.id}
@@ -204,6 +233,7 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
               }
               t={t}
               onChange={(localeCode, value) => updateField(field.id, localeCode, value)}
+              onPersist={(localeCode, value) => persistField(field.id, localeCode, value)}
             />
           ))}
         </>
