@@ -25,6 +25,7 @@ import {
 import { ConfirmDialog } from './ConfirmDialog';
 import { EditorGate } from './EditorGate';
 import { EditorOutlines } from './EditorOutlines';
+import { SectionBadge } from './SectionBadge';
 import { HelpDialog } from './HelpDialog';
 import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
 import { InspectorPanel } from './InspectorPanel';
@@ -60,7 +61,7 @@ export function SiteEditor() {
   const layoutDraft = useSiteEditorStore((state) =>
     activeLayout ? state.layoutDrafts[activeLayout.page] : undefined,
   );
-  const { setMode, select, close, setSummaryOpen, reset, openStructure, closeStructure } =
+  const { setMode, select, setSummaryOpen, reset, openStructure, closeStructure } =
     useSiteEditorStore.getState();
   const selection = useCurrentSelection();
   const hasUnsavedDrafts = useHasUnsavedDrafts();
@@ -77,7 +78,7 @@ export function SiteEditor() {
     void refreshRecords();
   }, [refreshRecords]);
 
-  const pick = useCallback(
+  const open = useCallback(
     (target: CanvasTarget) => {
       setSelected(target);
       if (target.kind === 'section') {
@@ -87,18 +88,14 @@ export function SiteEditor() {
       select({
         entryId: target.address.entryId,
         contentTypeId: target.address.contentTypeId,
-        fieldId: target.address.fieldId,
+        fieldId: target.kind === 'entry' ? undefined : target.address.fieldId,
         locale: target.kind === 'field' ? target.address.locale : undefined,
       });
     },
     [select, openStructure],
   );
 
-  const hovered = useCanvasTargets(mode === 'edit' && !gate, pick);
-
-  useEffect(() => {
-    if (!selection && !structure) setSelected(null);
-  }, [selection, structure]);
+  const { hovered, section } = useCanvasTargets(mode === 'edit' && !gate, setSelected, open);
 
   useEffect(() => {
     const { setLayoutOverride } = useContentPreviewStore.getState();
@@ -126,8 +123,10 @@ export function SiteEditor() {
       if (event.key !== 'Escape' || document.querySelector('dialog[open]')) return;
       const state = useSiteEditorStore.getState();
       if (state.isSummaryOpen) state.setSummaryOpen(false);
+      else if (state.mode !== 'edit') return;
       else if (state.structure) state.closeStructure();
       else if (state.history.length > 0) state.close();
+      else setSelected(null);
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
@@ -150,13 +149,11 @@ export function SiteEditor() {
     void refreshRecords();
   };
 
+  const isStructureShown = mode === 'edit' && Boolean(structure);
+
   const switchMode = (next: EditorMode) => {
     setMode(next);
-    if (next === 'preview') {
-      close();
-      closeStructure();
-      setSummaryOpen(false);
-    }
+    if (next === 'preview') setSummaryOpen(false);
   };
 
   const pending = changes.data?.length ?? 0;
@@ -175,7 +172,23 @@ export function SiteEditor() {
       />
 
       {mode === 'edit' && (
-        <EditorOutlines hovered={hovered} selected={selected} sectionLabel={t.structure.section} />
+        <>
+          <EditorOutlines
+            hovered={hovered}
+            selected={selected}
+            sectionLabel={t.structure.section}
+          />
+          {section && (
+            <SectionBadge
+              key={section.sectionId}
+              section={section}
+              page={activeLayout?.page ?? null}
+              t={t}
+              onSelect={setSelected}
+              onOpen={open}
+            />
+          )}
+        </>
       )}
 
       <p role="status" aria-live="polite" className="sr-only">
@@ -234,9 +247,16 @@ export function SiteEditor() {
           <IconButton
             icon={LayoutList}
             label={t.structure.open}
-            aria-pressed={Boolean(structure)}
-            onClick={() => (structure ? closeStructure() : openStructure({}))}
-            className={structure ? 'bg-white/10 text-text-primary' : 'text-text-primary'}
+            aria-pressed={isStructureShown}
+            onClick={() => {
+              if (isStructureShown) {
+                closeStructure();
+                return;
+              }
+              setMode('edit');
+              openStructure({});
+            }}
+            className={isStructureShown ? 'bg-white/10 text-text-primary' : 'text-text-primary'}
           />
         )}
         <Tooltip text={t.summaryHint} placement="bottom" floatingClassName={EDITOR_TOOLTIP_CLASS}>
@@ -275,8 +295,9 @@ export function SiteEditor() {
       ) : (
         <>
           {isSummaryOpen && <SummaryPanel t={t} onExit={() => setConfirmingExit(true)} />}
-          {structure && !isSummaryOpen && <StructurePanel t={t} />}
-          {selection &&
+          {mode === 'edit' && structure && !isSummaryOpen && <StructurePanel t={t} />}
+          {mode === 'edit' &&
+            selection &&
             !isSummaryOpen &&
             !structure &&
             (recordResourceOf(selection.contentTypeId) ? (

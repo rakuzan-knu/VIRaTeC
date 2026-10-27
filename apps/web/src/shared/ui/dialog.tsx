@@ -30,7 +30,7 @@ export function Dialog({
     if (!dialog) return;
     if (open && !dialog.open) {
       dialog.showModal();
-      dialog.querySelector<HTMLElement>('[data-autofocus]')?.focus();
+      (dialog.querySelector<HTMLElement>('[data-autofocus]') ?? dialog).focus();
     }
     if (!open && dialog.open) dialog.close();
   }, [open]);
@@ -38,6 +38,7 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
+      tabIndex={-1}
       aria-labelledby={titleId}
       aria-describedby={description ? descriptionId : undefined}
       onCancel={(event) => {
@@ -48,7 +49,7 @@ export function Dialog({
         if (event.target === event.currentTarget) onClose();
       }}
       className={cn(
-        'm-auto max-h-[calc(100dvh-32px)] w-[calc(100vw-32px)] max-w-[640px] overflow-y-auto rounded-[28px] border border-white/12 bg-viratec-surface p-0 text-white shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm',
+        'm-auto outline-none max-h-[calc(100dvh-32px)] w-[calc(100vw-32px)] max-w-[640px] overflow-y-auto rounded-[28px] border border-white/12 bg-viratec-surface p-0 text-white shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm',
         className,
       )}
     >

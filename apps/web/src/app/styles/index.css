@@ -138,6 +138,18 @@
   --animate-hero-drift: hero-drift 14s ease-in-out infinite alternate;
   --animate-hero-drift-reverse: hero-drift 14s ease-in-out -7s infinite alternate-reverse;
   --animate-hero-fade: hero-fade 1.4s var(--ease-apple) both;
+  --animate-editor-badge-in: editor-badge-in 180ms var(--ease-apple) both;
+
+  @keyframes editor-badge-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 
   @keyframes hero-reveal {
     from {

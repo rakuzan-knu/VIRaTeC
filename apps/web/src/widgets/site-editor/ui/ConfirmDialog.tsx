@@ -33,7 +33,7 @@ export function ConfirmDialog({
       onClose={onClose}
     >
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button label={cancelLabel} variant="secondary" data-autofocus onClick={onClose} />
+        <Button label={cancelLabel} variant="secondary" onClick={onClose} />
         <Button label={confirmLabel} loading={isPending} onClick={onConfirm} />
       </div>
     </Dialog>
