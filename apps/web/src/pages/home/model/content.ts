@@ -1,8 +1,13 @@
-import { buildPublicationPath } from '@/shared/config/routes';
 import { useMemo } from 'react';
-import { defineMessages, useLocale } from '@/shared/i18n';
+import { usePublications } from '@/entities/publication';
+import { useLocale } from '@/shared/i18n';
 import { useLiveContent } from '@/shared/lib';
+import {
+  pickHomePublications,
+  toPublicationCard,
+} from '../../../../build-tools/contentful/records.ts';
 import { PAGE_TEXT } from './page.generated';
+import { HOME_PUBLICATIONS } from './publications.generated';
 
 export interface Pillar {
   index: string;
@@ -80,57 +85,27 @@ export interface HomeContent {
 }
 
 export type HomeText = Omit<HomeContent, 'publications'> & {
-  publications: Omit<HomeContent['publications'], 'items'>;
+  publications: Omit<HomeContent['publications'], 'items'> & { slugs?: string[] };
 };
 
-const PUBLICATION_ITEMS = defineMessages<PublicationCard[]>({
-  en: [
-    {
-      year: '2026',
-      title: 'Big Data and AI: the foundation of the digital economy',
-      source: 'K. Kravets, A. Mekshun, A. Loban, L. Liashenko · Grail of Science, No. 67',
-      to: buildPublicationPath('big-data-and-ai-digital-economy'),
-    },
-    {
-      year: '2026',
-      title: 'The economic efficiency of AI-driven talent acquisition',
-      source: 'M. Artemenko, S. Vasylyeva, M. Tymoshenko, L. Liashenko · Grail of Science, No. 67',
-      to: buildPublicationPath('ai-driven-talent-acquisition'),
-    },
-    {
-      year: '2026',
-      title: 'Digital Narratives: AI and IT in Multidisciplinary Research 2026',
-      source: 'Conference · KNU, 8 June 2026',
-      to: buildPublicationPath('digital-narratives-2026'),
-    },
-  ],
-  uk: [
-    {
-      year: '2026',
-      title: 'Big Data and AI: the foundation of the digital economy',
-      source: 'К. Кравець, А. Мекшун, А. Лобан, Л. Ляшенко · Grail of Science, № 67',
-      to: buildPublicationPath('big-data-and-ai-digital-economy'),
-    },
-    {
-      year: '2026',
-      title: 'The economic efficiency of AI-driven talent acquisition',
-      source: 'М. Артеменко, С. Васильєва, М. Тимошенко, Л. Ляшенко · Grail of Science, № 67',
-      to: buildPublicationPath('ai-driven-talent-acquisition'),
-    },
-    {
-      year: '2026',
-      title: 'Digital Narratives: ШІ та ІТ у мультидисциплінарних дослідженнях 2026',
-      source: 'Конференція · КНУ, 8 червня 2026',
-      to: buildPublicationPath('digital-narratives-2026'),
-    },
-  ],
-});
+const NO_SLUGS: string[] = [];
 
 export const useHomeContent = (): HomeContent => {
   const locale = useLocale();
   const text = useLiveContent('homePage', 'PAGE_TEXT', PAGE_TEXT)[locale];
+  const live = usePublications();
+  const slugs = text.publications.slugs ?? NO_SLUGS;
+  const isLive = !live.isPending && !live.isError;
   return useMemo(
-    () => ({ ...text, publications: { ...text.publications, items: PUBLICATION_ITEMS[locale] } }),
-    [text, locale],
+    () => ({
+      ...text,
+      publications: {
+        ...text.publications,
+        items: isLive
+          ? pickHomePublications(live.publications, slugs).map(toPublicationCard)
+          : HOME_PUBLICATIONS[locale],
+      },
+    }),
+    [text, locale, isLive, live.publications, slugs],
   );
 };

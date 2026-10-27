@@ -74,6 +74,12 @@ export const PAGE_SPECS: readonly PageSpec[] = [
     symbol('publications.title'),
     symbol('publications.action'),
     symbol('publications.cardAction'),
+    {
+      kind: 'recordKeys',
+      path: 'publications.slugs',
+      resource: 'publication',
+      help: 'Publications shown on the home page, in this order. Leave empty to show the 3 newest.',
+    },
     symbol('getInvolved.eyebrow'),
     symbol('getInvolved.titleLine'),
     symbol('getInvolved.titleAccent', ACCENT_HELP),

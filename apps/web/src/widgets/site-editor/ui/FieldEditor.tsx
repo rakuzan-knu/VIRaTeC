@@ -10,6 +10,7 @@ import { allowedValues, type FieldDefinition } from '../model/contentModel';
 import type { SiteEditorMessages } from '../model/messages';
 import { AssetField } from './AssetField';
 import { EntryLinksField } from './EntryLinksField';
+import { PublicationKeysField } from './PublicationKeysField';
 
 export interface FieldEditorProps {
   field: FieldDefinition;
@@ -20,6 +21,7 @@ export interface FieldEditorProps {
   readOnly: boolean;
   t: SiteEditorMessages;
   onChange: (localeCode: string, value: unknown) => void;
+  onPersist?: (localeCode: string, value: unknown) => void;
 }
 
 const asString = (value: unknown) => (typeof value === 'string' ? value : '');
@@ -154,6 +156,7 @@ export function FieldEditor({
   readOnly,
   t,
   onChange,
+  onPersist,
 }: FieldEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
   const title = field.required ? `${field.name} · ${t.inspector.required}` : field.name;
@@ -164,7 +167,18 @@ export function FieldEditor({
 
   const isLink = field.type === 'Link' || (field.type === 'Array' && field.items?.type === 'Link');
   let body;
-  if (field.type === 'Link' && field.linkType === 'Asset') {
+  if (field.source === 'publication') {
+    body = (
+      <PublicationKeysField
+        label={title}
+        help={field.help}
+        value={values?.[locales.en]}
+        readOnly={readOnly}
+        t={t}
+        onChange={(value) => onChange(locales.en, value)}
+      />
+    );
+  } else if (field.type === 'Link' && field.linkType === 'Asset') {
     body = (
       <AssetField
         label={title}
@@ -185,6 +199,7 @@ export function FieldEditor({
         readOnly={readOnly}
         t={t}
         onChange={(value) => onChange(locales.en, value)}
+        onPersist={onPersist && ((value) => onPersist(locales.en, value))}
       />
     );
   } else if (field.localized && field.type !== 'Boolean') {

@@ -84,6 +84,7 @@ export const PAGE_TEXT: Localized<HomeText> = {
       title: 'Latest from VIRaTeC',
       action: 'All Publications',
       cardAction: 'Read more',
+      slugs: [],
     },
     getInvolved: {
       eyebrow: 'Get Involved',
@@ -190,6 +191,7 @@ export const PAGE_TEXT: Localized<HomeText> = {
       title: 'Останнє від VIRaTeC',
       action: 'Усі публікації',
       cardAction: 'Читати далі',
+      slugs: [],
     },
     getInvolved: {
       eyebrow: 'Долучайтеся',
