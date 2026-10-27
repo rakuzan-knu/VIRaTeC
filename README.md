@@ -1,6 +1,6 @@
 # VIRaTeC — Virtual Innovating Research & Technology Community
 
-[![CI/CD Pipeline](https://github.com/viratec-knu/viratec/actions/workflows/ci.yml/badge.svg)](https://github.com/viratec-knu/viratec/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/rakuzan-knu/VIRaTeC/actions/workflows/ci.yml/badge.svg)](https://github.com/rakuzan-knu/VIRaTeC/actions/workflows/ci.yml)
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary%20%2F%20All%20Rights%20Reserved-red.svg)](./LICENSE)
 [![AI Training: Prohibited](https://img.shields.io/badge/AI%20Training-Strictly%20Prohibited-black.svg)](#-ліцензія-та-авторські-права)
 [![Turborepo](https://img.shields.io/badge/monorepo-Turborepo-ef4444.svg)](https://turbo.build/)
@@ -75,8 +75,8 @@ Viratec/
 1. Клонуйте репозиторій:
 
    ```bash
-   git clone https://github.com/viratec-knu/viratec.git
-   cd viratec
+   git clone https://github.com/rakuzan-knu/VIRaTeC.git
+   cd VIRaTeC
    ```
 
 2. Скопіюйте файл змінних середовища:
@@ -154,3 +154,4 @@ pnpm dev:web       # React 19 Frontend (http://localhost:5173)
 Повний юридичний текст ліцензії наведено у файлі [LICENSE](./LICENSE).
 
 © 2026 VIRaTeC, Київський національний університет імені Тараса Шевченка.
+
