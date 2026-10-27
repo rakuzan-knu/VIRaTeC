@@ -7,6 +7,7 @@ export const ROUTES = {
   ADMIN: '/admin',
   ADMIN_USERS: '/admin/users',
   ADMIN_AUDIT: '/admin/audit',
+  ADMIN_CONTENT: '/admin/content',
   PEOPLE: '/people',
   PERSON: '/people/:userId',
   TERMS: '/terms',

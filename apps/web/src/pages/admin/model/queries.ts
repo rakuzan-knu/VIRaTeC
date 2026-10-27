@@ -1,10 +1,11 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { UpdateStaffAccessRequestDto } from '@viratec/contracts';
+import type { RecordResource, UpdateStaffAccessRequestDto } from '@viratec/contracts';
 import {
   fetchAdminCapabilities,
   fetchAdminMetrics,
   fetchAdminUsers,
   fetchAuditLog,
+  fetchContentList,
   revokeStaffAccess,
   revokeUserSessions,
   setUserBlocked,
@@ -18,6 +19,10 @@ export const adminKeys = {
   metrics: () => [...adminKeys.all, 'metrics'] as const,
   users: (query: AdminUsersQuery) => [...adminKeys.all, 'users', query] as const,
   audit: (page: number, action: string) => [...adminKeys.all, 'audit', page, action] as const,
+  content: (resource?: RecordResource) =>
+    resource
+      ? ([...adminKeys.all, 'content', resource] as const)
+      : ([...adminKeys.all, 'content'] as const),
 };
 
 const noRetryOnAuthErrors = (failureCount: number, error: unknown) =>
@@ -78,3 +83,10 @@ export const useSetUserBlocked = () =>
   );
 
 export const useRevokeUserSessions = () => useAdminMutation(revokeUserSessions);
+
+export const useContentList = (resource: RecordResource) =>
+  useQuery({
+    queryKey: adminKeys.content(resource),
+    queryFn: () => fetchContentList(resource),
+    retry: noRetryOnAuthErrors,
+  });
