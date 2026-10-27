@@ -1,3 +1,26 @@
+<img src="https://raw.githubusercontent.com/subvincdebian/subvincdebian/main/assets/repo-VIRaTeC.svg" alt="VIRaTeC project overview" width="100%" />
+
+# VIRaTeC
+
+A bilingual research-community platform for Taras Shevchenko National University of Kyiv, with project and publication directories, member profiles and account interfaces.
+
+[Website](https://viratec.vercel.app) · [Frontend](apps/web/src/) · [Backend](apps/backend/src/) · [Documentation](docs/)
+
+## Frontend overview
+
+- Responsive research, publication, community and profile pages.
+- English and Ukrainian content, navigation and account flows.
+- React 19, TypeScript, Vite 6, Tailwind CSS 4 and React Router 7.
+- TanStack Query, Zustand, React Hook Form and Zod for application data and forms.
+- NestJS backend, shared contracts and UI packages in a pnpm/Turborepo workspace.
+
+## Review the source
+
+Start with [web application layers](apps/web/src/), [shared UI](packages/ui/) and [contracts](packages/contracts/). Commands and environment requirements are documented below; the checked-in package manifests are the reference for available scripts.
+
+<details>
+<summary>Original project overview, local setup and contributor documentation (Ukrainian)</summary>
+
 # VIRaTeC — Virtual Innovating Research & Technology Community
 
 [![CI/CD Pipeline](https://github.com/rakuzan-knu/VIRaTeC/actions/workflows/ci.yml/badge.svg)](https://github.com/rakuzan-knu/VIRaTeC/actions/workflows/ci.yml)
@@ -155,3 +178,5 @@ pnpm dev:web       # React 19 Frontend (http://localhost:5173)
 
 © 2026 VIRaTeC, Київський національний університет імені Тараса Шевченка.
 
+
+</details>
