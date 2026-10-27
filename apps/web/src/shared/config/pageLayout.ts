@@ -135,6 +135,11 @@ export const pageSectionSchema = z.discriminatedUnion('type', [
   z.object({ ...base, type: z.literal('builtin'), key: z.string().max(40) }),
   z.object({
     ...base,
+    type: z.literal('block'),
+    blockId: z.string().regex(/^[A-Za-z0-9_.-]{1,64}$/),
+  }),
+  z.object({
+    ...base,
     type: z.literal('text'),
     eyebrow: text,
     title: text,
@@ -188,7 +193,7 @@ export const pageSectionsSchema = z.array(pageSectionSchema).max(40);
 
 export type PageSectionItem = z.infer<typeof pageSectionSchema>;
 
-export type CustomSectionItem = Exclude<PageSectionItem, { type: 'builtin' }>;
+export type CustomSectionItem = Exclude<PageSectionItem, { type: 'builtin' | 'block' }>;
 
 export type CustomSectionType = CustomSectionItem['type'];
 
