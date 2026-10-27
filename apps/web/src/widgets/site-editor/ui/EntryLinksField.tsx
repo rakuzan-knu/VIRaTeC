@@ -24,6 +24,7 @@ interface EntryLinksFieldProps {
   readOnly: boolean;
   t: SiteEditorMessages;
   onChange: (value: unknown) => void;
+  onPersist?: (value: unknown) => void;
 }
 
 function LinkedEntryRow({
@@ -96,6 +97,7 @@ export function EntryLinksField({
   readOnly,
   t,
   onChange,
+  onPersist,
 }: EntryLinksFieldProps) {
   const createEntry = useCreateEntry();
   const isList = field.type === 'Array';
@@ -104,10 +106,12 @@ export function EntryLinksField({
     .filter((id): id is string => Boolean(id));
   const childType = findContentType(linkedContentTypes(field)[0]);
 
-  const commit = (next: string[]) => {
-    if (isList) onChange(next.length > 0 ? next.map((id) => toLink('Entry', id)) : undefined);
-    else onChange(next[0] ? toLink('Entry', next[0]) : undefined);
+  const toValue = (next: string[]) => {
+    if (isList) return next.length > 0 ? next.map((id) => toLink('Entry', id)) : undefined;
+    return next[0] ? toLink('Entry', next[0]) : undefined;
   };
+
+  const commit = (next: string[]) => onChange(toValue(next));
 
   const move = (from: number, to: number) => {
     const next = [...ids];
@@ -137,7 +141,7 @@ export function EntryLinksField({
       },
       {
         onSuccess: (entry) => {
-          commit([...ids, entry.id]);
+          (onPersist ?? onChange)(toValue([...ids, entry.id]));
           const { pushAction } = useSiteEditorStore.getState();
           pushAction(
             entryCreateAction({

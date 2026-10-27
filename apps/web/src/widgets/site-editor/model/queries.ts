@@ -15,7 +15,6 @@ import {
   createEditorEntry,
   createRecord,
   deleteRecord,
-  discardContentChange,
   fetchContentChanges,
   fetchEditorAsset,
   fetchEditorEntry,
@@ -26,6 +25,7 @@ import {
   saveRecord,
   uploadEditorAsset,
 } from '../api/editorApi';
+import { discardChange } from './discard';
 
 export const EDITOR_QUERY_KEY = ['site-editor'] as const;
 
@@ -167,7 +167,7 @@ export const useUploadAsset = () => {
 
 export const useDiscardChange = () => {
   const refresh = useRefreshAfter();
-  return useMutation({ mutationFn: discardContentChange, onSuccess: refresh });
+  return useMutation({ mutationFn: discardChange, onSuccess: refresh });
 };
 
 export const usePublishContent = () => {
