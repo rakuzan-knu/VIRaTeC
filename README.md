@@ -178,5 +178,4 @@ pnpm dev:web       # React 19 Frontend (http://localhost:5173)
 
 © 2026 VIRaTeC, Київський національний університет імені Тараса Шевченка.
 
-
 </details>
