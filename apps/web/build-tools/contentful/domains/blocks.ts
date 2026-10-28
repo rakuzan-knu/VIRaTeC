@@ -92,7 +92,11 @@ const STAT_TYPE: ContentTypeDefinition = {
   description: 'A number with a caption, e.g. "15+ partner universities".',
   displayField: 'value',
   fields: [
-    field('value', 'Value', 'Symbol', { required: true, help: 'E.g. 15+, 500+, 10.' }),
+    field('value', 'Value', 'Symbol', {
+      required: true,
+      editableOnPage: true,
+      help: 'E.g. 15+, 500+, 10.',
+    }),
     localizedField('label', 'Label', 'Symbol', { required: true }),
   ],
 };

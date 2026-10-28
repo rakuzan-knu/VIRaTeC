@@ -62,6 +62,18 @@ export const registerAssetAddress = (assetId: string, address: ContentAssetAddre
 
 export const findAssetAddress = (assetId: string) => assetAddresses.get(assetId);
 
+const CONTENT_ASSET_HOST = 'images.ctfassets.net';
+
+export const contentAssetIdFromUrl = (url: string) => {
+  if (!url.includes('//')) return null;
+  try {
+    const parsed = new URL(url, `https://${CONTENT_ASSET_HOST}`);
+    return parsed.hostname === CONTENT_ASSET_HOST ? (parsed.pathname.split('/')[2] ?? null) : null;
+  } catch {
+    return null;
+  }
+};
+
 const readEnabled = () => {
   try {
     return typeof window !== 'undefined' && sessionStorage.getItem(SITE_EDITOR_STORAGE_KEY) === '1';

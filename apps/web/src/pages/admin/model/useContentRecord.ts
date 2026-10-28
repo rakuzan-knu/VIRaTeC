@@ -7,6 +7,7 @@ import {
   type RecordResource,
 } from '@viratec/contracts';
 import { useLocale } from '@/shared/i18n';
+import { contentAssetIdFromUrl } from '@/shared/lib';
 import {
   canEditRecords,
   isConflict,
@@ -66,6 +67,13 @@ export function useContentRecord(
   const change = changes.data?.find(
     (item) => item.resourceType === RESOURCE_KINDS[resource] && item.resourceId === key,
   );
+  const assetIds = Object.values(loaded?.data ?? {}).flatMap((value) => {
+    const assetId = typeof value === 'string' ? contentAssetIdFromUrl(value) : null;
+    return assetId ? [assetId] : [];
+  });
+  const assetChangeIds = (changes.data ?? [])
+    .filter((item) => item.resourceType === 'ASSET' && assetIds.includes(item.resourceId))
+    .map((item) => item.id);
   const canEdit = canEditRecords(permissions, resource);
   const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
   const isBusy = save.isPending || remove.isPending || discard.isPending || publish.isPending;
@@ -112,7 +120,9 @@ export function useContentRecord(
     if (!change || draft) return;
     setFeedback(null);
     try {
-      const result = await runWithStepUp(() => publish.mutateAsync({ changeIds: [change.id] }));
+      const result = await runWithStepUp(() =>
+        publish.mutateAsync({ changeIds: [...assetChangeIds, change.id] }),
+      );
       const [failed] = result.failed;
       setFeedback(
         failed

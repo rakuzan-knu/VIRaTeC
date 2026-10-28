@@ -29,7 +29,7 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
     types: {
       link: 'Link',
       card: 'Card',
-      stat: 'Number',
+      stat: 'Statistic',
       step: 'Step',
       siteSettings: 'Site settings',
       partner: 'Partner',
@@ -214,8 +214,14 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       'publication.readMoreLink': { label: 'Show the “Read more” button' },
       'publication.sourceUrl': { label: 'Link to the original' },
       'publication.pdfUrl': { label: 'Link to the PDF' },
-      'publication.coverKey': { label: 'Technical cover key' },
-      'publication.detailSource': { label: 'Technical detail source' },
+      'publication.coverKey': {
+        label: 'Cover photo',
+        help: 'Shown on the card and the publication page. A landscape photo, at least 1200 px wide.',
+      },
+      'publication.detailSource': {
+        label: 'Source link on the publication page',
+        help: 'Full address starting with https://.',
+      },
       'publication.content.{locale}.detail.heroTitle': { label: 'Title on the publication page' },
       'publication.content.{locale}.detail.heroAccent': {
         label: 'Highlighted part of the title',
@@ -352,7 +358,7 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
     types: {
       link: 'Посилання',
       card: 'Картка',
-      stat: 'Число',
+      stat: 'Показник',
       step: 'Крок',
       siteSettings: 'Налаштування сайту',
       partner: 'Партнер',
@@ -558,8 +564,14 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       'publication.readMoreLink': { label: 'Показувати кнопку «Читати далі»' },
       'publication.sourceUrl': { label: 'Посилання на оригінал' },
       'publication.pdfUrl': { label: 'Посилання на PDF' },
-      'publication.coverKey': { label: 'Технічний ключ обкладинки' },
-      'publication.detailSource': { label: 'Технічне джерело сторінки' },
+      'publication.coverKey': {
+        label: 'Обкладинка',
+        help: 'Фото на картці та сторінці публікації. Горизонтальне, щонайменше 1200 px завширшки.',
+      },
+      'publication.detailSource': {
+        label: 'Посилання на джерело на сторінці публікації',
+        help: 'Повна адреса, що починається з https://.',
+      },
       'publication.content.{locale}.detail.heroTitle': {
         label: 'Заголовок на сторінці публікації',
       },

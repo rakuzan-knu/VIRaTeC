@@ -1,6 +1,7 @@
 import {
   LOCALE_PLACEHOLDER,
   RECORD_DEFINITIONS,
+  readRecordValue,
   recordTypeId,
   type RecordData,
   type RecordDraftDto,
@@ -8,7 +9,12 @@ import {
 } from '@viratec/contracts';
 import { api } from '@/shared/api/apiClient';
 import { LOCALES } from '@/shared/i18n';
-import { encodeFieldMark, useContentPreviewStore } from './contentPreview';
+import {
+  contentAssetIdFromUrl,
+  encodeFieldMark,
+  registerAssetAddress,
+  useContentPreviewStore,
+} from './contentPreview';
 
 export const RECORD_QUERY_ROOTS: readonly string[] = ['projects', 'publications', 'events'];
 
@@ -60,6 +66,15 @@ const markValue = (value: unknown, marker: string): unknown => {
 const markRecord = <T>(resource: RecordResource, key: string, item: T): T => {
   let marked: unknown = item;
   for (const field of RECORD_DEFINITIONS[resource].fields) {
+    const value = field.localized ? undefined : readRecordValue(item, field.path);
+    const assetId = typeof value === 'string' ? contentAssetIdFromUrl(value) : null;
+    if (assetId) {
+      registerAssetAddress(assetId, {
+        entryId: key,
+        contentTypeId: recordTypeId(resource),
+        fieldId: field.path,
+      });
+    }
     if (!field.localized || !MARKED_KINDS.has(field.kind)) continue;
     for (const locale of LOCALES) {
       const marker = encodeFieldMark({

@@ -32,7 +32,7 @@ export interface LiveExportOptions {
 }
 
 const isMarkableText = (definition: FieldDefinition) =>
-  definition.localized &&
+  (definition.localized || definition.editableOnPage) &&
   (definition.type === 'Symbol' ||
     definition.type === 'Text' ||
     (definition.type === 'Array' && definition.items?.type === 'Symbol'));
@@ -87,7 +87,7 @@ export const markPreviewPayload = (
       }
       if (!isMarkableText(field)) continue;
       const marked: Record<string, unknown> = { ...values };
-      for (const locale of LOCALES) {
+      for (const locale of field.localized ? LOCALES : [DEFAULT_LOCALE]) {
         const code = payload.locales[locale];
         if (values[code] === undefined) continue;
         const marker = mark({ entryId: entry.sys.id, contentTypeId, fieldId: field.id, locale });

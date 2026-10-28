@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  contentAssetIdFromUrl,
   decodeFieldMarks,
   findAssetAddress,
   stripFieldMarks,
@@ -13,7 +14,6 @@ export const EDITOR_ROOT_ATTRIBUTE = 'data-site-editor';
 const SECTION_ATTRIBUTE = 'data-page-section';
 
 const MAX_ANCESTORS = 6;
-const ASSET_HOST = 'images.ctfassets.net';
 
 export interface ContentEntryAddress {
   entryId: string;
@@ -32,14 +32,8 @@ export type CanvasTarget =
   | { kind: 'asset'; address: ContentAssetAddress; element: Element }
   | SectionTarget;
 
-const assetIdFromImage = (image: HTMLImageElement) => {
-  try {
-    const url = new URL(image.currentSrc || image.src);
-    return url.hostname === ASSET_HOST ? (url.pathname.split('/')[2] ?? null) : null;
-  } catch {
-    return null;
-  }
-};
+const assetIdFromImage = (image: HTMLImageElement) =>
+  contentAssetIdFromUrl(image.currentSrc || image.src);
 
 const visibleText = (text: string | null) => stripFieldMarks(text ?? '').trim();
 

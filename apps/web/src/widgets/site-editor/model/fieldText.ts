@@ -45,12 +45,9 @@ const ADVANCED_FIELDS = new Set([
   'pageSeo.route',
 ]);
 
-const ADVANCED_RECORD_FIELDS = new Set([
-  'publication.slug',
-  'publication.position',
-  'publication.coverKey',
-  'publication.detailSource',
-]);
+const ADVANCED_RECORD_FIELDS = new Set(['publication.slug', 'publication.position']);
+
+const IMAGE_RECORD_FIELDS = new Set(['publication.coverKey']);
 
 const isUpper = (char: string | undefined) => Boolean(char && char >= 'A' && char <= 'Z');
 
@@ -165,6 +162,9 @@ export const recordFieldText = (
 
 export const isAdvancedRecordField = (resource: RecordResource, path: string) =>
   ADVANCED_RECORD_FIELDS.has(`${resource}.${path}`);
+
+export const isImageRecordField = (resource: RecordResource, path: string) =>
+  IMAGE_RECORD_FIELDS.has(`${resource}.${path}`);
 
 export const optionName = (labels: FieldLabels, option: string) => labels.options[option] ?? option;
 

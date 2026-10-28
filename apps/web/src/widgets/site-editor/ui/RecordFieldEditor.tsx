@@ -1,21 +1,24 @@
 import { useEffect, useId, useRef } from 'react';
 import {
+  PublicationRecordSchema,
   readRecordValue,
   type RecordData,
   type RecordFieldDefinition,
   type RecordResource,
 } from '@viratec/contracts';
 import { useProjectLabels } from '@/entities/project';
+import { getPublicationCover } from '@/entities/publication';
 import { LOCALES, type Locale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
-import { recordFieldText } from '../model/fieldText';
+import { isImageRecordField, recordFieldText } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
 import { BlocksField } from './BlocksField';
+import { ImageUploadField } from './ImageUploadField';
 
 interface RecordFieldEditorProps {
   resource: RecordResource;
@@ -223,7 +226,27 @@ export function RecordFieldEditor({
         isFocused ? 'border-viratec-cyan/70 bg-viratec-cyan/6' : 'border-white/8',
       )}
     >
-      {field.localized ? (
+      {isImageRecordField(resource, field.path) ? (
+        <ImageUploadField
+          label={title}
+          help={text.help}
+          previewSrc={getPublicationCover(asString(readRecordValue(data, field.path)) || null)}
+          previewAlt=""
+          hasValue={Boolean(readRecordValue(data, field.path))}
+          canRemove={!field.required}
+          readOnly={readOnly}
+          uploadName="cover"
+          t={t}
+          onUploaded={(asset) => {
+            if (!PublicationRecordSchema.shape.coverKey.safeParse(asset.url).success) {
+              return t.inspector.imageNotSaved;
+            }
+            onChange(field.path, asset.url);
+            return null;
+          }}
+          onRemove={() => onChange(field.path, null)}
+        />
+      ) : field.localized ? (
         <fieldset
           aria-describedby={text.help ? helpId : undefined}
           className="flex min-w-0 flex-col gap-3"

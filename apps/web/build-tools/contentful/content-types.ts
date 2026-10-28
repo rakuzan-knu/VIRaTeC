@@ -24,6 +24,7 @@ export interface FieldDefinition {
   validations: readonly FieldValidation[];
   help?: string;
   source?: RecordResource;
+  editableOnPage?: boolean;
 }
 
 export interface ContentTypeDefinition {

@@ -25,6 +25,7 @@ export {
   decodeFieldMarks,
   stripFieldMarks,
   findAssetAddress,
+  contentAssetIdFromUrl,
   type ContentFieldAddress,
   type ContentAssetAddress,
   type ActivePageLayout,
