@@ -25,6 +25,9 @@ export const fetchEntryReferences = (id: string) =>
 export const saveEditorEntry = (id: string, dto: SaveContentEntryRequestDto) =>
   api.put<ContentEntryDto>(entryPath(id), dto);
 
+export const deleteEditorEntry = (id: string, label: string) =>
+  api.delete<{ success: boolean }>(entryPath(id), { label });
+
 export const createEditorEntry = (dto: CreateContentEntryRequestDto) =>
   api.post<ContentEntryDto>('/admin/content/entries', dto);
 

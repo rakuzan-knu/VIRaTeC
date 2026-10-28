@@ -13,7 +13,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@viratec/contracts';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { StaffGuard } from '../common/guards/staff.guard';
@@ -27,6 +27,7 @@ import { ContentEditorService } from './content-editor.service';
 import { ContentIdPipe } from './content-id.pipe';
 import {
   CreateContentEntryDto,
+  DeleteContentEntryDto,
   PublishContentDto,
   SaveContentEntryDto,
   UploadContentAssetDto,
@@ -88,6 +89,21 @@ export class AdminContentController {
     @Client() client: ClientContext,
   ) {
     return this.editor.createEntry(actor, dto, client);
+  }
+
+  @Delete('entries/:id')
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
+  @ApiOperation({
+    summary: 'Delete an entry: a draft is removed now, a published entry goes away on publish',
+  })
+  @ApiResponse({ status: 404, description: 'Entry not found' })
+  remove(
+    @CurrentUser() actor: AuthenticatedUser,
+    @Param('id', ContentIdPipe) id: string,
+    @Body() dto: DeleteContentEntryDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.editor.deleteEntry(actor, id, dto.label, client);
   }
 
   @Get('assets/:id')

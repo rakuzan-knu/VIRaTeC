@@ -52,6 +52,14 @@ export class CreateContentEntryDto {
   label?: string;
 }
 
+export class DeleteContentEntryDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  label?: string;
+}
+
 export class UploadContentAssetDto {
   @ApiProperty({ example: 'team-photo.webp' })
   @IsString()

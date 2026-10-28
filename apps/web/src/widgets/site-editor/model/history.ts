@@ -72,6 +72,11 @@ export const entryCreateAction = (options: { id: string; label: string }): Edito
   undo: () => discard('ENTRY', options.id),
 });
 
+export const entryDeleteAction = (options: { id: string; label: string }): EditorAction => ({
+  label: options.label,
+  undo: () => discard('ENTRY', options.id),
+});
+
 export const recordSaveAction = (options: {
   resource: RecordResource;
   key: string;

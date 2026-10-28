@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ContentEntryDto, type ContentFields, type RecordResource } from '@viratec/contracts';
-import { fetchEditorEntry, fetchEntryReferences, fetchRecord } from '../api/editorApi';
+import { PREVIEW_CONTENT_QUERY_KEY } from '@/shared/lib';
+import {
+  deleteEditorEntry,
+  fetchEditorEntry,
+  fetchEntryReferences,
+  fetchRecord,
+} from '../api/editorApi';
 import { cancelDraftSave } from './autosaveRegistry';
-import { recordSaveKey } from './autosave';
+import { entrySaveKey, recordSaveKey } from './autosave';
 import type { CollectionGrid, CollectionItem } from './collections';
 import {
   changeLabel,
@@ -14,9 +20,9 @@ import {
   withFieldValue,
 } from './contentModel';
 import { typeName } from './fieldText';
-import { entryCreateAction, recordDeleteAction } from './history';
+import { entryCreateAction, entryDeleteAction, recordDeleteAction } from './history';
 import { useSiteEditorMessages } from './messages';
-import { editorKeys, useCreateEntry, useDeleteRecord } from './queries';
+import { EDITOR_QUERY_KEY, editorKeys, useCreateEntry, useDeleteRecord } from './queries';
 import { recordDraftKey, useSiteEditorStore } from './store';
 
 const asNumber = (value: unknown) => (typeof value === 'number' ? value : null);
@@ -219,10 +225,29 @@ export function useCollectionActions() {
             !candidate.required &&
             asNumber(entryFields(entry)[candidate.id]?.[entry.locales.en]) !== null,
         );
-        if (!field) return null;
-        await updateEntry(id, (fields, loaded) =>
-          withFieldValue(fields, field.id, loaded.locales.en, undefined),
-        );
+        if (field) {
+          await updateEntry(id, (fields, loaded) =>
+            withFieldValue(fields, field.id, loaded.locales.en, undefined),
+          );
+        } else {
+          const type = findContentType(entry.contentTypeId);
+          const removedLabel = changeLabel(
+            typeName(t.fields, entry.contentTypeId, type?.name ?? entry.contentTypeId),
+            label,
+          );
+          cancelDraftSave(entrySaveKey(id));
+          useSiteEditorStore.getState().dropDraft(id);
+          await deleteEditorEntry(id, removedLabel);
+          if (entry.publishedVersion !== null) {
+            useSiteEditorStore
+              .getState()
+              .pushAction(entryDeleteAction({ id, label: t.history.deleted(removedLabel) }));
+          }
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: EDITOR_QUERY_KEY }),
+            queryClient.invalidateQueries({ queryKey: PREVIEW_CONTENT_QUERY_KEY }),
+          ]);
+        }
       }
       return t.collection.removed(label);
     });

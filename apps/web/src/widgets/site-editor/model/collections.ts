@@ -1,5 +1,5 @@
-import { recordResourceOf, type RecordResource } from '@viratec/contracts';
-import { stripFieldMarks } from '@/shared/lib';
+import { RECORD_DEFINITIONS, recordResourceOf, type RecordResource } from '@viratec/contracts';
+import { decodeFieldMarks, stripFieldMarks } from '@/shared/lib';
 import {
   findContentType,
   isCollectionType,
@@ -51,7 +51,7 @@ export const canReorder = (collection: CollectionKind) =>
 export const removalOf = (collection: CollectionKind) => {
   if (collection.kind === 'record') return 'delete';
   if (collection.kind === 'linked') return 'remove';
-  return collection.orderFields.some((field) => !field.required) ? 'hide' : null;
+  return collection.orderFields.some((field) => !field.required) ? 'hide' : 'delete';
 };
 
 const isListContainer = (element: Element) => {
@@ -127,9 +127,29 @@ const cleanText = (text: string | null | undefined) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const displayFieldOf = (contentTypeId: string) => {
+  const resource = recordResourceOf(contentTypeId);
+  return resource
+    ? RECORD_DEFINITIONS[resource].displayPath
+    : findContentType(contentTypeId)?.displayField;
+};
+
+const markedText = (cell: Element, fieldId: string) => {
+  const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!(node instanceof Text)) continue;
+    if (decodeFieldMarks(node.data).some((address) => address.fieldId === fieldId)) {
+      return cleanText(node.data);
+    }
+  }
+  return '';
+};
+
 export const itemLabel = (item: CollectionItem, fallback: string) => {
   const labelled = item.cell.querySelector(LABEL_SELECTOR);
+  const displayField = displayFieldOf(item.target.address.contentTypeId);
   const text =
+    (displayField ? markedText(item.cell, displayField) : '') ||
     cleanText(labelled instanceof HTMLImageElement ? labelled.alt : labelled?.textContent) ||
     cleanText(item.cell instanceof HTMLElement ? item.cell.innerText.split('\n')[0] : null);
   if (!text) return fallback;

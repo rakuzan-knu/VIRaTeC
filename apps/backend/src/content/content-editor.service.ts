@@ -254,6 +254,58 @@ export class ContentEditorService {
     return this.toEntry(entry);
   }
 
+  async deleteEntry(
+    actor: AuthenticatedUser,
+    id: string,
+    label: string | undefined,
+    client: ClientContext,
+  ) {
+    const path = `/entries/${id}`;
+    const current = await this.cma(`Entry ${id}`, () =>
+      this.contentful.request<CmaResource>('management', path),
+    );
+    const where = {
+      resourceType_resourceId: { resourceType: ContentResourceType.ENTRY, resourceId: id },
+    };
+    if (current.sys.publishedVersion) {
+      await this.prisma.contentChange.upsert({
+        where,
+        create: {
+          resourceType: ContentResourceType.ENTRY,
+          resourceId: id,
+          contentTypeId: current.sys.contentType?.sys.id ?? null,
+          label: label ?? null,
+          isDeleted: true,
+          actorId: actor.id,
+        },
+        update: { isDeleted: true, actorId: actor.id, ...(label ? { label } : {}) },
+      });
+    } else {
+      await this.cma(label ?? id, () =>
+        this.contentful.request('management', path, {
+          method: 'DELETE',
+          version: current.sys.version,
+        }),
+      );
+      await this.prisma.contentChange.deleteMany({
+        where: { resourceType: ContentResourceType.ENTRY, resourceId: id },
+      });
+    }
+    await this.audit.record({
+      action: 'content.entry_deleted',
+      actorId: actor.id,
+      targetType: 'contentEntry',
+      targetId: id,
+      metadata: {
+        contentTypeId: current.sys.contentType?.sys.id ?? null,
+        label: label ?? null,
+        wasPublished: Boolean(current.sys.publishedVersion),
+      },
+      client,
+    });
+    return { success: true };
+  }
+
   getAsset(id: string): Promise<ContentAssetDto> {
     return this.cma(`Image ${id}`, async () => {
       const asset = await this.contentful.request<CmaAsset>('management', `/assets/${id}`);
@@ -408,6 +460,19 @@ export class ContentEditorService {
     return { success: true };
   }
 
+  private async unpublishAndArchive(path: string, current: CmaResource) {
+    let version = current.sys.version;
+    if (current.sys.publishedVersion) {
+      const unpublished = await this.contentful.request<CmaResource>(
+        'management',
+        `${path}/published`,
+        { method: 'DELETE', version },
+      );
+      version = unpublished.sys.version;
+    }
+    await this.contentful.request('management', `${path}/archived`, { method: 'PUT', version });
+  }
+
   async publish(
     actor: AuthenticatedUser,
     dto: PublishContentDto,
@@ -430,6 +495,12 @@ export class ContentEditorService {
           continue;
         }
         const current = await this.contentful.request<CmaResource>('management', path);
+        if (change.isDeleted) {
+          await this.unpublishAndArchive(path, current);
+          await this.prisma.contentChange.delete({ where: { id: change.id } });
+          result.published.push(change.id);
+          continue;
+        }
         await this.contentful.request('management', `${path}/published`, {
           method: 'PUT',
           version: current.sys.version,
