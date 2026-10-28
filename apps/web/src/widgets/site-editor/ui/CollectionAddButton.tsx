@@ -28,6 +28,7 @@ export function CollectionAddButton({ grid, isBusy, t, onAdd }: CollectionAddBut
   return (
     <button
       type="button"
+      data-tour="add"
       disabled={isBusy}
       onClick={onAdd}
       style={{ top: slot.top, left: slot.left, width: slot.width, height: slot.height }}

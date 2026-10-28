@@ -11,4 +11,5 @@ export const SHORTCUTS = {
   next: { label: isMac ? '⌥↓' : 'Alt+↓', aria: 'Alt+ArrowDown' },
   previous: { label: isMac ? '⌥↑' : 'Alt+↑', aria: 'Alt+ArrowUp' },
   open: { label: 'Enter', aria: 'Enter' },
+  search: { label: isMac ? '⌘K' : 'Ctrl+K', aria: 'Control+K Meta+K' },
 } as const satisfies Record<string, Shortcut>;

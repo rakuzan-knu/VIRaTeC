@@ -10,6 +10,8 @@ import type { Locale } from '@/shared/i18n';
 
 export type { ContentTypeDefinition, FieldDefinition };
 
+export const CONTENT_TYPE_IDS = CONTENT_TYPES.map((type) => type.id);
+
 export const findContentType = (id: string | null | undefined) =>
   CONTENT_TYPES.find((type) => type.id === id);
 

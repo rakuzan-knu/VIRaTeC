@@ -8,10 +8,11 @@ import { ConfirmDialog } from './ConfirmDialog';
 
 interface PublishControlProps {
   count: number;
+  issueCount: number;
   t: SiteEditorMessages;
 }
 
-export function PublishControl({ count, t }: PublishControlProps) {
+export function PublishControl({ count, issueCount, t }: PublishControlProps) {
   const flow = usePublishFlow();
   const published = useSiteEditorStore((state) => state.publishResult?.published.length ?? 0);
 
@@ -52,7 +53,11 @@ export function PublishControl({ count, t }: PublishControlProps) {
       <ConfirmDialog
         open={flow.phase === 'confirm'}
         title={t.changes.publishTitle}
-        description={t.changes.publishText(count)}
+        description={
+          issueCount > 0
+            ? `${t.changes.publishText(count)} ${t.dots.publishWarning(issueCount)}`
+            : t.changes.publishText(count)
+        }
         confirmLabel={t.changes.publishConfirm}
         cancelLabel={t.keepEditing}
         closeLabel={t.close}

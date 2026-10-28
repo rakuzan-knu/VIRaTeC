@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CircleHelp, Eye, LayoutList, ListChecks, LogOut, PencilLine } from 'lucide-react';
+import { CircleHelp, Eye, LayoutList, ListChecks, LogOut, PencilLine, Search } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   AdminPermission,
@@ -19,6 +20,10 @@ import { useEditorHistory } from '../model/history';
 import { inlineFieldOf, type InlineField } from '../model/inlineEdit';
 import { useCollectionGrids } from '../model/useCollectionGrids';
 import { useImageDrop } from '../model/useImageDrop';
+import { useIssueAnchors } from '../model/useIssueAnchors';
+import { useIssueTargets } from '../model/useIssueTargets';
+import type { SearchItem } from '../model/siteSearch';
+import { targetLabel } from '../model/targetLabel';
 import { NO_PERMISSIONS, canEditRecords } from '../model/permissions';
 import { useSiteEditorMessages } from '../model/messages';
 import {
@@ -33,9 +38,10 @@ import {
   useSiteEditorStore,
   type EditorMode,
 } from '../model/store';
-import { isTextInput } from '../model/shortcuts';
+import { SHORTCUTS, isTextInput } from '../model/shortcuts';
 import {
   EDITOR_ROOT_ATTRIBUTE,
+  collectCanvasTargets,
   stepCanvasTarget,
   targetKey,
   useCanvasTargets,
@@ -46,20 +52,26 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { DeviceFrame } from './DeviceFrame';
 import { DeviceSwitch } from './DeviceSwitch';
 import { EditorGate } from './EditorGate';
+import { EditorTour } from './EditorTour';
 import { EditorOutlines } from './EditorOutlines';
 import { SectionBadge } from './SectionBadge';
 import { HelpDialog } from './HelpDialog';
 import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
 import { ImageDropOverlay } from './ImageDropOverlay';
 import { InlineEditor, type InlineCloseReason } from './InlineEditor';
+import { IssueDots } from './IssueDots';
 import { InspectorPanel } from './InspectorPanel';
 import { PublishControl } from './PublishControl';
 import { RecordPanel } from './RecordPanel';
 import { RecordWizard } from './RecordWizard';
 import { SaveIndicator } from './SaveIndicator';
+import { SiteSearchDialog } from './SiteSearchDialog';
 import { SelectionActions } from './SelectionActions';
 import { StructurePanel } from './StructurePanel';
 import { SummaryPanel } from './SummaryPanel';
+
+const PENDING_FOCUS_ATTEMPTS = 20;
+const PENDING_FOCUS_INTERVAL_MS = 300;
 
 const TOOLBAR_BUTTON =
   'inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus motion-reduce:transition-none';
@@ -97,7 +109,8 @@ export function SiteEditor() {
   const gate = gateFor(changes.error);
   const [selected, setSelected] = useState<CanvasTarget | null>(null);
   const [isConfirmingExit, setConfirmingExit] = useState(false);
-  const [isHelpOpen, setHelpOpen] = useState(readIntroPending);
+  const [isHelpOpen, setHelpOpen] = useState(false);
+  const [isTourOpen, setTourOpen] = useState(readIntroPending);
   const [focusRequest, setFocusRequest] = useState(0);
   const announcement = useSiteEditorStore((state) => state.announcement);
   const history = useEditorHistory();
@@ -107,6 +120,10 @@ export function SiteEditor() {
   const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
   const [inline, setInline] = useState<InlineField | null>(null);
   const [wizard, setWizard] = useState<RecordResource | null>(null);
+  const [isSearchOpen, setSearchOpen] = useState(false);
+  const [pendingFocus, setPendingFocus] = useState<SearchItem['selection'] | null>(null);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   useAutosave();
 
   useEffect(() => {
@@ -164,6 +181,8 @@ export function SiteEditor() {
   const { hovered, section } = useCanvasTargets(isCanvasActive, setSelected, open);
   const grids = useCollectionGrids(isCanvasActive && !inline);
   const drop = useImageDrop(isCanvasActive);
+  const issueTargets = useIssueTargets(!gate);
+  const issueAnchors = useIssueAnchors(isCanvasActive && !inline, issueTargets);
 
   const step = (direction: 1 | -1) => {
     const next = stepCanvasTarget(selected, direction);
@@ -198,6 +217,65 @@ export function SiteEditor() {
         : null,
     );
   }, [activeLayout, layoutDraft]);
+
+  useEffect(() => {
+    const handleSearchKey = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.code !== 'KeyK') return;
+      if (useSiteEditorStore.getState().mode !== 'edit' || document.querySelector('dialog[open]')) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      setSearchOpen(true);
+    };
+    window.addEventListener('keydown', handleSearchKey, true);
+    return () => window.removeEventListener('keydown', handleSearchKey, true);
+  }, []);
+
+  useEffect(() => {
+    if (!pendingFocus) return;
+    let attempts = 0;
+    const timer = setInterval(() => {
+      attempts += 1;
+      const targets = collectCanvasTargets();
+      const found =
+        targets.find(
+          (target) =>
+            target.kind === 'field' &&
+            target.address.entryId === pendingFocus.entryId &&
+            target.address.fieldId === pendingFocus.fieldId &&
+            target.address.locale === pendingFocus.locale,
+        ) ??
+        targets.find(
+          (target) => target.kind !== 'section' && target.address.entryId === pendingFocus.entryId,
+        );
+      const { announce, select: openPanel } = useSiteEditorStore.getState();
+      if (found) {
+        clearInterval(timer);
+        setPendingFocus(null);
+        found.element.scrollIntoView({ block: 'center' });
+        setSelected(found);
+        setFocusRequest((count) => count + 1);
+        announce(t.search.found(targetLabel(found, t)));
+      } else if (attempts >= PENDING_FOCUS_ATTEMPTS) {
+        clearInterval(timer);
+        setPendingFocus(null);
+        openPanel(pendingFocus);
+        announce(t.search.notOnPage);
+      }
+    }, PENDING_FOCUS_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [pendingFocus, t]);
+
+  const chooseResult = (item: SearchItem) => {
+    setSearchOpen(false);
+    setSelected(null);
+    useSiteEditorStore.getState().close();
+    useSiteEditorStore.getState().setDevice('desktop');
+    setMode('edit');
+    if (pathname !== item.route) navigate(item.route);
+    setPendingFocus(item.selection);
+  };
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -253,6 +331,15 @@ export function SiteEditor() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [history]);
 
+  const finishTour = () => {
+    setTourOpen(false);
+    try {
+      localStorage.setItem(SITE_EDITOR_INTRO_STORAGE_KEY, '1');
+    } catch {
+      return;
+    }
+  };
+
   const closeHelp = () => {
     setHelpOpen(false);
     try {
@@ -296,6 +383,7 @@ export function SiteEditor() {
       {isCanvasActive && (
         <>
           <EditorOutlines hovered={hovered} selected={selected} t={t} />
+          {!inline && <IssueDots anchors={issueAnchors} t={t} onOpen={select} />}
           {drop.target && (
             <ImageDropOverlay target={drop.target} isUploading={drop.isUploading} t={t} />
           )}
@@ -343,6 +431,7 @@ export function SiteEditor() {
 
       <div
         role="toolbar"
+        data-tour="publish"
         aria-label={t.toolbar}
         className="pointer-events-auto fixed top-[72px] right-3 z-[2147483004] flex items-center gap-1 rounded-2xl border border-white/12 bg-viratec-deep/95 p-1 shadow-[0_12px_32px_rgba(0,0,0,0.45)] xl:top-[96px]"
       >
@@ -433,8 +522,15 @@ export function SiteEditor() {
             )}
           </button>
         </Tooltip>
+        <IconButton
+          icon={Search}
+          label={t.search.open}
+          shortcut={SHORTCUTS.search}
+          aria-haspopup="dialog"
+          onClick={() => setSearchOpen(true)}
+        />
         <DeviceSwitch t={t} />
-        {canPublish && <PublishControl count={pending} t={t} />}
+        {canPublish && <PublishControl count={pending} issueCount={issueTargets.length} t={t} />}
         <IconButton icon={CircleHelp} label={t.helpOpen} onClick={() => setHelpOpen(true)} />
         <IconButton icon={LogOut} label={t.exitHint} onClick={() => setConfirmingExit(true)} />
       </div>
@@ -472,7 +568,23 @@ export function SiteEditor() {
           }}
         />
       )}
-      <HelpDialog open={isHelpOpen} t={t} onClose={closeHelp} />
+      <SiteSearchDialog
+        open={isSearchOpen}
+        t={t}
+        onClose={() => setSearchOpen(false)}
+        onChoose={chooseResult}
+      />
+      <HelpDialog
+        open={isHelpOpen}
+        t={t}
+        onClose={closeHelp}
+        onTour={() => {
+          closeHelp();
+          setMode('edit');
+          setTourOpen(true);
+        }}
+      />
+      {isTourOpen && !gate && mode === 'edit' && <EditorTour t={t} onFinish={finishTour} />}
       <ConfirmDialog
         open={isConfirmingExit}
         title={t.exitTitle}

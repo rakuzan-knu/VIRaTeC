@@ -81,6 +81,49 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       nothing: 'Nothing to publish yet',
       waiting: 'Finishing saving…',
     },
+    search: {
+      open: 'Search the site',
+      title: 'Search the site',
+      description: 'Find any text on any page and jump straight to it.',
+      label: 'What are you looking for?',
+      placeholder: 'For example 500+ or a project name',
+      loading: 'Collecting texts from all pages…',
+      empty: 'Nothing found. Try a shorter word.',
+      results: (count: number) => (count === 1 ? '1 result' : `${count} results`),
+      hint: 'Arrows choose, Enter opens',
+      found: (label: string) => `Found: ${label}`,
+      notOnPage: 'This text is not visible on the page, so it opens in the panel.',
+    },
+    dots: {
+      label: (text: string) => `Needs attention: ${text}. Open the field`,
+      publishWarning: (count: number) =>
+        `${count} ${count === 1 ? 'place needs' : 'places need'} attention; red dots on the page show where. Changes with problems are not published.`,
+    },
+    tour: {
+      next: 'Next',
+      done: 'Done',
+      skip: 'Skip the tour',
+      step: (current: number, total: number) => `${current} of ${total}`,
+      again: 'Take the tour again',
+      steps: {
+        select: {
+          title: 'Choose what to change',
+          text: 'Click any text, photo or card. A frame shows what is selected.',
+        },
+        edit: {
+          title: 'Change it right here',
+          text: 'Double-click a text or press Enter and type. The page updates at once and saves on its own.',
+        },
+        add: {
+          title: 'Add new things',
+          text: 'Dashed cards add a project, a publication, an event or another card to the list.',
+        },
+        publish: {
+          title: 'Publish when ready',
+          text: 'Visitors see your changes only after Publish. Until then they are drafts for editors.',
+        },
+      },
+    },
     article: {
       toolbar: 'Text formatting',
       bold: 'Bold',
@@ -513,6 +556,49 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       button: (count: number) => `Опублікувати (${count})`,
       nothing: 'Поки нічого публікувати',
       waiting: 'Завершуємо збереження…',
+    },
+    search: {
+      open: 'Пошук по сайту',
+      title: 'Пошук по сайту',
+      description: 'Знайдіть будь-який текст на будь-якій сторінці й одразу перейдіть до нього.',
+      label: 'Що шукаєте?',
+      placeholder: 'Наприклад 500+ або назва проєкту',
+      loading: 'Збираємо тексти з усіх сторінок…',
+      empty: 'Нічого не знайдено. Спробуйте коротше слово.',
+      results: (count: number) => `Знайдено: ${count}`,
+      hint: 'Стрілки — вибір, Enter — перейти',
+      found: (label: string) => `Знайдено: ${label}`,
+      notOnPage: 'Цього тексту не видно на сторінці, тому він відкриється в панелі.',
+    },
+    dots: {
+      label: (text: string) => `Потребує уваги: ${text}. Відкрити поле`,
+      publishWarning: (count: number) =>
+        `Місць, що потребують уваги: ${count}. Вони позначені червоними точками на сторінці. Зміни з помилками не опублікуються.`,
+    },
+    tour: {
+      next: 'Далі',
+      done: 'Готово',
+      skip: 'Пропустити',
+      step: (current: number, total: number) => `${current} з ${total}`,
+      again: 'Пройти тур ще раз',
+      steps: {
+        select: {
+          title: 'Оберіть, що змінити',
+          text: 'Клікніть на будь-який текст, фото чи картку. Рамка показує, що виділено.',
+        },
+        edit: {
+          title: 'Правте просто тут',
+          text: 'Двічі клікніть на текст або натисніть Enter і пишіть. Сторінка оновлюється одразу, а зміни зберігаються самі.',
+        },
+        add: {
+          title: 'Додавайте нове',
+          text: 'Пунктирні картки додають проєкт, публікацію, подію чи іншу картку до списку.',
+        },
+        publish: {
+          title: 'Опублікуйте, коли готово',
+          text: 'Відвідувачі побачать зміни лише після «Опублікувати». До того це чернетки для редакторів.',
+        },
+      },
     },
     article: {
       toolbar: 'Форматування тексту',

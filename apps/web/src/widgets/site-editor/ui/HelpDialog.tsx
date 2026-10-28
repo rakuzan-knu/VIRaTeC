@@ -7,9 +7,10 @@ interface HelpDialogProps {
   open: boolean;
   t: SiteEditorMessages;
   onClose: () => void;
+  onTour: () => void;
 }
 
-export function HelpDialog({ open, t, onClose }: HelpDialogProps) {
+export function HelpDialog({ open, t, onClose, onTour }: HelpDialogProps) {
   const shortcuts = [
     [SHORTCUTS.save.label, t.help.shortcuts.save],
     [SHORTCUTS.undo.label, t.help.shortcuts.undo],
@@ -52,7 +53,10 @@ export function HelpDialog({ open, t, onClose }: HelpDialogProps) {
           ))}
         </dl>
       </section>
-      <Button label={t.help.gotIt} className="self-end" data-autofocus onClick={onClose} />
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button label={t.tour.again} variant="secondary" onClick={onTour} />
+        <Button label={t.help.gotIt} data-autofocus onClick={onClose} />
+      </div>
     </Dialog>
   );
 }

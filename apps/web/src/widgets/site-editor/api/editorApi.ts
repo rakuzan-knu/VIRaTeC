@@ -1,4 +1,5 @@
 import { api } from '@/shared/api/apiClient';
+import type { ContentSearchSource } from '../model/siteSearch';
 import type {
   ContentAssetDto,
   ContentChangeDto,
@@ -8,6 +9,7 @@ import type {
   CreateRecordRequestDto,
   PublishContentRequestDto,
   PublishContentResultDto,
+  RecordDraftDto,
   RecordDto,
   RecordResource,
   SaveContentEntryRequestDto,
@@ -45,6 +47,12 @@ export const publishContent = (dto: PublishContentRequestDto) =>
 export const fetchEditorAsset = (id: string) =>
   api.get<ContentAssetDto>(`/admin/content/assets/${encodeURIComponent(id)}`);
 
+const RECORD_LIST_PATHS: Record<RecordResource, string> = {
+  project: '/projects',
+  publication: '/publications',
+  event: '/events',
+};
+
 const recordPath = (resource: RecordResource, key?: string) =>
   `/admin/records/${resource}${key ? `/${encodeURIComponent(key)}` : ''}`;
 
@@ -59,3 +67,13 @@ export const createRecord = (resource: RecordResource, dto: CreateRecordRequestD
 
 export const deleteRecord = (resource: RecordResource, key: string, label: string) =>
   api.delete<{ success: boolean }>(recordPath(resource, key), { label });
+
+export const fetchRecordDrafts = () => api.get<RecordDraftDto[]>('/admin/records/drafts');
+
+export const fetchContentForSearch = (types: readonly string[]) =>
+  api.get<ContentSearchSource>(
+    `/admin/content/preview?types=${encodeURIComponent(types.join(','))}`,
+  );
+
+export const fetchRecordList = <T>(resource: RecordResource) =>
+  api.get<T[]>(RECORD_LIST_PATHS[resource]);
