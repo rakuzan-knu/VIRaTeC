@@ -31,7 +31,25 @@ const matchesShape = (snapshot: unknown, live: unknown): boolean => {
   return typeof snapshot === typeof live;
 };
 
+const definedEntries = (value: Record<string, unknown>) =>
+  Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined));
+
+const requiredTextOf = (items: readonly unknown[]): Record<string, string> | null => {
+  const [first] = items;
+  if (!isRecord(first)) return null;
+  const keys = Object.keys(first).filter((key) =>
+    items.every((item) => isRecord(item) && typeof item[key] === 'string'),
+  );
+  return Object.fromEntries(keys.map((key) => [key, '']));
+};
+
 const withSnapshotFallback = (snapshot: unknown, live: unknown): unknown => {
+  if (Array.isArray(snapshot) && Array.isArray(live)) {
+    const required = requiredTextOf(snapshot);
+    return required
+      ? live.map((item) => (isRecord(item) ? { ...required, ...definedEntries(item) } : item))
+      : live;
+  }
   if (!isRecord(snapshot) || !isRecord(live)) return live;
   const merged: Record<string, unknown> = { ...snapshot };
   for (const [key, value] of Object.entries(live)) {

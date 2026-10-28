@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CircleHelp, Eye, LayoutList, ListChecks, LogOut, PencilLine } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { AdminPermission, recordResourceOf } from '@viratec/contracts';
+import {
+  AdminPermission,
+  recordResourceOf,
+  recordTypeId,
+  type RecordResource,
+} from '@viratec/contracts';
 import { useSessionStore } from '@/entities/session';
 import { getApiErrorCode } from '@/shared/api/apiClient';
 import { SITE_EDITOR_INTRO_STORAGE_KEY } from '@/shared/config/storageKeys';
@@ -12,6 +17,7 @@ import { useAutosave } from '../model/autosave';
 import { flushDrafts } from '../model/autosaveRegistry';
 import { useEditorHistory } from '../model/history';
 import { inlineFieldOf, type InlineField } from '../model/inlineEdit';
+import { useCollectionGrids } from '../model/useCollectionGrids';
 import { NO_PERMISSIONS, canEditRecords } from '../model/permissions';
 import { useSiteEditorMessages } from '../model/messages';
 import {
@@ -34,6 +40,7 @@ import {
   useCanvasTargets,
   type CanvasTarget,
 } from '../model/useCanvasTargets';
+import { CollectionOverlay } from './CollectionOverlay';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DeviceFrame } from './DeviceFrame';
 import { DeviceSwitch } from './DeviceSwitch';
@@ -46,6 +53,7 @@ import { InlineEditor, type InlineCloseReason } from './InlineEditor';
 import { InspectorPanel } from './InspectorPanel';
 import { PublishControl } from './PublishControl';
 import { RecordPanel } from './RecordPanel';
+import { RecordWizard } from './RecordWizard';
 import { SaveIndicator } from './SaveIndicator';
 import { SelectionActions } from './SelectionActions';
 import { StructurePanel } from './StructurePanel';
@@ -96,6 +104,7 @@ export function SiteEditor() {
   const permissions = useSessionStore((state) => state.user?.permissions ?? NO_PERMISSIONS);
   const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
   const [inline, setInline] = useState<InlineField | null>(null);
+  const [wizard, setWizard] = useState<RecordResource | null>(null);
   useAutosave();
 
   useEffect(() => {
@@ -151,6 +160,7 @@ export function SiteEditor() {
 
   const isCanvasActive = mode === 'edit' && !gate && device === 'desktop';
   const { hovered, section } = useCanvasTargets(isCanvasActive, setSelected, open);
+  const grids = useCollectionGrids(isCanvasActive && !inline);
 
   const step = (direction: 1 | -1) => {
     const next = stepCanvasTarget(selected, direction);
@@ -283,6 +293,14 @@ export function SiteEditor() {
       {isCanvasActive && (
         <>
           <EditorOutlines hovered={hovered} selected={selected} t={t} />
+          {!inline && (
+            <CollectionOverlay
+              grids={grids}
+              activeElement={hovered?.element ?? selected?.element ?? null}
+              t={t}
+              onAddRecord={setWizard}
+            />
+          )}
           {inline && (
             <InlineEditor
               key={targetKey(inline.target)}
@@ -437,6 +455,17 @@ export function SiteEditor() {
         </>
       )}
 
+      {wizard && (
+        <RecordWizard
+          resource={wizard}
+          t={t}
+          onClose={() => setWizard(null)}
+          onCreated={(record) => {
+            setWizard(null);
+            select({ entryId: record.key, contentTypeId: recordTypeId(wizard) });
+          }}
+        />
+      )}
       <HelpDialog open={isHelpOpen} t={t} onClose={closeHelp} />
       <ConfirmDialog
         open={isConfirmingExit}
