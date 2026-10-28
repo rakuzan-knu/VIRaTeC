@@ -164,6 +164,7 @@ export class RecordEditorService {
         tags: project.tags,
         repositoryUrl: project.repositoryUrl,
         demoUrl: project.demoUrl,
+        coverUrl: project.coverUrl,
         translations: project.translations
           ? ProjectTranslationsSchema.parse(project.translations)
           : { en: fallback, uk: fallback },
@@ -428,6 +429,7 @@ export class RecordEditorService {
           tags: record.tags,
           repositoryUrl: record.repositoryUrl,
           demoUrl: record.demoUrl,
+          coverUrl: record.coverUrl,
           translations: record.translations,
         };
         if (change.isDeleted) await tx.project.delete({ where: { id: key } });

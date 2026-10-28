@@ -81,6 +81,12 @@ export const RECORD_DEFINITIONS: Record<RecordResource, RecordDefinition> = {
       { path: 'tags', name: 'Tags', kind: 'stringList', help: 'Tags filter the project list.' },
       { path: 'repositoryUrl', name: 'Repository URL', kind: 'url' },
       { path: 'demoUrl', name: 'Demo URL', kind: 'url' },
+      {
+        path: 'coverUrl',
+        name: 'Cover photo',
+        kind: 'url',
+        help: 'Without a photo the card shows a picture for the research area.',
+      },
     ],
   },
   event: {
@@ -165,6 +171,7 @@ export const ProjectRecordSchema = z.object({
   tags: z.array(z.string().max(64)).max(30),
   repositoryUrl: optionalUrl,
   demoUrl: optionalUrl,
+  coverUrl: optionalUrl.default(null),
   translations: z.object({ en: ProjectTextSchema, uk: ProjectTextSchema }),
 });
 

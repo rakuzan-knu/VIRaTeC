@@ -1,3 +1,4 @@
+import { withImageParams } from '@/shared/lib';
 import { linkId, toLink } from '../model/contentModel';
 import type { SiteEditorMessages } from '../model/messages';
 import { useEditorAsset } from '../model/queries';
@@ -29,9 +30,7 @@ export function AssetField({
     <ImageUploadField
       label={label}
       help={help}
-      previewSrc={
-        asset?.url ? `${asset.url}${asset.url.includes('?') ? '&' : '?'}w=640&fm=webp` : undefined
-      }
+      previewSrc={asset?.url ? withImageParams(asset.url, 'w=640&fm=webp') : undefined}
       previewAlt={asset?.title ?? ''}
       hasValue={Boolean(assetId)}
       canRemove={!required}

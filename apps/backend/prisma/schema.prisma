@@ -308,6 +308,7 @@ model Project {
   tags          String[]          @default([])
   repositoryUrl String?
   demoUrl       String?
+  coverUrl      String?
   translations  Json?
   leadId        String?
   lead          User?             @relation(fields: [leadId], references: [id], onDelete: SetNull)

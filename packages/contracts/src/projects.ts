@@ -22,6 +22,7 @@ export const ProjectSchema = z.object({
   tags: z.array(z.string()).default([]),
   repositoryUrl: z.string().url().optional(),
   demoUrl: z.string().url().optional(),
+  coverUrl: z.string().url().nullable().optional(),
   translations: ProjectTranslationsSchema.nullable(),
   leadId: z.string().uuid().nullable(),
   createdAt: z.date(),

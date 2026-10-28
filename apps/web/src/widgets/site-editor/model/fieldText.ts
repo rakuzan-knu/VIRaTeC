@@ -1,4 +1,10 @@
-import type { RecordFieldDefinition, RecordResource } from '@viratec/contracts';
+import {
+  ProjectRecordSchema,
+  PublicationRecordSchema,
+  type RecordFieldDefinition,
+  type RecordResource,
+} from '@viratec/contracts';
+import type { ZodType } from 'zod';
 import { fieldId as pageFieldId } from '../../../../build-tools/contentful/pages/engine.ts';
 import { PAGE_SPECS } from '../../../../build-tools/contentful/pages/specs.ts';
 import type { FieldDefinition } from './contentModel';
@@ -47,7 +53,10 @@ const ADVANCED_FIELDS = new Set([
 
 const ADVANCED_RECORD_FIELDS = new Set(['publication.slug', 'publication.position']);
 
-const IMAGE_RECORD_FIELDS = new Set(['publication.coverKey']);
+const IMAGE_RECORD_FIELDS = new Map<string, ZodType>([
+  ['publication.coverKey', PublicationRecordSchema.shape.coverKey],
+  ['project.coverUrl', ProjectRecordSchema.shape.coverUrl],
+]);
 
 const isUpper = (char: string | undefined) => Boolean(char && char >= 'A' && char <= 'Z');
 
@@ -163,8 +172,8 @@ export const recordFieldText = (
 export const isAdvancedRecordField = (resource: RecordResource, path: string) =>
   ADVANCED_RECORD_FIELDS.has(`${resource}.${path}`);
 
-export const isImageRecordField = (resource: RecordResource, path: string) =>
-  IMAGE_RECORD_FIELDS.has(`${resource}.${path}`);
+export const imageRecordSchema = (resource: RecordResource, path: string) =>
+  IMAGE_RECORD_FIELDS.get(`${resource}.${path}`);
 
 export const optionName = (labels: FieldLabels, option: string) => labels.options[option] ?? option;
 

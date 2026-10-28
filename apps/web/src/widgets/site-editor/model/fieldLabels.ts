@@ -176,6 +176,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       'project.tags': { label: 'Tags', help: 'Visitors filter projects by them.' },
       'project.repositoryUrl': { label: 'Code repository link', help: 'E.g. a GitHub address.' },
       'project.demoUrl': { label: 'Demo link' },
+      'project.coverUrl': {
+        label: 'Cover photo',
+        help: 'Shown on the project card and page. Without a photo the card shows a picture for the research area.',
+      },
       'event.translations.{locale}.title': { label: 'Event name' },
       'event.translations.{locale}.description': { label: 'Event description' },
       'event.translations.{locale}.meta': {
@@ -520,6 +524,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
         help: 'Наприклад адреса на GitHub.',
       },
       'project.demoUrl': { label: 'Посилання на демо' },
+      'project.coverUrl': {
+        label: 'Обкладинка',
+        help: 'Фото на картці та сторінці проєкту. Без фото показується картинка напряму досліджень.',
+      },
       'event.translations.{locale}.title': { label: 'Назва події' },
       'event.translations.{locale}.description': { label: 'Опис події' },
       'event.translations.{locale}.meta': {

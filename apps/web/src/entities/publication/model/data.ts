@@ -1,6 +1,6 @@
 import { PublicationType as PublicationDtoType, type PublicationDto } from '@viratec/contracts';
 import { defineMessages, useLocalized, type Locale } from '@/shared/i18n';
-import { contentAssetIdFromUrl } from '@/shared/lib';
+import { contentAssetIdFromUrl, contentCoverSrc } from '@/shared/lib';
 import type { Publication, PublicationType } from './types';
 
 interface PublicationLabels {
@@ -43,12 +43,10 @@ const COVERS = Object.fromEntries(
   ]),
 );
 
-const UPLOADED_COVER_PARAMS = 'w=1200&fm=webp&q=80';
-
 export const getPublicationCover = (coverKey: string | null | undefined) => {
   if (!coverKey) return undefined;
   if (!contentAssetIdFromUrl(coverKey)) return COVERS[coverKey];
-  return `${coverKey}${coverKey.includes('?') ? '&' : '?'}${UPLOADED_COVER_PARAMS}`;
+  return contentCoverSrc(coverKey);
 };
 
 export const toPublication = (dto: PublicationDto, locale: Locale): Publication => {

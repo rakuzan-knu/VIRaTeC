@@ -86,6 +86,7 @@ export const newRecordData = (resource: RecordResource, slug: string): RecordDat
       tags: [],
       repositoryUrl: null,
       demoUrl: null,
+      coverUrl: null,
       translations: {
         en: { title: 'New project', description: '' },
         uk: { title: 'Новий проєкт', description: '' },

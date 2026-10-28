@@ -5,6 +5,7 @@ import educationCover from '@/shared/assets/photos/lecture-hall.webp';
 import crossCulturalCover from '@/shared/assets/photos/intercultural-flags.webp';
 import experientialCover from '@/shared/assets/photos/wordbank-workshop.webp';
 import defaultCover from '@/shared/assets/photos/community-knu.webp';
+import { contentCoverSrc } from '@/shared/lib';
 import type { Project } from '../model/types';
 
 const AREA_COVERS: Record<string, string> = {
@@ -16,5 +17,7 @@ const AREA_COVERS: Record<string, string> = {
   Experiential: experientialCover,
 };
 
-export const getProjectCover = (project: Pick<Project, 'tags'>) =>
-  project.tags.map((tag) => AREA_COVERS[tag]).find(Boolean) ?? defaultCover;
+export const getProjectCover = (project: Pick<Project, 'tags' | 'coverUrl'>) =>
+  project.coverUrl
+    ? contentCoverSrc(project.coverUrl)
+    : (project.tags.map((tag) => AREA_COVERS[tag]).find(Boolean) ?? defaultCover);

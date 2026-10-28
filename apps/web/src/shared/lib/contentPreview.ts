@@ -63,6 +63,14 @@ export const registerAssetAddress = (assetId: string, address: ContentAssetAddre
 export const findAssetAddress = (assetId: string) => assetAddresses.get(assetId);
 
 const CONTENT_ASSET_HOST = 'images.ctfassets.net';
+const CONTENT_COVER_PARAMS = 'w=1200&fm=webp&q=80';
+
+export const withImageParams = (url: string, params: string) =>
+  `${url}${url.includes('?') ? '&' : '?'}${params}`;
+
+export const contentCoverSrc = (url: string) => withImageParams(url, CONTENT_COVER_PARAMS);
+
+export const absoluteImageUrl = (url: string) => (url.startsWith('//') ? `https:${url}` : url);
 
 export const contentAssetIdFromUrl = (url: string) => {
   if (!url.includes('//')) return null;

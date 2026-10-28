@@ -14,6 +14,7 @@ interface ProjectData {
   tags: string[];
   repositoryUrl: string | null;
   demoUrl: string | null;
+  coverUrl: string | null;
   translations: Record<'en' | 'uk', Translation>;
 }
 
@@ -62,6 +63,7 @@ const projectRow = (overrides: Partial<ProjectRow> = {}): ProjectRow => ({
   tags: ['ai'],
   repositoryUrl: null,
   demoUrl: null,
+  coverUrl: null,
   translations: {
     en: { title: 'Old title', description: 'Old description' },
     uk: { title: 'Стара назва', description: 'Старий опис' },
@@ -76,6 +78,7 @@ const projectData = (overrides: Partial<ProjectData> = {}): ProjectData => ({
   tags: ['ai'],
   repositoryUrl: null,
   demoUrl: null,
+  coverUrl: null,
   translations: {
     en: { title: 'New title', description: 'New description' },
     uk: { title: 'Нова назва', description: 'Новий опис' },
