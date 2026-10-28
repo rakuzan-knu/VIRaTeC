@@ -18,6 +18,7 @@ import type { SiteEditorMessages } from '../model/messages';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
 import { BlocksField } from './BlocksField';
 import { ImageUploadField } from './ImageUploadField';
+import { TranslationHint } from './TranslationHint';
 
 interface RecordFieldEditorProps {
   resource: RecordResource;
@@ -35,6 +36,7 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 function RecordInput({
   field,
   label,
+  lang,
   helperText,
   value,
   readOnly,
@@ -44,6 +46,7 @@ function RecordInput({
 }: {
   field: RecordFieldDefinition;
   label: string;
+  lang?: Locale;
   helperText: string | undefined;
   value: unknown;
   readOnly: boolean;
@@ -122,6 +125,7 @@ function RecordInput({
       return (
         <Textarea
           label={label}
+          lang={lang}
           helperText={[helperText, t.inspector.onePerLine].filter(Boolean).join(' ')}
           value={lines.join('\n')}
           readOnly={readOnly}
@@ -135,6 +139,7 @@ function RecordInput({
       return (
         <Input
           label={label}
+          lang={lang}
           helperText={helperText}
           type="number"
           inputMode="numeric"
@@ -152,6 +157,7 @@ function RecordInput({
       return (
         <Input
           label={label}
+          lang={lang}
           helperText={helperText}
           type="datetime-local"
           value={toLocalDateTime(value)}
@@ -164,6 +170,7 @@ function RecordInput({
       return (
         <Textarea
           label={label}
+          lang={lang}
           helperText={helperText}
           value={asString(value)}
           readOnly={readOnly}
@@ -183,6 +190,7 @@ function RecordInput({
       return (
         <Input
           label={label}
+          lang={lang}
           helperText={helperText}
           type={field.kind === 'url' ? 'url' : 'text'}
           value={asString(value)}
@@ -263,6 +271,17 @@ export function RecordFieldEditor({
               {text.help}
             </p>
           )}
+          <TranslationHint
+            values={{
+              en: readRecordValue(data, localizedPath(field, 'en')),
+              uk: readRecordValue(data, localizedPath(field, 'uk')),
+            }}
+            readOnly={readOnly}
+            t={t}
+            onCopy={(from, to) =>
+              onChange(localizedPath(field, to), readRecordValue(data, localizedPath(field, from)))
+            }
+          />
           {LOCALES.map((locale) => {
             const path = localizedPath(field, locale);
             return (
@@ -270,6 +289,7 @@ export function RecordFieldEditor({
                 key={locale}
                 field={field}
                 label={t.locales[locale]}
+                lang={locale}
                 helperText={undefined}
                 value={readRecordValue(data, path)}
                 readOnly={readOnly}

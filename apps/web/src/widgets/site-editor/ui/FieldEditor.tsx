@@ -12,6 +12,7 @@ import type { SiteEditorMessages } from '../model/messages';
 import { AssetField } from './AssetField';
 import { EntryLinksField } from './EntryLinksField';
 import { PublicationKeysField } from './PublicationKeysField';
+import { TranslationHint } from './TranslationHint';
 
 export interface FieldEditorProps {
   contentTypeId: string;
@@ -31,6 +32,7 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 function ScalarInput({
   field,
   label,
+  lang,
   helperText,
   value,
   readOnly,
@@ -40,6 +42,7 @@ function ScalarInput({
 }: {
   field: FieldDefinition;
   label: string;
+  lang?: Locale;
   helperText: string | undefined;
   value: unknown;
   readOnly: boolean;
@@ -83,6 +86,7 @@ function ScalarInput({
     return (
       <Textarea
         label={label}
+        lang={lang}
         helperText={helperText}
         value={asString(value)}
         readOnly={readOnly}
@@ -97,6 +101,7 @@ function ScalarInput({
     return (
       <Textarea
         label={label}
+        lang={lang}
         helperText={[helperText, t.inspector.onePerLine].filter(Boolean).join(' ')}
         value={lines.join('\n')}
         readOnly={readOnly}
@@ -113,6 +118,7 @@ function ScalarInput({
     return (
       <Input
         label={label}
+        lang={lang}
         helperText={helperText}
         type="number"
         inputMode="numeric"
@@ -131,6 +137,7 @@ function ScalarInput({
     return (
       <Input
         label={label}
+        lang={lang}
         helperText={helperText}
         type="date"
         value={asString(value).slice(0, 10)}
@@ -143,6 +150,7 @@ function ScalarInput({
   return (
     <Input
       label={label}
+      lang={lang}
       helperText={helperText}
       value={asString(value)}
       readOnly={readOnly}
@@ -225,11 +233,18 @@ export function FieldEditor({
             {text.help}
           </p>
         )}
+        <TranslationHint
+          values={{ en: values?.[locales.en], uk: values?.[locales.uk] }}
+          readOnly={readOnly}
+          t={t}
+          onCopy={(from, to) => onChange(locales[to], values?.[locales[from]])}
+        />
         {LOCALES.map((locale) => (
           <ScalarInput
             key={locale}
             field={field}
             label={t.locales[locale]}
+            lang={locale}
             helperText={undefined}
             value={values?.[locales[locale]]}
             readOnly={readOnly}

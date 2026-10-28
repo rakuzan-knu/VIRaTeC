@@ -49,7 +49,7 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       title: 'How the site editor works',
       steps: [
         'Click any text, image or card on the page and press Edit next to it (or double-click it). From the keyboard, Alt+↓ and Alt+↑ move between the editable parts of the page. Hold Alt and click to follow a link.',
-        'Change the text in English and Ukrainian. The page shows your edits as you type, and drafts save on their own; visitors still see the old version.',
+        'Double-click a text (or select it and press Enter) to change it right on the page: Enter saves, Esc cancels. The other language is in the small box below. The page shows your edits as you type and drafts save on their own; visitors still see the old version.',
         'Use Page sections in the toolbar to reorder, hide or add sections.',
         'Press Publish in the toolbar to make all drafts live with a two-factor code. Summary lists the drafts and lets you undo your actions.',
       ],
@@ -80,6 +80,20 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       button: (count: number) => `Publish (${count})`,
       nothing: 'Nothing to publish yet',
       waiting: 'Finishing saving…',
+    },
+    translation: {
+      missingIn: { en: 'No English yet', uk: 'No Ukrainian yet' },
+      copyFrom: { en: 'Copy from English', uk: 'Copy from Ukrainian' },
+      copied: 'Copied. Check the text and adjust it if needed.',
+    },
+    inline: {
+      label: (field: string) => `Editing: ${field}`,
+      hint: 'Enter saves, Esc cancels',
+      hintMultiline: 'Enter saves, Shift+Enter starts a new line, Esc cancels',
+      otherLocale: (locale: string) => `${locale} version`,
+      allFields: 'All fields',
+      cancelled: 'Edit cancelled',
+      loading: 'Opening the text…',
     },
     device: {
       label: 'Preview size',
@@ -378,7 +392,7 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       title: 'Як працює редактор сайту',
       steps: [
         'Клікніть на будь-який текст, зображення чи картку й натисніть «Редагувати» поруч (або клікніть двічі). З клавіатури Alt+↓ та Alt+↑ переходять між частинами сторінки, які можна змінити. Щоб перейти за посиланням, клікніть з утиснутим Alt.',
-        'Змініть текст англійською й українською. Сторінка показує правки, поки ви пишете, а чернетки зберігаються самі. Відвідувачі поки бачать стару версію.',
+        'Двічі клікніть на текст (або виділіть його й натисніть Enter), щоб змінити його просто на сторінці: Enter — зберегти, Esc — скасувати. Інша мова — у віконці під текстом. Сторінка показує правки, поки ви пишете, а чернетки зберігаються самі. Відвідувачі поки бачать стару версію.',
         'Кнопка «Секції сторінки» в панелі інструментів дозволяє переставляти, приховувати й додавати секції.',
         'Кнопка «Опублікувати» в панелі інструментів робить усі чернетки видимими для всіх, після коду двофакторної автентифікації. У «Зміни» є список чернеток і скасування дій.',
       ],
@@ -410,6 +424,20 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       button: (count: number) => `Опублікувати (${count})`,
       nothing: 'Поки нічого публікувати',
       waiting: 'Завершуємо збереження…',
+    },
+    translation: {
+      missingIn: { en: 'Немає англійської', uk: 'Немає української' },
+      copyFrom: { en: 'Скопіювати з англійської', uk: 'Скопіювати з української' },
+      copied: 'Скопійовано. Перевірте текст і за потреби виправте.',
+    },
+    inline: {
+      label: (field: string) => `Редагування: ${field}`,
+      hint: 'Enter — зберегти, Esc — скасувати',
+      hintMultiline: 'Enter — зберегти, Shift+Enter — новий рядок, Esc — скасувати',
+      otherLocale: (locale: string) => `${locale} версія`,
+      allFields: 'Всі поля',
+      cancelled: 'Правку скасовано',
+      loading: 'Відкриваємо текст…',
     },
     device: {
       label: 'Розмір перегляду',

@@ -11,9 +11,15 @@ import type { EditorGateCode } from './EditorGate';
 import { useAutosave } from '../model/autosave';
 import { flushDrafts } from '../model/autosaveRegistry';
 import { useEditorHistory } from '../model/history';
-import { NO_PERMISSIONS } from '../model/permissions';
+import { inlineFieldOf, type InlineField } from '../model/inlineEdit';
+import { NO_PERMISSIONS, canEditRecords } from '../model/permissions';
 import { useSiteEditorMessages } from '../model/messages';
-import { EDITOR_QUERY_KEY, useContentChanges, useRefreshRecordQueries } from '../model/queries';
+import {
+  EDITOR_QUERY_KEY,
+  prefetchEditorSource,
+  useContentChanges,
+  useRefreshRecordQueries,
+} from '../model/queries';
 import {
   useCurrentSelection,
   useHasUnsavedDrafts,
@@ -24,6 +30,7 @@ import { isTextInput } from '../model/shortcuts';
 import {
   EDITOR_ROOT_ATTRIBUTE,
   stepCanvasTarget,
+  targetKey,
   useCanvasTargets,
   type CanvasTarget,
 } from '../model/useCanvasTargets';
@@ -35,6 +42,7 @@ import { EditorOutlines } from './EditorOutlines';
 import { SectionBadge } from './SectionBadge';
 import { HelpDialog } from './HelpDialog';
 import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
+import { InlineEditor, type InlineCloseReason } from './InlineEditor';
 import { InspectorPanel } from './InspectorPanel';
 import { PublishControl } from './PublishControl';
 import { RecordPanel } from './RecordPanel';
@@ -85,16 +93,22 @@ export function SiteEditor() {
   const history = useEditorHistory();
   const refreshRecords = useRefreshRecordQueries();
   const device = useSiteEditorStore((state) => state.device);
-  const canPublish = useSessionStore((state) =>
-    (state.user?.permissions ?? NO_PERMISSIONS).includes(AdminPermission.CONTENT_PUBLISH),
-  );
+  const permissions = useSessionStore((state) => state.user?.permissions ?? NO_PERMISSIONS);
+  const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
+  const [inline, setInline] = useState<InlineField | null>(null);
   useAutosave();
 
   useEffect(() => {
     void refreshRecords();
   }, [refreshRecords]);
 
-  const open = useCallback(
+  useEffect(() => {
+    if (!selected || selected.kind === 'section' || gate) return;
+    const { contentTypeId, entryId } = selected.address;
+    void prefetchEditorSource(queryClient, contentTypeId, entryId);
+  }, [selected, gate, queryClient]);
+
+  const openPanel = useCallback(
     (target: CanvasTarget) => {
       setSelected(target);
       if (target.kind === 'section') {
@@ -111,6 +125,30 @@ export function SiteEditor() {
     [select, openStructure],
   );
 
+  const open = useCallback(
+    (target: CanvasTarget) => {
+      const field = inlineFieldOf(target);
+      const canEdit = field?.resource
+        ? canEditRecords(permissions, field.resource)
+        : permissions.includes(AdminPermission.CONTENT_EDIT);
+      if (!field || !canEdit) {
+        openPanel(target);
+        return;
+      }
+      setSelected(target);
+      useSiteEditorStore.getState().close();
+      setInline(field);
+    },
+    [openPanel, permissions],
+  );
+
+  const closeInline = (reason: InlineCloseReason) => {
+    const target = inline?.target;
+    setInline(null);
+    if (reason === 'panel' && target) openPanel(target);
+    else setFocusRequest((count) => count + 1);
+  };
+
   const isCanvasActive = mode === 'edit' && !gate && device === 'desktop';
   const { hovered, section } = useCanvasTargets(isCanvasActive, setSelected, open);
 
@@ -126,6 +164,10 @@ export function SiteEditor() {
   };
   const stepRef = useRef(step);
   stepRef.current = step;
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+  const openRef = useRef(open);
+  openRef.current = open;
 
   const isPanelOpen = Boolean(selection) || Boolean(structure);
   const wasPanelOpen = useRef(isPanelOpen);
@@ -158,6 +200,20 @@ export function SiteEditor() {
       ) {
         event.preventDefault();
         stepRef.current(event.key === 'ArrowDown' ? 1 : -1);
+        return;
+      }
+      if (
+        event.key === 'Enter' &&
+        !isModifier &&
+        !event.altKey &&
+        !event.shiftKey &&
+        selectedRef.current &&
+        (event.target === document.body || event.target === document.documentElement) &&
+        useSiteEditorStore.getState().history.length === 0 &&
+        !document.querySelector('dialog[open]')
+      ) {
+        event.preventDefault();
+        openRef.current(selectedRef.current);
         return;
       }
       if (
@@ -227,7 +283,15 @@ export function SiteEditor() {
       {isCanvasActive && (
         <>
           <EditorOutlines hovered={hovered} selected={selected} t={t} />
-          {selected && !gate && !isPanelOpen && !isSummaryOpen && (
+          {inline && (
+            <InlineEditor
+              key={targetKey(inline.target)}
+              field={inline}
+              t={t}
+              onClose={closeInline}
+            />
+          )}
+          {selected && !inline && !gate && !isPanelOpen && !isSummaryOpen && (
             <SelectionActions
               target={selected}
               focusRequest={focusRequest}

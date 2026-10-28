@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import type {
-  CreateRecordRequestDto,
-  RecordResource,
-  SaveContentEntryRequestDto,
-  SaveRecordRequestDto,
+import {
+  recordResourceOf,
+  type CreateRecordRequestDto,
+  type RecordResource,
+  type SaveContentEntryRequestDto,
+  type SaveRecordRequestDto,
 } from '@viratec/contracts';
 import {
   PREVIEW_CONTENT_QUERY_KEY,
@@ -46,6 +47,27 @@ export const useEditorEntry = (id: string | null) =>
     retry: noRetryOnClientErrors,
     staleTime: 0,
   });
+
+const PREFETCH_STALE_MS = 10_000;
+
+export const prefetchEditorSource = (
+  queryClient: QueryClient,
+  contentTypeId: string,
+  id: string,
+) => {
+  const resource = recordResourceOf(contentTypeId);
+  return resource
+    ? queryClient.prefetchQuery({
+        queryKey: editorKeys.record(resource, id),
+        queryFn: () => fetchRecord(resource, id),
+        staleTime: PREFETCH_STALE_MS,
+      })
+    : queryClient.prefetchQuery({
+        queryKey: editorKeys.entry(id),
+        queryFn: () => fetchEditorEntry(id),
+        staleTime: PREFETCH_STALE_MS,
+      });
+};
 
 export const useEditorAsset = (id: string | null) =>
   useQuery({

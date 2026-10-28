@@ -1193,3 +1193,7 @@
 [data-offscreen] * {
   animation-play-state: paused;
 }
+
+::highlight(site-editor-inline) {
+  color: transparent;
+}
