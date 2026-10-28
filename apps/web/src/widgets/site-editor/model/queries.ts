@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import type {
   CreateRecordRequestDto,
   RecordResource,
@@ -29,12 +29,18 @@ import { discardChange } from './discard';
 
 export const EDITOR_QUERY_KEY = ['site-editor'] as const;
 
+export const editorKeys = {
+  entry: (id: string | null) => [...EDITOR_QUERY_KEY, 'entry', id] as const,
+  record: (resource: RecordResource | null, key: string | null) =>
+    [...EDITOR_QUERY_KEY, 'record', resource, key] as const,
+};
+
 const noRetryOnClientErrors = (failureCount: number, error: unknown) =>
   failureCount < 2 && !(error instanceof Error && 'status' in error && Number(error.status) < 500);
 
 export const useEditorEntry = (id: string | null) =>
   useQuery({
-    queryKey: [...EDITOR_QUERY_KEY, 'entry', id],
+    queryKey: editorKeys.entry(id),
     queryFn: () => fetchEditorEntry(id ?? ''),
     enabled: Boolean(id),
     retry: noRetryOnClientErrors,
@@ -65,14 +71,16 @@ export const useContentChanges = () =>
     refetchInterval: 30_000,
   });
 
+export const refreshRecordQueries = (queryClient: QueryClient) => {
+  invalidateRecordDrafts();
+  return queryClient.invalidateQueries({
+    predicate: (query) => RECORD_QUERY_ROOTS.includes(String(query.queryKey[0])),
+  });
+};
+
 export const useRefreshRecordQueries = () => {
   const queryClient = useQueryClient();
-  return useCallback(() => {
-    invalidateRecordDrafts();
-    return queryClient.invalidateQueries({
-      predicate: (query) => RECORD_QUERY_ROOTS.includes(String(query.queryKey[0])),
-    });
-  }, [queryClient]);
+  return useCallback(() => refreshRecordQueries(queryClient), [queryClient]);
 };
 
 const useRefreshAfter = () => {
@@ -95,7 +103,7 @@ const useRefreshRecordsAfter = () => {
 
 export const useEditorRecord = (resource: RecordResource | null, key: string | null) =>
   useQuery({
-    queryKey: [...EDITOR_QUERY_KEY, 'record', resource, key],
+    queryKey: editorKeys.record(resource, key),
     queryFn: () => fetchRecord(resource ?? 'project', key ?? ''),
     enabled: Boolean(resource && key),
     retry: noRetryOnClientErrors,

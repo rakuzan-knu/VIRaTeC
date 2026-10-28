@@ -1,3 +1,5 @@
+import { useCallback, useDeferredValue } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import {
   LOCALE_PLACEHOLDER,
   RECORD_DEFINITIONS,
@@ -116,4 +118,35 @@ export async function previewRecords<T>(
     }
   }
   return merged.map((item) => markRecord(resource, keyOf(item), item));
+}
+
+type RecordOverlayOptions<T> = Pick<RecordPreviewOptions<T>, 'resource' | 'keyOf' | 'merge'>;
+
+const NO_RECORD_OVERRIDES: Record<string, RecordData> = {};
+
+const pickRecordOverrides = (overrides: Record<string, RecordData>, resource: RecordResource) => {
+  const prefix = `${resource}:`;
+  const picked = Object.entries(overrides).filter(([key]) => key.startsWith(prefix));
+  return picked.length > 0
+    ? Object.fromEntries(picked.map(([key, data]) => [key.slice(prefix.length), data]))
+    : NO_RECORD_OVERRIDES;
+};
+
+export function useRecordOverlay<T>({ resource, keyOf, merge }: RecordOverlayOptions<T>) {
+  const overrides = useDeferredValue(
+    useContentPreviewStore(
+      useShallow((state) => pickRecordOverrides(state.recordOverrides, resource)),
+    ),
+  );
+  return useCallback(
+    (items: readonly T[]): T[] =>
+      overrides === NO_RECORD_OVERRIDES
+        ? [...items]
+        : items.map((item) => {
+            const key = keyOf(item);
+            const data = overrides[key];
+            return data ? merge(item, markRecord(resource, key, data)) : item;
+          }),
+    [overrides, resource, keyOf, merge],
+  );
 }

@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CircleHelp, Eye, LayoutList, ListChecks, LogOut, PencilLine } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { recordResourceOf } from '@viratec/contracts';
+import { AdminPermission, recordResourceOf } from '@viratec/contracts';
+import { useSessionStore } from '@/entities/session';
 import { getApiErrorCode } from '@/shared/api/apiClient';
 import { SITE_EDITOR_INTRO_STORAGE_KEY } from '@/shared/config/storageKeys';
 import { cn, PREVIEW_CONTENT_QUERY_KEY, useContentPreviewStore } from '@/shared/lib';
 import { Tooltip } from '@/shared/ui/Tooltip';
 import type { EditorGateCode } from './EditorGate';
+import { useAutosave } from '../model/autosave';
+import { flushDrafts } from '../model/autosaveRegistry';
 import { useEditorHistory } from '../model/history';
+import { NO_PERMISSIONS } from '../model/permissions';
 import { useSiteEditorMessages } from '../model/messages';
 import { EDITOR_QUERY_KEY, useContentChanges, useRefreshRecordQueries } from '../model/queries';
 import {
@@ -24,13 +28,17 @@ import {
   type CanvasTarget,
 } from '../model/useCanvasTargets';
 import { ConfirmDialog } from './ConfirmDialog';
+import { DeviceFrame } from './DeviceFrame';
+import { DeviceSwitch } from './DeviceSwitch';
 import { EditorGate } from './EditorGate';
 import { EditorOutlines } from './EditorOutlines';
 import { SectionBadge } from './SectionBadge';
 import { HelpDialog } from './HelpDialog';
 import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
 import { InspectorPanel } from './InspectorPanel';
+import { PublishControl } from './PublishControl';
 import { RecordPanel } from './RecordPanel';
+import { SaveIndicator } from './SaveIndicator';
 import { SelectionActions } from './SelectionActions';
 import { StructurePanel } from './StructurePanel';
 import { SummaryPanel } from './SummaryPanel';
@@ -76,6 +84,11 @@ export function SiteEditor() {
   const announcement = useSiteEditorStore((state) => state.announcement);
   const history = useEditorHistory();
   const refreshRecords = useRefreshRecordQueries();
+  const device = useSiteEditorStore((state) => state.device);
+  const canPublish = useSessionStore((state) =>
+    (state.user?.permissions ?? NO_PERMISSIONS).includes(AdminPermission.CONTENT_PUBLISH),
+  );
+  useAutosave();
 
   useEffect(() => {
     void refreshRecords();
@@ -98,7 +111,8 @@ export function SiteEditor() {
     [select, openStructure],
   );
 
-  const { hovered, section } = useCanvasTargets(mode === 'edit' && !gate, setSelected, open);
+  const isCanvasActive = mode === 'edit' && !gate && device === 'desktop';
+  const { hovered, section } = useCanvasTargets(isCanvasActive, setSelected, open);
 
   const step = (direction: 1 | -1) => {
     const next = stepCanvasTarget(selected, direction);
@@ -159,7 +173,9 @@ export function SiteEditor() {
       if (event.key !== 'Escape' || document.querySelector('dialog[open]')) return;
       const state = useSiteEditorStore.getState();
       if (state.isSummaryOpen) state.setSummaryOpen(false);
-      else if (state.mode !== 'edit') return;
+      else if (state.history.length === 0 && !state.structure && state.device !== 'desktop') {
+        state.setDevice('desktop');
+      } else if (state.mode !== 'edit') return;
       else if (state.structure) state.closeStructure();
       else if (state.history.length > 0) state.close();
       else setSelected(null);
@@ -177,7 +193,8 @@ export function SiteEditor() {
     }
   };
 
-  const exit = () => {
+  const exit = async () => {
+    await flushDrafts();
     reset();
     useContentPreviewStore.getState().setEnabled(false);
     queryClient.removeQueries({ queryKey: PREVIEW_CONTENT_QUERY_KEY });
@@ -207,7 +224,7 @@ export function SiteEditor() {
         className="pointer-events-none fixed inset-0 z-[2147483000] shadow-[inset_0_0_0_2px_var(--color-viratec-cyan),inset_0_0_32px_rgba(3,197,234,0.35)]"
       />
 
-      {mode === 'edit' && (
+      {isCanvasActive && (
         <>
           <EditorOutlines hovered={hovered} selected={selected} t={t} />
           {selected && !gate && !isPanelOpen && !isSummaryOpen && (
@@ -245,6 +262,7 @@ export function SiteEditor() {
           <span aria-hidden="true" className="size-2 rounded-full bg-viratec-cyan" />
           {t.editing}
         </span>
+        <SaveIndicator t={t} />
         <div
           role="radiogroup"
           aria-label={t.modeLabel}
@@ -327,9 +345,15 @@ export function SiteEditor() {
             )}
           </button>
         </Tooltip>
+        <DeviceSwitch t={t} />
+        {canPublish && <PublishControl count={pending} t={t} />}
         <IconButton icon={CircleHelp} label={t.helpOpen} onClick={() => setHelpOpen(true)} />
         <IconButton icon={LogOut} label={t.exitHint} onClick={() => setConfirmingExit(true)} />
       </div>
+
+      {device !== 'desktop' && !gate && (
+        <DeviceFrame device={device} isPanelOpen={isPanelOpen || isSummaryOpen} t={t} />
+      )}
 
       {gate ? (
         <EditorGate code={gate} t={t} />
@@ -359,7 +383,7 @@ export function SiteEditor() {
         closeLabel={t.close}
         onConfirm={() => {
           setConfirmingExit(false);
-          exit();
+          void exit();
         }}
         onClose={() => setConfirmingExit(false)}
       />

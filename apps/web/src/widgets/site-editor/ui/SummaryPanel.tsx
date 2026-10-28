@@ -5,31 +5,22 @@ import {
   recordTypeId,
   type ContentChangeDto,
   type ContentResourceKind,
-  type PublishContentResultDto,
   type RecordResource,
 } from '@viratec/contracts';
-import { useQueryClient } from '@tanstack/react-query';
 import { useSessionStore } from '@/entities/session';
 import { NO_PERMISSIONS } from '../model/permissions';
-import { CodePrompt, useStepUp } from '@/features/manage-two-factor';
-import { getApiErrorCode } from '@/shared/api/apiClient';
 import { INTL_LOCALE, useLocale } from '@/shared/i18n';
 import { cn, useContentPreviewStore } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
-import { Dialog } from '@/shared/ui/dialog';
+import { entrySaveKey, recordSaveKey } from '../model/autosave';
+import { cancelDraftSave } from '../model/autosaveRegistry';
 import { findContentType } from '../model/contentModel';
-import { useEditorErrorMessage } from '../model/errors';
 import { typeName } from '../model/fieldText';
 import { useEditorHistory } from '../model/history';
 import type { SiteEditorMessages } from '../model/messages';
-import {
-  EDITOR_QUERY_KEY,
-  useContentChanges,
-  useDiscardChange,
-  usePublishContent,
-} from '../model/queries';
+import { useContentChanges, useDiscardChange } from '../model/queries';
 import { SHORTCUTS } from '../model/shortcuts';
-import { useSiteEditorStore, type EditorSelection } from '../model/store';
+import { recordDraftKey, useSiteEditorStore, type EditorSelection } from '../model/store';
 import { EDITOR_ROOT_ATTRIBUTE } from '../model/useCanvasTargets';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DraftIssues } from './DraftIssues';
@@ -40,8 +31,6 @@ const RECORD_KINDS: Partial<Record<ContentResourceKind, RecordResource>> = {
   EVENT: 'event',
   PUBLICATION: 'publication',
 };
-
-const STEP_UP_CODES = new Set(['STEP_UP_REQUIRED', 'MFA_REVERIFY_REQUIRED']);
 
 const changeSelection = (change: ContentChangeDto): EditorSelection => {
   const resource = RECORD_KINDS[change.resourceType];
@@ -135,32 +124,21 @@ function ChangeRow({
 }
 
 export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () => void }) {
-  const queryClient = useQueryClient();
   const permissions = useSessionStore((state) => state.user?.permissions ?? NO_PERMISSIONS);
   const canEdit = permissions.includes(AdminPermission.CONTENT_EDIT);
-  const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
   const issuesByDomain = useContentPreviewStore((state) => state.issues);
   const issues = useMemo(() => Object.values(issuesByDomain).flat(), [issuesByDomain]);
   const changes = useContentChanges();
   const discard = useDiscardChange();
-  const publish = usePublishContent();
-  const stepUp = useStepUp();
-  const publishError = useEditorErrorMessage(
-    publish.error && !STEP_UP_CODES.has(getApiErrorCode(publish.error) ?? '')
-      ? publish.error
-      : null,
-  );
   const [discarding, setDiscarding] = useState<ContentChangeDto | null>(null);
-  const [isConfirmingPublish, setConfirmingPublish] = useState(false);
-  const [isSteppingUp, setSteppingUp] = useState(false);
-  const [result, setResult] = useState<PublishContentResultDto | null>(null);
+  const result = useSiteEditorStore((state) => state.publishResult);
   const [isConfirmingUndoAll, setConfirmingUndoAll] = useState(false);
   const isCollapsed = useSiteEditorStore((state) => state.isSummaryCollapsed);
   const past = useSiteEditorStore((state) => state.past);
   const future = useSiteEditorStore((state) => state.future);
   const isHistoryBusy = useSiteEditorStore((state) => state.isHistoryBusy);
   const hasHistoryError = useSiteEditorStore((state) => state.hasHistoryError);
-  const { setSummaryCollapsed, setHistory, announce } = useSiteEditorStore.getState();
+  const { setSummaryCollapsed } = useSiteEditorStore.getState();
   const history = useEditorHistory();
   const lastAction = past[past.length - 1];
   const nextAction = future[future.length - 1];
@@ -172,30 +150,6 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
   }, []);
 
   const items = changes.data ?? [];
-
-  const runPublish = () => {
-    setResult(null);
-    publish.mutate(
-      {},
-      {
-        onSuccess: (published) => {
-          setConfirmingPublish(false);
-          setResult(published);
-          if (published.published.length > 0) {
-            setHistory([], []);
-            announce(t.announce.published(published.published.length));
-          }
-        },
-        onError: (error) => {
-          setConfirmingPublish(false);
-          if (STEP_UP_CODES.has(getApiErrorCode(error) ?? '')) {
-            stepUp.reset();
-            setSteppingUp(true);
-          }
-        },
-      },
-    );
-  };
 
   return (
     <section
@@ -321,39 +275,15 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
             )}
           </div>
         )}
-        {publishError && (
-          <p role="alert" className="text-[14px] text-state-error">
-            {publishError}
-          </p>
-        )}
       </div>
 
       <footer className="flex flex-col gap-2 border-t border-white/8 p-4">
-        {items.length > 0 &&
-          (canPublish ? (
-            <Button
-              label={t.changes.publishAll(items.length)}
-              className="w-full"
-              loading={publish.isPending}
-              onClick={() => setConfirmingPublish(true)}
-            />
-          ) : (
-            <p className="text-[13px] text-text-muted">{t.changes.noPublishRight}</p>
-          ))}
+        {items.length > 0 && !permissions.includes(AdminPermission.CONTENT_PUBLISH) && (
+          <p className="text-[13px] text-text-muted">{t.changes.noPublishRight}</p>
+        )}
         <Button label={t.exit} variant="secondary" className="w-full" onClick={onExit} />
       </footer>
 
-      <ConfirmDialog
-        open={isConfirmingPublish}
-        title={t.changes.publishTitle}
-        description={t.changes.publishText(items.length)}
-        confirmLabel={t.changes.publishConfirm}
-        cancelLabel={t.keepEditing}
-        closeLabel={t.close}
-        isPending={publish.isPending}
-        onConfirm={runPublish}
-        onClose={() => setConfirmingPublish(false)}
-      />
       <ConfirmDialog
         open={Boolean(discarding)}
         title={discarding ? t.changes.discardTitle(changeLabel(discarding, t)) : ''}
@@ -364,7 +294,16 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
         isPending={discard.isPending}
         onConfirm={() => {
           if (!discarding) return;
-          useSiteEditorStore.getState().dropDraft(discarding.resourceId);
+          const resource = RECORD_KINDS[discarding.resourceType];
+          const { dropDraft, dropRecordDraft } = useSiteEditorStore.getState();
+          if (resource) {
+            const draftKey = recordDraftKey(resource, discarding.resourceId);
+            cancelDraftSave(recordSaveKey(draftKey));
+            dropRecordDraft(draftKey);
+          } else {
+            cancelDraftSave(entrySaveKey(discarding.resourceId));
+            dropDraft(discarding.resourceId);
+          }
           discard.mutate(discarding, { onSettled: () => setDiscarding(null) });
         }}
         onClose={() => setDiscarding(null)}
@@ -383,29 +322,6 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
         }}
         onClose={() => setConfirmingUndoAll(false)}
       />
-      <Dialog
-        open={isSteppingUp}
-        title={t.stepUp.title}
-        description={t.stepUp.description}
-        closeLabel={t.close}
-        onClose={() => setSteppingUp(false)}
-      >
-        <CodePrompt
-          submitLabel={t.stepUp.confirm}
-          isPending={stepUp.isPending || publish.isPending}
-          error={stepUp.error}
-          onCancel={() => setSteppingUp(false)}
-          onSubmit={(code) =>
-            stepUp.mutate(code, {
-              onSuccess: () => {
-                setSteppingUp(false);
-                void queryClient.invalidateQueries({ queryKey: EDITOR_QUERY_KEY });
-                runPublish();
-              },
-            })
-          }
-        />
-      </Dialog>
     </section>
   );
 }

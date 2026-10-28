@@ -16,6 +16,7 @@ import {
   saveEditorEntry,
   saveRecord,
 } from '../api/editorApi';
+import { flushDrafts } from './autosaveRegistry';
 import { discardChange } from './discard';
 import { useSiteEditorMessages } from './messages';
 import { EDITOR_QUERY_KEY, useRefreshRecordQueries } from './queries';
@@ -130,6 +131,7 @@ export function useEditorHistory() {
 
   const step = useCallback(
     async (direction: 'undo' | 'redo') => {
+      await flushDrafts();
       const store = useSiteEditorStore.getState();
       const stack = direction === 'undo' ? store.past : store.future;
       const action = stack[stack.length - 1];

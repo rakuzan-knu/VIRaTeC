@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { ContentFields, RecordData } from '@viratec/contracts';
 import type { ContentIssue } from '../../../build-tools/contentful/entry-reader.ts';
 import type { LayoutPage, PageSectionItem } from '@/shared/config/pageLayout';
 import { SITE_EDITOR_STORAGE_KEY } from '@/shared/config/storageKeys';
@@ -114,10 +115,14 @@ interface ContentPreviewState {
   issues: Record<string, readonly ContentIssue[]>;
   activeLayout: ActivePageLayout | null;
   layoutOverride: PageLayoutOverride | null;
+  entryOverrides: Record<string, ContentFields>;
+  recordOverrides: Record<string, RecordData>;
   setEnabled: (enabled: boolean) => void;
   setIssues: (domainId: string, issues: readonly ContentIssue[]) => void;
   setActiveLayout: (layout: ActivePageLayout | null) => void;
   setLayoutOverride: (override: PageLayoutOverride | null) => void;
+  setEntryOverrides: (overrides: Record<string, ContentFields>) => void;
+  setRecordOverrides: (overrides: Record<string, RecordData>) => void;
 }
 
 export const useContentPreviewStore = create<ContentPreviewState>((set) => ({
@@ -125,12 +130,16 @@ export const useContentPreviewStore = create<ContentPreviewState>((set) => ({
   issues: {},
   activeLayout: null,
   layoutOverride: null,
+  entryOverrides: {},
+  recordOverrides: {},
   setEnabled: (enabled) => {
     writeEnabled(enabled);
-    set({ enabled, issues: {}, layoutOverride: null });
+    set({ enabled, issues: {}, layoutOverride: null, entryOverrides: {}, recordOverrides: {} });
   },
   setActiveLayout: (activeLayout) => set({ activeLayout }),
   setLayoutOverride: (layoutOverride) => set({ layoutOverride }),
+  setEntryOverrides: (entryOverrides) => set({ entryOverrides }),
+  setRecordOverrides: (recordOverrides) => set({ recordOverrides }),
   setIssues: (domainId, issues) =>
     set((state) => ({ issues: { ...state.issues, [domainId]: issues } })),
 }));

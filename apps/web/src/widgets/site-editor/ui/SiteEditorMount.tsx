@@ -4,6 +4,8 @@ import { useSessionStore } from '@/entities/session';
 import { useContentPreviewStore } from '@/shared/lib';
 import { SITE_EDITOR_PARAM } from '@/shared/config/routes';
 import { useCanOpenSiteEditor } from '../model/permissions';
+import { isEditorFrame } from '../model/useFrameSync';
+import { FrameBridge } from './FrameBridge';
 
 const SiteEditor = lazy(() =>
   import('./SiteEditor').then((module) => ({ default: module.SiteEditor })),
@@ -31,6 +33,7 @@ export function SiteEditorMount() {
   }, [isEnabled, isRestoring, canOpen, setEnabled]);
 
   if (!isEnabled || !canOpen) return null;
+  if (isEditorFrame()) return <FrameBridge />;
   return (
     <Suspense fallback={null}>
       <SiteEditor />

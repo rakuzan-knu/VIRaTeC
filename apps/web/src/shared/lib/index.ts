@@ -32,6 +32,12 @@ export {
   type ContentFieldAddress,
   type ContentAssetAddress,
   type ActivePageLayout,
+  type PageLayoutOverride,
   type ContentIssue,
 } from './contentPreview';
-export { previewRecords, invalidateRecordDrafts, RECORD_QUERY_ROOTS } from './recordPreview';
+export {
+  previewRecords,
+  useRecordOverlay,
+  invalidateRecordDrafts,
+  RECORD_QUERY_ROOTS,
+} from './recordPreview';

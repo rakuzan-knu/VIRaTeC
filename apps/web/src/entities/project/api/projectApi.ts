@@ -9,7 +9,7 @@ const mergeDraft = (project: Project, data: RecordData): Project => {
   return text ? { ...merged, title: text.title, description: text.description } : merged;
 };
 
-const PROJECT_PREVIEW = {
+export const PROJECT_PREVIEW = {
   resource: 'project',
   keyOf: (project: Project) => project.id,
   merge: mergeDraft,

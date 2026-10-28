@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { ArrowLeft, CircleDot, X } from 'lucide-react';
+import { flushDrafts } from '../model/autosaveRegistry';
 import type { SiteEditorMessages } from '../model/messages';
 import { useSiteEditorStore } from '../model/store';
 import { EDITOR_ROOT_ATTRIBUTE } from '../model/useCanvasTargets';
@@ -15,6 +16,7 @@ interface EditorPanelProps {
   footer?: ReactNode;
   onClose?: () => void;
   focusTitle?: boolean;
+  saveKey?: string;
   children: ReactNode;
 }
 
@@ -27,6 +29,7 @@ export function EditorPanel({
   footer,
   onClose,
   focusTitle = false,
+  saveKey,
   children,
 }: EditorPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -75,7 +78,10 @@ export function EditorPanel({
         />
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain p-4">
+      <div
+        onBlur={saveKey ? () => void flushDrafts(saveKey) : undefined}
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain p-4"
+      >
         {children}
       </div>
 

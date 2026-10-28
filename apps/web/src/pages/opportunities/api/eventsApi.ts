@@ -1,4 +1,4 @@
-import type { EventDto } from '@viratec/contracts';
+import type { EventDto, RecordData } from '@viratec/contracts';
 import { api } from '@/shared/api/apiClient';
 import { previewRecords } from '@/shared/lib';
 
@@ -13,11 +13,16 @@ const mergeDraft = (event: EventResponse, data: Partial<EventResponse>): EventRe
   return text ? { ...merged, title: text.title, description: text.description } : merged;
 };
 
+export const EVENT_PREVIEW = {
+  resource: 'event',
+  keyOf: (event: EventResponse) => event.id,
+  merge: (event: EventResponse, data: RecordData) =>
+    mergeDraft(event, data as Partial<EventResponse>),
+} as const;
+
 export const fetchEvents = async (): Promise<EventResponse[]> =>
   previewRecords(await api.get<EventResponse[]>('/events'), {
-    resource: 'event',
-    keyOf: (event) => event.id,
-    merge: (event, data) => mergeDraft(event, data as Partial<EventResponse>),
+    ...EVENT_PREVIEW,
     create: (id, data) =>
       mergeDraft(
         {

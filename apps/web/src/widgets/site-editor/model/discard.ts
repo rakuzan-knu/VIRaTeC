@@ -39,7 +39,11 @@ const detachEntry = async (entryId: string) => {
     const fields = withoutEntryLink(draft.fields, entryId);
     const version = savedVersions.get(id);
     if (version === undefined && fields === draft.fields) continue;
-    setDraft(id, { version: version ?? draft.version, fields });
+    setDraft(id, {
+      version: version ?? draft.version,
+      base: withoutEntryLink(draft.base, entryId),
+      fields,
+    });
   }
 };
 
