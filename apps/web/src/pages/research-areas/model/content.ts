@@ -10,6 +10,7 @@ interface TitledText {
 
 export interface ResearchArea extends TitledText {
   image?: string;
+  imageAlt?: string;
 }
 
 export interface ResearchAreasContent {

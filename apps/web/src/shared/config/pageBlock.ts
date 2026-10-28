@@ -17,6 +17,7 @@ export interface BlockCard {
   linkLabel?: string;
   to?: string;
   image?: string;
+  imageAlt?: string;
 }
 
 export interface BlockStat {

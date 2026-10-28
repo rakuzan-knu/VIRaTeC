@@ -145,6 +145,7 @@ export class RecordEditorService {
         isFeatured: publication.isFeatured,
         readMoreLink: publication.readMoreLink,
         coverKey: publication.coverKey,
+        coverFocus: publication.coverFocus,
         sourceUrl: publication.sourceUrl,
         pdfUrl: publication.pdfUrl,
         detailSource: publication.detailSource,
@@ -165,6 +166,7 @@ export class RecordEditorService {
         repositoryUrl: project.repositoryUrl,
         demoUrl: project.demoUrl,
         coverUrl: project.coverUrl,
+        coverFocus: project.coverFocus,
         translations: project.translations
           ? ProjectTranslationsSchema.parse(project.translations)
           : { en: fallback, uk: fallback },
@@ -430,6 +432,7 @@ export class RecordEditorService {
           repositoryUrl: record.repositoryUrl,
           demoUrl: record.demoUrl,
           coverUrl: record.coverUrl,
+          coverFocus: record.coverFocus,
           translations: record.translations,
         };
         if (change.isDeleted) await tx.project.delete({ where: { id: key } });

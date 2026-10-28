@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PublicationType } from './enums.js';
+import { CoverFocusSchema } from './projects.js';
 
 export const PublicationBlockSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('paragraph'), text: z.string() }),
@@ -24,6 +25,7 @@ export const PublicationTextSchema = z.object({
   title: z.string(),
   source: z.string(),
   excerpt: z.string(),
+  coverAlt: z.string().max(300).optional(),
   detail: PublicationDetailTextSchema.optional(),
 });
 
@@ -43,6 +45,7 @@ export const PublicationSchema = z.object({
   isFeatured: z.boolean(),
   readMoreLink: z.boolean(),
   coverKey: z.string().nullable(),
+  coverFocus: CoverFocusSchema.nullable().optional(),
   sourceUrl: z.string().nullable(),
   pdfUrl: z.string().nullable(),
   detailSource: z.string().nullable(),

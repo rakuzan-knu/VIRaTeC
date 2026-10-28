@@ -53,6 +53,8 @@ const ADVANCED_FIELDS = new Set([
 
 const ADVANCED_RECORD_FIELDS = new Set(['publication.slug', 'publication.position']);
 
+export const COVER_FOCUS_PATH = 'coverFocus';
+
 const IMAGE_RECORD_FIELDS = new Map<string, ZodType>([
   ['publication.coverKey', PublicationRecordSchema.shape.coverKey],
   ['project.coverUrl', ProjectRecordSchema.shape.coverUrl],
@@ -226,6 +228,7 @@ export const arrangeRecordFields = (
   const detail: RecordFieldDefinition[] = [];
   const advanced: RecordFieldDefinition[] = [];
   for (const field of fields) {
+    if (field.path === COVER_FOCUS_PATH) continue;
     if (isAdvancedRecordField(resource, field.path)) advanced.push(field);
     else if (field.path.includes(RECORD_DETAIL_SEGMENT)) detail.push(field);
     else main.push(field);

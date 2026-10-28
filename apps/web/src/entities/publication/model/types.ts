@@ -30,6 +30,8 @@ export interface Publication {
   linkLabel: string;
   isFeatured?: boolean;
   image?: string;
+  imageFocus?: string;
+  coverAlt?: string;
   sourceUrl?: string;
   detail?: PublicationDetail;
 }

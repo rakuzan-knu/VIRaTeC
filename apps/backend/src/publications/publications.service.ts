@@ -13,6 +13,7 @@ const toPublicationDto = (publication: Publication): PublicationDto => ({
   isFeatured: publication.isFeatured,
   readMoreLink: publication.readMoreLink,
   coverKey: publication.coverKey,
+  coverFocus: publication.coverFocus,
   sourceUrl: publication.sourceUrl,
   pdfUrl: publication.pdfUrl,
   detailSource: publication.detailSource,

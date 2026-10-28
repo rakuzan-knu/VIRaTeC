@@ -9,6 +9,7 @@ interface MediaPlaceholderProps {
   alt?: string;
   label?: string;
   sizes?: string;
+  focus?: string | null;
 }
 
 export function MediaPlaceholder({
@@ -17,6 +18,7 @@ export function MediaPlaceholder({
   alt = '',
   label,
   sizes = CARD_IMAGE_SIZES,
+  focus,
 }: MediaPlaceholderProps) {
   if (src) {
     return (
@@ -27,6 +29,7 @@ export function MediaPlaceholder({
           alt={alt}
           loading="lazy"
           decoding="async"
+          style={focus ? { objectPosition: focus } : undefined}
           className="reveal-media size-full object-cover"
         />
       </span>

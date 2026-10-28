@@ -41,6 +41,8 @@ export function FeaturedPublicationCard({ publication }: PublicationCardProps) {
     >
       <MediaPlaceholder
         src={publication.image}
+        alt={publication.coverAlt}
+        focus={publication.imageFocus}
         label={labels.type[publication.type]}
         sizes="(min-width: 1024px) 560px, 100vw"
         className="h-[190px] rounded-[14px] lg:h-80 lg:w-[560px] lg:rounded-[18px]"
@@ -77,6 +79,8 @@ export function RelatedPublicationCard({ publication }: RelatedPublicationCardPr
     >
       <MediaPlaceholder
         src={publication.image}
+        alt={publication.coverAlt}
+        focus={publication.imageFocus}
         label={labels.type[publication.type]}
         className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]"
       />

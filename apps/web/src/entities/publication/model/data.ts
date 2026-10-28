@@ -63,6 +63,7 @@ export const toPublication = (dto: PublicationDto, locale: Locale): Publication 
     ...text,
     linkLabel: showPaperLink ? labels.readPaper : labels.readMore,
     image: getPublicationCover(dto.coverKey),
+    imageFocus: dto.coverFocus ?? undefined,
     sourceUrl: dto.sourceUrl ?? undefined,
     detail: detail && {
       ...detail,

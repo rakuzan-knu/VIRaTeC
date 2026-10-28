@@ -47,6 +47,7 @@ export function ResearchAreasPage() {
                   <li key={area.title}>
                     <InfoCard
                       image={area.image}
+                      imageAlt={area.imageAlt}
                       title={area.title}
                       description={area.description}
                       linkLabel={common.seeProjects}

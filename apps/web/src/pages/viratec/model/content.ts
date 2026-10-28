@@ -22,6 +22,7 @@ interface TitledText {
 interface Principle extends TitledText {
   to: string;
   image?: string;
+  imageAlt?: string;
 }
 
 export interface ViratecContent {

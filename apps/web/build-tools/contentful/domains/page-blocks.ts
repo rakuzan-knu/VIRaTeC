@@ -117,6 +117,7 @@ const createBlockBuilder = (entry: RawEntry, context: PullContext) => {
         const meta = card.reader.read('meta', nonEmpty, locale);
         const linkLabel = card.reader.read('linkLabel', nonEmpty, locale);
         const imageId = card.reader.read('image', assetLinkSchema)?.sys.id;
+        const imageAlt = card.reader.read('imageAlt', nonEmpty, locale);
         return [
           {
             title: cardTitle,
@@ -124,6 +125,7 @@ const createBlockBuilder = (entry: RawEntry, context: PullContext) => {
             ...(meta && { meta }),
             ...(card.target?.to && { to: card.target.to, ...(linkLabel && { linkLabel }) }),
             ...(imageId && { image: context.assets.reference(imageId) }),
+            ...(imageAlt && { imageAlt }),
           },
         ];
       });

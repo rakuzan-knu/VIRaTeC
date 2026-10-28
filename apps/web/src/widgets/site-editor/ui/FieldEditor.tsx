@@ -12,7 +12,10 @@ import type { SiteEditorMessages } from '../model/messages';
 import { AssetField } from './AssetField';
 import { EntryLinksField } from './EntryLinksField';
 import { PublicationKeysField } from './PublicationKeysField';
+import { AltHint } from './AltHint';
 import { TranslationHint } from './TranslationHint';
+
+const ALT_FIELD_ID = 'imageAlt';
 
 export interface FieldEditorProps {
   contentTypeId: string;
@@ -239,6 +242,9 @@ export function FieldEditor({
           t={t}
           onCopy={(from, to) => onChange(locales[to], values?.[locales[from]])}
         />
+        {field.id === ALT_FIELD_ID && (
+          <AltHint values={{ en: values?.[locales.en], uk: values?.[locales.uk] }} t={t} />
+        )}
         {LOCALES.map((locale) => (
           <ScalarInput
             key={locale}

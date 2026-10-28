@@ -81,6 +81,26 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       nothing: 'Nothing to publish yet',
       waiting: 'Finishing saving…',
     },
+    focus: {
+      title: 'The main part of the photo',
+      help: 'Click a face or the key detail. It always stays in the frame on phones and computers.',
+      horizontal: 'Left to right',
+      vertical: 'Top to bottom',
+      preview: 'How the photo fits the card',
+      phone: 'Phone',
+      desktop: 'Computer',
+      reset: 'Back to the centre',
+    },
+    alt: {
+      missing: 'Describe what is in the photo. Blind visitors hear this text.',
+    },
+    drop: {
+      hint: 'Drop to replace the photo',
+      uploading: 'Uploading the photo…',
+      replaced: 'Photo replaced',
+      noRight: 'You cannot upload photos. Ask an owner for the media permission.',
+      failed: 'The photo was not replaced. Try another file.',
+    },
     collection: {
       add: (name: string) => `Add ${name.toLowerCase()}`,
       controls: (label: string) => `Actions for “${label}”`,
@@ -471,6 +491,26 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       button: (count: number) => `Опублікувати (${count})`,
       nothing: 'Поки нічого публікувати',
       waiting: 'Завершуємо збереження…',
+    },
+    focus: {
+      title: 'Що головне на фото',
+      help: 'Клікніть на обличчя чи головну деталь — вона завжди буде в кадрі на телефоні й компʼютері.',
+      horizontal: 'Зліва направо',
+      vertical: 'Згори донизу',
+      preview: 'Як фото ляже в картку',
+      phone: 'Телефон',
+      desktop: 'Компʼютер',
+      reset: 'Повернути в центр',
+    },
+    alt: {
+      missing: 'Опишіть, що на фото — це читають незрячі.',
+    },
+    drop: {
+      hint: 'Відпустіть, щоб замінити фото',
+      uploading: 'Завантажуємо фото…',
+      replaced: 'Фото замінено',
+      noRight: 'У вас немає права завантажувати фото. Попросіть власника сайту.',
+      failed: 'Фото не замінено. Спробуйте інший файл.',
     },
     collection: {
       add: (name: string) => `Додати ${name.toLowerCase()}`,

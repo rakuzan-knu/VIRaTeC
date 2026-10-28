@@ -18,6 +18,7 @@ export function CardsBlock({ block, headingId }: BlockProps<'cards'>) {
             <li key={index}>
               <InfoCard
                 image={item.image}
+                imageAlt={item.imageAlt}
                 meta={item.meta}
                 title={item.title}
                 description={item.description}

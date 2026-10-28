@@ -83,6 +83,9 @@ const CARD_TYPE: ContentTypeDefinition = {
     }),
     entryField('link', 'Link', [LINK_TYPE_ID]),
     imageField('image', 'Image'),
+    localizedField('imageAlt', 'Image description', 'Symbol', {
+      help: 'Describe what is in the photo. Blind visitors hear this text.',
+    }),
   ],
 };
 

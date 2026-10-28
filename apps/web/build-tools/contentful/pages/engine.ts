@@ -33,6 +33,7 @@ export interface CardMapping {
   linkLabel?: string;
   link?: string;
   image?: string;
+  imageAlt?: string;
 }
 
 type FieldKind =
@@ -220,6 +221,9 @@ const pullPage = (spec: PageSpec, context: PullContext) => {
           if (card.image) {
             const imageId = cardReader.reader.read('image', assetLinkSchema)?.sys.id;
             if (imageId) output[card.image] = context.assets.reference(imageId);
+          }
+          if (card.imageAlt) {
+            output[card.imageAlt] = cardReader.reader.read('imageAlt', nonEmpty, locale) ?? '';
           }
           return [output];
         });

@@ -309,6 +309,7 @@ model Project {
   repositoryUrl String?
   demoUrl       String?
   coverUrl      String?
+  coverFocus    String?
   translations  Json?
   leadId        String?
   lead          User?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
@@ -350,6 +351,7 @@ model Publication {
   isFeatured   Boolean         @default(false)
   readMoreLink Boolean         @default(false)
   coverKey     String?
+  coverFocus   String?
   sourceUrl    String?
   pdfUrl       String?
   detailSource String?

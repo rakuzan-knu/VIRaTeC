@@ -13,12 +13,16 @@ import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
-import { imageRecordSchema, recordFieldText } from '../model/fieldText';
+import { COVER_FOCUS_PATH, imageRecordSchema, recordFieldText } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
 import { BlocksField } from './BlocksField';
 import { ImageUploadField } from './ImageUploadField';
+import { AltHint } from './AltHint';
+import { FocusPicker } from './FocusPicker';
 import { TranslationHint } from './TranslationHint';
+
+const ALT_SUFFIX = '.coverAlt';
 
 interface RecordFieldEditorProps {
   resource: RecordResource;
@@ -242,24 +246,35 @@ export function RecordFieldEditor({
       )}
     >
       {imageSchema ? (
-        <ImageUploadField
-          label={title}
-          help={text.help}
-          previewSrc={imagePreview}
-          previewAlt=""
-          hasValue={Boolean(imageValue)}
-          canRemove={!field.required}
-          readOnly={readOnly}
-          uploadName="cover"
-          t={t}
-          onUploaded={(asset) => {
-            const url = absoluteImageUrl(asset.url);
-            if (!imageSchema.safeParse(url).success) return t.inspector.imageNotSaved;
-            onChange(field.path, url);
-            return null;
-          }}
-          onRemove={() => onChange(field.path, null)}
-        />
+        <div className="flex min-w-0 flex-col gap-5">
+          <ImageUploadField
+            label={title}
+            help={text.help}
+            previewSrc={imagePreview}
+            previewAlt=""
+            hasValue={Boolean(imageValue)}
+            canRemove={!field.required}
+            readOnly={readOnly}
+            uploadName="cover"
+            t={t}
+            onUploaded={(asset) => {
+              const url = absoluteImageUrl(asset.url);
+              if (!imageSchema.safeParse(url).success) return t.inspector.imageNotSaved;
+              onChange(field.path, url);
+              return null;
+            }}
+            onRemove={() => onChange(field.path, null)}
+          />
+          {imageValue && imagePreview && (
+            <FocusPicker
+              src={imagePreview}
+              value={asString(readRecordValue(data, COVER_FOCUS_PATH)) || null}
+              readOnly={readOnly}
+              t={t}
+              onChange={(value) => onChange(COVER_FOCUS_PATH, value)}
+            />
+          )}
+        </div>
       ) : field.localized ? (
         <fieldset
           aria-describedby={text.help ? helpId : undefined}
@@ -282,6 +297,15 @@ export function RecordFieldEditor({
               onChange(localizedPath(field, to), readRecordValue(data, localizedPath(field, from)))
             }
           />
+          {field.path.endsWith(ALT_SUFFIX) && (
+            <AltHint
+              values={{
+                en: readRecordValue(data, localizedPath(field, 'en')),
+                uk: readRecordValue(data, localizedPath(field, 'uk')),
+              }}
+              t={t}
+            />
+          )}
           {LOCALES.map((locale) => {
             const path = localizedPath(field, locale);
             return (

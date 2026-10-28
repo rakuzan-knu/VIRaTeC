@@ -18,6 +18,7 @@ import { flushDrafts } from '../model/autosaveRegistry';
 import { useEditorHistory } from '../model/history';
 import { inlineFieldOf, type InlineField } from '../model/inlineEdit';
 import { useCollectionGrids } from '../model/useCollectionGrids';
+import { useImageDrop } from '../model/useImageDrop';
 import { NO_PERMISSIONS, canEditRecords } from '../model/permissions';
 import { useSiteEditorMessages } from '../model/messages';
 import {
@@ -49,6 +50,7 @@ import { EditorOutlines } from './EditorOutlines';
 import { SectionBadge } from './SectionBadge';
 import { HelpDialog } from './HelpDialog';
 import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
+import { ImageDropOverlay } from './ImageDropOverlay';
 import { InlineEditor, type InlineCloseReason } from './InlineEditor';
 import { InspectorPanel } from './InspectorPanel';
 import { PublishControl } from './PublishControl';
@@ -161,6 +163,7 @@ export function SiteEditor() {
   const isCanvasActive = mode === 'edit' && !gate && device === 'desktop';
   const { hovered, section } = useCanvasTargets(isCanvasActive, setSelected, open);
   const grids = useCollectionGrids(isCanvasActive && !inline);
+  const drop = useImageDrop(isCanvasActive);
 
   const step = (direction: 1 | -1) => {
     const next = stepCanvasTarget(selected, direction);
@@ -293,6 +296,9 @@ export function SiteEditor() {
       {isCanvasActive && (
         <>
           <EditorOutlines hovered={hovered} selected={selected} t={t} />
+          {drop.target && (
+            <ImageDropOverlay target={drop.target} isUploading={drop.isUploading} t={t} />
+          )}
           {!inline && (
             <CollectionOverlay
               grids={grids}

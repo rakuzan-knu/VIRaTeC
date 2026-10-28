@@ -74,6 +74,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       'card.meta': { label: 'Small text on the card', help: 'E.g. a date, a number or a place.' },
       'card.linkLabel': { label: 'Link text', help: 'E.g. Learn more.' },
       'card.link': { label: 'Where the card leads' },
+      'card.imageAlt': {
+        label: 'Photo description',
+        help: 'One short sentence, e.g. “Students test a robot in the lab”.',
+      },
       'stat.value': { label: 'Number', help: 'E.g. 15+, 500+ or 10.' },
       'stat.label': { label: 'Caption under the number' },
       'step.title': { label: 'Step title' },
@@ -180,6 +184,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
         label: 'Cover photo',
         help: 'Shown on the project card and page. Without a photo the card shows a picture for the research area.',
       },
+      'project.translations.{locale}.coverAlt': {
+        label: 'Photo description',
+        help: 'One short sentence, e.g. “Students test a robot in the lab”.',
+      },
       'event.translations.{locale}.title': { label: 'Event name' },
       'event.translations.{locale}.description': { label: 'Event description' },
       'event.translations.{locale}.meta': {
@@ -221,6 +229,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       'publication.coverKey': {
         label: 'Cover photo',
         help: 'Shown on the card and the publication page. A landscape photo, at least 1200 px wide.',
+      },
+      'publication.content.{locale}.coverAlt': {
+        label: 'Photo description',
+        help: 'One short sentence, e.g. “Students test a robot in the lab”.',
       },
       'publication.detailSource': {
         label: 'Source link on the publication page',
@@ -410,6 +422,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       },
       'card.linkLabel': { label: 'Текст посилання', help: 'Наприклад «Детальніше».' },
       'card.link': { label: 'Куди веде картка' },
+      'card.imageAlt': {
+        label: 'Опис фото',
+        help: 'Одне коротке речення, наприклад «Студенти тестують робота в лабораторії».',
+      },
       'stat.value': { label: 'Число', help: 'Наприклад 15+, 500+ або 10.' },
       'stat.label': { label: 'Підпис під числом' },
       'step.title': { label: 'Назва кроку' },
@@ -528,6 +544,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
         label: 'Обкладинка',
         help: 'Фото на картці та сторінці проєкту. Без фото показується картинка напряму досліджень.',
       },
+      'project.translations.{locale}.coverAlt': {
+        label: 'Опис фото',
+        help: 'Одне коротке речення, наприклад «Студенти тестують робота в лабораторії».',
+      },
       'event.translations.{locale}.title': { label: 'Назва події' },
       'event.translations.{locale}.description': { label: 'Опис події' },
       'event.translations.{locale}.meta': {
@@ -575,6 +595,10 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       'publication.coverKey': {
         label: 'Обкладинка',
         help: 'Фото на картці та сторінці публікації. Горизонтальне, щонайменше 1200 px завширшки.',
+      },
+      'publication.content.{locale}.coverAlt': {
+        label: 'Опис фото',
+        help: 'Одне коротке речення, наприклад «Студенти тестують робота в лабораторії».',
       },
       'publication.detailSource': {
         label: 'Посилання на джерело на сторінці публікації',
