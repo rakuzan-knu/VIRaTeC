@@ -12,3 +12,5 @@ export {
   RelatedPublicationCard,
   PublicationCardSkeleton,
 } from './ui/PublicationCard';
+export { InlineText } from './ui/InlineText';
+export { parseInline, serializeInline, type InlineSegment } from './lib/inline';

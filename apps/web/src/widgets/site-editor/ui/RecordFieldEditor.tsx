@@ -1,11 +1,13 @@
-import { useEffect, useId, useRef } from 'react';
+import { lazy, Suspense, useEffect, useId, useRef } from 'react';
 import {
+  AdminPermission,
   readRecordValue,
   type RecordData,
   type RecordFieldDefinition,
   type RecordResource,
 } from '@viratec/contracts';
 import { useProjectLabels } from '@/entities/project';
+import { useSessionStore } from '@/entities/session';
 import { getPublicationCover } from '@/entities/publication';
 import { LOCALES, type Locale } from '@/shared/i18n';
 import { absoluteImageUrl, cn, contentCoverSrc } from '@/shared/lib';
@@ -15,14 +17,18 @@ import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
 import { COVER_FOCUS_PATH, imageRecordSchema, recordFieldText } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
+import { NO_PERMISSIONS } from '../model/permissions';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
-import { BlocksField } from './BlocksField';
 import { ImageUploadField } from './ImageUploadField';
 import { AltHint } from './AltHint';
 import { FocusPicker } from './FocusPicker';
 import { TranslationHint } from './TranslationHint';
 
 const ALT_SUFFIX = '.coverAlt';
+
+const ArticleEditor = lazy(() =>
+  import('./ArticleEditor').then((module) => ({ default: module.ArticleEditor })),
+);
 
 interface RecordFieldEditorProps {
   resource: RecordResource;
@@ -66,6 +72,9 @@ function RecordInput({
     ...projectLabels.faculty,
   };
   const optionLabel = (option: string) => optionLabels[option] ?? option;
+  const canUpload = useSessionStore((state) =>
+    (state.user?.permissions ?? NO_PERMISSIONS).includes(AdminPermission.MEDIA_MANAGE),
+  );
 
   switch (field.kind) {
     case 'boolean':
@@ -185,10 +194,17 @@ function RecordInput({
       );
     case 'blocks':
       return (
-        <div className="flex min-w-0 flex-col gap-2">
-          <span className="text-label font-medium text-text-muted">{label}</span>
-          <BlocksField value={value} readOnly={readOnly} t={t} onChange={onChange} />
-        </div>
+        <Suspense fallback={<p className="text-[14px] text-text-muted">{t.loading}</p>}>
+          <ArticleEditor
+            label={label}
+            value={value}
+            lang={lang ?? 'uk'}
+            readOnly={readOnly}
+            canUpload={canUpload}
+            t={t}
+            onChange={onChange}
+          />
+        </Suspense>
       );
     default:
       return (

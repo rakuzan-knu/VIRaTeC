@@ -34,6 +34,8 @@ const loadDrafts = () =>
 
 const MARKED_KINDS = new Set(['text', 'longText', 'blocks']);
 
+const MARKED_BLOCK_KEYS = new Set(['text', 'author', 'caption']);
+
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -56,7 +58,9 @@ const markValue = (value: unknown, marker: string): unknown => {
         ? Object.fromEntries(
             Object.entries(block).map(([key, item]) => [
               key,
-              key !== 'kind' && typeof item === 'string' && item.trim() ? `${item}${marker}` : item,
+              MARKED_BLOCK_KEYS.has(key) && typeof item === 'string' && item.trim()
+                ? `${item}${marker}`
+                : item,
             ]),
           )
         : block,

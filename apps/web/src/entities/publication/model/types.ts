@@ -1,9 +1,8 @@
+import type { PublicationBlockDto } from '@viratec/contracts';
+
 export type PublicationType = 'paper' | 'news' | 'event' | 'media';
 
-export type PublicationBlock =
-  | { kind: 'paragraph'; text: string }
-  | { kind: 'heading'; text: string }
-  | { kind: 'quote'; text: string; author: string };
+export type PublicationBlock = PublicationBlockDto;
 
 export interface PublicationDetail {
   heroTitle: string;

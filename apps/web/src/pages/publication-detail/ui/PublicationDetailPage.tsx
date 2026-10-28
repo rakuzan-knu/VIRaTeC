@@ -6,6 +6,7 @@ import { PageSection } from '@/shared/ui/page-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { FactsCard } from '@/shared/ui/facts-card';
 import { MediaPlaceholder } from '@/shared/ui/media-placeholder';
+import { ResponsiveImage } from '@/shared/ui/responsive-image';
 import { ButtonArrow, LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
 import {
   RelatedPublicationCard,
@@ -13,13 +14,14 @@ import {
   usePublicationLabels,
   usePublications,
   type Publication,
+  InlineText,
   type PublicationBlock,
 } from '@/entities/publication';
 import { PageIntro, type BreadcrumbItem } from '@/widgets/page-intro';
 import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
 import { SiteFooter } from '@/widgets/site-footer';
-import { useSeo } from '@/shared/lib';
+import { cn, useSeo } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { ListFeedback } from '@/shared/ui/list-feedback';
 
@@ -64,7 +66,7 @@ function ArticleBlock({ block }: { block: PublicationBlock }) {
   if (block.kind === 'heading') {
     return (
       <h2 className="pt-1 font-display text-2xl leading-[30px] font-medium tracking-[-0.02em] text-white lg:text-[32px] lg:leading-[38px]">
-        {block.text}
+        <InlineText text={block.text} />
       </h2>
     );
   }
@@ -72,18 +74,61 @@ function ArticleBlock({ block }: { block: PublicationBlock }) {
     return (
       <blockquote className="flex flex-col gap-2 border-l-[3px] border-viratec-accent pl-6">
         <p className="font-display text-xl leading-8 tracking-[-0.015em] text-white lg:text-[26px] lg:leading-9">
-          {block.text}
+          <InlineText text={block.text} />
         </p>
-        <footer className="text-sm leading-5 text-viratec-subtle">{block.author}</footer>
+        {block.author && (
+          <footer className="text-sm leading-5 text-viratec-subtle">{block.author}</footer>
+        )}
       </blockquote>
+    );
+  }
+  if (block.kind === 'list') {
+    const ListTag = block.ordered ? 'ol' : 'ul';
+    return (
+      <ListTag
+        className={cn(
+          'flex flex-col gap-2 pl-6 text-base leading-[26px] text-viratec-muted marker:text-viratec-accent lg:text-[17px] lg:leading-7',
+          block.ordered ? 'list-decimal' : 'list-disc',
+        )}
+      >
+        {block.items.map((item, index) => (
+          <li key={index}>
+            <InlineText text={item} />
+          </li>
+        ))}
+      </ListTag>
+    );
+  }
+  if (block.kind === 'image') {
+    return (
+      <figure className="flex flex-col gap-3">
+        <ResponsiveImage
+          src={block.url}
+          sizes="(min-width: 1440px) 1270px, 100vw"
+          alt={block.alt}
+          loading="lazy"
+          decoding="async"
+          className="w-full rounded-[24px] object-cover lg:rounded-[32px]"
+        />
+        {block.caption && (
+          <figcaption className="text-sm leading-5 text-viratec-subtle">{block.caption}</figcaption>
+        )}
+      </figure>
     );
   }
   return (
     <p className="text-base leading-[26px] text-viratec-muted lg:text-[17px] lg:leading-7">
-      {block.text}
+      <InlineText text={block.text} />
     </p>
   );
 }
+
+const blockKey = (block: PublicationBlock, index: number) =>
+  block.kind === 'image'
+    ? `${block.kind}-${block.url}`
+    : block.kind === 'list'
+      ? `${block.kind}-${index}`
+      : `${block.kind}-${block.text}`;
 
 function PublicationBody({ publication }: { publication: Publication }) {
   const { detail } = publication;
@@ -128,8 +173,8 @@ function PublicationBody({ publication }: { publication: Publication }) {
           className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]"
         />
         {detail ? (
-          detail.blocks.map((block) => (
-            <ArticleBlock key={`${block.kind}-${block.text}`} block={block} />
+          detail.blocks.map((block, index) => (
+            <ArticleBlock key={blockKey(block, index)} block={block} />
           ))
         ) : (
           <ArticleBlock block={{ kind: 'paragraph', text: publication.excerpt }} />
