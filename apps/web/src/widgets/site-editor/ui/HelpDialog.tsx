@@ -15,6 +15,8 @@ export function HelpDialog({ open, t, onClose }: HelpDialogProps) {
     [SHORTCUTS.undo.label, t.help.shortcuts.undo],
     [SHORTCUTS.redo.label, t.help.shortcuts.redo],
     [SHORTCUTS.close.label, t.help.shortcuts.close],
+    [`${SHORTCUTS.next.label} ${SHORTCUTS.previous.label}`, t.help.shortcuts.step],
+    [SHORTCUTS.open.label, t.help.shortcuts.open],
     [SHORTCUTS.link.label, t.help.shortcuts.link],
   ] as const;
 

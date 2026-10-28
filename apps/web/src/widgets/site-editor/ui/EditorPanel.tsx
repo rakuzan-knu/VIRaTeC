@@ -55,7 +55,7 @@ export function EditorPanel({
           <h2
             ref={titleRef}
             tabIndex={-1}
-            className="truncate text-[17px] font-medium text-text-primary outline-none"
+            className="text-[17px] font-medium break-words text-text-primary outline-none"
           >
             {title}
           </h2>

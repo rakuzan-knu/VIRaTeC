@@ -84,7 +84,8 @@ const containsPoint = (node: Node, point: CanvasPoint) => {
   );
 };
 
-const textAtPoint = (element: Element, point: CanvasPoint | undefined) => {
+const textAtPoint = (element: Element, point: CanvasPoint | Text | undefined) => {
+  if (point instanceof Text) return point.parentElement === element ? point : null;
   if (!point) return null;
   const node = document.caretPositionFromPoint?.(point.x, point.y)?.offsetNode;
   return node instanceof Text && node.parentElement === element && containsPoint(node, point)
@@ -92,7 +93,7 @@ const textAtPoint = (element: Element, point: CanvasPoint | undefined) => {
     : null;
 };
 
-const fieldSegment = (start: Element, element: Element, point: CanvasPoint | undefined) => {
+const fieldSegment = (start: Element, element: Element, point: CanvasPoint | Text | undefined) => {
   const anchor: Node | null = start === element ? textAtPoint(element, point) : start;
   if (!anchor || (start !== element && !isInlinePath(start, element))) return null;
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -133,7 +134,7 @@ const resolveSection = (start: Element): SectionTarget | null => {
 
 export const resolveCanvasTarget = (
   start: EventTarget | null,
-  point?: CanvasPoint,
+  point?: CanvasPoint | Text,
 ): CanvasTarget | null => {
   if (!(start instanceof Element) || start.closest(`[${EDITOR_ROOT_ATTRIBUTE}]`)) return null;
 
@@ -175,6 +176,47 @@ export const targetKey = (target: CanvasTarget | null) => {
   if (target.kind === 'entry') return `entry:${target.address.entryId}`;
   const locale = target.kind === 'field' ? target.address.locale : '';
   return `${target.kind}:${target.address.entryId}:${target.address.fieldId}:${locale}`;
+};
+
+const isVisible = (element: Element) =>
+  [...element.getClientRects()].some((rect) => rect.width > 0 && rect.height > 0);
+
+export const collectCanvasTargets = (): CanvasTarget[] => {
+  const targets: CanvasTarget[] = [];
+  const seen = new Set<string>();
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+  );
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const element = node instanceof Text ? node.parentElement : node;
+    if (!(element instanceof Element) || element.closest(`[${EDITOR_ROOT_ATTRIBUTE}]`)) continue;
+    const isMarkedText = node instanceof Text && decodeFieldMarks(node.data).length > 0;
+    if (!isMarkedText && !(node instanceof HTMLImageElement)) continue;
+    if (!isVisible(element)) continue;
+    const target = resolveCanvasTarget(element, node instanceof Text ? node : undefined);
+    if (!target || target.kind === 'section') continue;
+    const key = targetKey(target);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    targets.push(target);
+  }
+  return targets;
+};
+
+export const stepCanvasTarget = (current: CanvasTarget | null, direction: 1 | -1) => {
+  const targets = collectCanvasTargets();
+  if (targets.length === 0) return null;
+  const index = current
+    ? targets.findIndex((target) => targetKey(target) === targetKey(current))
+    : -1;
+  if (index === -1) {
+    const visible = targets.findIndex(
+      (target) => target.element.getBoundingClientRect().bottom > 0,
+    );
+    return targets[visible === -1 ? 0 : visible] ?? null;
+  }
+  return targets[(index + direction + targets.length) % targets.length] ?? null;
 };
 
 const isInsideEditor = (target: EventTarget | null) =>

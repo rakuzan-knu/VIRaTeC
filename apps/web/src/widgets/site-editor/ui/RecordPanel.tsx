@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RECORD_DEFINITIONS, recordResourceOf, type RecordData } from '@viratec/contracts';
+import { recordResourceOf, type RecordData } from '@viratec/contracts';
 import { useSessionStore } from '@/entities/session';
 import { useLocale } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
@@ -14,7 +14,7 @@ import { recordDraftKey, useCurrentSelection, useSiteEditorStore } from '../mode
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUTS } from '../model/shortcuts';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
-import { RecordFieldEditor } from './RecordFieldEditor';
+import { RecordFieldList } from './RecordFieldList';
 
 export function RecordPanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
@@ -74,7 +74,6 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
 
   if (!selection || !resource || !key || !draftKey) return null;
 
-  const definition = RECORD_DEFINITIONS[resource];
   const loaded = record.data;
   const data = draft ?? loaded?.data ?? {};
   const canEdit = canEditRecords(permissions, resource) && !loaded?.isDeleted;
@@ -104,6 +103,7 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
       kicker={t.records.resource[resource]}
       title={label}
       status={status}
+      focusTitle={!selection.fieldId}
       footer={
         loaded && canEditRecords(permissions, resource) && !loaded.isDeleted ? (
           <>
@@ -194,18 +194,15 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
               {t.inspector.readOnly}
             </p>
           )}
-          {definition.fields.map((field) => (
-            <RecordFieldEditor
-              key={field.path}
-              field={field}
-              data={data}
-              focusLocale={selection.locale ?? locale}
-              isFocused={field.path === selection.fieldId}
-              readOnly={!canEdit}
-              t={t}
-              onChange={updateField}
-            />
-          ))}
+          <RecordFieldList
+            resource={resource}
+            data={data}
+            focusedPath={selection.fieldId}
+            focusLocale={selection.locale ?? locale}
+            readOnly={!canEdit}
+            t={t}
+            onChange={updateField}
+          />
         </>
       )}
       <ConfirmDialog

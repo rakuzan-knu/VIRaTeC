@@ -1,9 +1,10 @@
-import { defineMessages, useLocalized } from '@/shared/i18n';
+import { defineMessages, mapLocalized, useLocalized } from '@/shared/i18n';
+import { FIELD_LABELS } from './fieldLabels';
 
 const SITE_EDITOR_MESSAGES = defineMessages({
   en: {
     locales: { en: 'English', uk: 'Ukrainian' },
-    modeEditHint: 'Click to select, double-click to edit',
+    modeEditHint: 'Click any text, image or card, then press Edit',
     modePreviewHint: 'See the page as visitors will after publishing, with your drafts',
     summaryHint: 'Drafts and publishing',
     exitHint: 'Leave the editor',
@@ -47,7 +48,7 @@ const SITE_EDITOR_MESSAGES = defineMessages({
     help: {
       title: 'How the site editor works',
       steps: [
-        'Click any text, image, card or section to select it, double-click to open it in the side panel. Hold Alt to follow a link instead.',
+        'Click any text, image or card on the page and press Edit next to it (or double-click it). From the keyboard, Alt+↓ and Alt+↑ move between the editable parts of the page. Hold Alt and click to follow a link.',
         'Change the text in English and Ukrainian, then press Save draft. The page updates right away; visitors still see the old version.',
         'Use Page sections in the toolbar to reorder, hide or add sections.',
         'Open Summary to review all drafts, undo your actions, and publish everything at once with a two-factor code.',
@@ -59,6 +60,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
         redo: 'Redo',
         close: 'Close the panel',
         link: 'Follow a link while editing',
+        step: 'Select the next or previous editable part',
+        open: 'Edit the selected part',
       },
       gotIt: 'Got it',
     },
@@ -73,7 +76,16 @@ const SITE_EDITOR_MESSAGES = defineMessages({
     summaryCount: (count: number) => `Summary, ${count} unpublished`,
     exit: 'Exit editor',
     keepEditing: 'Keep editing',
-    hint: 'Double-click any text, image or card to edit it. Hold Alt to click links.',
+    hint: 'Click any text, image or card, then press Edit. Hold Alt to click links.',
+    canvas: {
+      edit: 'Edit',
+      editLabel: (label: string) => `Edit: ${label}`,
+      sections: 'Arrange sections',
+      previous: 'Previous part of the page',
+      next: 'Next part of the page',
+      selected: (label: string) => `Selected: ${label}. Press Enter to edit.`,
+      nothing: 'There is nothing to edit on this page.',
+    },
     close: 'Close',
     back: 'Back',
     loading: 'Loading…',
@@ -285,6 +297,9 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       replaceImage: 'Replace image',
       uploadImage: 'Upload image',
       removeImage: 'Remove image',
+      noImage: 'No image yet',
+      imageHint:
+        'Drop a file here or press the button. PNG, JPEG, WebP or SVG, large photos are compressed automatically.',
       uploading: 'Uploading…',
       imageTooLarge: 'The image is too large even after compression. Use a smaller file.',
       imageType: 'Use a PNG, JPEG, WebP or SVG image.',
@@ -294,7 +309,7 @@ const SITE_EDITOR_MESSAGES = defineMessages({
   },
   uk: {
     locales: { en: 'Англійська', uk: 'Українська' },
-    modeEditHint: 'Клік виділяє, подвійний клік відкриває редагування',
+    modeEditHint: 'Клікніть на текст, зображення чи картку й натисніть «Редагувати»',
     modePreviewHint:
       'Сторінка такою, якою її побачать відвідувачі після публікації (з вашими чернетками)',
     summaryHint: 'Чернетки й публікація',
@@ -338,7 +353,7 @@ const SITE_EDITOR_MESSAGES = defineMessages({
     help: {
       title: 'Як працює редактор сайту',
       steps: [
-        'Клікніть на текст, зображення, картку чи секцію, щоб виділити, і двічі, щоб відкрити в боковій панелі. Утримуйте Alt, щоб перейти за посиланням.',
+        'Клікніть на будь-який текст, зображення чи картку й натисніть «Редагувати» поруч (або клікніть двічі). З клавіатури Alt+↓ та Alt+↑ переходять між частинами сторінки, які можна змінити. Щоб перейти за посиланням, клікніть з утиснутим Alt.',
         'Змініть текст англійською й українською та натисніть «Зберегти чернетку». Сторінка оновиться одразу, а відвідувачі поки бачать стару версію.',
         'Кнопка «Секції сторінки» в панелі інструментів дозволяє переставляти, приховувати й додавати секції.',
         'У «Зміни» можна переглянути всі чернетки, скасувати свої дії й опублікувати все разом із кодом двофакторної автентифікації.',
@@ -350,6 +365,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
         redo: 'Повернути',
         close: 'Закрити панель',
         link: 'Перейти за посиланням під час редагування',
+        step: 'Виділити наступну чи попередню частину сторінки',
+        open: 'Редагувати виділене',
       },
       gotIt: 'Зрозуміло',
     },
@@ -364,7 +381,16 @@ const SITE_EDITOR_MESSAGES = defineMessages({
     summaryCount: (count: number) => `Зміни, неопубліковано: ${count}`,
     exit: 'Вийти з редактора',
     keepEditing: 'Продовжити редагування',
-    hint: 'Двічі клікніть на текст, зображення чи картку, щоб змінити. Утримуйте Alt, щоб перейти за посиланням.',
+    hint: 'Клікніть на текст, зображення чи картку й натисніть «Редагувати». Утримуйте Alt, щоб перейти за посиланням.',
+    canvas: {
+      edit: 'Редагувати',
+      editLabel: (label: string) => `Редагувати: ${label}`,
+      sections: 'Налаштувати секції',
+      previous: 'Попередня частина сторінки',
+      next: 'Наступна частина сторінки',
+      selected: (label: string) => `Виділено: ${label}. Натисніть Enter, щоб редагувати.`,
+      nothing: 'На цій сторінці немає що редагувати.',
+    },
     close: 'Закрити',
     back: 'Назад',
     loading: 'Завантаження…',
@@ -575,6 +601,9 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       replaceImage: 'Замінити зображення',
       uploadImage: 'Завантажити зображення',
       removeImage: 'Прибрати зображення',
+      noImage: 'Зображення ще немає',
+      imageHint:
+        'Перетягніть файл сюди або натисніть кнопку. PNG, JPEG, WebP чи SVG, великі фото стискаються автоматично.',
       uploading: 'Завантаження…',
       imageTooLarge: 'Зображення завелике навіть після стиснення. Оберіть менший файл.',
       imageType: 'Оберіть зображення PNG, JPEG, WebP або SVG.',
@@ -586,4 +615,9 @@ const SITE_EDITOR_MESSAGES = defineMessages({
 
 export type SiteEditorMessages = ReturnType<typeof useSiteEditorMessages>;
 
-export const useSiteEditorMessages = () => useLocalized(SITE_EDITOR_MESSAGES);
+const MESSAGES_WITH_FIELDS = mapLocalized(SITE_EDITOR_MESSAGES, (messages, locale) => ({
+  ...messages,
+  fields: FIELD_LABELS[locale],
+}));
+
+export const useSiteEditorMessages = () => useLocalized(MESSAGES_WITH_FIELDS);

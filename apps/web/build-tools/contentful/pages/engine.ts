@@ -59,7 +59,7 @@ type Json = Record<string, unknown>;
 
 const PARAGRAPH_SEPARATOR = /\n\s*\n/;
 
-const fieldId = (fieldPath: string) =>
+export const fieldId = (fieldPath: string) =>
   fieldPath
     .split('.')
     .map((part, index) => (index === 0 ? part : part[0]?.toUpperCase() + part.slice(1)))

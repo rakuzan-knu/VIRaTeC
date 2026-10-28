@@ -1,7 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { isRecordResource, type RecordResource } from '@viratec/contracts';
 import { cn } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
+import { Input } from '@/shared/ui/Input';
 import { canEditRecords } from '@/widgets/site-editor';
 import type { AdminCapabilities } from '../api/adminApi';
 import { useAdminMessages } from '../model/messages';
@@ -16,6 +18,8 @@ const TABS: readonly RecordResource[] = ['publication', 'event', 'project'];
 const PANE_CLASS =
   'lg:sticky lg:top-28 lg:max-h-[calc(100dvh-8.5rem)] lg:overflow-y-auto lg:overscroll-contain';
 
+const NARROW_QUERY = '(max-width: 1023px)';
+
 const TAB_CLASS =
   'rounded-full px-4 py-2 text-[15px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime motion-reduce:transition-none';
 
@@ -28,6 +32,14 @@ export function AdminContentPage() {
   const selectedKey = params.get('key');
   const list = useContentList(resource);
   const canCreate = canEditRecords(capabilities.permissions, resource);
+  const [query, setQuery] = useState('');
+  const formRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (selectedKey && window.matchMedia(NARROW_QUERY).matches) {
+      formRef.current?.scrollIntoView({ block: 'start' });
+    }
+  }, [selectedKey]);
 
   const open = (next: RecordResource, key: string | null) =>
     setParams(key ? { type: next, key } : { type: next }, { preventScrollReset: true });
@@ -54,7 +66,10 @@ export function AdminContentPage() {
             key={tab}
             type="button"
             aria-pressed={tab === resource}
-            onClick={() => open(tab, null)}
+            onClick={() => {
+              setQuery('');
+              open(tab, null);
+            }}
             className={cn(
               TAB_CLASS,
               tab === resource
@@ -87,10 +102,22 @@ export function AdminContentPage() {
               />
             </div>
           )}
+          {list.data && list.data.length > 0 && (
+            <div className="border-b border-white/6 p-4">
+              <Input
+                type="search"
+                label={t.content.search}
+                helperText={t.content.searchHelp}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
+          )}
           {list.data && (
             <ContentList
               resource={resource}
               items={list.data}
+              query={query}
               selectedKey={selectedKey}
               onSelect={(key) => open(resource, key)}
             />
@@ -98,6 +125,7 @@ export function AdminContentPage() {
         </div>
 
         <section
+          ref={formRef}
           key={`${resource}:${selectedKey ?? ''}`}
           aria-label={t.content.title}
           className={cn(ADMIN_CARD_CLASS, PANE_CLASS)}
@@ -110,7 +138,24 @@ export function AdminContentPage() {
               onClosed={() => open(resource, null)}
             />
           ) : (
-            <p className="py-8 text-center text-viratec-muted">{t.content.pick}</p>
+            <div className="flex flex-col gap-4 py-4">
+              <p className="text-viratec-muted">{t.content.pick}</p>
+              <section aria-label={t.content.howToLabel}>
+                <ol className="flex list-none flex-col gap-3">
+                  {t.content.howTo.map((step, index) => (
+                    <li key={step} className="flex gap-3 text-[15px] leading-6 text-viratec-soft">
+                      <span
+                        aria-hidden="true"
+                        className="flex size-7 shrink-0 items-center justify-center rounded-full bg-viratec-cyan/15 text-[13px] font-medium text-viratec-cyan"
+                      >
+                        {index + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            </div>
           )}
         </section>
       </div>

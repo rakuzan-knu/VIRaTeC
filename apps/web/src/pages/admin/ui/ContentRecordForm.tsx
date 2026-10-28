@@ -1,9 +1,9 @@
 import { useId } from 'react';
-import { RECORD_DEFINITIONS, type AdminPermission, type RecordResource } from '@viratec/contracts';
+import type { AdminPermission, RecordResource } from '@viratec/contracts';
 import { useLocale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
-import { RecordFieldEditor } from '@/widgets/site-editor';
+import { ConfirmDialog, RecordFieldList } from '@/widgets/site-editor';
 import { useAdminMessages } from '../model/messages';
 import { useContentRecord } from '../model/useContentRecord';
 
@@ -83,18 +83,14 @@ export function ContentRecordForm({
             </p>
           )}
           <div className="flex flex-col gap-5">
-            {RECORD_DEFINITIONS[resource].fields.map((field) => (
-              <RecordFieldEditor
-                key={field.path}
-                field={field}
-                data={form.data}
-                focusLocale={locale}
-                isFocused={false}
-                readOnly={!form.canEdit}
-                t={editorT}
-                onChange={form.updateField}
-              />
-            ))}
+            <RecordFieldList
+              resource={resource}
+              data={form.data}
+              focusLocale={locale}
+              readOnly={!form.canEdit}
+              t={editorT}
+              onChange={form.updateField}
+            />
           </div>
 
           <div className="sticky bottom-0 -mx-6 flex flex-col gap-3 border-t border-white/8 bg-viratec-deep px-6 py-4 lg:-bottom-8 lg:-mx-8 lg:-mb-8 lg:px-8">
@@ -156,7 +152,7 @@ export function ContentRecordForm({
                   label={t.content.discard}
                   variant="secondary"
                   disabled={form.isBusy}
-                  onClick={form.discardChanges}
+                  onClick={form.askDiscard}
                 />
               )}
               {form.canDelete && (
@@ -165,7 +161,7 @@ export function ContentRecordForm({
                   variant="secondary"
                   className="hover:border-state-error"
                   disabled={form.isBusy}
-                  onClick={form.deleteRecord}
+                  onClick={form.askDelete}
                 />
               )}
             </div>
@@ -180,6 +176,26 @@ export function ContentRecordForm({
           </div>
         </>
       )}
+      <ConfirmDialog
+        open={form.confirming === 'discard'}
+        title={editorT.changes.discardTitle(form.label)}
+        description={t.content.discardText}
+        confirmLabel={editorT.changes.discardConfirm}
+        cancelLabel={editorT.keepEditing}
+        closeLabel={editorT.close}
+        onConfirm={form.discardChanges}
+        onClose={form.cancelConfirm}
+      />
+      <ConfirmDialog
+        open={form.confirming === 'delete'}
+        title={editorT.records.deleteTitle(form.label)}
+        description={editorT.records.deleteText}
+        confirmLabel={editorT.records.deleteConfirm}
+        cancelLabel={editorT.keepEditing}
+        closeLabel={editorT.close}
+        onConfirm={form.deleteRecord}
+        onClose={form.cancelConfirm}
+      />
     </form>
   );
 }

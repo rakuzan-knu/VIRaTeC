@@ -1,16 +1,24 @@
-import { useEffect, useRef } from 'react';
-import { readRecordValue, type RecordData, type RecordFieldDefinition } from '@viratec/contracts';
+import { useEffect, useId, useRef } from 'react';
+import {
+  readRecordValue,
+  type RecordData,
+  type RecordFieldDefinition,
+  type RecordResource,
+} from '@viratec/contracts';
+import { useProjectLabels } from '@/entities/project';
 import { LOCALES, type Locale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
+import { recordFieldText } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
 import { BlocksField } from './BlocksField';
 
 interface RecordFieldEditorProps {
+  resource: RecordResource;
   field: RecordFieldDefinition;
   data: RecordData;
   focusLocale?: Locale;
@@ -25,6 +33,7 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 function RecordInput({
   field,
   label,
+  helperText,
   value,
   readOnly,
   autoFocus,
@@ -33,6 +42,7 @@ function RecordInput({
 }: {
   field: RecordFieldDefinition;
   label: string;
+  helperText: string | undefined;
   value: unknown;
   readOnly: boolean;
   autoFocus: boolean;
@@ -40,7 +50,13 @@ function RecordInput({
   onChange: (value: unknown) => void;
 }) {
   const nullable = !field.localized && !field.required;
-  const helperText = field.help;
+  const projectLabels = useProjectLabels();
+  const optionLabels: Record<string, string> = {
+    ...t.fields.options,
+    ...projectLabels.status,
+    ...projectLabels.faculty,
+  };
+  const optionLabel = (option: string) => optionLabels[option] ?? option;
 
   switch (field.kind) {
     case 'boolean':
@@ -52,7 +68,10 @@ function RecordInput({
             autoFocus={autoFocus}
             onChange={(event) => onChange(event.target.checked)}
           />
-          {label}
+          <span className="flex flex-col">
+            {label}
+            {helperText && <span className="text-[13px] text-text-muted">{helperText}</span>}
+          </span>
         </label>
       );
     case 'enum':
@@ -63,7 +82,10 @@ function RecordInput({
           value={asString(value)}
           disabled={readOnly}
           autoFocus={autoFocus}
-          options={(field.options ?? []).map((option) => ({ value: option, label: option }))}
+          options={(field.options ?? []).map((option) => ({
+            value: option,
+            label: optionLabel(option),
+          }))}
           onChange={(event) => onChange(event.target.value)}
         />
       );
@@ -86,7 +108,7 @@ function RecordInput({
                     )
                   }
                 />
-                {option}
+                {optionLabel(option)}
               </label>
             ))}
           </div>
@@ -175,6 +197,7 @@ function RecordInput({
 }
 
 export function RecordFieldEditor({
+  resource,
   field,
   data,
   focusLocale,
@@ -184,7 +207,9 @@ export function RecordFieldEditor({
   onChange,
 }: RecordFieldEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const title = field.required ? `${field.name} · ${t.inspector.required}` : field.name;
+  const helpId = useId();
+  const text = recordFieldText(t.fields, resource, field);
+  const title = field.required ? `${text.label} · ${t.inspector.required}` : text.label;
 
   useEffect(() => {
     if (isFocused) ref.current?.scrollIntoView({ block: 'center' });
@@ -199,8 +224,16 @@ export function RecordFieldEditor({
       )}
     >
       {field.localized ? (
-        <fieldset className="flex min-w-0 flex-col gap-3">
-          <legend className="mb-2 text-label font-medium text-text-primary">{title}</legend>
+        <fieldset
+          aria-describedby={text.help ? helpId : undefined}
+          className="flex min-w-0 flex-col gap-3"
+        >
+          <legend className="mb-1 text-label font-medium text-text-primary">{title}</legend>
+          {text.help && (
+            <p id={helpId} className="-mt-1 text-[13px] text-text-muted">
+              {text.help}
+            </p>
+          )}
           {LOCALES.map((locale) => {
             const path = localizedPath(field, locale);
             return (
@@ -208,6 +241,7 @@ export function RecordFieldEditor({
                 key={locale}
                 field={field}
                 label={t.locales[locale]}
+                helperText={undefined}
                 value={readRecordValue(data, path)}
                 readOnly={readOnly}
                 autoFocus={isFocused && locale === focusLocale}
@@ -221,6 +255,7 @@ export function RecordFieldEditor({
         <RecordInput
           field={field}
           label={title}
+          helperText={text.help}
           value={readRecordValue(data, field.path)}
           readOnly={readOnly}
           autoFocus={isFocused}

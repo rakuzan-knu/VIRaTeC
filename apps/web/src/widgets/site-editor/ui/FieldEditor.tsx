@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import type { ContentLocales } from '@viratec/contracts';
 import { LOCALES, type Locale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
@@ -7,12 +7,14 @@ import { Input } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
 import { allowedValues, type FieldDefinition } from '../model/contentModel';
+import { fieldText, optionName } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
 import { AssetField } from './AssetField';
 import { EntryLinksField } from './EntryLinksField';
 import { PublicationKeysField } from './PublicationKeysField';
 
 export interface FieldEditorProps {
+  contentTypeId: string;
   field: FieldDefinition;
   values: Record<string, unknown> | undefined;
   locales: ContentLocales;
@@ -29,6 +31,7 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 function ScalarInput({
   field,
   label,
+  helperText,
   value,
   readOnly,
   autoFocus,
@@ -37,13 +40,13 @@ function ScalarInput({
 }: {
   field: FieldDefinition;
   label: string;
+  helperText: string | undefined;
   value: unknown;
   readOnly: boolean;
   autoFocus: boolean;
   t: SiteEditorMessages;
   onChange: (value: unknown) => void;
 }) {
-  const helperText = field.help;
   const options = allowedValues(field);
 
   if (field.type === 'Boolean') {
@@ -55,7 +58,10 @@ function ScalarInput({
           autoFocus={autoFocus}
           onChange={(event) => onChange(event.target.checked)}
         />
-        {label}
+        <span className="flex flex-col">
+          {label}
+          {helperText && <span className="text-[13px] text-text-muted">{helperText}</span>}
+        </span>
       </label>
     );
   }
@@ -68,7 +74,7 @@ function ScalarInput({
         disabled={readOnly}
         autoFocus={autoFocus}
         placeholder={t.inspector.noValue}
-        options={options.map((option) => ({ value: option, label: option }))}
+        options={options.map((option) => ({ value: option, label: optionName(t.fields, option) }))}
         onChange={(event) => onChange(event.target.value || undefined)}
       />
     );
@@ -148,6 +154,7 @@ function ScalarInput({
 }
 
 export function FieldEditor({
+  contentTypeId,
   field,
   values,
   locales,
@@ -159,7 +166,9 @@ export function FieldEditor({
   onPersist,
 }: FieldEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const title = field.required ? `${field.name} · ${t.inspector.required}` : field.name;
+  const helpId = useId();
+  const text = fieldText(t.fields, contentTypeId, field);
+  const title = field.required ? `${text.label} · ${t.inspector.required}` : text.label;
 
   useEffect(() => {
     if (isFocused) ref.current?.scrollIntoView({ block: 'center' });
@@ -171,7 +180,7 @@ export function FieldEditor({
     body = (
       <PublicationKeysField
         label={title}
-        help={field.help}
+        help={text.help}
         value={values?.[locales.en]}
         readOnly={readOnly}
         t={t}
@@ -182,6 +191,7 @@ export function FieldEditor({
     body = (
       <AssetField
         label={title}
+        help={text.help}
         value={values?.[locales.en]}
         readOnly={readOnly}
         required={field.required}
@@ -194,6 +204,7 @@ export function FieldEditor({
       <EntryLinksField
         field={field}
         label={title}
+        help={text.help}
         value={values?.[locales.en]}
         locales={locales}
         readOnly={readOnly}
@@ -204,13 +215,22 @@ export function FieldEditor({
     );
   } else if (field.localized && field.type !== 'Boolean') {
     body = (
-      <fieldset className="flex min-w-0 flex-col gap-3">
-        <legend className="mb-2 text-label font-medium text-text-primary">{title}</legend>
+      <fieldset
+        aria-describedby={text.help ? helpId : undefined}
+        className="flex min-w-0 flex-col gap-3"
+      >
+        <legend className="mb-1 text-label font-medium text-text-primary">{title}</legend>
+        {text.help && (
+          <p id={helpId} className="-mt-1 text-[13px] text-text-muted">
+            {text.help}
+          </p>
+        )}
         {LOCALES.map((locale) => (
           <ScalarInput
             key={locale}
             field={field}
             label={t.locales[locale]}
+            helperText={undefined}
             value={values?.[locales[locale]]}
             readOnly={readOnly}
             autoFocus={isFocused && locale === focusLocale}
@@ -225,6 +245,7 @@ export function FieldEditor({
       <ScalarInput
         field={field}
         label={title}
+        helperText={text.help}
         value={values?.[locales.en]}
         readOnly={readOnly}
         autoFocus={isFocused}

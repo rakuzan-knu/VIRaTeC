@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CircleHelp, Eye, LayoutList, ListChecks, LogOut, PencilLine } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { recordResourceOf } from '@viratec/contracts';
@@ -19,6 +19,7 @@ import {
 import { isTextInput } from '../model/shortcuts';
 import {
   EDITOR_ROOT_ATTRIBUTE,
+  stepCanvasTarget,
   useCanvasTargets,
   type CanvasTarget,
 } from '../model/useCanvasTargets';
@@ -30,6 +31,7 @@ import { HelpDialog } from './HelpDialog';
 import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
 import { InspectorPanel } from './InspectorPanel';
 import { RecordPanel } from './RecordPanel';
+import { SelectionActions } from './SelectionActions';
 import { StructurePanel } from './StructurePanel';
 import { SummaryPanel } from './SummaryPanel';
 
@@ -70,6 +72,7 @@ export function SiteEditor() {
   const [selected, setSelected] = useState<CanvasTarget | null>(null);
   const [isConfirmingExit, setConfirmingExit] = useState(false);
   const [isHelpOpen, setHelpOpen] = useState(readIntroPending);
+  const [focusRequest, setFocusRequest] = useState(0);
   const announcement = useSiteEditorStore((state) => state.announcement);
   const history = useEditorHistory();
   const refreshRecords = useRefreshRecordQueries();
@@ -97,6 +100,27 @@ export function SiteEditor() {
 
   const { hovered, section } = useCanvasTargets(mode === 'edit' && !gate, setSelected, open);
 
+  const step = (direction: 1 | -1) => {
+    const next = stepCanvasTarget(selected, direction);
+    if (!next) {
+      useSiteEditorStore.getState().announce(t.canvas.nothing);
+      return;
+    }
+    next.element.scrollIntoView({ block: 'center' });
+    setSelected(next);
+    setFocusRequest((count) => count + 1);
+  };
+  const stepRef = useRef(step);
+  stepRef.current = step;
+
+  const isPanelOpen = Boolean(selection) || Boolean(structure);
+  const wasPanelOpen = useRef(isPanelOpen);
+  useEffect(() => {
+    const isFocusLost = !document.activeElement || document.activeElement === document.body;
+    if (wasPanelOpen.current && !isPanelOpen && isFocusLost) setFocusRequest((count) => count + 1);
+    wasPanelOpen.current = isPanelOpen;
+  }, [isPanelOpen]);
+
   useEffect(() => {
     const { setLayoutOverride } = useContentPreviewStore.getState();
     setLayoutOverride(
@@ -110,6 +134,18 @@ export function SiteEditor() {
     const handleKey = (event: KeyboardEvent) => {
       const isModifier = event.metaKey || event.ctrlKey;
       const key = event.key.toLowerCase();
+      if (
+        event.altKey &&
+        !isModifier &&
+        (event.key === 'ArrowDown' || event.key === 'ArrowUp') &&
+        useSiteEditorStore.getState().mode === 'edit' &&
+        !isTextInput(event.target) &&
+        !document.querySelector('dialog[open]')
+      ) {
+        event.preventDefault();
+        stepRef.current(event.key === 'ArrowDown' ? 1 : -1);
+        return;
+      }
       if (
         isModifier &&
         (key === 'z' || key === 'y') &&
@@ -173,11 +209,16 @@ export function SiteEditor() {
 
       {mode === 'edit' && (
         <>
-          <EditorOutlines
-            hovered={hovered}
-            selected={selected}
-            sectionLabel={t.structure.section}
-          />
+          <EditorOutlines hovered={hovered} selected={selected} t={t} />
+          {selected && !gate && !isPanelOpen && !isSummaryOpen && (
+            <SelectionActions
+              target={selected}
+              focusRequest={focusRequest}
+              t={t}
+              onOpen={open}
+              onStep={step}
+            />
+          )}
           {section && (
             <SectionBadge
               key={section.sectionId}

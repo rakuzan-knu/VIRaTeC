@@ -19,6 +19,7 @@ import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/dialog';
 import { findContentType } from '../model/contentModel';
 import { useEditorErrorMessage } from '../model/errors';
+import { typeName } from '../model/fieldText';
 import { useEditorHistory } from '../model/history';
 import type { SiteEditorMessages } from '../model/messages';
 import {
@@ -55,7 +56,8 @@ const changeLabel = (change: ContentChangeDto, t: SiteEditorMessages) => {
   if (resource) return t.records.resource[resource];
   return change.resourceType === 'ASSET'
     ? t.changes.image
-    : (findContentType(change.contentTypeId)?.name ?? change.resourceId);
+    : typeName(t.fields, change.contentTypeId, findContentType(change.contentTypeId)?.name) ||
+        change.resourceId;
 };
 
 function ChangeRow({

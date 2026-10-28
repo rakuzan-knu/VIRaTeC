@@ -54,6 +54,7 @@ export function useContentRecord(
   const publish = usePublishContent();
   const [draft, setDraft] = useState<RecordData | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
+  const [confirming, setConfirming] = useState<'discard' | 'delete' | null>(null);
   const saveError = useEditorErrorMessage(save.error);
   const loadError = useEditorErrorMessage(record.error);
   const actionError = useEditorErrorMessage(remove.error ?? discard.error);
@@ -130,7 +131,8 @@ export function useContentRecord(
   };
 
   const discardChanges = () => {
-    if (!change || !window.confirm(t.content.discardConfirm(label))) return;
+    setConfirming(null);
+    if (!change) return;
     setFeedback(null);
     discard.mutate(change, {
       onSuccess: () => {
@@ -142,7 +144,8 @@ export function useContentRecord(
   };
 
   const deleteRecord = () => {
-    if (!loaded || !window.confirm(t.content.deleteConfirm(label))) return;
+    setConfirming(null);
+    if (!loaded) return;
     setFeedback(null);
     remove.mutate(
       { resource, key, label: changeLabel },
@@ -180,6 +183,10 @@ export function useContentRecord(
     reset: () => setDraft(null),
     reload,
     publishNow,
+    confirming,
+    askDiscard: () => setConfirming('discard'),
+    askDelete: () => setConfirming('delete'),
+    cancelConfirm: () => setConfirming(null),
     discardChanges,
     deleteRecord,
   };

@@ -16,11 +16,13 @@ const STATUS_TONES: Record<ContentItemStatus, 'lime' | 'cyan' | 'muted' | 'error
 export function ContentList({
   resource,
   items,
+  query,
   selectedKey,
   onSelect,
 }: {
   resource: RecordResource;
   items: ContentListItem[];
+  query: string;
   selectedKey: string | null;
   onSelect: (key: string) => void;
 }) {
@@ -31,9 +33,24 @@ export function ContentList({
     return <p className="px-5 py-8 text-center text-viratec-muted">{t.content.empty}</p>;
   }
 
+  const needle = query.trim().toLowerCase();
+  const matches = needle
+    ? items.filter((item) =>
+        `${recordLabel(resource, item.data, locale)} ${item.key}`.toLowerCase().includes(needle),
+      )
+    : items;
+
+  if (matches.length === 0) {
+    return (
+      <p role="status" className="px-5 py-8 text-center break-words text-viratec-muted">
+        {t.content.noMatches(query.trim())}
+      </p>
+    );
+  }
+
   return (
     <ul aria-label={t.content.listLabel(t.content.tabs[resource])} className="flex flex-col">
-      {items.map((item) => {
+      {matches.map((item) => {
         const isSelected = item.key === selectedKey;
         return (
           <li key={item.key} className="border-b border-white/6 last:border-0">

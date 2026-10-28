@@ -1,5 +1,6 @@
 export { SiteEditorMount } from './ui/SiteEditorMount';
-export { RecordFieldEditor } from './ui/RecordFieldEditor';
+export { RecordFieldList } from './ui/RecordFieldList';
+export { ConfirmDialog } from './ui/ConfirmDialog';
 export { useSiteEditorMessages, type SiteEditorMessages } from './model/messages';
 export { canEditRecords } from './model/permissions';
 export { isConflict, useEditorErrorMessage } from './model/errors';

@@ -1,24 +1,6 @@
-import { RECORD_DEFINITIONS, recordResourceOf } from '@viratec/contracts';
-import { findContentType, findField } from '../model/contentModel';
-import { findRecordField } from '../model/recordModel';
+import type { SiteEditorMessages } from '../model/messages';
+import { targetLabel } from '../model/targetLabel';
 import { useElementRects, type CanvasTarget } from '../model/useCanvasTargets';
-
-const targetLabel = (target: CanvasTarget, sectionLabel: string) => {
-  if (target.kind === 'section') return sectionLabel;
-  const resource = recordResourceOf(target.address.contentTypeId);
-  if (target.kind === 'entry') {
-    return resource
-      ? RECORD_DEFINITIONS[resource].name
-      : (findContentType(target.address.contentTypeId)?.name ?? target.address.contentTypeId);
-  }
-  if (resource) {
-    const field = findRecordField(resource, target.address.fieldId);
-    return [RECORD_DEFINITIONS[resource].name, field?.name].filter(Boolean).join(' · ');
-  }
-  const type = findContentType(target.address.contentTypeId);
-  const field = findField(target.address.contentTypeId, target.address.fieldId);
-  return [type?.name, field?.name].filter(Boolean).join(' · ');
-};
 
 const PAD = 3;
 const ROW_TOLERANCE = 2;
@@ -68,11 +50,11 @@ const outlinePath = (rows: readonly Row[]) => {
 function Outline({
   target,
   isSelected,
-  sectionLabel,
+  t,
 }: {
   target: CanvasTarget;
   isSelected: boolean;
-  sectionLabel: string;
+  t: SiteEditorMessages;
 }) {
   const rows = toRows(
     useElementRects(target.element, target.kind === 'field' ? target.range : undefined),
@@ -109,7 +91,7 @@ function Outline({
             : { left: last.left - PAD, top: last.bottom + PAD + 4 }
         }
       >
-        {targetLabel(target, sectionLabel)}
+        {targetLabel(target, t)}
       </span>
     </>
   );
@@ -118,17 +100,17 @@ function Outline({
 export function EditorOutlines({
   hovered,
   selected,
-  sectionLabel,
+  t,
 }: {
   hovered: CanvasTarget | null;
   selected: CanvasTarget | null;
-  sectionLabel: string;
+  t: SiteEditorMessages;
 }) {
   const showHover = hovered && hovered.element !== selected?.element;
   return (
     <>
-      {selected && <Outline target={selected} isSelected sectionLabel={sectionLabel} />}
-      {showHover && <Outline target={hovered} isSelected={false} sectionLabel={sectionLabel} />}
+      {selected && <Outline target={selected} isSelected t={t} />}
+      {showHover && <Outline target={hovered} isSelected={false} t={t} />}
     </>
   );
 }

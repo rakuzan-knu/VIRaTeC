@@ -13,12 +13,14 @@ import {
 import type { SiteEditorMessages } from '../model/messages';
 import { entryCreateAction } from '../model/history';
 import { useCreateEntry, useEditorEntry } from '../model/queries';
+import { typeName } from '../model/fieldText';
 import { useSiteEditorStore } from '../model/store';
 import { IconButton } from './IconButton';
 
 interface EntryLinksFieldProps {
   field: FieldDefinition;
   label: string;
+  help?: string;
   value: unknown;
   locales: ContentLocales;
   readOnly: boolean;
@@ -63,7 +65,7 @@ function LinkedEntryRow({
         aria-label={t.inspector.openEntry(label)}
         className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 py-2 text-left text-[15px] text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus"
       >
-        <span className="min-w-0 flex-1 truncate">{label}</span>
+        <span className="min-w-0 flex-1 break-words">{label}</span>
         <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-text-subtle" />
       </button>
       {isList && !readOnly && (
@@ -92,6 +94,7 @@ function LinkedEntryRow({
 export function EntryLinksField({
   field,
   label,
+  help,
   value,
   locales,
   readOnly,
@@ -123,11 +126,12 @@ export function EntryLinksField({
   const add = () => {
     if (!childType) return;
     const displayField = childType.fields.find((item) => item.id === childType.displayField);
-    const placeholder = `${t.inspector.untitled} ${childType.name.toLowerCase()}`;
+    const childName = typeName(t.fields, childType.id, childType.name);
+    const placeholder = `${t.inspector.untitled}: ${childName.toLowerCase()}`;
     createEntry.mutate(
       {
         contentTypeId: childType.id,
-        label: changeLabel(childType.name, placeholder),
+        label: changeLabel(childName, placeholder),
         fields: displayField
           ? {
               [displayField.id]: Object.fromEntries(
@@ -146,7 +150,7 @@ export function EntryLinksField({
           pushAction(
             entryCreateAction({
               id: entry.id,
-              label: t.history.created(changeLabel(childType.name, placeholder)),
+              label: t.history.created(changeLabel(childName, placeholder)),
             }),
           );
         },
@@ -157,7 +161,7 @@ export function EntryLinksField({
   return (
     <fieldset className="flex min-w-0 flex-col gap-3">
       <legend className="mb-2 text-label font-medium text-text-primary">{label}</legend>
-      {field.help && <p className="-mt-1 text-caption text-text-muted">{field.help}</p>}
+      {help && <p className="-mt-1 text-caption text-text-muted">{help}</p>}
       {ids.length === 0 ? (
         <p className="text-[14px] text-text-subtle">{t.inspector.noItems}</p>
       ) : (
@@ -186,7 +190,7 @@ export function EntryLinksField({
           className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl border border-dashed border-white/20 px-3 py-2 text-[14px] text-text-primary transition-colors hover:border-viratec-cyan/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus disabled:cursor-wait disabled:opacity-60 motion-reduce:transition-none"
         >
           <Plus aria-hidden="true" className="size-4" />
-          {t.inspector.add(childType.name.toLowerCase())}
+          {t.inspector.add(typeName(t.fields, childType.id, childType.name).toLowerCase())}
         </button>
       )}
     </fieldset>

@@ -14,6 +14,7 @@ import {
   withFieldValue,
 } from '../model/contentModel';
 import { isConflict, useEditorErrorMessage } from '../model/errors';
+import { typeName } from '../model/fieldText';
 import { entrySaveAction } from '../model/history';
 import type { SiteEditorMessages } from '../model/messages';
 import { useEditorEntry, useEntryReferences, useSaveEntry } from '../model/queries';
@@ -21,7 +22,7 @@ import { useCurrentSelection, useSiteEditorStore } from '../model/store';
 import { SHORTCUTS } from '../model/shortcuts';
 import { AddSiblingEntryButton } from './AddSiblingEntryButton';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
-import { FieldEditor } from './FieldEditor';
+import { EntryFieldList } from './EntryFieldList';
 
 export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
@@ -57,7 +58,7 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
     if (!data || !type) return;
     const fieldsToSave = normalizeFields(withFieldValue(data.fields, fieldId, localeCode, value));
     const label = changeLabel(
-      type.name,
+      typeName(t.fields, type.id, type.name),
       entryLabel(data.contentTypeId, fieldsToSave, data.locales, locale),
     );
     save.mutate(
@@ -81,7 +82,7 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
     if (!data || !draft || !type) return;
     const fieldsToSave = normalizeFields(draft.fields);
     const label = changeLabel(
-      type.name,
+      typeName(t.fields, type.id, type.name),
       entryLabel(data.contentTypeId, draft.fields, data.locales, locale),
     );
     save.mutate(
@@ -123,9 +124,10 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
     <EditorPanel
       t={t}
       label={t.inspector.title}
-      kicker={type?.name ?? t.inspector.title}
+      kicker={type ? typeName(t.fields, type.id, type.name) : t.inspector.title}
       title={label}
       status={status}
+      focusTitle={!selection.fieldId}
       footer={
         data && type && canEdit ? (
           <>
@@ -220,22 +222,18 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
           {canEdit && isCollectionType(type.id) && (
             <AddSiblingEntryButton type={type} fields={fields} locales={data.locales} t={t} />
           )}
-          {type.fields.map((field) => (
-            <FieldEditor
-              key={field.id}
-              field={field}
-              values={fields[field.id]}
-              locales={data.locales}
-              focusLocale={selection.locale ?? locale}
-              isFocused={field.id === selection.fieldId}
-              readOnly={
-                !canEdit || (field.type === 'Link' && field.linkType === 'Asset' && !canUpload)
-              }
-              t={t}
-              onChange={(localeCode, value) => updateField(field.id, localeCode, value)}
-              onPersist={(localeCode, value) => persistField(field.id, localeCode, value)}
-            />
-          ))}
+          <EntryFieldList
+            type={type}
+            fields={fields}
+            locales={data.locales}
+            focusedFieldId={selection.fieldId}
+            focusLocale={selection.locale ?? locale}
+            canEdit={canEdit}
+            canUpload={canUpload}
+            t={t}
+            onChange={updateField}
+            onPersist={persistField}
+          />
         </>
       )}
     </EditorPanel>

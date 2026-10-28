@@ -1,6 +1,7 @@
 import { LOCALES, type Locale } from '@/shared/i18n';
 import type { ContentIssue } from '@/shared/lib';
 import { findContentType, findField } from './contentModel';
+import { fieldText, typeName as localizedTypeName } from './fieldText';
 import type { SiteEditorMessages } from './messages';
 import type { EditorSelection } from './store';
 
@@ -18,13 +19,14 @@ export interface IssueGroup {
 
 const GENERAL_GROUP = '';
 
-const typeName = (contentTypeId: string | undefined) =>
-  findContentType(contentTypeId)?.name ?? contentTypeId ?? '';
+const typeName = (contentTypeId: string | undefined, t: SiteEditorMessages) =>
+  localizedTypeName(t.fields, contentTypeId, findContentType(contentTypeId)?.name);
 
-const fieldName = (issue: ContentIssue) => {
+const fieldName = (issue: ContentIssue, t: SiteEditorMessages) => {
   const { target } = issue;
   if (!target?.fieldId) return '';
-  return findField(target.contentTypeId, target.fieldId)?.name ?? target.fieldId;
+  const field = findField(target.contentTypeId, target.fieldId);
+  return field ? fieldText(t.fields, target.contentTypeId, field).label : target.fieldId;
 };
 
 const issueLocale = (issue: ContentIssue): Locale | undefined => {
@@ -63,12 +65,12 @@ export const issueGroupTitle = (
   group: IssueGroup,
   label: string | null | undefined,
   t: SiteEditorMessages,
-) => (group.selection ? label || typeName(group.selection.contentTypeId) : t.issues.general);
+) => (group.selection ? label || typeName(group.selection.contentTypeId, t) : t.issues.general);
 
 export const issueText = (line: IssueLine, t: SiteEditorMessages) => {
   const { issue } = line;
   const text = t.issues;
-  const field = fieldName(issue);
+  const field = fieldName(issue, t);
   const value = issue.value ?? '';
   const count = issue.count ?? 0;
   const base = (() => {
@@ -80,9 +82,9 @@ export const issueText = (line: IssueLine, t: SiteEditorMessages) => {
       case 'needsPageLink':
         return text.needsPageLink;
       case 'missingEntry':
-        return text.missingEntry(typeName(value));
+        return text.missingEntry(typeName(value, t));
       case 'wrongEntryType':
-        return text.wrongEntryType(typeName(value));
+        return text.wrongEntryType(typeName(value, t));
       case 'linkBothTargets':
         return text.linkBothTargets;
       case 'unknownPage':
@@ -96,7 +98,7 @@ export const issueText = (line: IssueLine, t: SiteEditorMessages) => {
       case 'tableCells':
         return text.tableCells(count);
       case 'singleEntry':
-        return text.singleEntry(typeName(value), count);
+        return text.singleEntry(typeName(value, t), count);
       case 'homeSeoMissing':
         return text.homeSeoMissing;
       case 'founderCount':

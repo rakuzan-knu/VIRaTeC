@@ -244,6 +244,15 @@ const ADMIN_MESSAGES = defineMessages({
       retry: 'Try again',
       empty: 'Nothing here yet.',
       pick: 'Pick an item from the list or add a new one.',
+      howTo: [
+        'Pick an item in the list, or press the add button at the top.',
+        'Change the texts in English and Ukrainian, then press Save draft.',
+        'Press Publish. Visitors see the changes right away.',
+      ],
+      howToLabel: 'How it works',
+      search: 'Search',
+      searchHelp: 'By title or address.',
+      noMatches: (query: string) => `Nothing found for “${query}”.`,
       status: {
         published: 'Published',
         draft: 'Draft',
@@ -258,10 +267,7 @@ const ADMIN_MESSAGES = defineMessages({
       noPublishPermission:
         'You can save drafts. Someone with publishing access puts them on the site.',
       discard: 'Discard changes',
-      discardConfirm: (label: string) =>
-        `Discard all unpublished changes to “${label}”? A new item is removed completely.`,
-      deleteConfirm: (label: string) =>
-        `Delete “${label}”? It disappears from the site after you publish.`,
+      discardText: 'All unpublished changes are lost. A new item is removed completely.',
     },
     audit: {
       title: 'Audit log',
@@ -451,6 +457,15 @@ const ADMIN_MESSAGES = defineMessages({
       retry: 'Спробувати ще',
       empty: 'Тут поки нічого немає.',
       pick: 'Оберіть запис зі списку або додайте новий.',
+      howTo: [
+        'Оберіть запис у списку або натисніть кнопку додавання вгорі.',
+        'Змініть тексти англійською й українською та натисніть «Зберегти чернетку».',
+        'Натисніть «Опублікувати». Відвідувачі одразу побачать зміни.',
+      ],
+      howToLabel: 'Як це працює',
+      search: 'Пошук',
+      searchHelp: 'За назвою або адресою.',
+      noMatches: (query: string) => `За запитом «${query}» нічого не знайдено.`,
       status: {
         published: 'Опубліковано',
         draft: 'Чернетка',
@@ -465,10 +480,7 @@ const ADMIN_MESSAGES = defineMessages({
       noPublishPermission:
         'Ви можете зберігати чернетки. На сайт їх виносить людина з правом публікації.',
       discard: 'Скасувати зміни',
-      discardConfirm: (label: string) =>
-        `Скасувати всі неопубліковані зміни «${label}»? Новий запис буде видалено повністю.`,
-      deleteConfirm: (label: string) =>
-        `Видалити «${label}»? Запис зникне із сайту після публікації.`,
+      discardText: 'Усі неопубліковані зміни зникнуть. Новий запис буде видалено повністю.',
     },
     audit: {
       title: 'Журнал аудиту',
