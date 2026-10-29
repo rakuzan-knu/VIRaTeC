@@ -40,6 +40,8 @@ Every exception goes through `AllExceptionsFilter` and is returned in one shape:
 
 A global `ValidationPipe` with `whitelist`, `forbidNonWhitelisted` and `transform`: an extra field in the body is a 400, not silently dropped. Bodies and queries are described by DTO classes with `class-validator` and `@ApiProperty`. Enums come from `@viratec/contracts`.
 
+Before validation a `preValidation` hook in `main.ts` rejects any request with a null byte (`\0`) in the query, path params or body (keys included) with 400 and code `NULL_BYTE_IN_INPUT`: Postgres cannot store it in text and would otherwise answer with a 500.
+
 ## Authentication and CSRF
 
 - The session lives in httpOnly cookies (`vt_at` access for 15 minutes, `vt_rt` refresh for 7 days, `vt_mfa` for the second factor; in secure mode with `__Host-`/`__Secure-` prefixes). Names — `cookieNames` in `apps/backend/src/auth/session-cookies.ts`.

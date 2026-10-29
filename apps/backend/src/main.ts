@@ -92,6 +92,41 @@ async function verifyCsrf(request: CsrfRequest, reply: CsrfReply) {
   }
 }
 
+interface InputRequest {
+  url: string;
+  query: unknown;
+  params: unknown;
+  body: unknown;
+}
+
+function hasNullByte(input: unknown) {
+  const pending: unknown[] = [input];
+  while (pending.length > 0) {
+    const value = pending.pop();
+    if (typeof value === 'string') {
+      if (value.includes('\0')) return true;
+    } else if (Array.isArray(value)) {
+      for (const item of value) pending.push(item);
+    } else if (value && typeof value === 'object' && !ArrayBuffer.isView(value)) {
+      for (const [key, item] of Object.entries(value)) {
+        if (key.includes('\0')) return true;
+        pending.push(item);
+      }
+    }
+  }
+  return false;
+}
+
+async function rejectNullBytes(request: InputRequest, reply: CsrfReply) {
+  if (![request.query, request.params, request.body].some(hasNullByte)) return;
+  await reply.status(400).send({
+    statusCode: 400,
+    timestamp: new Date().toISOString(),
+    path: request.url,
+    error: { message: 'Request contains a null byte', code: 'NULL_BYTE_IN_INPUT' },
+  });
+}
+
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -115,6 +150,7 @@ async function bootstrap() {
   await app.register(compress, { encodings: ['gzip', 'deflate'] });
   await app.register(cookie);
   fastify.addHook('preValidation', verifyCsrf);
+  fastify.addHook('preValidation', rejectNullBytes);
   const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',')
     : ['http://localhost:5173', 'http://localhost:3000'];
