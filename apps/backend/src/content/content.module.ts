@@ -1,3 +1,4 @@
+import { RevisionsService } from './revisions.service';
 import { TranslationService } from './translation.service';
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
@@ -17,6 +18,7 @@ import { RecordEditorService } from './record-editor.service';
   imports: [AuthModule, ProjectsModule, EventsModule, PublicationsModule],
   controllers: [ContentController, AdminContentController, AdminRecordsController],
   providers: [
+    RevisionsService,
     TranslationService,
     ContentfulClient,
     ContentService,

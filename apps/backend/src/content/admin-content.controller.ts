@@ -14,6 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ContentResourceType } from '@prisma/client';
 import { AdminPermission } from '@viratec/contracts';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { StaffGuard } from '../common/guards/staff.guard';
@@ -30,6 +31,8 @@ import {
   CreateContentEntryDto,
   DeleteContentEntryDto,
   TranslateContentDto,
+  ListContentRevisionsQueryDto,
+  RestoreContentRevisionDto,
   PublishContentDto,
   SaveContentEntryDto,
   UploadContentAssetDto,
@@ -140,6 +143,27 @@ export class AdminContentController {
     @Client() client: ClientContext,
   ) {
     return this.editor.uploadAsset(actor, dto, client);
+  }
+
+  @Get('revisions')
+  @RequirePermissions(AdminPermission.CONTENT_VIEW)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Published versions of an entry or a record, newest first' })
+  revisions(@Query() query: ListContentRevisionsQueryDto) {
+    return this.editor.listRevisions(ContentResourceType[query.resourceType], query.resourceId);
+  }
+
+  @Post('revisions/restore')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
+  @ApiOperation({ summary: 'Turn a published version back into a draft' })
+  @ApiResponse({ status: 404, description: 'Version not found' })
+  restore(
+    @CurrentUser() actor: AuthenticatedUser,
+    @Body() dto: RestoreContentRevisionDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.editor.restoreRevision(actor, dto, client);
   }
 
   @Get('changes')

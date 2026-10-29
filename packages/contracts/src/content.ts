@@ -70,6 +70,26 @@ export interface ContentAssetDto {
 
 export type ContentResourceKind = 'ENTRY' | 'ASSET' | 'PROJECT' | 'EVENT' | 'PUBLICATION';
 
+export type ContentRevisionSource = 'site' | 'contentful';
+
+export const CONTENT_REVISION_LIMIT = 30;
+
+export interface ContentRevisionDto {
+  id: string;
+  source: ContentRevisionSource;
+  createdAt: string;
+  label: string | null;
+  actor: { id: string; name: string } | null;
+  data: Record<string, unknown>;
+}
+
+export interface RestoreContentRevisionRequestDto {
+  resourceType: Exclude<ContentResourceKind, 'ASSET'>;
+  resourceId: string;
+  revisionId: string;
+  label?: string;
+}
+
 export interface ContentChangeDto {
   id: string;
   resourceType: ContentResourceKind;

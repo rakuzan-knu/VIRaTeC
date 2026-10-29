@@ -81,7 +81,8 @@ const setup = (publishedVersion: number | null) => {
   const audit = { record: async () => undefined };
   const content = { invalidate: async () => undefined };
   const records = { applyChange: async () => undefined };
-  const service = new ContentEditorService(contentful, content, prisma, audit, records);
+  const revisions = { record: async () => undefined };
+  const service = new ContentEditorService(contentful, content, prisma, audit, records, revisions);
   return { service, calls, rows };
 };
 

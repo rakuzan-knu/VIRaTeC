@@ -6,6 +6,7 @@ import { Button } from '@/shared/ui/Button';
 import { recordSaveKey } from '../model/autosave';
 import { cancelDraftSave, flushDrafts } from '../model/autosaveRegistry';
 import { useEditorErrorMessage } from '../model/errors';
+import { recordDiff } from '../model/revisionDiff';
 import { recordDeleteAction } from '../model/history';
 import type { SiteEditorMessages } from '../model/messages';
 import { NO_PERMISSIONS, canEditRecords } from '../model/permissions';
@@ -16,6 +17,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
 import { RecordFieldList } from './RecordFieldList';
 import { SaveStatusLine } from './SaveStatusLine';
+import { VersionHistoryDialog } from './VersionHistoryDialog';
 
 export function RecordPanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
@@ -34,6 +36,7 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
   const loadError = useEditorErrorMessage(record.error);
   const removeError = useEditorErrorMessage(remove.error);
   const [isConfirmingDelete, setConfirmingDelete] = useState(false);
+  const [isHistoryOpen, setHistoryOpen] = useState(false);
   const saveKey = draftKey ? recordSaveKey(draftKey) : null;
 
   useSaveShortcut(() => {
@@ -74,6 +77,7 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
       status={status}
       focusTitle={!selection.fieldId}
       saveKey={saveKey ?? undefined}
+      onHistory={loaded && !loaded.isNew ? () => setHistoryOpen(true) : undefined}
       footer={
         loaded && canEditRecords(permissions, resource) && !loaded.isDeleted && saveKey ? (
           <>
@@ -170,6 +174,17 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
         }}
         onClose={() => setConfirmingDelete(false)}
       />
+      {loaded && (
+        <VersionHistoryDialog
+          open={isHistoryOpen}
+          contentTypeId={selection.contentTypeId}
+          id={key}
+          title={label}
+          t={t}
+          diffOf={(version) => recordDiff(resource, data, version, t)}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
     </EditorPanel>
   );
 }

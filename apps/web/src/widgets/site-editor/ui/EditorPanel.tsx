@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { ArrowLeft, CircleDot, X } from 'lucide-react';
+import { ArrowLeft, CircleDot, History, X } from 'lucide-react';
 import { flushDrafts } from '../model/autosaveRegistry';
 import type { SiteEditorMessages } from '../model/messages';
 import { useSiteEditorStore } from '../model/store';
@@ -17,6 +17,7 @@ interface EditorPanelProps {
   onClose?: () => void;
   focusTitle?: boolean;
   saveKey?: string;
+  onHistory?: () => void;
   children: ReactNode;
 }
 
@@ -30,6 +31,7 @@ export function EditorPanel({
   onClose,
   focusTitle = false,
   saveKey,
+  onHistory,
   children,
 }: EditorPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -69,6 +71,9 @@ export function EditorPanel({
             </span>
           )}
         </div>
+        {onHistory && (
+          <IconButton icon={History} size="lg" label={t.versions.open} onClick={onHistory} />
+        )}
         <IconButton
           icon={X}
           label={t.close}

@@ -15,6 +15,8 @@ import type {
   SaveContentEntryRequestDto,
   SaveRecordRequestDto,
   TranslateContentRequestDto,
+  ContentRevisionDto,
+  RestoreContentRevisionRequestDto,
   TranslateContentResultDto,
   UploadContentAssetRequestDto,
 } from '@viratec/contracts';
@@ -82,3 +84,14 @@ export const fetchRecordList = <T>(resource: RecordResource) =>
 
 export const translateTexts = (dto: TranslateContentRequestDto) =>
   api.post<TranslateContentResultDto>('/admin/content/translate', dto);
+
+export const fetchRevisions = (
+  resourceType: RestoreContentRevisionRequestDto['resourceType'],
+  resourceId: string,
+) =>
+  api.get<ContentRevisionDto[]>(
+    `/admin/content/revisions?resourceType=${resourceType}&resourceId=${encodeURIComponent(resourceId)}`,
+  );
+
+export const restoreRevision = (dto: RestoreContentRevisionRequestDto) =>
+  api.post<{ success: boolean }>('/admin/content/revisions/restore', dto);

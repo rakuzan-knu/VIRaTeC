@@ -121,17 +121,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  papers        ResearchPaper[]
-  projects      Project[]
-  posts         CommunityPost[]
-  postLikes     PostLike[]
-  refreshTokens RefreshToken[]
-  avatar        UserAvatar?
-  savedItems    SavedItem[]
-  backupCodes   BackupCode[]
-  mfaChallenges MfaChallenge[]
-  auditActions  AuditLog[]      @relation("AuditActor")
-  contentEdits  ContentChange[]
+  papers           ResearchPaper[]
+  projects         Project[]
+  posts            CommunityPost[]
+  postLikes        PostLike[]
+  refreshTokens    RefreshToken[]
+  avatar           UserAvatar?
+  savedItems       SavedItem[]
+  backupCodes      BackupCode[]
+  mfaChallenges    MfaChallenge[]
+  auditActions     AuditLog[]        @relation("AuditActor")
+  contentEdits     ContentChange[]
+  contentRevisions ContentRevision[]
 
   @@index([createdAt])
   @@index([name(ops: raw("gin_trgm_ops"))], map: "users_name_trgm_idx", type: Gin)
@@ -250,6 +251,21 @@ model ContentChange {
   @@unique([resourceType, resourceId])
   @@index([updatedAt])
   @@map("content_changes")
+}
+
+model ContentRevision {
+  id            String              @id @default(uuid())
+  resourceType  ContentResourceType
+  resourceId    String
+  contentTypeId String?
+  label         String?
+  data          Json
+  actorId       String?
+  actor         User?               @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt     DateTime            @default(now())
+
+  @@index([resourceType, resourceId, createdAt])
+  @@map("content_revisions")
 }
 
 model ContentCacheState {

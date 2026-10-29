@@ -116,3 +116,35 @@ export class TranslateContentDto {
   @MaxLength(TRANSLATION_LIMITS.maxTextLength, { each: true })
   texts!: string[];
 }
+
+const REVISION_RESOURCE_TYPES = ['ENTRY', 'PROJECT', 'EVENT', 'PUBLICATION'] as const;
+
+type RevisionResourceType = (typeof REVISION_RESOURCE_TYPES)[number];
+
+export class ListContentRevisionsQueryDto {
+  @ApiProperty({ enum: REVISION_RESOURCE_TYPES })
+  @IsIn(REVISION_RESOURCE_TYPES)
+  resourceType!: RevisionResourceType;
+
+  @ApiProperty({ example: '4kXrJ2' })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(128)
+  resourceId!: string;
+}
+
+export class RestoreContentRevisionDto extends ListContentRevisionsQueryDto {
+  @ApiProperty({
+    description: 'Version id from the list; Contentful versions start with contentful:',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(128)
+  revisionId!: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  label?: string;
+}

@@ -11,7 +11,9 @@ import {
   isCollectionType,
   withFieldValue,
 } from '../model/contentModel';
+import { useState } from 'react';
 import { useEditorErrorMessage } from '../model/errors';
+import { entryDiff } from '../model/revisionDiff';
 import { typeName } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
 import { useEditorEntry, useEntryReferences } from '../model/queries';
@@ -20,6 +22,7 @@ import { AddSiblingEntryButton } from './AddSiblingEntryButton';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
 import { EntryFieldList } from './EntryFieldList';
 import { SaveStatusLine } from './SaveStatusLine';
+import { VersionHistoryDialog } from './VersionHistoryDialog';
 
 export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
@@ -39,6 +42,7 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
   const type = findContentType(data?.contentTypeId);
   const fields = draft?.fields ?? data?.fields ?? {};
   const saveKey = entryId ? entrySaveKey(entryId) : null;
+  const [isHistoryOpen, setHistoryOpen] = useState(false);
 
   const updateField = (fieldId: string, localeCode: string, value: unknown) => {
     if (!data) return;
@@ -79,6 +83,7 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
       status={status}
       focusTitle={!selection.fieldId}
       saveKey={saveKey ?? undefined}
+      onHistory={data && type ? () => setHistoryOpen(true) : undefined}
       footer={
         data && type && canEdit && saveKey ? <SaveStatusLine saveKey={saveKey} t={t} /> : null
       }
@@ -142,6 +147,17 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
             onPersist={persistField}
           />
         </>
+      )}
+      {data && type && (
+        <VersionHistoryDialog
+          open={isHistoryOpen}
+          contentTypeId={data.contentTypeId}
+          id={data.id}
+          title={label}
+          t={t}
+          diffOf={(version) => entryDiff(data.contentTypeId, fields, version, data.locales, t)}
+          onClose={() => setHistoryOpen(false)}
+        />
       )}
     </EditorPanel>
   );
