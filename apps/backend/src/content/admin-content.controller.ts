@@ -147,7 +147,7 @@ export class AdminContentController {
   @Post('publish')
   @HttpCode(HttpStatus.OK)
   @RequirePermissions(AdminPermission.CONTENT_PUBLISH)
-  @RequireStepUp()
+  @RequireStepUp('publish')
   @ApiOperation({ summary: 'Publish saved drafts' })
   publish(
     @CurrentUser() actor: AuthenticatedUser,

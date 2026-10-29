@@ -167,8 +167,9 @@ model RefreshToken {
   createdAt  DateTime @default(now())
   lastUsedAt DateTime @default(now())
 
-  mfaVerifiedAt DateTime?
-  elevatedUntil DateTime?
+  mfaVerifiedAt        DateTime?
+  elevatedUntil        DateTime?
+  publishElevatedUntil DateTime?
 
   @@index([userId, sessionId])
   @@index([expiresAt])

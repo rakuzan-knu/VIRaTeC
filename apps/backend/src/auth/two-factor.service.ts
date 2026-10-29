@@ -12,6 +12,7 @@ import { BACKUP_CODE_COUNT, StaffRole } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../security/audit.service';
 import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
+import { STAFF_SESSION_MAX_AGE_MS } from '../common/guards/staff.guard';
 import {
   buildOtpauthUrl,
   decryptSecret,
@@ -201,10 +202,12 @@ export class TwoFactorService {
       throw new UnauthorizedException('The code is incorrect or expired');
     }
 
-    const elevatedUntil = new Date(Date.now() + STEP_UP_DURATION_MS);
+    const now = Date.now();
+    const elevatedUntil = new Date(now + STEP_UP_DURATION_MS);
+    const publishElevatedUntil = new Date(now + STAFF_SESSION_MAX_AGE_MS);
     await this.prisma.refreshToken.updateMany({
       where: { userId, sessionId, revoked: false },
-      data: { elevatedUntil, mfaVerifiedAt: new Date() },
+      data: { elevatedUntil, publishElevatedUntil, mfaVerifiedAt: new Date(now) },
     });
     await this.rateLimit.reset(`stepup:${userId}`);
     await this.audit.record({

@@ -10,4 +10,6 @@ export const RequirePermissions = (...permissions: AdminPermission[]) =>
 
 export const OwnerOnly = () => SetMetadata(OWNER_ONLY_KEY, true);
 
-export const RequireStepUp = () => SetMetadata(STEP_UP_KEY, true);
+export type StepUpScope = 'action' | 'publish';
+
+export const RequireStepUp = (scope: StepUpScope = 'action') => SetMetadata(STEP_UP_KEY, scope);

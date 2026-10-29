@@ -33,6 +33,7 @@ const DEFAULT_REFRESH_TTL_MS = 7 * 24 * 60 * 60_000;
 interface SessionCarry {
   mfaVerifiedAt?: Date | null;
   elevatedUntil?: Date | null;
+  publishElevatedUntil?: Date | null;
 }
 
 interface SignInUser extends TokenSubject {
@@ -318,6 +319,7 @@ export class AuthService {
     const tokens = await this.generateTokens(user, client, tokenRecord.sessionId, {
       mfaVerifiedAt: tokenRecord.mfaVerifiedAt,
       elevatedUntil: tokenRecord.elevatedUntil,
+      publishElevatedUntil: tokenRecord.publishElevatedUntil,
     });
     return {
       user: toAccount(user),
@@ -360,6 +362,7 @@ export class AuthService {
         sessionId,
         mfaVerifiedAt: carry.mfaVerifiedAt ?? null,
         elevatedUntil: carry.elevatedUntil ?? null,
+        publishElevatedUntil: carry.publishElevatedUntil ?? null,
         userAgent: client.userAgent ?? null,
         ipAddress: client.ipAddress ?? null,
         expiresAt,

@@ -12,4 +12,5 @@ export interface AuthenticatedUser {
   twoFactorEnabled: boolean;
   mfaVerifiedAt: Date | null;
   elevatedUntil: Date | null;
+  publishElevatedUntil: Date | null;
 }
