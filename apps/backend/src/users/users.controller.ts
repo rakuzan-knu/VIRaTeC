@@ -25,6 +25,9 @@ import { UpdatePrivacyDto } from './dto/update-privacy.dto';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
+const AVATAR_PUBLIC_CACHE = 'public, max-age=3600';
+const AVATAR_PRIVATE_CACHE = 'private, max-age=3600';
+
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
@@ -99,14 +102,19 @@ export class UsersController {
   }
 
   @Get(':id/avatar')
-  @ApiOperation({ summary: 'Get the profile photo of a user' })
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Get the profile photo of a user, respecting profile visibility' })
   @ApiResponse({ status: 200, description: 'Image bytes' })
-  @ApiResponse({ status: 404, description: 'Avatar not found' })
-  async getAvatar(@Param('id', ParseUUIDPipe) id: string, @Res() reply: FastifyReply) {
-    const { data, mimeType } = await this.usersService.findAvatar(id);
+  @ApiResponse({ status: 404, description: 'Avatar not found or profile hidden' })
+  async getAvatar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser('id') viewerId: string | undefined,
+    @Res() reply: FastifyReply,
+  ) {
+    const { data, mimeType, isPublic } = await this.usersService.findAvatar(id, viewerId ?? null);
     return reply
       .header('Content-Type', mimeType)
-      .header('Cache-Control', 'public, max-age=31536000, immutable')
+      .header('Cache-Control', isPublic ? AVATAR_PUBLIC_CACHE : AVATAR_PRIVATE_CACHE)
       .header('Content-Disposition', 'inline')
       .header('Cross-Origin-Resource-Policy', 'cross-origin')
       .send(data);
