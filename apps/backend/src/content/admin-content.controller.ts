@@ -103,7 +103,7 @@ export class AdminContentController {
   @Delete('entries/:id')
   @RequirePermissions(AdminPermission.CONTENT_EDIT)
   @ApiOperation({
-    summary: 'Delete an entry: a draft is removed now, a published entry goes away on publish',
+    summary: 'Delete an entry: a draft is archived now, a published entry is archived on publish',
   })
   @ApiResponse({ status: 404, description: 'Entry not found' })
   remove(

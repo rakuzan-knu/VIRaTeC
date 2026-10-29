@@ -86,12 +86,12 @@ const setup = (publishedVersion: number | null) => {
   return { service, calls, rows };
 };
 
-test('deleting an entry that was never published removes it from Contentful at once', async () => {
+test('deleting an entry that was never published archives it in Contentful at once', async () => {
   const { service, calls, rows } = setup(null);
   await service.deleteEntry(actor, 'milestone-1', 'Milestone: 2024', client);
   assert.deepEqual(
-    calls.map((call) => `${call.method} ${call.path}`),
-    ['GET /entries/milestone-1', 'DELETE /entries/milestone-1'],
+    calls.map((call) => `${call.method} ${call.path} v${call.version ?? ''}`),
+    ['GET /entries/milestone-1 v', 'PUT /entries/milestone-1/archived v5'],
   );
   assert.equal(rows.length, 0);
 });

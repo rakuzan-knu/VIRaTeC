@@ -25,6 +25,9 @@ import {
 
 export const CONTENTFUL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/;
 
+const REVISION_RESOURCE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$/;
+const REVISION_ID_PATTERN = /^(contentful:)?[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/;
+
 const DATA_URL_OVERHEAD = 64;
 
 export class SaveContentEntryDto {
@@ -138,8 +141,7 @@ export class ListContentRevisionsQueryDto {
 
   @ApiProperty({ example: '4kXrJ2' })
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(128)
+  @Matches(REVISION_RESOURCE_ID_PATTERN)
   resourceId!: string;
 }
 
@@ -148,8 +150,7 @@ export class RestoreContentRevisionDto extends ListContentRevisionsQueryDto {
     description: 'Version id from the list; Contentful versions start with contentful:',
   })
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(128)
+  @Matches(REVISION_ID_PATTERN)
   revisionId!: string;
 
   @ApiPropertyOptional()

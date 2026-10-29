@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { SavedItemKind } from '@prisma/client';
+import { Prisma, SavedItemKind } from '@prisma/client';
 import { SAVED_ITEMS_MAX } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 import { SavedItemDto } from './dto/saved-item.dto';
@@ -53,11 +53,17 @@ export class SavedItemsService {
       if (count >= SAVED_ITEMS_MAX) {
         throw new BadRequestException(`You can save up to ${SAVED_ITEMS_MAX} items`);
       }
-      await this.prisma.savedItem.upsert({
-        where: { userId_kind_refId: { userId, kind, refId } },
-        create: { userId, kind, refId },
-        update: {},
-      });
+      await this.prisma.savedItem
+        .upsert({
+          where: { userId_kind_refId: { userId, kind, refId } },
+          create: { userId, kind, refId },
+          update: {},
+        })
+        .catch((error: unknown) => {
+          if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
+            throw error;
+          }
+        });
     }
 
     return this.list(userId);

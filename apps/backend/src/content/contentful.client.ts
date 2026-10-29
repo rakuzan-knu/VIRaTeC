@@ -1,5 +1,6 @@
 import { setTimeout as sleep } from 'node:timers/promises';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -20,6 +21,9 @@ const HOSTS = {
 const REQUEST_TIMEOUT_MS = 10_000;
 const MAX_ATTEMPTS = 4;
 const MANAGEMENT_TYPE = 'application/vnd.contentful.management.v1+json';
+
+const isSafePath = (path: string) =>
+  !/[?#\\%]/.test(path) && path.split('/').every((segment) => segment !== '..' && segment !== '.');
 
 export type ContentfulApi = keyof typeof HOSTS;
 
@@ -101,6 +105,7 @@ export class ContentfulClient {
       api === 'upload'
         ? `/spaces/${config.spaceId}`
         : `/spaces/${config.spaceId}/environments/${config.environment}`;
+    if (!isSafePath(path)) throw new BadRequestException('Invalid content path');
     const url = new URL(`${base}${path}`, HOSTS[api]);
     if (options.query) url.search = new URLSearchParams(options.query).toString();
 
