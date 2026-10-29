@@ -26,7 +26,7 @@ const SCROLL_THRESHOLD = 12;
 const HIDE_OFFSET = 160;
 const HIDE_DELTA = 6;
 const NAV_LINK_CLASS =
-  'rounded-full px-3.5 py-2 text-[15px] transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';
+  'rounded-full px-3.5 py-2 text-[15px] whitespace-nowrap transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime';
 
 function useHeaderScroll() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -88,7 +88,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
         />
         <div
           className={cn(
-            'relative mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 transition-[height] duration-300 ease-apple xl:px-[60px]',
+            'relative mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 transition-[height] duration-300 ease-apple xl:px-10 2xl:px-[60px]',
             isScrolled ? 'xl:h-[68px]' : 'xl:h-[88px]',
           )}
         >
@@ -100,7 +100,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             <Logo
               className={cn(
                 'w-[132px] transition-[width] duration-300 ease-apple',
-                isScrolled ? 'xl:w-[164px]' : 'xl:w-[196px]',
+                isScrolled ? 'xl:w-[164px]' : 'xl:w-[164px] 2xl:w-[196px]',
               )}
             />
           </Link>
@@ -138,7 +138,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             </ul>
           </nav>
 
-          <div className="hidden items-center gap-2 xl:flex">
+          <div className="hidden shrink-0 items-center gap-2 xl:flex">
             {isAuthenticated ? (
               <AccountMenu />
             ) : (
