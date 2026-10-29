@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import sharp from 'sharp';
+import sharp, { type Sharp } from 'sharp';
 import type { Plugin } from 'vite';
 import {
   RESPONSIVE_IMAGE_FORMATS,
@@ -11,7 +11,7 @@ import {
   type ResponsiveImageFormat,
 } from '../src/shared/config/responsiveImages';
 
-const ENCODE_OPTIONS: Record<ResponsiveImageFormat, (image: sharp.Sharp) => sharp.Sharp> = {
+const ENCODE_OPTIONS: Record<ResponsiveImageFormat, (image: Sharp) => Sharp> = {
   avif: (image) => image.avif({ quality: 55, effort: 4 }),
   webp: (image) => image.webp({ quality: 78, effort: 5 }),
 };
