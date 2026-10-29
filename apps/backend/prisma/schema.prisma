@@ -56,6 +56,11 @@ enum ProfileVisibility {
   PRIVATE
 }
 
+enum EmailTokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
 enum SavedItemKind {
   PUBLICATION
   PROJECT
@@ -84,27 +89,29 @@ enum PublicationType {
 }
 
 model User {
-  id           String            @id @default(uuid())
-  email        String            @unique
-  passwordHash String?
-  googleId     String?           @unique
-  name         String
-  role         UserRole          @default(STUDENT)
-  faculty      FacultyDivision   @default(FIT)
-  department   String?
-  bio          String?
-  avatarUrl    String?
-  skills       String[]          @default([])
-  studyLevel   StudyLevel?
-  studyYear    Int?
-  institution  String?
-  country      String?
-  languages    Json              @default("[]")
-  links        Json              @default("{}")
-  openTo       String[]          @default([])
-  visibility   ProfileVisibility @default(MEMBERS)
-  showEmail    Boolean           @default(false)
-  isBlocked    Boolean           @default(false)
+  id                      String            @id @default(uuid())
+  email                   String            @unique
+  emailVerifiedAt         DateTime?
+  emailOwnershipClaimable Boolean           @default(true)
+  passwordHash            String?
+  googleId                String?           @unique
+  name                    String
+  role                    UserRole          @default(STUDENT)
+  faculty                 FacultyDivision   @default(FIT)
+  department              String?
+  bio                     String?
+  avatarUrl               String?
+  skills                  String[]          @default([])
+  studyLevel              StudyLevel?
+  studyYear               Int?
+  institution             String?
+  country                 String?
+  languages               Json              @default("[]")
+  links                   Json              @default("{}")
+  openTo                  String[]          @default([])
+  visibility              ProfileVisibility @default(MEMBERS)
+  showEmail               Boolean           @default(false)
+  isBlocked               Boolean           @default(false)
 
   staffRole      StaffRole         @default(NONE)
   permissions    AdminPermission[] @default([])
@@ -130,6 +137,7 @@ model User {
   savedItems    SavedItem[]
   backupCodes   BackupCode[]
   mfaChallenges MfaChallenge[]
+  emailTokens   EmailToken[]
   auditActions  AuditLog[]      @relation("AuditActor")
   contentEdits  ContentChange[]
 
@@ -202,6 +210,22 @@ model MfaChallenge {
   @@index([userId])
   @@index([expiresAt])
   @@map("mfa_challenges")
+}
+
+model EmailToken {
+  id         String            @id @default(uuid())
+  userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose    EmailTokenPurpose
+  tokenHash  String            @unique
+  attempts   Int               @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime          @default(now())
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+  @@map("email_tokens")
 }
 
 model AuditLog {

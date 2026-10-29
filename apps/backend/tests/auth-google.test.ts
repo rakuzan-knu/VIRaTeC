@@ -17,6 +17,7 @@ interface GoogleUser {
   email?: string;
   googleId?: string | null;
   passwordHash?: string | null;
+  emailVerifiedAt?: Date | null;
   role?: string;
   faculty?: string;
   name?: string;
@@ -53,9 +54,19 @@ function setup({
   const service = new AuthService(
     {
       user: {
-        findUnique: async ({ where }: { where: { googleId?: string } }) => {
+        update: async ({ where }: { where: { id: string } }) => {
+          calls.refreshTokens++;
+          return users.find((user) => user.id === where.id);
+        },
+        findUnique: async ({ where }: { where: { googleId?: string; email?: string } }) => {
           calls.reads++;
-          return users.find((user) => user.googleId === where.googleId) ?? null;
+          return (
+            users.find((user) =>
+              where.googleId === undefined
+                ? user.email === where.email
+                : user.googleId === where.googleId,
+            ) ?? null
+          );
         },
         create: async ({ data }: CreateUserArgs) => {
           calls.creates++;
@@ -144,13 +155,14 @@ test('returning Google user is identified by subject even if their Google email 
 });
 
 for (const googleId of [null, 'another-google-subject']) {
-  test(`email collision cannot grant access or link an account with googleId=${googleId}`, async () => {
+  test(`email collision with a verified account cannot grant access or link it with googleId=${googleId}`, async () => {
     const user = {
       id: 'victim',
       email: 'google@example.invalid',
       googleId,
       passwordHash: 'existing-password',
       role: 'ADMIN',
+      emailVerifiedAt: new Date('2026-01-01T00:00:00Z'),
     };
     const before = { ...user };
     const { service, users, calls } = setup({ users: [user] });

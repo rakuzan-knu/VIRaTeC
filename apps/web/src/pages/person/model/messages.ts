@@ -21,6 +21,10 @@ const PERSON_MESSAGES = defineMessages({
     membersOnlyTitle: 'Members-only profile',
     membersOnlyDescription: 'Sign in to the VIRaTeC community to see this profile.',
     signIn: 'Sign in',
+    unverifiedTitle: 'Confirm your email first',
+    unverifiedDescription:
+      'Members-only profiles open once you confirm your email address. Use the link we sent you or request a new one on your account page.',
+    toAccount: 'Go to your account',
     notFoundTitle: 'Profile not found',
     notFoundDescription: 'This profile doesn’t exist or its owner keeps it private.',
     errorTitle: 'Profile unavailable',
@@ -47,6 +51,10 @@ const PERSON_MESSAGES = defineMessages({
     membersOnlyTitle: 'Профіль лише для учасників',
     membersOnlyDescription: 'Увійдіть до спільноти VIRaTeC, щоб переглянути цей профіль.',
     signIn: 'Увійти',
+    unverifiedTitle: 'Спершу підтвердьте пошту',
+    unverifiedDescription:
+      'Профілі лише для учасників відкриються після підтвердження адреси електронної пошти. Скористайтеся посиланням із листа або надішліть нове на сторінці облікового запису.',
+    toAccount: 'До облікового запису',
     notFoundTitle: 'Профіль не знайдено',
     notFoundDescription: 'Такого профілю немає або власник зробив його приватним.',
     errorTitle: 'Профіль недоступний',

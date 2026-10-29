@@ -24,6 +24,10 @@ import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import { UpdatePrivacyDto } from './dto/update-privacy.dto';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../security/authenticated-user';
+
+const memberId = (viewer: AuthenticatedUser | undefined) =>
+  viewer?.emailVerified ? viewer.id : null;
 
 @ApiTags('Users')
 @Controller('users')
@@ -35,10 +39,10 @@ export class UsersController {
   @ApiOperation({ summary: 'Search the member directory (respects profile visibility)' })
   @ApiResponse({ status: 200, description: 'List of users retrieved' })
   async findAll(
-    @CurrentUser('id') viewerId: string | undefined,
+    @CurrentUser() viewer: AuthenticatedUser | undefined,
     @Query() query: ListUsersQueryDto,
   ) {
-    return this.usersService.findAll(viewerId ?? null, query);
+    return this.usersService.findAll(memberId(viewer), query);
   }
 
   @Patch('me/privacy')
@@ -117,11 +121,12 @@ export class UsersController {
   @ApiOperation({ summary: 'Get a public profile, respecting its visibility' })
   @ApiResponse({ status: 200, description: 'User profile retrieved' })
   @ApiResponse({ status: 401, description: 'Profile is visible to signed-in members only' })
+  @ApiResponse({ status: 403, description: 'The viewer has not confirmed their email' })
   @ApiResponse({ status: 404, description: 'User not found or profile hidden' })
   async findById(
     @Param('id', ParseUUIDPipe) id: string,
-    @CurrentUser('id') viewerId: string | undefined,
+    @CurrentUser() viewer: AuthenticatedUser | undefined,
   ) {
-    return this.usersService.findPublicProfile(id, viewerId ?? null);
+    return this.usersService.findPublicProfile(id, viewer?.id ?? null, memberId(viewer));
   }
 }

@@ -157,7 +157,14 @@ export const RECORD_DEFINITIONS: Record<RecordResource, RecordDefinition> = {
   },
 };
 
-const optionalUrl = z.union([z.string().url().max(2048), z.null()]);
+const optionalUrl = z.union([
+  z
+    .string()
+    .url()
+    .max(2048)
+    .regex(/^https?:\/\//i),
+  z.null(),
+]);
 
 export const ProjectRecordSchema = z.object({
   status: z.nativeEnum(ProjectStatus),

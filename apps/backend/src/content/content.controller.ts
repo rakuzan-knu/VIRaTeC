@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { safeEqual } from '../security/crypto';
+import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
 import { ContentService } from './content.service';
 import { ContentfulClient } from './contentful.client';
 
@@ -48,9 +49,10 @@ export class ContentController {
   @Header('Cache-Control', CONTENT_CACHE_CONTROL)
   @ApiOperation({ summary: 'Published Contentful entries of the given content types' })
   @ApiQuery({ name: 'types', example: 'homePage,partner' })
+  @ApiResponse({ status: 429, description: 'Too many uncached content requests' })
   @ApiResponse({ status: 503, description: 'Contentful is not configured or unavailable' })
-  getEntries(@Query('types') types?: string) {
-    return this.contentService.getEntries(parseContentTypes(types));
+  getEntries(@Client() client: ClientContext, @Query('types') types?: string) {
+    return this.contentService.getEntries(parseContentTypes(types), client);
   }
 
   @Post('webhook')

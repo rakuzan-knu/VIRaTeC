@@ -47,6 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         permissions: true,
         staffExpiresAt: true,
         twoFactorEnabled: true,
+        emailVerifiedAt: true,
         refreshTokens: payload.sid
           ? {
               where: { sessionId: payload.sid, revoked: false, expiresAt: { gt: new Date() } },
@@ -82,6 +83,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       staffRole: staff.staffRole,
       permissions: staff.permissions,
       twoFactorEnabled: user.twoFactorEnabled,
+      emailVerified: Boolean(user.emailVerifiedAt),
       mfaVerifiedAt: session?.mfaVerifiedAt ?? null,
       elevatedUntil: session?.elevatedUntil ?? null,
     };

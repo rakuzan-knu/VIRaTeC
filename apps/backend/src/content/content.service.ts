@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TtlCache } from '../common/cache/ttl-cache';
 import { PrismaService } from '../prisma/prisma.service';
+import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
+import type { ClientContext } from '../common/decorators/client-context.decorator';
 import { ContentfulClient, type ContentfulItem } from './contentful.client';
 
 const PAGE_SIZE = 100;
@@ -41,11 +43,23 @@ export class ContentService {
   constructor(
     private readonly contentful: ContentfulClient,
     private readonly prisma: PrismaService,
+    private readonly rateLimit?: RateLimitService,
   ) {}
 
-  async getEntries(types: readonly string[]): Promise<ContentEntriesResponse> {
+  async getEntries(
+    types: readonly string[],
+    client: ClientContext = {},
+  ): Promise<ContentEntriesResponse> {
     const revision = await this.revision.get('current', () => this.readRevision());
-    return this.cache.get(`${revision}:${types.join(',')}`, () => this.load('delivery', types));
+    return this.cache.get(`${revision}:${types.join(',')}`, async () => {
+      if (client.ipAddress) {
+        await this.rateLimit?.consume(
+          `content:miss:ip:${client.ipAddress}`,
+          RATE_LIMITS.contentMissPerIp,
+        );
+      }
+      return this.load('delivery', types);
+    });
   }
 
   getPreviewEntries(types: readonly string[]): Promise<ContentEntriesResponse> {

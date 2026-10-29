@@ -74,6 +74,18 @@ export default () => {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
     },
+    mail: {
+      from: process.env.MAIL_FROM?.trim() || '',
+      frontendUrl: (process.env.FRONTEND_URL?.trim() || 'http://localhost:5173').replace(
+        /\/+$/,
+        '',
+      ),
+      gmail: {
+        clientId: process.env.GMAIL_CLIENT_ID?.trim() || '',
+        clientSecret: process.env.GMAIL_CLIENT_SECRET?.trim() || '',
+        refreshToken: process.env.GMAIL_REFRESH_TOKEN?.trim() || '',
+      },
+    },
     redis: {
       url: process.env.REDIS_URL || 'redis://localhost:6379',
     },

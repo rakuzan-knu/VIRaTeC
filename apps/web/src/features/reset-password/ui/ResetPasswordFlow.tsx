@@ -3,6 +3,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Check, Eye, EyeOff } from 'lucide-react';
+import { ApiError, NETWORK_ERROR_STATUS, getApiErrorCode } from '@/shared/api/apiClient';
 import { ROUTES } from '@/shared/config/routes';
 import { CONTACT_EMAIL } from '@/shared/config/navigation';
 import { useCommonMessages } from '@/shared/i18n';
@@ -20,7 +21,7 @@ import {
   type VerifyCodeValues,
 } from '../model/schema';
 import { useResendCountdown } from '../model/useResendCountdown';
-import { IS_RECOVERY_AVAILABLE } from '../model/config';
+import { useResetPassword } from '../model/useResetPassword';
 import { useResetPasswordMessages } from '../model/messages';
 import {
   FIELD_INPUT_CLASS,
@@ -31,16 +32,20 @@ import {
   SupportLine,
 } from './parts';
 
-type Step = 'request' | 'verify' | 'reset' | 'done';
-
 const RESEND_SECONDS = 30;
+
+const errorStatus = (error: unknown) => (error instanceof ApiError ? error.status : null);
 
 function RequestStep({
   onSubmit,
   isUnavailable,
+  isPending,
+  errorMessage,
 }: {
   onSubmit: (email: string) => void;
   isUnavailable: boolean;
+  isPending: boolean;
+  errorMessage: string | null;
 }) {
   const t = useResetPasswordMessages();
   const common = useCommonMessages();
@@ -83,7 +88,12 @@ function RequestStep({
             </p>
           )}
         </div>
-        <Button type="submit" className={SUBMIT_CLASS}>
+        {errorMessage && (
+          <p role="alert" className="text-xs text-auth-error">
+            {errorMessage}
+          </p>
+        )}
+        <Button type="submit" isLoading={isPending} className={SUBMIT_CLASS}>
           {t.request.submit}
           <ArrowRight className="w-4 h-4" />
         </Button>
@@ -118,10 +128,16 @@ function VerifyStep({
   email,
   onBack,
   onSubmit,
+  onResend,
+  errorMessage,
+  statusMessage,
 }: {
   email: string;
   onBack: () => void;
-  onSubmit: () => void;
+  onSubmit: (code: string) => void;
+  onResend: () => void;
+  errorMessage: string | null;
+  statusMessage: string | null;
 }) {
   const countdown = useResendCountdown(RESEND_SECONDS);
   const t = useResetPasswordMessages();
@@ -148,7 +164,11 @@ function VerifyStep({
           </>
         }
       />
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-6" noValidate>
+      <form
+        onSubmit={handleSubmit((values) => onSubmit(values.code))}
+        className="space-y-4 pt-6"
+        noValidate
+      >
         <div className="space-y-1.5">
           <label htmlFor="recovery-code" className={FIELD_LABEL_CLASS}>
             {t.verify.codeLabel}
@@ -160,15 +180,19 @@ function VerifyStep({
             autoComplete="one-time-code"
             maxLength={6}
             placeholder="000000"
-            error={!!errors.code}
+            error={!!errors.code || !!errorMessage}
+            aria-invalid={!!errors.code || !!errorMessage}
             aria-describedby="recovery-code-hint"
             className={cn(FIELD_INPUT_CLASS, 'tracking-[0.5em]')}
           />
           <p
             id="recovery-code-hint"
-            className={cn('text-[11px]', errors.code ? 'text-auth-error' : 'text-auth-muted')}
+            className={cn(
+              'text-[11px]',
+              errors.code || errorMessage ? 'text-auth-error' : 'text-auth-muted',
+            )}
           >
-            {errors.code?.message ?? t.verify.codeHint}
+            {errors.code?.message ?? errorMessage ?? t.verify.codeHint}
           </p>
         </div>
         <Button type="submit" className={SUBMIT_CLASS}>
@@ -183,19 +207,35 @@ function VerifyStep({
         ) : (
           <button
             type="button"
-            onClick={countdown.restart}
+            onClick={() => {
+              countdown.restart();
+              onResend();
+            }}
             className="cursor-pointer font-medium text-auth-navy hover:underline"
           >
             {t.verify.resend}
           </button>
         )}
       </p>
+      <p role="status" className="pt-2 text-center text-xs text-auth-muted">
+        {statusMessage ?? ''}
+      </p>
       <SupportLine />
     </>
   );
 }
 
-function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => void }) {
+function ResetStep({
+  onBack,
+  onSubmit,
+  isPending,
+  errorMessage,
+}: {
+  onBack: () => void;
+  onSubmit: (password: string) => void;
+  isPending: boolean;
+  errorMessage: string | null;
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const t = useResetPasswordMessages();
   const common = useCommonMessages();
@@ -215,7 +255,11 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
     <>
       <StepTopBar step={3} backLabel={t.back} onBack={onBack} />
       <StepHeader title={t.reset.title} description={t.reset.description} />
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-6" noValidate>
+      <form
+        onSubmit={handleSubmit((values) => onSubmit(values.password))}
+        className="space-y-4 pt-6"
+        noValidate
+      >
         <div className="space-y-1.5">
           <label htmlFor="new-password" className={FIELD_LABEL_CLASS}>
             {t.reset.newPassword}
@@ -290,7 +334,12 @@ function ResetStep({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => v
             </p>
           )}
         </div>
-        <Button type="submit" className={SUBMIT_CLASS}>
+        {errorMessage && (
+          <p role="alert" className="text-xs text-auth-error">
+            {errorMessage}
+          </p>
+        )}
+        <Button type="submit" isLoading={isPending} className={SUBMIT_CLASS}>
           {t.reset.submit}
           <ArrowRight className="w-4 h-4" />
         </Button>
@@ -326,9 +375,10 @@ function DoneStep() {
 }
 
 export function ResetPasswordFlow() {
-  const [step, setStep] = useState<Step>('request');
-  const [email, setEmail] = useState('');
-  const [isUnavailable, setIsUnavailable] = useState(false);
+  const t = useResetPasswordMessages();
+  const common = useCommonMessages();
+  const flow = useResetPassword();
+  const { step } = flow;
   const containerRef = useRef<HTMLDivElement>(null);
   const previousStepRef = useRef(step);
 
@@ -338,30 +388,49 @@ export function ResetPasswordFlow() {
     containerRef.current?.querySelector<HTMLHeadingElement>('h2')?.focus();
   }, [step]);
 
+  const describeError = (status: number | null, tooMany: string) =>
+    status === null
+      ? null
+      : status === 429
+        ? tooMany
+        : status === NETWORK_ERROR_STATUS
+          ? common.networkError
+          : t.unexpectedError;
+  const forgotStatus = errorStatus(flow.forgot.error);
+  const isUnavailable = forgotStatus === 503;
+  const forgotError = isUnavailable ? null : describeError(forgotStatus, t.request.tooMany);
+  const resetError =
+    getApiErrorCode(flow.reset.error) === 'RESET_CODE_INVALID'
+      ? null
+      : describeError(errorStatus(flow.reset.error), t.reset.tooMany);
+
   return (
     <div ref={containerRef} className="w-full">
       {step === 'request' && (
         <RequestStep
           isUnavailable={isUnavailable}
-          onSubmit={(value) => {
-            if (!IS_RECOVERY_AVAILABLE) {
-              setIsUnavailable(true);
-              return;
-            }
-            setEmail(value);
-            setStep('verify');
-          }}
+          isPending={flow.forgot.isPending}
+          errorMessage={forgotError}
+          onSubmit={flow.requestCode}
         />
       )}
       {step === 'verify' && (
         <VerifyStep
-          email={email}
-          onBack={() => setStep('request')}
-          onSubmit={() => setStep('reset')}
+          email={flow.email}
+          onBack={flow.goBack}
+          onSubmit={flow.submitCode}
+          onResend={flow.resendCode}
+          errorMessage={flow.isCodeRejected ? t.verify.codeRejected : forgotError}
+          statusMessage={flow.forgot.isSuccess && !flow.isCodeRejected ? t.verify.resent : null}
         />
       )}
       {step === 'reset' && (
-        <ResetStep onBack={() => setStep('verify')} onSubmit={() => setStep('done')} />
+        <ResetStep
+          onBack={flow.goBack}
+          onSubmit={flow.submitPassword}
+          isPending={flow.reset.isPending}
+          errorMessage={resetError}
+        />
       )}
       {step === 'done' && <DoneStep />}
     </div>

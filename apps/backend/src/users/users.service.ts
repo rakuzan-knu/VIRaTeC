@@ -10,6 +10,7 @@ import { ProfileLanguagesSchema, ProfileLinksSchema } from '@viratec/contracts';
 import type { ZodType } from 'zod';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
+import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
 import { toAccount } from '../security/account';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
@@ -31,11 +32,17 @@ function parseWith<T>(schema: ZodType<T>, value: unknown, field: string): T {
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private rateLimit?: RateLimitService,
+  ) {}
 
   async findAll(viewerId: string | null, query: ListUsersQueryDto) {
     const { q, openTo, faculty, studyLevel, country, language, page, pageSize } = query;
-    const filters: Prisma.UserWhereInput[] = [visibleTo(viewerId)];
+    const filters: Prisma.UserWhereInput[] = [
+      visibleTo(viewerId),
+      { emailVerifiedAt: { not: null } },
+    ];
 
     if (q) {
       const contains = { contains: q, mode: Prisma.QueryMode.insensitive };
@@ -76,11 +83,12 @@ export class UsersService {
     };
   }
 
-  async findPublicProfile(id: string, viewerId: string | null) {
+  async findPublicProfile(id: string, viewerId: string | null, memberId: string | null) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
         ...PUBLIC_PROFILE_SELECT,
+        emailVerifiedAt: true,
         projects: {
           select: { id: true, title: true, status: true },
           take: RELATED_ITEMS_LIMIT,
@@ -94,15 +102,22 @@ export class UsersService {
       },
     });
 
-    const isOwner = viewerId === id;
-    if (!user || (user.visibility === ProfileVisibility.PRIVATE && !isOwner)) {
+    const isOwner = viewerId !== null && viewerId === id;
+    const isHidden = user?.visibility === ProfileVisibility.PRIVATE || !user?.emailVerifiedAt;
+    if (!user || (isHidden && !isOwner)) {
       throw new NotFoundException('Profile not found');
     }
-    if (user.visibility === ProfileVisibility.MEMBERS && !viewerId) {
-      throw new UnauthorizedException('Sign in to view this profile');
+    if (user.visibility === ProfileVisibility.MEMBERS && !isOwner) {
+      if (!viewerId) throw new UnauthorizedException('Sign in to view this profile');
+      if (!memberId) {
+        throw new ForbiddenException({
+          message: 'Confirm your email address to view member profiles',
+          code: 'EMAIL_NOT_VERIFIED',
+        });
+      }
     }
 
-    const { projects, papers, ...profile } = user;
+    const { projects, papers, emailVerifiedAt: _emailVerifiedAt, ...profile } = user;
     return { ...toPublicProfile(profile), isOwner, projects, papers };
   }
 
@@ -235,6 +250,10 @@ export class UsersService {
     }
 
     if (user.passwordHash) {
+      await this.rateLimit?.consume(
+        `password:check:${userId}`,
+        RATE_LIMITS.passwordCheckPerAccount,
+      );
       const isValid = !!dto.password && (await argon2.verify(user.passwordHash, dto.password));
       if (!isValid) {
         throw new ForbiddenException('Password is incorrect');

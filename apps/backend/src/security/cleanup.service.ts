@@ -27,13 +27,14 @@ export class CleanupService implements OnApplicationBootstrap, OnModuleDestroy {
   async run() {
     const now = new Date();
     try {
-      const [tokens, challenges, buckets] = await Promise.all([
+      const [tokens, challenges, buckets, emailTokens] = await Promise.all([
         this.prisma.refreshToken.deleteMany({ where: { expiresAt: { lt: now } } }),
         this.prisma.mfaChallenge.deleteMany({ where: { expiresAt: { lt: now } } }),
         this.prisma.rateLimitBucket.deleteMany({ where: { resetAt: { lt: now } } }),
+        this.prisma.emailToken.deleteMany({ where: { expiresAt: { lt: now } } }),
       ]);
       this.logger.log(
-        `Removed ${tokens.count} refresh tokens, ${challenges.count} MFA challenges, ${buckets.count} rate limit buckets`,
+        `Removed ${tokens.count} refresh tokens, ${challenges.count} MFA challenges, ${buckets.count} rate limit buckets, ${emailTokens.count} email tokens`,
       );
     } catch (error) {
       this.logger.error('Failed to remove expired security records', error as Error);

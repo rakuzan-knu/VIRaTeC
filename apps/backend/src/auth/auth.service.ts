@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
 import { OAuth2Client, type TokenPayload } from 'google-auth-library';
-import { Prisma } from '@prisma/client';
+import { Prisma, type User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -25,6 +25,8 @@ import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
 import { randomToken, sha256Hex } from '../security/crypto';
 import { TwoFactorService } from './two-factor.service';
 import { SessionsService } from './sessions.service';
+import { EmailVerificationService } from './email-verification.service';
+import { claimUnverifiedAccountWrites } from './email-ownership';
 
 const MFA_CHALLENGE_TTL_MS = 5 * 60_000;
 const MFA_CHALLENGE_MAX_ATTEMPTS = 5;
@@ -40,12 +42,10 @@ interface SignInUser extends TokenSubject {
   twoFactorEnabled: boolean;
 }
 
-interface TokenSubject {
-  id: string;
-  email: string;
-  role: string;
-  faculty: string;
-}
+type TokenSubject = Pick<
+  User,
+  'id' | 'email' | 'role' | 'faculty' | 'passwordHash' | 'googleId' | 'emailVerifiedAt'
+>;
 
 function assertTermsAccepted(acceptTerms: boolean | undefined) {
   if (acceptTerms !== true) {
@@ -54,6 +54,13 @@ function assertTermsAccepted(acceptTerms: boolean | undefined) {
 }
 
 const termsAcceptance = () => ({ termsAcceptedAt: new Date(), termsVersion: TERMS_VERSION });
+
+let dummyPasswordHash: Promise<string> | undefined;
+
+function verifyAgainstDummyHash(password: string) {
+  dummyPasswordHash ??= argon2.hash(randomToken());
+  return dummyPasswordHash.then((hash) => argon2.verify(hash, password));
+}
 
 @Injectable()
 export class AuthService {
@@ -67,6 +74,7 @@ export class AuthService {
     private audit?: AuditService,
     private rateLimit?: RateLimitService,
     private twoFactor?: TwoFactorService,
+    private emailVerification?: EmailVerificationService,
   ) {}
 
   async register(dto: RegisterDto, client: ClientContext = {}) {
@@ -102,6 +110,7 @@ export class AuthService {
       },
     });
 
+    await this.emailVerification?.sendAfterRegistration(user);
     const tokens = await this.generateTokens(user, client);
     return {
       user: toAccount(user),
@@ -123,12 +132,9 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user) {
+    if (!user?.passwordHash) {
+      await verifyAgainstDummyHash(dto.password);
       throw new UnauthorizedException('Invalid email or password');
-    }
-
-    if (!user.passwordHash) {
-      throw new UnauthorizedException('This account uses Google sign-in');
     }
 
     const isValid = await argon2.verify(user.passwordHash, dto.password);
@@ -227,6 +233,10 @@ export class AuthService {
     });
 
     if (!user) {
+      user = await this.claimUnverifiedByGoogle(email, payload, client);
+    }
+
+    if (!user) {
       assertTermsAccepted(dto.acceptTerms);
       try {
         user = await this.prisma.user.create({
@@ -235,6 +245,7 @@ export class AuthService {
             googleId: payload.sub,
             name: payload.name || email.split('@')[0],
             avatarUrl: payload.picture,
+            emailVerifiedAt: new Date(),
             ...termsAcceptance(),
           },
         });
@@ -252,6 +263,35 @@ export class AuthService {
     }
 
     return this.completeSignIn(user, client);
+  }
+
+  private async claimUnverifiedByGoogle(
+    email: string,
+    payload: TokenPayload,
+    client: ClientContext,
+  ) {
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (
+      !existing ||
+      existing.emailVerifiedAt ||
+      !existing.emailOwnershipClaimable ||
+      existing.isBlocked
+    )
+      return null;
+
+    const [claimed] = await this.prisma.$transaction([
+      ...claimUnverifiedAccountWrites(this.prisma, existing.id, {
+        googleId: payload.sub,
+        passwordHash: null,
+      }),
+    ]);
+    void this.audit?.record({
+      action: 'auth.unverified_account_claimed',
+      actorId: existing.id,
+      metadata: { method: 'google' },
+      client,
+    });
+    return claimed;
   }
 
   private async verifyGoogleCredential(
@@ -326,11 +366,12 @@ export class AuthService {
   }
 
   private async generateTokens(
-    { id: userId, email, role, faculty }: TokenSubject,
+    user: TokenSubject,
     client: ClientContext = {},
     sessionId: string = randomUUID(),
     carry: SessionCarry = {},
   ) {
+    const { id: userId, email, role, faculty } = user;
     const payload = { sub: userId, email, role, faculty, sid: sessionId };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -353,18 +394,38 @@ export class AuthService {
       this.configService.get<number>('jwt.refreshTtlMs') ?? DEFAULT_REFRESH_TTL_MS;
     const expiresAt = new Date(Date.now() + refreshTtlMs);
 
-    await this.prisma.refreshToken.create({
-      data: {
-        token: sha256Hex(refreshToken),
-        userId,
-        sessionId,
-        mfaVerifiedAt: carry.mfaVerifiedAt ?? null,
-        elevatedUntil: carry.elevatedUntil ?? null,
-        userAgent: client.userAgent ?? null,
-        ipAddress: client.ipAddress ?? null,
-        expiresAt,
-      },
-    });
+    try {
+      // Lock the same user row that recovery changes before inserting the session.
+      // A sign-in which started with old credentials cannot outlive recovery.
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+          passwordHash: user.passwordHash,
+          emailVerifiedAt: user.emailVerifiedAt,
+          AND: { googleId: user.googleId },
+          isBlocked: false,
+        },
+        data: {
+          updatedAt: new Date(),
+          refreshTokens: {
+            create: {
+              token: sha256Hex(refreshToken),
+              sessionId,
+              mfaVerifiedAt: carry.mfaVerifiedAt ?? null,
+              elevatedUntil: carry.elevatedUntil ?? null,
+              userAgent: client.userAgent ?? null,
+              ipAddress: client.ipAddress ?? null,
+              expiresAt,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new UnauthorizedException('The account changed. Sign in again.');
+      }
+      throw error;
+    }
 
     return { accessToken, refreshToken };
   }
@@ -391,11 +452,25 @@ export class AuthService {
 
     try {
       const updated = await this.prisma.user.update({
-        where: { id: userId },
-        data: { googleId: payload.sub, avatarUrl: user.avatarUrl ?? payload.picture },
+        where: {
+          id: userId,
+          AND: { googleId: null },
+          passwordHash: user.passwordHash,
+          emailVerifiedAt: user.emailVerifiedAt,
+        },
+        data: {
+          googleId: payload.sub,
+          avatarUrl: user.avatarUrl ?? payload.picture,
+          ...(!user.emailVerifiedAt && payload.email.toLowerCase() === user.email
+            ? { emailVerifiedAt: new Date() }
+            : {}),
+        },
       });
       return toAccount(updated);
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new ConflictException('The account changed. Sign in again before connecting Google.');
+      }
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new ConflictException('This Google account is connected to another VIRaTeC account');
       }
@@ -439,17 +514,34 @@ export class AuthService {
     }
 
     if (user.passwordHash) {
+      const checkKey = `password:check:${userId}`;
+      await this.rateLimit?.consume(checkKey, RATE_LIMITS.passwordCheckPerAccount);
       const isValid =
         !!dto.currentPassword && (await argon2.verify(user.passwordHash, dto.currentPassword));
       if (!isValid) {
         throw new ForbiddenException('Current password is incorrect');
       }
+      await this.rateLimit?.reset(checkKey);
     }
 
-    const updated = await this.prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash: await argon2.hash(dto.newPassword) },
-    });
+    const passwordHash = await argon2.hash(dto.newPassword);
+    const updated = await this.prisma.user
+      .update({
+        where: {
+          id: userId,
+          passwordHash: user.passwordHash,
+          emailVerifiedAt: user.emailVerifiedAt,
+        },
+        data: { passwordHash },
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+          throw new ConflictException(
+            'The account changed. Sign in again before changing the password.',
+          );
+        }
+        throw error;
+      });
     await this.sessions.revokeAll(userId);
 
     const tokens = await this.generateTokens(updated, client, sessionId);

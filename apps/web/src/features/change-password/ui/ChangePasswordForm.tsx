@@ -22,6 +22,7 @@ const CHANGE_PASSWORD_MESSAGES = defineMessages({
     submitSet: 'Set password',
     success: 'Password updated. Other devices have been signed out.',
     wrongPassword: 'The current password is incorrect.',
+    tooMany: 'Too many attempts. Wait 15 minutes and try again.',
     unexpectedError: 'Could not update the password. Please try again.',
     validation: {
       currentRequired: 'Enter your current password',
@@ -41,6 +42,7 @@ const CHANGE_PASSWORD_MESSAGES = defineMessages({
     submitSet: 'Встановити пароль',
     success: 'Пароль оновлено. На інших пристроях виконано вихід.',
     wrongPassword: 'Поточний пароль неправильний.',
+    tooMany: 'Забагато спроб. Зачекайте 15 хвилин і спробуйте ще раз.',
     unexpectedError: 'Не вдалося оновити пароль. Спробуйте ще раз.',
     validation: {
       currentRequired: 'Введіть поточний пароль',
@@ -79,9 +81,11 @@ export function ChangePasswordForm({ hasPassword }: ChangePasswordFormProps) {
     ? null
     : error instanceof ApiError && error.status === 403
       ? t.wrongPassword
-      : error instanceof ApiError && error.status === NETWORK_ERROR_STATUS
-        ? common.networkError
-        : t.unexpectedError;
+      : error instanceof ApiError && error.status === 429
+        ? t.tooMany
+        : error instanceof ApiError && error.status === NETWORK_ERROR_STATUS
+          ? common.networkError
+          : t.unexpectedError;
 
   const inputType = showPasswords ? 'text' : 'password';
 

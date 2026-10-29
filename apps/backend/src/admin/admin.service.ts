@@ -211,6 +211,15 @@ export class AdminService {
     return target;
   }
 
+  private assertVerified(target: User) {
+    if (!target.emailVerifiedAt) {
+      throw new ConflictException({
+        message: 'The user must confirm their email address first',
+        code: 'EMAIL_NOT_VERIFIED',
+      });
+    }
+  }
+
   private assertCanManage(actor: AuthenticatedUser, target: User) {
     if (actor.id === target.id) {
       throw new ForbiddenException('You cannot change your own access');
@@ -246,6 +255,7 @@ export class AdminService {
     if (dto.permissions.length === 0) {
       throw new BadRequestException('Select at least one permission');
     }
+    this.assertVerified(target);
     const expiresAt = dto.expiresAt ? new Date(dto.expiresAt) : null;
     if (expiresAt && expiresAt.getTime() <= Date.now()) {
       throw new BadRequestException('The expiry date must be in the future');
@@ -344,6 +354,7 @@ export class AdminService {
     const target = await this.findTarget(targetId);
     if (target.id === actor.id) throw new BadRequestException('You already own this site');
     if (target.isBlocked) throw new BadRequestException('A suspended user cannot become the owner');
+    this.assertVerified(target);
     if (!target.twoFactorEnabled) {
       throw new ConflictException('The new owner must enable two-factor authentication first');
     }

@@ -17,6 +17,7 @@ interface ResetPasswordMessages {
     unavailablePrefix: string;
     secureTitle: string;
     secureDescription: string;
+    tooMany: string;
   };
   verify: {
     title: string;
@@ -28,6 +29,8 @@ interface ResetPasswordMessages {
     noEmail: string;
     resendIn: (time: string) => string;
     resend: string;
+    codeRejected: string;
+    resent: string;
   };
   reset: {
     title: string;
@@ -40,12 +43,14 @@ interface ResetPasswordMessages {
     ruleNotMet: string;
     rules: Record<PasswordRuleId, string>;
     submit: string;
+    tooMany: string;
   };
   done: {
     title: string;
     description: string;
     action: string;
   };
+  unexpectedError: string;
   validation: ResetPasswordSchemaMessages;
 }
 
@@ -68,6 +73,7 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
       secureTitle: 'Secure by design',
       secureDescription:
         'For privacy, we’ll show the same confirmation whether or not an account exists for this email.',
+      tooMany: 'Too many recovery emails were requested. Try again in an hour.',
     },
     verify: {
       title: 'Check your inbox',
@@ -79,6 +85,8 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
       noEmail: 'Didn’t receive the email?',
       resendIn: (time) => `Resend in ${time}`,
       resend: 'Resend code',
+      codeRejected: 'The code is incorrect or has expired. Check it or request a new one.',
+      resent: 'If the account exists, a new code is on its way.',
     },
     reset: {
       title: 'Create a new password',
@@ -91,6 +99,7 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
       ruleNotMet: ': not met',
       rules: { length: '8+ characters', uppercase: 'Uppercase letter', number: 'Number' },
       submit: 'Update password',
+      tooMany: 'Too many attempts. Wait 15 minutes and try again.',
     },
     done: {
       title: 'Password updated',
@@ -98,6 +107,7 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
         'Your VIRaTeC password has been changed successfully. You can now sign in with your new credentials.',
       action: 'Return to login',
     },
+    unexpectedError: 'Something went wrong. Please try again.',
     validation: {
       invalidEmail: 'Please enter a valid email address',
       invalidCode: 'Enter the 6-digit code',
@@ -125,6 +135,7 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
       secureTitle: 'Безпека за замовчуванням',
       secureDescription:
         'З міркувань конфіденційності ми показуємо однакове підтвердження незалежно від того, чи існує обліковий запис із цією адресою.',
+      tooMany: 'Забагато запитів на відновлення. Спробуйте за годину.',
     },
     verify: {
       title: 'Перевірте пошту',
@@ -136,6 +147,9 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
       noEmail: 'Не отримали листа?',
       resendIn: (time) => `Повторне надсилання через ${time}`,
       resend: 'Надіслати код ще раз',
+      codeRejected:
+        'Код неправильний або строк його дії минув. Перевірте його або запросіть новий.',
+      resent: 'Якщо обліковий запис існує, новий код уже в дорозі.',
     },
     reset: {
       title: 'Створіть новий пароль',
@@ -148,6 +162,7 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
       ruleNotMet: ': не виконано',
       rules: { length: '8+ символів', uppercase: 'Велика літера', number: 'Цифра' },
       submit: 'Оновити пароль',
+      tooMany: 'Забагато спроб. Зачекайте 15 хвилин і спробуйте ще раз.',
     },
     done: {
       title: 'Пароль оновлено',
@@ -155,6 +170,7 @@ const RESET_PASSWORD_MESSAGES = defineMessages<ResetPasswordMessages>({
         'Пароль вашого облікового запису VIRaTeC успішно змінено. Тепер ви можете увійти з новими даними.',
       action: 'Повернутися до входу',
     },
+    unexpectedError: 'Щось пішло не так. Спробуйте ще раз.',
     validation: {
       invalidEmail: 'Введіть коректну адресу електронної пошти',
       invalidCode: 'Введіть 6-значний код',

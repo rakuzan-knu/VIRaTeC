@@ -11,6 +11,8 @@ const PRIVATE_FIELDS = [
   'staffRole',
   'permissions',
   'staffExpiresAt',
+  'emailVerifiedAt',
+  'emailOwnershipClaimable',
 ] as const satisfies readonly (keyof User)[];
 
 type PrivateField = (typeof PRIVATE_FIELDS)[number];
@@ -27,6 +29,7 @@ export function toAccount(user: User) {
     ...withoutPrivateFields(user),
     hasPassword: Boolean(user.passwordHash),
     hasGoogle: Boolean(user.googleId),
+    emailVerified: Boolean(user.emailVerifiedAt),
     staffRole: staff.staffRole,
     permissions: staff.permissions,
     staffExpiresAt: staff.staffRole === user.staffRole ? user.staffExpiresAt : null,
