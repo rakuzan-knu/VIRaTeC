@@ -32,6 +32,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
+import { withMinimumDuration } from '../common/timing/minimum-duration';
 import {
   clearMfaCookie,
   clearSessionCookies,
@@ -42,6 +43,8 @@ import {
   setSessionCookies,
   type SessionTokens,
 } from './session-cookies';
+
+const FORGOT_PASSWORD_MIN_RESPONSE_MS = 2_500;
 
 type SignInResult<T> = (T & SessionTokens) | { mfaRequired: true; challengeToken: string };
 
@@ -173,7 +176,9 @@ export class AuthController {
   @ApiResponse({ status: 429, description: 'Too many reset requests' })
   @ApiResponse({ status: 503, description: 'Email delivery is unavailable' })
   async forgotPassword(@Body() dto: ForgotPasswordDto, @Client() client: ClientContext) {
-    return this.passwordReset.request(dto.email, client);
+    return withMinimumDuration(FORGOT_PASSWORD_MIN_RESPONSE_MS, () =>
+      this.passwordReset.request(dto.email, client),
+    );
   }
 
   @Post('password/reset')
