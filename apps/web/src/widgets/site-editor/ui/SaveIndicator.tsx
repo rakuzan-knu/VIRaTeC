@@ -26,7 +26,7 @@ export function SaveIndicator({ t }: { t: SiteEditorMessages }) {
       )}
       {status === 'saved' && (
         <>
-          <Check aria-hidden="true" className="size-4 text-viratec-cyan" />
+          <Check aria-hidden="true" className="editor-pop-in size-4 text-viratec-cyan" />
           <span className="sr-only sm:not-sr-only">{t.autosave.saved}</span>
         </>
       )}

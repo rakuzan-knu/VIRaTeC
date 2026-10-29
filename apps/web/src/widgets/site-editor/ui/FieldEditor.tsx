@@ -8,6 +8,7 @@ import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
 import { allowedValues, type FieldDefinition } from '../model/contentModel';
 import { fieldText, optionName } from '../model/fieldText';
+import { entryLengthLimit, withLengthHint } from '../model/lengthLimits';
 import type { SiteEditorMessages } from '../model/messages';
 import { AssetField } from './AssetField';
 import { EntryLinksField } from './EntryLinksField';
@@ -34,6 +35,7 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 
 function ScalarInput({
   field,
+  limit,
   label,
   lang,
   helperText,
@@ -44,6 +46,7 @@ function ScalarInput({
   onChange,
 }: {
   field: FieldDefinition;
+  limit?: number;
   label: string;
   lang?: Locale;
   helperText: string | undefined;
@@ -90,7 +93,7 @@ function ScalarInput({
       <Textarea
         label={label}
         lang={lang}
-        helperText={helperText}
+        helperText={withLengthHint(helperText, value, limit, t)}
         value={asString(value)}
         readOnly={readOnly}
         autoFocus={autoFocus}
@@ -154,7 +157,7 @@ function ScalarInput({
     <Input
       label={label}
       lang={lang}
-      helperText={helperText}
+      helperText={withLengthHint(helperText, value, limit, t)}
       value={asString(value)}
       readOnly={readOnly}
       autoFocus={autoFocus}
@@ -180,6 +183,7 @@ export function FieldEditor({
   const helpId = useId();
   const text = fieldText(t.fields, contentTypeId, field);
   const title = field.required ? `${text.label} · ${t.inspector.required}` : text.label;
+  const limit = entryLengthLimit(contentTypeId, field.id);
 
   useEffect(() => {
     if (isFocused) ref.current?.scrollIntoView({ block: 'center' });
@@ -250,6 +254,7 @@ export function FieldEditor({
           <ScalarInput
             key={locale}
             field={field}
+            limit={limit}
             label={t.locales[locale]}
             lang={locale}
             helperText={undefined}
@@ -266,6 +271,7 @@ export function FieldEditor({
     body = (
       <ScalarInput
         field={field}
+        limit={limit}
         label={title}
         helperText={text.help}
         value={values?.[locales.en]}

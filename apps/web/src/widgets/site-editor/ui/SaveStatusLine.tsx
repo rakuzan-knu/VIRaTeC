@@ -61,7 +61,7 @@ export function SaveStatusLine({ saveKey, t }: SaveStatusLineProps) {
       {status === 'saved' && (
         <>
           <Check aria-hidden="true" className="size-3.5 text-viratec-cyan" />
-          {t.autosave.saved}
+          {t.autosave.savedPrivate}
         </>
       )}
     </p>

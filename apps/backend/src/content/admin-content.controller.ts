@@ -26,11 +26,13 @@ import { parseContentTypes } from './content.controller';
 import { ContentService } from './content.service';
 import { ContentEditorService } from './content-editor.service';
 import { ContentIdPipe } from './content-id.pipe';
+import { PresenceService } from './presence.service';
 import { TranslationService } from './translation.service';
 import {
   CreateContentEntryDto,
   DeleteContentEntryDto,
   TranslateContentDto,
+  UpdatePresenceDto,
   ListContentRevisionsQueryDto,
   RestoreContentRevisionDto,
   PublishContentDto,
@@ -47,6 +49,7 @@ export class AdminContentController {
     private readonly content: ContentService,
     private readonly editor: ContentEditorService,
     private readonly translation: TranslationService,
+    private readonly presence: PresenceService,
   ) {}
 
   @Get('preview')
@@ -110,6 +113,16 @@ export class AdminContentController {
     @Client() client: ClientContext,
   ) {
     return this.editor.deleteEntry(actor, id, dto.label, client);
+  }
+
+  @Put('presence')
+  @RequirePermissions(AdminPermission.CONTENT_VIEW)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({
+    summary: 'Mark what the editor has open and list other editors active on the same items',
+  })
+  updatePresence(@CurrentUser() actor: AuthenticatedUser, @Body() dto: UpdatePresenceDto) {
+    return this.presence.heartbeat(actor.id, dto);
   }
 
   @Post('translate')

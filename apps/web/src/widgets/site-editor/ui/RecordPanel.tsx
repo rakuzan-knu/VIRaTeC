@@ -17,6 +17,12 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
 import { RecordFieldList } from './RecordFieldList';
 import { SaveStatusLine } from './SaveStatusLine';
+import { TranslateAllButton } from './TranslateAllButton';
+import {
+  applyRecordTranslations,
+  missingRecordTranslations,
+  translateMissing,
+} from '../model/translateAll';
 import { VersionHistoryDialog } from './VersionHistoryDialog';
 
 export function RecordPanel({ t }: { t: SiteEditorMessages }) {
@@ -125,6 +131,22 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
             <p className="rounded-2xl bg-white/5 p-3 text-[14px] text-text-muted">
               {t.inspector.readOnly}
             </p>
+          )}
+          {canEdit && (
+            <TranslateAllButton
+              count={missingRecordTranslations(resource, data).length}
+              t={t}
+              onRun={async () => {
+                const results = await translateMissing(missingRecordTranslations(resource, data));
+                const current = useSiteEditorStore.getState().recordDrafts[draftKey];
+                setRecordDraft(draftKey, {
+                  baseUpdatedAt: current?.baseUpdatedAt ?? loaded.updatedAt,
+                  base: current?.base ?? loaded.data,
+                  data: applyRecordTranslations(resource, current?.data ?? loaded.data, results),
+                });
+                return results.length;
+              }}
+            />
           )}
           <RecordFieldList
             resource={resource}

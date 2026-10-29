@@ -4,15 +4,17 @@ import { Dialog } from '@/shared/ui/dialog';
 import type { SiteEditorMessages } from '../model/messages';
 import { useSiteEditorStore } from '../model/store';
 import { usePublishFlow } from '../model/usePublishFlow';
-import { ConfirmDialog } from './ConfirmDialog';
+import type { ContentChangeDto } from '@viratec/contracts';
+import { PublishReviewDialog } from './PublishReviewDialog';
 
 interface PublishControlProps {
-  count: number;
+  changes: readonly ContentChangeDto[];
   issueCount: number;
   t: SiteEditorMessages;
 }
 
-export function PublishControl({ count, issueCount, t }: PublishControlProps) {
+export function PublishControl({ changes, issueCount, t }: PublishControlProps) {
+  const count = changes.length;
   const flow = usePublishFlow();
   const published = useSiteEditorStore((state) => state.publishResult?.published.length ?? 0);
 
@@ -25,7 +27,7 @@ export function PublishControl({ count, issueCount, t }: PublishControlProps) {
           aria-busy={flow.isPending}
           aria-label={t.publish.button(count)}
           onClick={flow.confirm}
-          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl bg-brand-lime px-3 text-[14px] font-medium text-text-on-lime transition-colors hover:bg-brand-lime/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus disabled:cursor-wait disabled:opacity-70 motion-reduce:transition-none"
+          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl bg-brand-lime pointer-coarse:h-11 px-3 text-[14px] font-medium text-text-on-lime transition-colors hover:bg-brand-lime/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus disabled:cursor-wait disabled:opacity-70 motion-reduce:transition-none"
         >
           <Rocket aria-hidden="true" className="size-4" />
           <span aria-hidden="true" className="hidden sm:inline">
@@ -50,18 +52,12 @@ export function PublishControl({ count, issueCount, t }: PublishControlProps) {
           {flow.error}
         </span>
       )}
-      <ConfirmDialog
+      <PublishReviewDialog
         open={flow.phase === 'confirm'}
-        title={t.changes.publishTitle}
-        description={
-          issueCount > 0
-            ? `${t.changes.publishText(count)} ${t.dots.publishWarning(issueCount)}`
-            : t.changes.publishText(count)
-        }
-        confirmLabel={t.changes.publishConfirm}
-        cancelLabel={t.keepEditing}
-        closeLabel={t.close}
+        changes={changes}
+        warning={issueCount > 0 ? t.dots.publishWarning(issueCount) : null}
         isPending={flow.isPending}
+        t={t}
         onConfirm={() => void flow.run()}
         onClose={flow.cancel}
       />

@@ -133,6 +133,7 @@ model User {
   auditActions     AuditLog[]        @relation("AuditActor")
   contentEdits     ContentChange[]
   contentRevisions ContentRevision[]
+  editorPresence   EditorPresence[]
 
   @@index([createdAt])
   @@index([name(ops: raw("gin_trgm_ops"))], map: "users_name_trgm_idx", type: Gin)
@@ -266,6 +267,17 @@ model ContentRevision {
 
   @@index([resourceType, resourceId, createdAt])
   @@map("content_revisions")
+}
+
+model EditorPresence {
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resourceKey String
+  updatedAt   DateTime @updatedAt
+
+  @@id([userId, resourceKey])
+  @@index([resourceKey, updatedAt])
+  @@map("editor_presence")
 }
 
 model ContentCacheState {

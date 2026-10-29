@@ -15,6 +15,8 @@ import type {
   SaveContentEntryRequestDto,
   SaveRecordRequestDto,
   TranslateContentRequestDto,
+  UpdatePresenceRequestDto,
+  EditorPresenceDto,
   ContentRevisionDto,
   RestoreContentRevisionRequestDto,
   TranslateContentResultDto,
@@ -81,6 +83,9 @@ export const fetchContentForSearch = (types: readonly string[]) =>
 
 export const fetchRecordList = <T>(resource: RecordResource) =>
   api.get<T[]>(RECORD_LIST_PATHS[resource]);
+
+export const updatePresence = (dto: UpdatePresenceRequestDto) =>
+  api.put<EditorPresenceDto[]>('/admin/content/presence', dto);
 
 export const translateTexts = (dto: TranslateContentRequestDto) =>
   api.post<TranslateContentResultDto>('/admin/content/translate', dto);

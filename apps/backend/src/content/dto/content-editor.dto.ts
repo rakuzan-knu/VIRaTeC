@@ -17,6 +17,7 @@ import {
 } from 'class-validator';
 import {
   CONTENT_EDITOR_LIMITS,
+  PRESENCE_LIMITS,
   TRANSLATION_LIMITS,
   type ContentFields,
   type ContentLocaleKey,
@@ -98,6 +99,15 @@ export class PublishContentDto {
 }
 
 const CONTENT_LOCALE_KEYS: readonly ContentLocaleKey[] = ['en', 'uk'];
+
+export class UpdatePresenceDto {
+  @ApiProperty({ type: [String], example: ['entry:3xYp9', 'record:project:2f1c'] })
+  @IsArray()
+  @ArrayMaxSize(PRESENCE_LIMITS.maxKeys)
+  @IsString({ each: true })
+  @MaxLength(PRESENCE_LIMITS.maxKeyLength, { each: true })
+  resourceKeys!: string[];
+}
 
 export class TranslateContentDto {
   @ApiProperty({ enum: CONTENT_LOCALE_KEYS, example: 'uk' })

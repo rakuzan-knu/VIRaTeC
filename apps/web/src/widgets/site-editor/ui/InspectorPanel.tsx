@@ -22,6 +22,12 @@ import { AddSiblingEntryButton } from './AddSiblingEntryButton';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
 import { EntryFieldList } from './EntryFieldList';
 import { SaveStatusLine } from './SaveStatusLine';
+import { TranslateAllButton } from './TranslateAllButton';
+import {
+  applyEntryTranslations,
+  missingEntryTranslations,
+  translateMissing,
+} from '../model/translateAll';
 import { VersionHistoryDialog } from './VersionHistoryDialog';
 
 export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
@@ -133,6 +139,28 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
           )}
           {canEdit && isCollectionType(type.id) && (
             <AddSiblingEntryButton type={type} fields={fields} locales={data.locales} t={t} />
+          )}
+          {canEdit && (
+            <TranslateAllButton
+              count={missingEntryTranslations(data.contentTypeId, fields, data.locales).length}
+              t={t}
+              onRun={async () => {
+                const results = await translateMissing(
+                  missingEntryTranslations(data.contentTypeId, fields, data.locales),
+                );
+                const current = useSiteEditorStore.getState().drafts[data.id];
+                setDraft(data.id, {
+                  version: current?.version ?? data.version,
+                  base: current?.base ?? data.fields,
+                  fields: applyEntryTranslations(
+                    current?.fields ?? data.fields,
+                    data.locales,
+                    results,
+                  ),
+                });
+                return results.length;
+              }}
+            />
           )}
           <EntryFieldList
             type={type}

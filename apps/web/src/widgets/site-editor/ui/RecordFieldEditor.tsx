@@ -17,6 +17,7 @@ import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
 import { COVER_FOCUS_PATH, imageRecordSchema, recordFieldText } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
+import { recordLengthLimit, withLengthHint } from '../model/lengthLimits';
 import { NO_PERMISSIONS } from '../model/permissions';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
 import { ImageUploadField } from './ImageUploadField';
@@ -45,6 +46,7 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 
 function RecordInput({
   field,
+  limit,
   label,
   lang,
   helperText,
@@ -55,6 +57,7 @@ function RecordInput({
   onChange,
 }: {
   field: RecordFieldDefinition;
+  limit?: number;
   label: string;
   lang?: Locale;
   helperText: string | undefined;
@@ -184,7 +187,7 @@ function RecordInput({
         <Textarea
           label={label}
           lang={lang}
-          helperText={helperText}
+          helperText={withLengthHint(helperText, value, limit, t)}
           value={asString(value)}
           readOnly={readOnly}
           autoFocus={autoFocus}
@@ -211,7 +214,7 @@ function RecordInput({
         <Input
           label={label}
           lang={lang}
-          helperText={helperText}
+          helperText={withLengthHint(helperText, value, limit, t)}
           type={field.kind === 'url' ? 'url' : 'text'}
           value={asString(value)}
           readOnly={readOnly || Boolean(field.createOnly)}
@@ -329,6 +332,7 @@ export function RecordFieldEditor({
               <RecordInput
                 key={locale}
                 field={field}
+                limit={recordLengthLimit(resource, field.path)}
                 label={t.locales[locale]}
                 lang={locale}
                 helperText={undefined}

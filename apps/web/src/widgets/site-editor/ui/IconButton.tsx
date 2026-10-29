@@ -6,9 +6,9 @@ import type { Shortcut } from '../model/shortcuts';
 export const EDITOR_TOOLTIP_CLASS = 'z-[2147483006]';
 
 const SIZE_CLASS = {
-  sm: 'size-8 rounded-lg',
-  md: 'size-9 rounded-xl',
-  lg: 'size-10 rounded-xl',
+  sm: 'size-8 rounded-lg pointer-coarse:size-11',
+  md: 'size-9 rounded-xl pointer-coarse:size-11',
+  lg: 'size-10 rounded-xl pointer-coarse:size-11',
 } as const;
 
 interface IconButtonProps extends Omit<ComponentProps<'button'>, 'children' | 'aria-label'> {

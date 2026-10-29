@@ -3,14 +3,17 @@ import { getPublicationCover } from '@/entities/publication';
 import { buildPublicationPath } from '@/shared/config/routes';
 import { absoluteImageUrl, cn, contentCoverSrc } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
+import { Checkbox } from '@/shared/ui/checkbox';
 import { Dialog } from '@/shared/ui/dialog';
 import { Input } from '@/shared/ui/Input';
 import { Textarea } from '@/shared/ui/Textarea';
 import { imageRecordSchema } from '../model/fieldText';
+import { withLengthHint } from '../model/lengthLimits';
 import type { SiteEditorMessages } from '../model/messages';
 import { useRecordWizard } from '../model/useRecordWizard';
 import { ImageUploadField } from './ImageUploadField';
 import { WizardPreview } from './WizardPreview';
+import { WizardTemplatePicker } from './WizardTemplatePicker';
 
 interface RecordWizardProps {
   resource: RecordResource;
@@ -41,7 +44,7 @@ export function RecordWizard({ resource, t, onClose, onCreated }: RecordWizardPr
         className="flex flex-col gap-5"
         onSubmit={(event) => {
           event.preventDefault();
-          if (wizard.isLast) wizard.submit();
+          if (wizard.isLast) void wizard.submit();
           else wizard.next();
         }}
       >
@@ -57,12 +60,16 @@ export function RecordWizard({ resource, t, onClose, onCreated }: RecordWizardPr
           ))}
         </ol>
 
+        {wizard.step === 'template' && (
+          <WizardTemplatePicker value={wizard.template} t={t} onChange={wizard.setTemplate} />
+        )}
+
         {wizard.step === 'title' && (
           <>
             <Input
               key="title"
               label={t.wizard.titleLabel}
-              helperText={t.wizard.titleHelp}
+              helperText={withLengthHint(t.wizard.titleHelp, wizard.title, wizard.titleLimit, t)}
               value={wizard.title}
               error={wizard.titleError ?? undefined}
               required
@@ -97,7 +104,12 @@ export function RecordWizard({ resource, t, onClose, onCreated }: RecordWizardPr
         {wizard.step === 'summary' && (
           <Textarea
             label={t.wizard.summaryLabel}
-            helperText={t.wizard.summaryHelp}
+            helperText={withLengthHint(
+              t.wizard.summaryHelp,
+              wizard.summary,
+              wizard.summaryLimit,
+              t,
+            )}
             value={wizard.summary}
             rows={4}
             maxLength={600}
@@ -167,6 +179,19 @@ export function RecordWizard({ resource, t, onClose, onCreated }: RecordWizardPr
               place={wizard.place}
               t={t}
             />
+            <label className="flex cursor-pointer items-start gap-3">
+              <Checkbox
+                checked={wizard.translateOther}
+                onChange={(event) => wizard.setTranslateOther(event.target.checked)}
+                className="mt-0.5 shrink-0 accent-viratec-cyan"
+              />
+              <span className="flex flex-col gap-0.5">
+                <span className="text-[15px] text-text-primary">
+                  {t.wizard.translateOther[wizard.other]}
+                </span>
+                <span className="text-[13px] text-text-subtle">{t.wizard.translateHelp}</span>
+              </span>
+            </label>
           </div>
         )}
 
@@ -182,7 +207,13 @@ export function RecordWizard({ resource, t, onClose, onCreated }: RecordWizardPr
           )}
           <Button
             type="submit"
-            label={wizard.isLast ? t.wizard.create : t.wizard.next}
+            label={
+              wizard.isTranslating
+                ? t.wizard.translating
+                : wizard.isLast
+                  ? t.wizard.create
+                  : t.wizard.next
+            }
             loading={wizard.isPending}
           />
         </div>

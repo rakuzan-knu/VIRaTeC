@@ -38,6 +38,7 @@ export function useImageDrop(enabled: boolean) {
   const permissions = useSessionStore((state) => state.user?.permissions ?? NO_PERMISSIONS);
   const [target, setTarget] = useState<DropTarget | null>(null);
   const [isUploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const applyAsset = async ({ address }: DropTarget, asset: ContentAssetDto) => {
     const { entryId, contentTypeId, fieldId } = address;
@@ -89,8 +90,12 @@ export function useImageDrop(enabled: boolean) {
     const { announce } = useSiteEditorStore.getState();
     if (!canReplace(dropTarget)) {
       announce(t.drop.noRight);
+      setTarget(null);
       return;
     }
+    const objectUrl = URL.createObjectURL(file);
+    setTarget(dropTarget);
+    setPreviewUrl(objectUrl);
     setUploading(true);
     announce(t.drop.uploading);
     try {
@@ -106,6 +111,8 @@ export function useImageDrop(enabled: boolean) {
     } finally {
       setUploading(false);
       setTarget(null);
+      setPreviewUrl(null);
+      URL.revokeObjectURL(objectUrl);
     }
   };
 
@@ -143,7 +150,6 @@ export function useImageDrop(enabled: boolean) {
       }
       event.preventDefault();
       current = null;
-      setTarget(dropTarget);
       void replaceRef.current(dropTarget, file);
     };
     document.addEventListener('dragover', handleOver);
@@ -156,5 +162,5 @@ export function useImageDrop(enabled: boolean) {
     };
   }, [enabled]);
 
-  return { target, isUploading };
+  return { target, isUploading, previewUrl, replace };
 }

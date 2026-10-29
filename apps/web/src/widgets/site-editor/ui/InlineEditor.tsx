@@ -13,7 +13,9 @@ import { useSiteEditorStore } from '../model/store';
 import { targetLabel } from '../model/targetLabel';
 import { EDITOR_ROOT_ATTRIBUTE, useElementRects } from '../model/useCanvasTargets';
 import { useInlineEdit } from '../model/useInlineEdit';
+import { linkFieldFor } from './InlineLinkTarget';
 import { InlineLocalePopover } from './InlineLocalePopover';
+import { entryLengthLimit } from '../model/lengthLimits';
 
 const POPOVER_GAP = 10;
 
@@ -145,6 +147,13 @@ export function InlineEditor({ field, t, onClose }: InlineEditorProps) {
         hintId={hintId}
         multiline={multiline}
         anchor={{ top, bottom, left: box.left }}
+        linkField={linkFieldFor(target.address.contentTypeId, target.address.fieldId)}
+        entryId={target.address.entryId}
+        limit={
+          target.address.fieldId
+            ? entryLengthLimit(target.address.contentTypeId, target.address.fieldId)
+            : undefined
+        }
         t={t}
         onSave={() => close('saved')}
         onOpenPanel={() => close('panel')}

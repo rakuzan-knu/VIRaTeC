@@ -7,8 +7,11 @@ import {
   type RecordResource,
 } from '@viratec/contracts';
 import { slugify } from '@viratec/utils';
-import { LOCALES, useLocale } from '@/shared/i18n';
+import { LOCALES, useLocale, type Locale } from '@/shared/i18n';
+import { translateTexts } from '../api/editorApi';
+import { TEMPLATE_TYPES, templateBlocks, type PublicationTemplate } from './publicationTemplates';
 import { isConflict, useEditorErrorMessage } from './errors';
+import { recordLengthLimit } from './lengthLimits';
 import { recordCreateAction } from './history';
 import { useSiteEditorMessages } from './messages';
 import { useCreateRecord } from './queries';
@@ -22,11 +25,11 @@ import {
 } from './recordModel';
 import { useSiteEditorStore } from './store';
 
-export type WizardStep = 'title' | 'summary' | 'photo' | 'when' | 'preview';
+export type WizardStep = 'template' | 'title' | 'summary' | 'photo' | 'when' | 'preview';
 
 const WIZARD_STEPS: Record<RecordResource, readonly WizardStep[]> = {
   project: ['title', 'summary', 'photo', 'preview'],
-  publication: ['title', 'summary', 'photo', 'preview'],
+  publication: ['template', 'title', 'summary', 'photo', 'preview'],
   event: ['title', 'summary', 'when', 'preview'],
 };
 
@@ -67,6 +70,10 @@ export function useRecordWizard(
   const [isSlugEdited, setSlugEdited] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [slugError, setSlugError] = useState<string | null>(null);
+  const [template, setTemplate] = useState<PublicationTemplate>('announcement');
+  const [translateOther, setTranslateOther] = useState(true);
+  const [isTranslating, setTranslating] = useState(false);
+  const other: Locale = LOCALES.find((item) => item !== locale) ?? locale;
   const createError = useEditorErrorMessage(
     create.error && !isConflict(create.error) ? create.error : null,
   );
@@ -89,6 +96,13 @@ export function useRecordWizard(
       summary.trim(),
     );
     if (coverPath) next = writeRecordValue(next, coverPath, cover);
+    if (resource === 'publication') {
+      next = writeRecordValue(next, 'type', TEMPLATE_TYPES[template]);
+      const blocks = templateBlocks(template, t);
+      if (blocks.length > 0) {
+        next = writeRecordValue(next, `content.${locale}.detail.blocks`, blocks);
+      }
+    }
     if (resource === 'event') {
       next = writeRecordValue(next, 'location', place.trim());
       next = writeRecordValue(next, 'startDate', fromLocalDateTime(start) ?? defaults.startDate);
@@ -111,7 +125,7 @@ export function useRecordWizard(
 
   const back = () => setStepIndex((index) => Math.max(index - 1, 0));
 
-  const submit = () => {
+  const submit = async () => {
     if (!validateTitle()) return;
     if (needsSlug && !SLUG_PATTERN.test(effectiveSlug)) {
       setSlugEdited(true);
@@ -121,8 +135,31 @@ export function useRecordWizard(
       return;
     }
     const label = `${t.records.resource[resource]}: ${recordLabel(resource, data, locale)}`;
+    let payload = data;
+    if (translateOther) {
+      setTranslating(true);
+      const texts = [title.trim(), summary.trim()];
+      try {
+        const { translations } = await translateTexts({ from: locale, to: other, texts });
+        const { displayPath } = RECORD_DEFINITIONS[resource];
+        payload = writeRecordValue(
+          payload,
+          displayPath.replace(LOCALE_PLACEHOLDER, other),
+          translations[0] || title.trim(),
+        );
+        payload = writeRecordValue(
+          payload,
+          SUMMARY_PATHS[resource].replace(LOCALE_PLACEHOLDER, other),
+          translations[1] ?? '',
+        );
+      } catch {
+        useSiteEditorStore.getState().announce(t.translation.failed);
+      } finally {
+        setTranslating(false);
+      }
+    }
     create.mutate(
-      { resource, dto: { data, label } },
+      { resource, dto: { data: payload, label } },
       {
         onSuccess: (record) => {
           const { pushAction, announce } = useSiteEditorStore.getState();
@@ -161,7 +198,15 @@ export function useRecordWizard(
     titleError,
     slugError,
     createError,
-    isPending: create.isPending,
+    isPending: create.isPending || isTranslating,
+    isTranslating,
+    titleLimit: recordLengthLimit(resource, RECORD_DEFINITIONS[resource].displayPath),
+    summaryLimit: recordLengthLimit(resource, SUMMARY_PATHS[resource]),
+    template,
+    setTemplate,
+    translateOther,
+    setTranslateOther,
+    other,
     setTitle: (value: string) => {
       setTitle(value);
       setTitleError(null);

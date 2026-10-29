@@ -18,6 +18,23 @@ export type ContentLocaleKey = keyof ContentLocales;
 
 export const TRANSLATION_LIMITS = { maxTexts: 20, maxTextLength: 4000 } as const;
 
+export const PRESENCE_LIMITS = {
+  maxKeys: 20,
+  maxKeyLength: 200,
+  activeMs: 45_000,
+  heartbeatMs: 20_000,
+} as const;
+
+export interface UpdatePresenceRequestDto {
+  resourceKeys: string[];
+}
+
+export interface EditorPresenceDto {
+  resourceKey: string;
+  userId: string;
+  name: string;
+}
+
 export interface TranslateContentRequestDto {
   from: ContentLocaleKey;
   to: ContentLocaleKey;

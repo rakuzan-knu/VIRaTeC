@@ -1,18 +1,35 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CircleHelp, Eye, LayoutList, ListChecks, LogOut, PencilLine, Search } from 'lucide-react';
+import {
+  CalendarPlus,
+  CircleHelp,
+  Eye,
+  FilePlus2,
+  FolderPlus,
+  Highlighter,
+  LayoutList,
+  ListChecks,
+  LogOut,
+  Menu,
+  Monitor,
+  PencilLine,
+  Plus,
+  Search,
+  Smartphone,
+  Tablet,
+} from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   AdminPermission,
   recordResourceOf,
   recordTypeId,
+  type ContentChangeDto,
   type RecordResource,
 } from '@viratec/contracts';
 import { useSessionStore } from '@/entities/session';
 import { getApiErrorCode } from '@/shared/api/apiClient';
 import { SITE_EDITOR_INTRO_STORAGE_KEY } from '@/shared/config/storageKeys';
-import { cn, PREVIEW_CONTENT_QUERY_KEY, useContentPreviewStore } from '@/shared/lib';
-import { Tooltip } from '@/shared/ui/Tooltip';
+import { PREVIEW_CONTENT_QUERY_KEY, useContentPreviewStore } from '@/shared/lib';
 import type { EditorGateCode } from './EditorGate';
 import { useAutosave } from '../model/autosave';
 import { flushDrafts } from '../model/autosaveRegistry';
@@ -22,6 +39,7 @@ import { useCollectionGrids } from '../model/useCollectionGrids';
 import { useImageDrop } from '../model/useImageDrop';
 import { useIssueAnchors } from '../model/useIssueAnchors';
 import { useIssueTargets } from '../model/useIssueTargets';
+import { changeTargets } from '../model/changeTargets';
 import type { SearchItem } from '../model/siteSearch';
 import { targetLabel } from '../model/targetLabel';
 import { NO_PERMISSIONS, canEditRecords } from '../model/permissions';
@@ -50,31 +68,33 @@ import {
 import { CollectionOverlay } from './CollectionOverlay';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DeviceFrame } from './DeviceFrame';
-import { DeviceSwitch } from './DeviceSwitch';
 import { EditorGate } from './EditorGate';
 import { EditorTour } from './EditorTour';
 import { EditorOutlines } from './EditorOutlines';
 import { SectionBadge } from './SectionBadge';
 import { HelpDialog } from './HelpDialog';
-import { EDITOR_TOOLTIP_CLASS, IconButton } from './IconButton';
+import { IconButton } from './IconButton';
 import { ImageDropOverlay } from './ImageDropOverlay';
 import { InlineEditor, type InlineCloseReason } from './InlineEditor';
+import { ChangeHighlights } from './ChangeHighlights';
 import { IssueDots } from './IssueDots';
 import { InspectorPanel } from './InspectorPanel';
 import { PublishControl } from './PublishControl';
 import { RecordPanel } from './RecordPanel';
+import { PresenceBanner } from './PresenceBanner';
+import { useEditorPresence } from '../model/useEditorPresence';
 import { RecordWizard } from './RecordWizard';
 import { SaveIndicator } from './SaveIndicator';
+import { ToolbarMenu, type ToolbarMenuItem } from './ToolbarMenu';
 import { SiteSearchDialog } from './SiteSearchDialog';
 import { SelectionActions } from './SelectionActions';
 import { StructurePanel } from './StructurePanel';
 import { SummaryPanel } from './SummaryPanel';
 
+const NO_CHANGES: ContentChangeDto[] = [];
+
 const PENDING_FOCUS_ATTEMPTS = 20;
 const PENDING_FOCUS_INTERVAL_MS = 300;
-
-const TOOLBAR_BUTTON =
-  'inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus motion-reduce:transition-none';
 
 const readIntroPending = () => {
   try {
@@ -101,9 +121,13 @@ export function SiteEditor() {
   const layoutDraft = useSiteEditorStore((state) =>
     activeLayout ? state.layoutDrafts[activeLayout.page] : undefined,
   );
-  const { setMode, select, setSummaryOpen, reset, openStructure, closeStructure } =
-    useSiteEditorStore.getState();
+  const { setMode, select, setSummaryOpen, reset, openStructure } = useSiteEditorStore.getState();
   const selection = useCurrentSelection();
+  const editingNames = useEditorPresence(
+    selection && mode === 'edit'
+      ? `${selection.contentTypeId ?? 'entry'}:${selection.entryId}`
+      : null,
+  );
   const hasUnsavedDrafts = useHasUnsavedDrafts();
   const changes = useContentChanges();
   const gate = gateFor(changes.error);
@@ -121,6 +145,7 @@ export function SiteEditor() {
   const [inline, setInline] = useState<InlineField | null>(null);
   const [wizard, setWizard] = useState<RecordResource | null>(null);
   const [isSearchOpen, setSearchOpen] = useState(false);
+  const [isChangesShown, setChangesShown] = useState(false);
   const [pendingFocus, setPendingFocus] = useState<SearchItem['selection'] | null>(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -183,6 +208,10 @@ export function SiteEditor() {
   const drop = useImageDrop(isCanvasActive);
   const issueTargets = useIssueTargets(!gate);
   const issueAnchors = useIssueAnchors(isCanvasActive && !inline, issueTargets);
+  const changeAnchors = useIssueAnchors(
+    isCanvasActive && isChangesShown && !inline,
+    changeTargets(changes.data ?? NO_CHANGES),
+  );
 
   const step = (direction: 1 | -1) => {
     const next = stepCanvasTarget(selected, direction);
@@ -358,14 +387,117 @@ export function SiteEditor() {
     void refreshRecords();
   };
 
-  const isStructureShown = mode === 'edit' && Boolean(structure);
-
   const switchMode = (next: EditorMode) => {
     setMode(next);
     if (next === 'preview') setSummaryOpen(false);
   };
 
   const pending = changes.data?.length ?? 0;
+
+  const addItems: ToolbarMenuItem[] = (
+    [
+      ['project', FolderPlus],
+      ['publication', FilePlus2],
+      ['event', CalendarPlus],
+    ] as const
+  )
+    .filter(([resource]) => canEditRecords(permissions, resource))
+    .map(([resource, icon]) => ({
+      key: resource,
+      label: t.wizard.title[resource],
+      icon,
+      onSelect: () => setWizard(resource),
+    }));
+
+  const moreItems: ToolbarMenuItem[] = [
+    {
+      key: 'edit',
+      label: t.menu.edit,
+      icon: PencilLine,
+      kind: 'radio',
+      checked: mode === 'edit',
+      group: 'view',
+      onSelect: () => switchMode('edit'),
+    },
+    {
+      key: 'preview',
+      label: t.menu.preview,
+      icon: Eye,
+      kind: 'radio',
+      checked: mode === 'preview',
+      group: 'view',
+      onSelect: () => switchMode('preview'),
+    },
+    {
+      key: 'changes',
+      label: t.menu.showChanges,
+      icon: Highlighter,
+      kind: 'check',
+      checked: isChangesShown,
+      group: 'view',
+      onSelect: () => {
+        const next = !isChangesShown;
+        setChangesShown(next);
+        useSiteEditorStore
+          .getState()
+          .announce(
+            next
+              ? t.highlight.shown(changeTargets(changes.data ?? NO_CHANGES).length)
+              : t.highlight.hidden,
+          );
+      },
+    },
+    ...(activeLayout
+      ? [
+          {
+            key: 'sections',
+            label: t.menu.sections,
+            icon: LayoutList,
+            group: 'tools',
+            onSelect: () => {
+              setMode('edit');
+              openStructure({});
+            },
+          },
+        ]
+      : []),
+    {
+      key: 'summary',
+      label: t.menu.changesList(pending),
+      icon: ListChecks,
+      group: 'tools',
+      onSelect: () => setSummaryOpen(true),
+    },
+    ...(
+      [
+        ['desktop', Monitor],
+        ['tablet', Tablet],
+        ['phone', Smartphone],
+      ] as const
+    ).map(([value, icon]) => ({
+      key: `device-${value}`,
+      label: `${t.menu.device}: ${t.device[value]}`,
+      icon,
+      kind: 'radio' as const,
+      checked: device === value,
+      group: 'device',
+      onSelect: () => useSiteEditorStore.getState().setDevice(value),
+    })),
+    {
+      key: 'help',
+      label: t.menu.help,
+      icon: CircleHelp,
+      group: 'app',
+      onSelect: () => setHelpOpen(true),
+    },
+    {
+      key: 'exit',
+      label: t.menu.exit,
+      icon: LogOut,
+      group: 'app',
+      onSelect: () => setConfirmingExit(true),
+    },
+  ];
 
   const exitDescription = hasUnsavedDrafts
     ? t.exitUnsaved
@@ -383,9 +515,15 @@ export function SiteEditor() {
       {isCanvasActive && (
         <>
           <EditorOutlines hovered={hovered} selected={selected} t={t} />
+          {isChangesShown && !inline && <ChangeHighlights anchors={changeAnchors} t={t} />}
           {!inline && <IssueDots anchors={issueAnchors} t={t} onOpen={select} />}
           {drop.target && (
-            <ImageDropOverlay target={drop.target} isUploading={drop.isUploading} t={t} />
+            <ImageDropOverlay
+              target={drop.target}
+              isUploading={drop.isUploading}
+              previewUrl={drop.previewUrl}
+              t={t}
+            />
           )}
           {!inline && (
             <CollectionOverlay
@@ -410,6 +548,15 @@ export function SiteEditor() {
               t={t}
               onOpen={open}
               onStep={step}
+              onReplaceImage={
+                selected.kind === 'asset'
+                  ? (file) =>
+                      void drop.replace(
+                        { element: selected.element, address: selected.address },
+                        file,
+                      )
+                  : undefined
+              }
             />
           )}
           {section && (
@@ -435,93 +582,20 @@ export function SiteEditor() {
         aria-label={t.toolbar}
         className="pointer-events-auto fixed top-[72px] right-3 z-[2147483004] flex items-center gap-1 rounded-2xl border border-white/12 bg-viratec-deep/95 p-1 shadow-[0_12px_32px_rgba(0,0,0,0.45)] xl:top-[96px]"
       >
-        <span className="hidden items-center gap-2 px-3 text-[13px] font-medium text-viratec-cyan sm:flex">
+        <span className="hidden items-center gap-2 px-3 text-[13px] font-medium text-viratec-cyan lg:flex">
           <span aria-hidden="true" className="size-2 rounded-full bg-viratec-cyan" />
-          {t.editing}
+          {mode === 'edit' ? t.editing : t.modePreview}
         </span>
         <SaveIndicator t={t} />
-        <div
-          role="radiogroup"
-          aria-label={t.modeLabel}
-          className="flex rounded-xl bg-white/5 p-0.5"
-        >
-          {(
-            [
-              ['edit', t.modeEdit, t.modeEditHint, PencilLine],
-              ['preview', t.modePreview, t.modePreviewHint, Eye],
-            ] as const
-          ).map(([value, label, hint, Icon]) => (
-            <Tooltip
-              key={value}
-              text={hint}
-              placement="bottom"
-              floatingClassName={EDITOR_TOOLTIP_CLASS}
-            >
-              <button
-                type="button"
-                role="radio"
-                aria-checked={mode === value}
-                aria-label={label}
-                onClick={() => switchMode(value)}
-                className={cn(
-                  TOOLBAR_BUTTON,
-                  'h-8 px-2.5',
-                  mode === value
-                    ? 'bg-viratec-cyan text-viratec-ink'
-                    : 'text-text-muted hover:text-text-primary',
-                )}
-              >
-                <Icon aria-hidden="true" className="size-4" />
-                <span aria-hidden="true" className="hidden md:inline">
-                  {label}
-                </span>
-              </button>
-            </Tooltip>
-          ))}
-        </div>
-        {activeLayout && (
-          <IconButton
-            icon={LayoutList}
-            label={t.structure.open}
-            aria-pressed={isStructureShown}
-            onClick={() => {
-              if (isStructureShown) {
-                closeStructure();
-                return;
-              }
-              setMode('edit');
-              openStructure({});
-            }}
-            className={isStructureShown ? 'bg-white/10 text-text-primary' : 'text-text-primary'}
+        {mode === 'edit' && addItems.length > 0 && (
+          <ToolbarMenu
+            label={t.menu.addLabel}
+            buttonLabel={t.menu.add}
+            icon={Plus}
+            items={addItems}
+            variant="accent"
           />
         )}
-        <Tooltip text={t.summaryHint} placement="bottom" floatingClassName={EDITOR_TOOLTIP_CLASS}>
-          <button
-            type="button"
-            aria-expanded={isSummaryOpen}
-            aria-label={t.summaryCount(pending)}
-            onClick={() => setSummaryOpen(!isSummaryOpen)}
-            className={cn(
-              TOOLBAR_BUTTON,
-              isSummaryOpen
-                ? 'bg-white/10 text-text-primary'
-                : 'text-text-primary hover:bg-white/8',
-            )}
-          >
-            <ListChecks aria-hidden="true" className="size-4" />
-            <span aria-hidden="true" className="hidden sm:inline">
-              {t.summary}
-            </span>
-            {pending > 0 && (
-              <span
-                aria-hidden="true"
-                className="min-w-5 rounded-full bg-brand-lime px-1.5 text-center text-[12px] leading-5 text-text-on-lime"
-              >
-                {pending}
-              </span>
-            )}
-          </button>
-        </Tooltip>
         <IconButton
           icon={Search}
           label={t.search.open}
@@ -529,10 +603,19 @@ export function SiteEditor() {
           aria-haspopup="dialog"
           onClick={() => setSearchOpen(true)}
         />
-        <DeviceSwitch t={t} />
-        {canPublish && <PublishControl count={pending} issueCount={issueTargets.length} t={t} />}
-        <IconButton icon={CircleHelp} label={t.helpOpen} onClick={() => setHelpOpen(true)} />
-        <IconButton icon={LogOut} label={t.exitHint} onClick={() => setConfirmingExit(true)} />
+        {canPublish && (
+          <PublishControl
+            changes={changes.data ?? NO_CHANGES}
+            issueCount={issueTargets.length}
+            t={t}
+          />
+        )}
+        <ToolbarMenu
+          label={t.menu.moreLabel}
+          buttonLabel={t.menu.more}
+          icon={Menu}
+          items={moreItems}
+        />
       </div>
 
       {device !== 'desktop' && !gate && (
@@ -556,6 +639,8 @@ export function SiteEditor() {
             ))}
         </>
       )}
+
+      {!gate && <PresenceBanner names={editingNames} t={t} />}
 
       {wizard && (
         <RecordWizard

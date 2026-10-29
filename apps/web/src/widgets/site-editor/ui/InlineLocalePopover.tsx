@@ -1,9 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { PanelRight } from 'lucide-react';
+import { cn } from '@/shared/lib';
 import { Input } from '@/shared/ui/Input';
 import { Textarea } from '@/shared/ui/Textarea';
+import { withLengthHint } from '../model/lengthLimits';
 import type { SiteEditorMessages } from '../model/messages';
 import type { useInlineEdit } from '../model/useInlineEdit';
+import { InlineLinkTarget } from './InlineLinkTarget';
 import { TranslationHint } from './TranslationHint';
 
 const GAP = 10;
@@ -15,6 +18,9 @@ interface InlineLocalePopoverProps {
   hintId: string;
   multiline: boolean;
   anchor: { top: number; bottom: number; left: number };
+  linkField: string | null;
+  entryId: string;
+  limit?: number;
   t: SiteEditorMessages;
   onSave: () => void;
   onOpenPanel: () => void;
@@ -25,6 +31,9 @@ export function InlineLocalePopover({
   hintId,
   multiline,
   anchor,
+  linkField,
+  entryId,
+  limit,
   t,
   onSave,
   onOpenPanel,
@@ -50,12 +59,23 @@ export function InlineLocalePopover({
       ref={ref}
       role="group"
       aria-label={otherLabel}
-      className="pointer-events-auto fixed z-[2147483004] flex w-[min(340px,calc(100vw-16px))] flex-col gap-3 rounded-2xl border border-white/12 bg-viratec-deep p-3 shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+      className="editor-pop-in pointer-events-auto fixed z-[2147483004] flex w-[min(340px,calc(100vw-16px))] flex-col gap-3 rounded-2xl border border-white/12 bg-viratec-deep p-3 shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
       style={{ top, left: Math.max(left, EDGE) }}
     >
       <p id={hintId} className="text-[12px] text-text-subtle">
         {multiline ? t.inline.hintMultiline : t.inline.hint}
       </p>
+      {limit && edit.value && (
+        <p
+          aria-live="polite"
+          className={cn(
+            'text-[12px]',
+            edit.value.trim().length > limit ? 'text-text-primary' : 'text-text-subtle',
+          )}
+        >
+          {withLengthHint(undefined, edit.value, limit, t)}
+        </p>
+      )}
       {edit.localized && (
         <>
           <TranslationHint
@@ -69,6 +89,7 @@ export function InlineLocalePopover({
             <Textarea
               label={otherLabel}
               lang={edit.other}
+              helperText={withLengthHint(undefined, edit.otherValue, limit, t)}
               value={edit.otherValue}
               rows={3}
               onChange={(event) => edit.setOther(event.target.value)}
@@ -77,6 +98,7 @@ export function InlineLocalePopover({
             <Input
               label={otherLabel}
               lang={edit.other}
+              helperText={withLengthHint(undefined, edit.otherValue, limit, t)}
               value={edit.otherValue}
               onChange={(event) => edit.setOther(event.target.value)}
               onKeyDown={(event) => {
@@ -88,6 +110,7 @@ export function InlineLocalePopover({
           )}
         </>
       )}
+      {linkField && <InlineLinkTarget entryId={entryId} linkFieldId={linkField} t={t} />}
       <button
         type="button"
         onClick={onOpenPanel}

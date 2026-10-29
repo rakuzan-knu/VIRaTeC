@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, LayoutList, PencilLine } from 'lucide-react';
+import { ChevronDown, ChevronUp, ImageUp, LayoutList, PencilLine } from 'lucide-react';
+import { ACCEPTED_IMAGE_TYPES } from '../lib/prepareImage';
 import type { SiteEditorMessages } from '../model/messages';
 import { SHORTCUTS } from '../model/shortcuts';
 import { targetLabel } from '../model/targetLabel';
@@ -16,6 +17,7 @@ interface SelectionActionsProps {
   t: SiteEditorMessages;
   onOpen: (target: CanvasTarget) => void;
   onStep: (direction: 1 | -1) => void;
+  onReplaceImage?: (file: File) => void;
 }
 
 export function SelectionActions({
@@ -24,7 +26,9 @@ export function SelectionActions({
   t,
   onOpen,
   onStep,
+  onReplaceImage,
 }: SelectionActionsProps) {
+  const fileRef = useRef<HTMLInputElement>(null);
   const editRef = useRef<HTMLButtonElement>(null);
   const handledRequest = useRef(0);
   const rects = useElementRects(target.element, target.kind === 'field' ? target.range : undefined);
@@ -51,7 +55,7 @@ export function SelectionActions({
 
   return (
     <div
-      className="pointer-events-auto fixed z-[2147483003] flex items-center gap-1 rounded-2xl border border-white/12 bg-viratec-deep/95 p-1 shadow-[0_12px_32px_rgba(0,0,0,0.45)]"
+      className="editor-pop-in pointer-events-auto fixed z-[2147483003] flex items-center gap-1 rounded-2xl border border-white/12 bg-viratec-deep/95 p-1 shadow-[0_12px_32px_rgba(0,0,0,0.45)]"
       style={position}
     >
       <IconButton
@@ -68,6 +72,31 @@ export function SelectionActions({
         className="text-text-muted hover:text-text-primary"
         onClick={() => onStep(1)}
       />
+      {target.kind === 'asset' && onReplaceImage && (
+        <>
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl px-3 text-[14px] font-medium text-text-primary transition-colors hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus motion-reduce:transition-none pointer-coarse:h-11"
+          >
+            <ImageUp aria-hidden="true" className="size-4" />
+            {t.canvas.replacePhoto}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept={ACCEPTED_IMAGE_TYPES}
+            tabIndex={-1}
+            aria-hidden="true"
+            className="sr-only"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = '';
+              if (file) onReplaceImage(file);
+            }}
+          />
+        </>
+      )}
       <button
         ref={editRef}
         type="button"
