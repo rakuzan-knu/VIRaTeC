@@ -57,11 +57,19 @@ The client ID is public; never put client secrets in `VITE_*` variables.
 Google accounts are identified by the verified token's `sub`. A new account gets
 the database's student role. Email collisions return HTTP 409 without linking or
 issuing tokens: an existing password account must use its existing sign-in method.
-Explicit account linking is not implemented. Returning Google users keep their
-existing role. Password login for Google-only users returns HTTP 401, which the
+After password sign-in, Google can be connected in account security settings.
+Returning Google users keep their existing role and MFA requirements. A verified
+Google claim confirms the profile email only when the addresses match exactly;
+linking a Google account with a different email does not verify the profile email.
+Password login for Google-only users returns HTTP 401, which the
 form presents as the normal invalid-credentials message.
 
 The official Google button remains limited to 400px. Verify a new Google account,
 repeat sign-in, popup cancellation, a rejected credential, and an email collision
 on the deployed origin. Unit tests stub Google verification; they do not replace
 a real Google login on an authorized origin.
+
+The button uses the application language, adapts when its container changes width,
+and offers a retry after a loading failure. Authentication errors are localized;
+email collisions offer password sign-in and recovery. Authentication transitions
+clear the client query cache, and device sessions are also keyed by account ID.

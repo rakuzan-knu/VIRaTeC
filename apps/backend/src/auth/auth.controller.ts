@@ -19,11 +19,16 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from './auth.service';
 import { TwoFactorService } from './two-factor.service';
 import { SessionsService } from './sessions.service';
+import { EmailVerificationService } from './email-verification.service';
+import { PasswordResetService } from './password-reset.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { TwoFactorCodeDto } from './dto/two-factor-code.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
@@ -48,6 +53,8 @@ export class AuthController {
     private twoFactorService: TwoFactorService,
     private sessionsService: SessionsService,
     private configService: ConfigService,
+    private emailVerification: EmailVerificationService,
+    private passwordReset: PasswordResetService,
   ) {}
 
   private get secure() {
@@ -136,6 +143,46 @@ export class AuthController {
     const result = await this.authService.verifyMfaChallenge(challenge, dto.code, client);
     clearMfaCookie(reply, this.secure);
     return this.startSession(reply, result);
+  }
+
+  @Post('email/verify')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Confirm the account email with the token from the verification link' })
+  @ApiResponse({ status: 400, description: 'The link is invalid, used or expired' })
+  async verifyEmail(@Body() dto: VerifyEmailDto, @Client() client: ClientContext) {
+    return this.emailVerification.verify(dto.token, client);
+  }
+
+  @Post('email/resend')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Send a new verification link to the account email' })
+  @ApiResponse({ status: 429, description: 'Too many verification emails' })
+  @ApiResponse({ status: 503, description: 'Email delivery is unavailable' })
+  async resendVerification(@CurrentUser('id') userId: string) {
+    return this.emailVerification.resend(userId);
+  }
+
+  @Post('password/forgot')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Email a password reset code; the response is the same whether or not the account exists',
+  })
+  @ApiResponse({ status: 429, description: 'Too many reset requests' })
+  @ApiResponse({ status: 503, description: 'Email delivery is unavailable' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto, @Client() client: ClientContext) {
+    return this.passwordReset.request(dto.email, client);
+  }
+
+  @Post('password/reset')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Set a new password with the emailed code and sign out every device' })
+  @ApiResponse({ status: 400, description: 'The code is incorrect or expired' })
+  @ApiResponse({ status: 429, description: 'Too many attempts' })
+  async resetPassword(@Body() dto: ResetPasswordDto, @Client() client: ClientContext) {
+    return this.passwordReset.reset(dto, client);
   }
 
   @Post('google/link')

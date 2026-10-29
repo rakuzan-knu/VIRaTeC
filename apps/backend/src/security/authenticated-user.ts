@@ -10,6 +10,7 @@ export interface AuthenticatedUser {
   staffRole: StaffRole;
   permissions: AdminPermission[];
   twoFactorEnabled: boolean;
+  emailVerified: boolean;
   mfaVerifiedAt: Date | null;
   elevatedUntil: Date | null;
   publishElevatedUntil: Date | null;

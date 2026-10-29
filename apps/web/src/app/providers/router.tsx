@@ -94,6 +94,12 @@ export const routes: RouteObject[] = [
         ],
       },
       {
+        path: ROUTES.VERIFY_EMAIL,
+        lazy: async () => ({
+          Component: (await import('@/pages/verify-email')).VerifyEmailPage,
+        }),
+      },
+      {
         path: ROUTES.ACCOUNT,
         lazy: async () => {
           const { AccountPage } = await import('@/pages/account');

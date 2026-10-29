@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { ENV } from '../config/env';
-import { INTL_LOCALE, useLocale } from '../i18n';
+import { useLocale } from '../i18n';
 
 const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
 
@@ -41,24 +41,28 @@ declare global {
 
 let scriptPromise: Promise<GoogleAccountsId> | null = null;
 
-export function loadGoogleIdentity(): Promise<GoogleAccountsId> {
+export function loadGoogleIdentity(locale: string): Promise<GoogleAccountsId> {
   if (window.google?.accounts.id) return Promise.resolve(window.google.accounts.id);
   if (scriptPromise) return scriptPromise;
 
   scriptPromise = new Promise<GoogleAccountsId>((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = GSI_SCRIPT_SRC;
+    script.src = `${GSI_SCRIPT_SRC}?hl=${encodeURIComponent(locale)}`;
     script.async = true;
     script.defer = true;
-    script.onload = () => {
-      if (window.google?.accounts.id) resolve(window.google.accounts.id);
-      else reject(new Error('Google Identity Services failed to initialize'));
-    };
-    script.onerror = () => {
+    const timeout = window.setTimeout(() => fail('Google Identity Services timed out'), 15_000);
+    const fail = (message: string) => {
+      window.clearTimeout(timeout);
       scriptPromise = null;
       script.remove();
-      reject(new Error('Failed to load Google Identity Services'));
+      reject(new Error(message));
     };
+    script.onload = () => {
+      window.clearTimeout(timeout);
+      if (window.google?.accounts.id) resolve(window.google.accounts.id);
+      else fail('Google Identity Services failed to initialize');
+    };
+    script.onerror = () => fail('Failed to load Google Identity Services');
     document.head.appendChild(script);
   });
 
@@ -70,54 +74,80 @@ const GOOGLE_BUTTON_MAX_WIDTH = 400;
 interface GoogleButtonOptions {
   text: GoogleButtonText;
   onCredential: (credential: string) => void;
+  disabled?: boolean;
 }
 
 export function useGoogleButton(
   containerRef: RefObject<HTMLDivElement | null>,
-  { text, onCredential }: GoogleButtonOptions,
+  { text, onCredential, disabled = false }: GoogleButtonOptions,
 ) {
   const [loadFailed, setLoadFailed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [attempt, setAttempt] = useState(0);
   const onCredentialRef = useRef(onCredential);
+  const disabledRef = useRef(disabled);
   const locale = useLocale();
 
   useEffect(() => {
     onCredentialRef.current = onCredential;
-  }, [onCredential]);
+    disabledRef.current = disabled;
+  }, [onCredential, disabled]);
+
+  const retry = useCallback(() => setAttempt((value) => value + 1), []);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!ENV.GOOGLE_CLIENT_ID || !container) return;
     let cancelled = false;
+    let resizeObserver: ResizeObserver | undefined;
+    setLoadFailed(false);
+    setIsLoading(true);
 
-    loadGoogleIdentity()
+    loadGoogleIdentity(locale)
       .then((googleId) => {
         if (cancelled) return;
         googleId.initialize({
           client_id: ENV.GOOGLE_CLIENT_ID,
-          callback: ({ credential }) => onCredentialRef.current(credential),
+          callback: ({ credential }) => {
+            if (!cancelled && !disabledRef.current) onCredentialRef.current(credential);
+          },
           ux_mode: 'popup',
           context: text === 'signup_with' ? 'signup' : text === 'continue_with' ? 'use' : 'signin',
         });
-        container.replaceChildren();
-        googleId.renderButton(container, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          shape: 'rectangular',
-          logo_alignment: 'center',
-          text,
-          width: Math.min(container.clientWidth, GOOGLE_BUTTON_MAX_WIDTH),
-          locale: INTL_LOCALE[locale],
-        });
+        let previousWidth = -1;
+        const render = () => {
+          const width = Math.min(container.clientWidth, GOOGLE_BUTTON_MAX_WIDTH);
+          if (width <= 0 || width === previousWidth) return;
+          previousWidth = width;
+          container.replaceChildren();
+          googleId.renderButton(container, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            shape: 'rectangular',
+            logo_alignment: 'center',
+            text,
+            width,
+            locale,
+          });
+        };
+        render();
+        resizeObserver = new ResizeObserver(render);
+        resizeObserver.observe(container);
+        setIsLoading(false);
       })
       .catch(() => {
-        if (!cancelled) setLoadFailed(true);
+        if (!cancelled) {
+          setLoadFailed(true);
+          setIsLoading(false);
+        }
       });
 
     return () => {
       cancelled = true;
+      resizeObserver?.disconnect();
     };
-  }, [containerRef, text, locale]);
+  }, [containerRef, text, locale, attempt]);
 
-  return { isConfigured: Boolean(ENV.GOOGLE_CLIENT_ID), loadFailed };
+  return { isConfigured: Boolean(ENV.GOOGLE_CLIENT_ID), loadFailed, isLoading, retry };
 }

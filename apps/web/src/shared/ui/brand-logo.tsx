@@ -12,7 +12,11 @@ export function BrandLogo({ className }: BrandLogoProps) {
   const common = useCommonMessages();
 
   return (
-    <Link to={ROUTES.HOME} aria-label={common.homeAriaLabel} className={cn('block', className)}>
+    <Link
+      to={ROUTES.HOME}
+      aria-label={common.homeAriaLabel}
+      className={cn('block max-w-full', className)}
+    >
       <Logo tone="dark" className="size-full" />
     </Link>
   );

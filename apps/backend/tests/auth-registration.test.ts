@@ -54,6 +54,7 @@ for (const role of [undefined, 'STUDENT', 'PARTNER']) {
       {
         user: {
           findUnique: async () => null,
+          update: async () => storedUser,
           create: async ({ data }: { data: CreatedUserData }) => {
             storedUser = { ...data, id: 'registration-test', role: data.role ?? 'STUDENT' };
             return storedUser;

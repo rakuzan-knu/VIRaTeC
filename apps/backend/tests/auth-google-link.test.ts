@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { Prisma } from '@prisma/client';
 import { hasStatus } from './support.ts';
 import { AuthService } from '../dist/auth/auth.service.js';
 
@@ -16,11 +17,15 @@ interface LinkUser {
   passwordHash: string | null;
   googleId: string | null;
   avatarUrl?: string | null;
+  emailVerifiedAt?: Date | null;
 }
 
 interface UserWhere {
   id?: string;
-  googleId?: string;
+  googleId?: string | null;
+  passwordHash?: string | null;
+  emailVerifiedAt?: Date | null;
+  AND?: { googleId: string | null };
 }
 
 function setup(users: LinkUser[]) {
@@ -28,12 +33,24 @@ function setup(users: LinkUser[]) {
     {
       user: {
         findUnique: async ({ where }: { where: UserWhere }) =>
-          users.find((user) =>
-            where.id !== undefined ? user.id === where.id : user.googleId === where.googleId,
-          ) ?? null,
+          structuredClone(
+            users.find((user) =>
+              where.id !== undefined ? user.id === where.id : user.googleId === where.googleId,
+            ) ?? null,
+          ),
         update: async ({ where, data }: { where: UserWhere; data: Partial<LinkUser> }) => {
-          const user = users.find((item) => item.id === where.id);
-          assert.ok(user);
+          const user = users.find((item) =>
+            Object.entries(where).every(([key, value]) =>
+              key === 'AND'
+                ? item.googleId === where.AND?.googleId
+                : value === undefined || item[key as keyof LinkUser] === value,
+            ),
+          );
+          if (!user)
+            throw new Prisma.PrismaClientKnownRequestError('Account changed', {
+              code: 'P2025',
+              clientVersion: 'test',
+            });
           Object.assign(user, data);
           return user;
         },
@@ -52,6 +69,7 @@ const passwordUser = (): LinkUser => ({
   passwordHash: 'hash',
   googleId: null,
   avatarUrl: null,
+  emailVerifiedAt: null,
 });
 
 test('linking stores the Google subject and reports the connection', async () => {
@@ -63,6 +81,24 @@ test('linking stores the Google subject and reports the connection', async () =>
   assert.equal(account.hasPassword, true);
   assert.equal(account.googleId, undefined);
   assert.equal(account.avatarUrl, payload.picture);
+  assert.equal(users[0].emailVerifiedAt, null);
+});
+
+test('an in-flight Google link cannot survive email ownership recovery', async () => {
+  const users = [passwordUser()];
+  const service = setup(users);
+  service.googleClient = {
+    verifyIdToken: async () => {
+      users[0].passwordHash = 'new-owner-password';
+      users[0].emailVerifiedAt = new Date();
+      return { getPayload: () => payload };
+    },
+  };
+  await assert.rejects(
+    service.linkGoogle('password-user', { credential: 'token' }),
+    hasStatus(409),
+  );
+  assert.equal(users[0].googleId, null);
 });
 
 test('linking refuses a Google account owned by another user', async () => {

@@ -44,6 +44,7 @@ export const AccountSchema = UserSchema.extend({
   showEmail: z.boolean(),
   hasPassword: z.boolean(),
   hasGoogle: z.boolean(),
+  emailVerified: z.boolean(),
   twoFactorEnabled: z.boolean(),
   staffRole: z.nativeEnum(StaffRole),
   permissions: z.array(z.nativeEnum(AdminPermission)),
@@ -124,6 +125,32 @@ export const LoginRequestSchema = z.object({
 });
 
 export type LoginRequestDto = z.infer<typeof LoginRequestSchema>;
+
+export const EMAIL_TOKEN_LIMITS = {
+  resetCodeLength: 6,
+  resetCodeTtlMinutes: 10,
+  verifyLinkTtlHours: 24,
+} as const;
+
+export const VerifyEmailRequestSchema = z.object({
+  token: z.string().min(1).max(128),
+});
+
+export type VerifyEmailRequestDto = z.infer<typeof VerifyEmailRequestSchema>;
+
+export const ForgotPasswordRequestSchema = z.object({
+  email: z.string().email(),
+});
+
+export type ForgotPasswordRequestDto = z.infer<typeof ForgotPasswordRequestSchema>;
+
+export const ResetPasswordRequestSchema = z.object({
+  email: z.string().email(),
+  code: z.string().regex(/^\d{6}$/),
+  newPassword: z.string().min(PROFILE_LIMITS.passwordMin).max(PROFILE_LIMITS.passwordMax),
+});
+
+export type ResetPasswordRequestDto = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const TERMS_VERSION = '1.1';
 

@@ -31,6 +31,7 @@ const profile = (visibility: Visibility, overrides: Record<string, unknown> = {}
   email: 'owner@example.invalid',
   showEmail: false,
   visibility,
+  emailVerifiedAt: new Date(),
   projects: [],
   papers: [],
   ...overrides,
@@ -42,22 +43,23 @@ const usersService = (user: ReturnType<typeof profile>) =>
 test('private profiles are hidden from everyone except the owner', async () => {
   const service = usersService(profile('PRIVATE'));
 
-  await assert.rejects(service.findPublicProfile('owner', null), hasStatus(404));
-  await assert.rejects(service.findPublicProfile('owner', 'member'), hasStatus(404));
-  assert.equal((await service.findPublicProfile('owner', 'owner')).isOwner, true);
+  await assert.rejects(service.findPublicProfile('owner', null, null), hasStatus(404));
+  await assert.rejects(service.findPublicProfile('owner', 'member', 'member'), hasStatus(404));
+  assert.equal((await service.findPublicProfile('owner', 'owner', 'owner')).isOwner, true);
 });
 
 test('members-only profiles require a signed-in viewer', async () => {
   const service = usersService(profile('MEMBERS'));
 
-  await assert.rejects(service.findPublicProfile('owner', null), hasStatus(401));
-  assert.equal((await service.findPublicProfile('owner', 'member')).isOwner, false);
+  await assert.rejects(service.findPublicProfile('owner', null, null), hasStatus(401));
+  assert.equal((await service.findPublicProfile('owner', 'member', 'member')).isOwner, false);
 });
 
 test('public profiles never expose the email unless the owner opted in', async () => {
-  const hidden = await usersService(profile('PUBLIC')).findPublicProfile('owner', null);
+  const hidden = await usersService(profile('PUBLIC')).findPublicProfile('owner', null, null);
   const shown = await usersService(profile('PUBLIC', { showEmail: true })).findPublicProfile(
     'owner',
+    null,
     null,
   );
 
@@ -87,6 +89,12 @@ function authWithToken(record: RefreshTokenRecord) {
   const created: CreatedToken[] = [];
   const service = new AuthService(
     {
+      user: {
+        update: async ({ data }: { data: { refreshTokens: { create: CreatedToken } } }) => {
+          created.push(data.refreshTokens.create);
+          return record.user;
+        },
+      },
       refreshToken: {
         deleteMany: async () => ({ count: 0 }),
         findUnique: async () => record,
@@ -169,7 +177,8 @@ test('the directory never lists private profiles of other members', async () => 
   assert.deepEqual(calls[0].AND[0], {
     OR: [{ visibility: { in: ['PUBLIC', 'MEMBERS'] } }, { id: 'member' }],
   });
-  assert.deepEqual(calls[0].AND[1], { openTo: { has: 'COIL_PROJECT' } });
+  assert.deepEqual(calls[0].AND[1], { emailVerifiedAt: { not: null } });
+  assert.deepEqual(calls[0].AND[2], { openTo: { has: 'COIL_PROJECT' } });
 });
 
 test('erasing other sessions keeps only the current device', async () => {

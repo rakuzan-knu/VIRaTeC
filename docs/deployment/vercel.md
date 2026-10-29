@@ -23,6 +23,7 @@ Configure these in Vercel for production and preview:
 | `DATABASE_URL`              | Managed by the Neon integration                                               |
 | `JWT_ACCESS_SECRET`         | Random secret, distinct per environment                                       |
 | `JWT_REFRESH_SECRET`        | Independent random secret, distinct per environment                           |
+| `TOTP_ENCRYPTION_KEY`       | 32 random bytes encoded in base64, distinct per environment                   |
 | `CORS_ORIGIN`               | Exact permitted frontend origin; production uses `https://viratec.vercel.app` |
 | `CONTENTFUL_SPACE_ID`       | Contentful space ID                                                           |
 | `CONTENTFUL_ENVIRONMENT`    | `master` for production, `dev` for preview                                    |
@@ -56,3 +57,9 @@ After a deployment, verify `/api/v1/health/ready` reports `data.status: ready`,
 the frontend loads, and direct links to content and auth pages resolve.
 Public registration permits student and partner accounts; privileged roles require administrative provisioning.
 JWT credentials and cookies are redacted from HTTP logs.
+
+Preview functions also run with `NODE_ENV=production`, so they require the JWT
+secrets and `TOTP_ENCRYPTION_KEY` even when email delivery is disabled. Use fresh
+test accounts in preview: its independent encryption key cannot decrypt second
+factors copied from production. Configure Gmail delivery in production as described
+in [Transactional email](email.md); keep sender credentials out of general previews.

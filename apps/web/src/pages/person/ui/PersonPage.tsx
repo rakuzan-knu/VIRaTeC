@@ -2,7 +2,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { usePublicProfile } from '@/entities/person';
 import { useSessionStore } from '@/entities/session';
-import { ApiError } from '@/shared/api/apiClient';
+import { ApiError, getApiErrorCode } from '@/shared/api/apiClient';
 import { ROUTES } from '@/shared/config/routes';
 import { useSeo } from '@/shared/lib';
 import { LinkButton, linkButtonClassName } from '@/shared/ui/link-button';
@@ -43,6 +43,20 @@ export function PersonPage() {
             <Lock aria-hidden="true" className="size-[18px]" />
             {t.signIn}
           </Link>
+        }
+      />
+    );
+  }
+
+  if (getApiErrorCode(error) === 'EMAIL_NOT_VERIFIED') {
+    return (
+      <ProfileState
+        title={t.unverifiedTitle}
+        description={t.unverifiedDescription}
+        action={
+          <LinkButton to={ROUTES.ACCOUNT} className="mt-2 w-full sm:w-auto">
+            {t.toAccount}
+          </LinkButton>
         }
       />
     );

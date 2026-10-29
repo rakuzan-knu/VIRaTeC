@@ -16,6 +16,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { ListPostsQueryDto } from './dto/list-posts-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
+import { VerifiedEmailGuard } from '../common/guards/verified-email.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @ApiTags('Community')
@@ -46,10 +47,11 @@ export class CommunityController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, VerifiedEmailGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Publish a new discussion or announcement' })
   @ApiResponse({ status: 201, description: 'Post created' })
+  @ApiResponse({ status: 403, description: 'The account email is not confirmed' })
   async create(@Body() dto: CreatePostDto, @CurrentUser('id') userId: string) {
     return this.communityService.create(dto, userId);
   }

@@ -9,6 +9,7 @@ import { useLogout } from '@/features/logout';
 import { PrivacyForm } from '@/features/update-privacy';
 import { ExportDataButton } from '@/features/export-data';
 import { SavedList } from '@/features/save-item';
+import { EmailVerificationNotice } from '@/features/verify-email';
 import { ROUTES, buildPersonPath } from '@/shared/config/routes';
 import { INTL_LOCALE, useLocale } from '@/shared/i18n';
 import { cn, useSeo } from '@/shared/lib';
@@ -68,6 +69,7 @@ export function AccountPage() {
         />
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
+          {!account.emailVerified && <EmailVerificationNotice email={account.email} />}
           <header className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-col gap-1.5">
               <h2 className="font-display text-[30px] leading-9 font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]">

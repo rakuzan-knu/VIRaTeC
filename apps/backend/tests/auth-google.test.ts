@@ -17,6 +17,11 @@ interface GoogleUser {
   email?: string;
   googleId?: string | null;
   passwordHash?: string | null;
+  emailVerifiedAt?: Date | null;
+  emailOwnershipClaimable?: boolean;
+  isBlocked?: boolean;
+  twoFactorEnabled?: boolean;
+  twoFactorSecret?: string | null;
   role?: string;
   faculty?: string;
   name?: string;
@@ -26,6 +31,18 @@ interface GoogleUser {
 
 interface CreateUserArgs {
   data: Omit<GoogleUser, 'id'>;
+}
+
+interface UpdateUserArgs {
+  where: {
+    id: string;
+    email?: string;
+    passwordHash?: string | null;
+    emailVerifiedAt?: Date | null;
+    isBlocked?: boolean;
+    AND?: { googleId: string | null };
+  };
+  data: Partial<GoogleUser> & { updatedAt?: Date; refreshTokens?: unknown };
 }
 
 interface VerifyOptions {
@@ -48,14 +65,53 @@ function setup({
   verifyError,
   createError,
 }: SetupOptions = {}) {
-  const calls = { reads: 0, creates: 0, tokens: 0, refreshTokens: 0 };
+  const calls = {
+    reads: 0,
+    creates: 0,
+    tokens: 0,
+    refreshTokens: 0,
+    verifications: 0,
+    mfaChallenges: 0,
+  };
   let verifiedOptions: VerifyOptions | undefined;
   const service = new AuthService(
     {
       user: {
-        findUnique: async ({ where }: { where: { googleId?: string } }) => {
+        update: async ({ where, data }: UpdateUserArgs) => {
+          const user = users.find(
+            (user) =>
+              user.id === where.id &&
+              (where.email === undefined || user.email === where.email) &&
+              (where.passwordHash === undefined || user.passwordHash === where.passwordHash) &&
+              (where.emailVerifiedAt === undefined ||
+                (user.emailVerifiedAt?.getTime() ?? null) ===
+                  (where.emailVerifiedAt?.getTime() ?? null)) &&
+              (where.isBlocked === undefined || (user.isBlocked ?? false) === where.isBlocked) &&
+              (where.AND === undefined || (user.googleId ?? null) === where.AND.googleId),
+          );
+          if (!user) {
+            throw new Prisma.PrismaClientKnownRequestError('Account changed', {
+              code: 'P2025',
+              clientVersion: 'test',
+            });
+          }
+          if (data.refreshTokens) {
+            calls.refreshTokens++;
+          } else {
+            calls.verifications++;
+            Object.assign(user, data);
+          }
+          return structuredClone(user);
+        },
+        findUnique: async ({ where }: { where: { googleId?: string; email?: string } }) => {
           calls.reads++;
-          return users.find((user) => user.googleId === where.googleId) ?? null;
+          return structuredClone(
+            users.find((user) =>
+              where.googleId === undefined
+                ? user.email === where.email
+                : user.googleId === where.googleId,
+            ) ?? null,
+          );
         },
         create: async ({ data }: CreateUserArgs) => {
           calls.creates++;
@@ -74,13 +130,18 @@ function setup({
             ...data,
           };
           users.push(user);
-          return user;
+          return structuredClone(user);
         },
       },
       refreshToken: {
         deleteMany: async () => ({ count: 0 }),
         create: async () => {
           calls.refreshTokens++;
+        },
+      },
+      mfaChallenge: {
+        create: async () => {
+          calls.mfaChallenges++;
         },
       },
     },
@@ -129,28 +190,149 @@ test('returning Google user signs in without re-sending terms acceptance', async
   assert.equal(calls.creates, 0);
 });
 
+test('returning Google sign-in verifies the matching legacy email without replacing credentials', async () => {
+  const user: GoogleUser = {
+    id: 'legacy-linked-user',
+    email: 'google@example.invalid',
+    googleId: payload.sub,
+    passwordHash: 'legacy-password-hash',
+    emailVerifiedAt: null,
+    emailOwnershipClaimable: false,
+    role: 'ADMIN',
+  };
+  const { service, calls } = setup({ users: [user] });
+  const result = await service.googleAuth({ credential: 'token' });
+
+  assert.equal(result.user.emailVerified, true);
+  assert.equal(result.user.role, 'ADMIN');
+  assert.equal(user.passwordHash, 'legacy-password-hash');
+  assert.equal(user.googleId, payload.sub);
+  assert.equal(user.emailOwnershipClaimable, false);
+  assert.ok(user.emailVerifiedAt instanceof Date);
+  assert.equal(calls.verifications, 1);
+  assert.equal(calls.refreshTokens, 1);
+});
+
+test('returning verified Google sign-in keeps the original verification timestamp', async () => {
+  const verifiedAt = new Date('2026-01-01T00:00:00Z');
+  const user = {
+    id: 'verified-user',
+    email: 'google@example.invalid',
+    googleId: payload.sub,
+    emailVerifiedAt: verifiedAt,
+  };
+  const { service, calls } = setup({ users: [user] });
+  const result = await service.googleAuth({ credential: 'token' });
+
+  assert.equal(result.user.emailVerified, true);
+  assert.equal(user.emailVerifiedAt, verifiedAt);
+  assert.equal(calls.verifications, 0);
+});
+
+test('matching Google verification preserves legacy MFA and still requires its challenge', async () => {
+  const user: GoogleUser = {
+    id: 'mfa-linked-user',
+    email: 'google@example.invalid',
+    googleId: payload.sub,
+    passwordHash: 'legacy-password-hash',
+    emailVerifiedAt: null,
+    emailOwnershipClaimable: false,
+    twoFactorEnabled: true,
+    twoFactorSecret: 'legacy-secret',
+  };
+  const { service, calls } = setup({ users: [user] });
+  const result = await service.googleAuth({ credential: 'token' });
+
+  assert.equal(result.mfaRequired, true);
+  assert.ok(result.challengeToken);
+  assert.equal(user.twoFactorEnabled, true);
+  assert.equal(user.twoFactorSecret, 'legacy-secret');
+  assert.equal(user.passwordHash, 'legacy-password-hash');
+  assert.ok(user.emailVerifiedAt instanceof Date);
+  assert.equal(calls.mfaChallenges, 1);
+  assert.equal(calls.tokens, 0);
+  assert.equal(calls.refreshTokens, 0);
+});
+
+test('blocked returning Google account cannot be verified or issued a session', async () => {
+  const user: GoogleUser = {
+    id: 'blocked-user',
+    email: 'google@example.invalid',
+    googleId: payload.sub,
+    emailVerifiedAt: null,
+    isBlocked: true,
+  };
+  const { service, calls } = setup({ users: [user] });
+
+  await assert.rejects(service.googleAuth({ credential: 'token' }), hasStatus(403));
+  assert.equal(user.emailVerifiedAt, null);
+  assert.equal(calls.verifications, 0);
+  assert.equal(calls.tokens, 0);
+});
+
+for (const change of [
+  { passwordHash: 'recovered-password-hash' },
+  { googleId: null },
+  { email: 'new@example.invalid' },
+  { emailVerifiedAt: new Date('2026-02-01T00:00:00Z') },
+  { isBlocked: true },
+]) {
+  test(`returning Google verification cannot overwrite a concurrent account change: ${Object.keys(change)[0]}`, async () => {
+    const user: GoogleUser = {
+      id: 'changed-user',
+      email: 'google@example.invalid',
+      googleId: payload.sub,
+      passwordHash: 'old-password-hash',
+      emailVerifiedAt: null,
+      emailOwnershipClaimable: false,
+    };
+    const { service, calls } = setup({ users: [user] });
+    const update = service.prisma.user.update;
+    service.prisma.user.update = (args: UpdateUserArgs) => {
+      Object.assign(user, change);
+      return update(args);
+    };
+
+    await assert.rejects(service.googleAuth({ credential: 'token' }), hasStatus(401));
+    assert.equal(calls.verifications, 0);
+    assert.equal(calls.tokens, 0);
+    assert.equal(calls.refreshTokens, 0);
+    for (const [key, value] of Object.entries(change)) {
+      assert.deepEqual(user[key as keyof GoogleUser], value);
+    }
+  });
+}
+
 test('returning Google user is identified by subject even if their Google email changed', async () => {
   const user = {
     id: 'existing',
     email: 'old@example.invalid',
     googleId: payload.sub,
     role: 'PARTNER',
+    passwordHash: 'original-password-hash',
+    emailVerifiedAt: null,
   };
   const { service, calls } = setup({ users: [user] });
   const result = await service.googleAuth({ credential: 'token', acceptTerms: true });
   assert.equal(result.user.id, user.id);
   assert.equal(result.user.role, 'PARTNER');
+  assert.equal(result.user.emailVerified, false);
+  assert.equal(user.emailVerifiedAt, null);
+  assert.equal(user.email, 'old@example.invalid');
+  assert.equal(user.passwordHash, 'original-password-hash');
+  assert.equal(calls.verifications, 0);
   assert.equal(calls.creates, 0);
 });
 
 for (const googleId of [null, 'another-google-subject']) {
-  test(`email collision cannot grant access or link an account with googleId=${googleId}`, async () => {
+  test(`email collision with a verified account cannot grant access or link it with googleId=${googleId}`, async () => {
     const user = {
       id: 'victim',
       email: 'google@example.invalid',
       googleId,
       passwordHash: 'existing-password',
       role: 'ADMIN',
+      emailVerifiedAt: new Date('2026-01-01T00:00:00Z'),
     };
     const before = { ...user };
     const { service, users, calls } = setup({ users: [user] });

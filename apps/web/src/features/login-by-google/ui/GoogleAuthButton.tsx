@@ -1,6 +1,7 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
+import { Link, useLocation } from 'react-router-dom';
+import { readAuthNavigationState } from '@/entities/session';
+import { ApiError, getApiErrorCode, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
@@ -11,7 +12,16 @@ import { useGoogleAuth } from '../model/useGoogleAuth';
 
 const GOOGLE_AUTH_MESSAGES = defineMessages({
   en: {
-    loadFailed: 'Google sign-in could not be loaded. Please try again later.',
+    loadFailed: 'Google sign-in could not be loaded. Check your connection and try again.',
+    loading: 'Loading Google sign-in…',
+    signingIn: 'Signing in…',
+    accountExists:
+      'An account with this email already exists. Log in with your password, then connect Google in your account settings.',
+    blocked: 'This account is blocked. Contact the VIRaTeC team for help.',
+    sessionExpired:
+      'Your sign-in session could not be verified. Allow site cookies, reload this page and try again.',
+    rateLimited: 'Too many attempts. Please wait a moment and try again.',
+    resetPassword: 'Reset password',
     invalidCredential: 'We could not verify your Google account. Please try again.',
     notConfigured: 'Google sign-in is temporarily unavailable.',
     unexpectedError: 'An unexpected error occurred. Please try again later.',
@@ -21,7 +31,17 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     privacyLink: 'Privacy Policy',
   },
   uk: {
-    loadFailed: 'Не вдалося завантажити вхід через Google. Спробуйте пізніше.',
+    loadFailed:
+      'Не вдалося завантажити вхід через Google. Перевірте з’єднання та спробуйте ще раз.',
+    loading: 'Завантаження входу через Google…',
+    signingIn: 'Входимо…',
+    accountExists:
+      'Обліковий запис із цією поштою вже існує. Увійдіть із паролем, а потім підключіть Google у налаштуваннях облікового запису.',
+    blocked: 'Цей обліковий запис заблоковано. Зверніться до команди VIRaTeC по допомогу.',
+    sessionExpired:
+      'Не вдалося перевірити сеанс входу. Дозвольте cookie сайту, оновіть сторінку та спробуйте ще раз.',
+    rateLimited: 'Забагато спроб. Зачекайте трохи та спробуйте ще раз.',
+    resetPassword: 'Відновити пароль',
     invalidCredential: 'Не вдалося підтвердити ваш обліковий запис Google. Спробуйте ще раз.',
     notConfigured: 'Вхід через Google тимчасово недоступний.',
     unexpectedError: 'Сталася неочікувана помилка. Спробуйте пізніше.',
@@ -38,8 +58,12 @@ const getErrorMessage = (error: Error | null, t: GoogleAuthMessages, networkErro
   if (!error) return null;
   if (error instanceof ApiError && error.status === NETWORK_ERROR_STATUS) return networkError;
   if (error instanceof ApiError && error.status === 401) return t.invalidCredential;
+  if (error instanceof ApiError && error.status === 409) return t.accountExists;
+  if (getApiErrorCode(error) === 'CSRF_INVALID') return t.sessionExpired;
+  if (error instanceof ApiError && error.status === 403) return t.blocked;
+  if (error instanceof ApiError && error.status === 429) return t.rateLimited;
   if (error instanceof ApiError && error.status === 503) return t.notConfigured;
-  return error.message || t.unexpectedError;
+  return t.unexpectedError;
 };
 
 interface GoogleAuthButtonProps {
@@ -48,13 +72,15 @@ interface GoogleAuthButtonProps {
 }
 
 export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
+  const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const { mutate: authenticate, isPending, error } = useGoogleAuth();
   const t = useLocalized(GOOGLE_AUTH_MESSAGES);
   const common = useCommonMessages();
-  const { isConfigured, loadFailed } = useGoogleButton(containerRef, {
+  const { isConfigured, loadFailed, isLoading, retry } = useGoogleButton(containerRef, {
     text,
     onCredential: authenticate,
+    disabled: isPending,
   });
 
   if (!isConfigured) {
@@ -79,14 +105,20 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
     <div className="space-y-2">
       <div
         aria-busy={isPending || undefined}
+        inert={isPending}
         className={cn(
           'flex w-full items-center justify-center transition-opacity',
           isPending && 'pointer-events-none opacity-60',
           className,
         )}
       >
-        <div ref={containerRef} className="flex w-full justify-center" />
+        <div ref={containerRef} className="flex min-h-10 w-full justify-center" />
       </div>
+      {(isLoading || isPending) && (
+        <p role="status" className="text-center text-xs text-auth-muted">
+          {isPending ? t.signingIn : t.loading}
+        </p>
+      )}
       <p className="text-center text-xs leading-5 text-auth-muted">
         {t.agreePrefix}{' '}
         <Link to={ROUTES.TERMS} className="font-medium text-auth-navy underline">
@@ -102,6 +134,31 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
         <p role="alert" className="text-center text-xs text-auth-error">
           {errorMessage}
         </p>
+      )}
+      {loadFailed && (
+        <Button variant="outline" type="button" onClick={retry}>
+          {common.tryAgain}
+        </Button>
+      )}
+      {!loadFailed && error instanceof ApiError && error.status === 409 && (
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-medium text-auth-navy">
+          {location.pathname !== ROUTES.LOGIN && (
+            <Link
+              to={ROUTES.LOGIN}
+              state={readAuthNavigationState(location.state)}
+              className="underline"
+            >
+              {common.logIn}
+            </Link>
+          )}
+          <Link
+            to={ROUTES.FORGOT_PASSWORD}
+            state={readAuthNavigationState(location.state)}
+            className="underline"
+          >
+            {t.resetPassword}
+          </Link>
+        </div>
       )}
     </div>
   );

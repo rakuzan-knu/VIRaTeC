@@ -16,6 +16,7 @@ const DELETE_ACCOUNT_MESSAGES = defineMessages({
     submit: 'Delete permanently',
     cancel: 'Cancel',
     wrongPassword: 'The password is incorrect.',
+    tooMany: 'Too many attempts. Wait 15 minutes and try again.',
     mismatch: 'The email does not match your account.',
     unexpectedError: 'Could not delete the account. Please try again.',
   },
@@ -28,6 +29,7 @@ const DELETE_ACCOUNT_MESSAGES = defineMessages({
     submit: 'Видалити назавжди',
     cancel: 'Скасувати',
     wrongPassword: 'Неправильний пароль.',
+    tooMany: 'Забагато спроб. Зачекайте 15 хвилин і спробуйте ще раз.',
     mismatch: 'Адреса не збігається з вашим обліковим записом.',
     unexpectedError: 'Не вдалося видалити обліковий запис. Спробуйте ще раз.',
   },
@@ -56,11 +58,13 @@ export function DeleteAccountForm({ email, hasPassword }: DeleteAccountFormProps
     ? null
     : error instanceof ApiError && error.status === 403
       ? t.wrongPassword
-      : error instanceof ApiError && error.status === 400
-        ? t.mismatch
-        : error instanceof ApiError && error.status === NETWORK_ERROR_STATUS
-          ? common.networkError
-          : t.unexpectedError;
+      : error instanceof ApiError && error.status === 429
+        ? t.tooMany
+        : error instanceof ApiError && error.status === 400
+          ? t.mismatch
+          : error instanceof ApiError && error.status === NETWORK_ERROR_STATUS
+            ? common.networkError
+            : t.unexpectedError;
 
   const close = () => {
     setIsOpen(false);

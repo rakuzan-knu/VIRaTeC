@@ -15,7 +15,10 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ListProjectsQueryDto } from './dto/list-projects-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { StaffGuard } from '../common/guards/staff.guard';
+import { RequirePermissions } from '../common/decorators/staff.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { AdminPermission } from '@viratec/contracts';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -39,10 +42,12 @@ export class ProjectsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, StaffGuard)
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Register a new project in the community showcase' })
+  @ApiOperation({ summary: 'Register a new project in the community showcase (staff only)' })
   @ApiResponse({ status: 201, description: 'Project created' })
+  @ApiResponse({ status: 403, description: 'Staff access with content editing is required' })
   async create(@Body() dto: CreateProjectDto, @CurrentUser('id') userId: string) {
     return this.projectsService.create(dto, userId);
   }

@@ -15,9 +15,9 @@ import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { ListEventsQueryDto } from './dto/list-events-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from '../common/decorators/roles.decorator';
-import { UserRole } from '@viratec/contracts';
+import { StaffGuard } from '../common/guards/staff.guard';
+import { RequirePermissions } from '../common/decorators/staff.decorator';
+import { AdminPermission } from '@viratec/contracts';
 
 @ApiTags('Events')
 @Controller('events')
@@ -41,11 +41,12 @@ export class EventsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.RESEARCHER)
+  @UseGuards(JwtAuthGuard, StaffGuard)
+  @RequirePermissions(AdminPermission.EVENTS_MANAGE)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new event (Professors, Researchers, Admins only)' })
+  @ApiOperation({ summary: 'Create a new event (staff with event management only)' })
   @ApiResponse({ status: 201, description: 'Event created' })
+  @ApiResponse({ status: 403, description: 'Staff access with event management is required' })
   async create(@Body() dto: CreateEventDto) {
     return this.eventsService.create(dto);
   }

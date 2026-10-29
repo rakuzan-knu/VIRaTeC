@@ -13,7 +13,10 @@ import { ResearchService } from './research.service';
 import { CreatePaperDto } from './dto/create-paper.dto';
 import { ListPapersQueryDto } from './dto/list-papers-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { StaffGuard } from '../common/guards/staff.guard';
+import { RequirePermissions } from '../common/decorators/staff.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { AdminPermission } from '@viratec/contracts';
 
 @ApiTags('Research')
 @Controller('research')
@@ -35,10 +38,12 @@ export class ResearchController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, StaffGuard)
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Publish or register a new research paper' })
+  @ApiOperation({ summary: 'Publish or register a new research paper (staff only)' })
   @ApiResponse({ status: 201, description: 'Paper published' })
+  @ApiResponse({ status: 403, description: 'Staff access with content editing is required' })
   async create(@Body() dto: CreatePaperDto, @CurrentUser('id') userId: string) {
     return this.researchService.create(dto, userId);
   }
