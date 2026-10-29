@@ -193,6 +193,17 @@ test('auth forms fit a narrow screen, resize the Google button and pass accessib
     })
     .toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  const expectLogoToFit = async () => {
+    const logo = page.getByRole('link', { name: 'VIRaTeC home', exact: true });
+    const bounds = await logo.boundingBox();
+    const available = await logo.evaluate(
+      (element) => element.parentElement?.getBoundingClientRect().width ?? 0,
+    );
+    expect(bounds).not.toBeNull();
+    expect(bounds!.width).toBeLessThanOrEqual(available);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
+  };
+  await expectLogoToFit();
   await page.getByText('Email address', { exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Email address', exact: true })).toBeFocused();
   await expect(page.getByRole('textbox', { name: 'Email address', exact: true })).toHaveAttribute(
@@ -206,6 +217,7 @@ test('auth forms fit a narrow screen, resize the Google button and pass accessib
   await page.screenshot({ path: testInfo.outputPath('login-mobile.png'), fullPage: true });
   await page.getByRole('link', { name: 'Create an account', exact: true }).click();
   await expect(googleButton(page)).toHaveText('Google signup_with en');
+  await expectLogoToFit();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   const registerA11y = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
