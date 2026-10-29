@@ -1,7 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { readAuthNavigationState } from '@/entities/session';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
@@ -79,6 +80,7 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ socialAuth }: RegisterFormProps) {
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { mutate: register, isPending, error } = useRegister();
   const t = useLocalized(REGISTER_MESSAGES);
@@ -252,7 +254,11 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
 
       <p className="text-center text-xs text-auth-muted">
         {t.haveAccount}{' '}
-        <Link to={ROUTES.LOGIN} className="font-medium text-auth-navy hover:underline">
+        <Link
+          to={ROUTES.LOGIN}
+          state={readAuthNavigationState(location.state)}
+          className="font-medium text-auth-navy hover:underline"
+        >
           {common.logIn}
         </Link>
       </p>
