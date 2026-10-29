@@ -262,6 +262,27 @@ export class AuthService {
       }
     }
 
+    if (!user.emailVerifiedAt && user.email === email && !user.isBlocked) {
+      user = await this.prisma.user
+        .update({
+          where: {
+            id: user.id,
+            email,
+            passwordHash: user.passwordHash,
+            AND: { googleId: payload.sub },
+            emailVerifiedAt: null,
+            isBlocked: false,
+          },
+          data: { emailVerifiedAt: new Date(), emailOwnershipClaimable: false },
+        })
+        .catch((error: unknown) => {
+          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            throw new UnauthorizedException('The account changed. Sign in again.');
+          }
+          throw error;
+        });
+    }
+
     return this.completeSignIn(user, client);
   }
 

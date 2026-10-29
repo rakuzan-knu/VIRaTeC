@@ -188,7 +188,11 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
 
       <p className="text-center text-xs text-auth-muted">
         {t.noAccount}{' '}
-        <Link to={ROUTES.REGISTER} className="font-medium text-auth-navy hover:underline">
+        <Link
+          to={ROUTES.REGISTER}
+          state={readAuthNavigationState(location.state)}
+          className="font-medium text-auth-navy hover:underline"
+        >
           {t.createAccount}
         </Link>
       </p>

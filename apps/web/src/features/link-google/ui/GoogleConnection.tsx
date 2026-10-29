@@ -127,9 +127,11 @@ function GoogleConnectButton({
   onCredential,
 }: GoogleConnectButtonProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isConfigured, loadFailed } = useGoogleButton(containerRef, {
+  const common = useCommonMessages();
+  const { isConfigured, loadFailed, retry } = useGoogleButton(containerRef, {
     text: 'continue_with',
     onCredential,
+    disabled: isPending,
   });
 
   return (
@@ -138,6 +140,7 @@ function GoogleConnectButton({
       {isConfigured ? (
         <div
           aria-busy={isPending || undefined}
+          inert={isPending}
           className={cn(
             'w-full max-w-[320px] transition-opacity',
             isPending && 'pointer-events-none opacity-60',
@@ -148,7 +151,20 @@ function GoogleConnectButton({
       ) : (
         <p className="text-sm text-viratec-subtle">{unavailableMessage}</p>
       )}
-      {loadFailed && <p className="text-sm text-state-error">{loadFailedMessage}</p>}
+      {loadFailed && (
+        <div className="space-y-2">
+          <p role="alert" className="text-sm text-state-error">
+            {loadFailedMessage}
+          </p>
+          <button
+            type="button"
+            onClick={retry}
+            className="cursor-pointer text-sm text-viratec-accent underline"
+          >
+            {common.tryAgain}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
