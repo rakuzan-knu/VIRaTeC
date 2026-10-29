@@ -29,6 +29,9 @@ const REGISTER_MESSAGES = defineMessages({
     submit: 'Create new account',
     haveAccount: 'Already have an account?',
     accountExists: 'An account with this email address already exists.',
+    accountExistsSignIn: 'Sign in',
+    accountExistsReset: 'Reset password',
+    tooMany: 'Too many sign-up attempts. Try again in an hour.',
     invalidData: 'Invalid registration data. Please check your inputs.',
     unexpectedError: 'An unexpected error occurred. Please try again later.',
     validation: {
@@ -51,6 +54,9 @@ const REGISTER_MESSAGES = defineMessages({
     submit: 'Створити обліковий запис',
     haveAccount: 'Вже маєте обліковий запис?',
     accountExists: 'Обліковий запис із цією адресою електронної пошти вже існує.',
+    accountExistsSignIn: 'Увійти',
+    accountExistsReset: 'Відновити пароль',
+    tooMany: 'Забагато спроб реєстрації. Спробуйте за годину.',
     invalidData: 'Некоректні дані для реєстрації. Перевірте введені значення.',
     unexpectedError: 'Сталася неочікувана помилка. Спробуйте пізніше.',
     validation: {
@@ -68,6 +74,7 @@ const getErrorMessage = (error: Error | null, t: RegisterMessages, networkError:
   if (!error) return null;
   if (error instanceof ApiError && error.status === NETWORK_ERROR_STATUS) return networkError;
   if (error instanceof ApiError && error.status === 409) return t.accountExists;
+  if (error instanceof ApiError && error.status === 429) return t.tooMany;
   if (error instanceof ApiError && error.status === 400) return error.message || t.invalidData;
   return error.message || t.unexpectedError;
 };
@@ -82,7 +89,7 @@ interface RegisterFormProps {
 export function RegisterForm({ socialAuth }: RegisterFormProps) {
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate: register, isPending, error } = useRegister();
+  const { mutate: register, isPending, error, variables } = useRegister();
   const t = useLocalized(REGISTER_MESSAGES);
   const common = useCommonMessages();
   const schema = useMemo(() => createRegisterFormSchema(t.validation), [t]);
@@ -102,6 +109,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
   });
 
   const serverErrorMessage = getErrorMessage(error, t, common.networkError);
+  const isAccountTaken = error instanceof ApiError && error.status === 409;
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(8px,1.4svh,20px)]">
@@ -129,6 +137,20 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
           className="p-3 text-xs text-auth-error bg-red-50 border border-red-200 rounded-lg"
         >
           {serverErrorMessage}
+          {isAccountTaken && (
+            <span className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
+              <Link
+                to={ROUTES.LOGIN}
+                state={{ ...readAuthNavigationState(location.state), email: variables?.email }}
+                className="font-medium text-auth-navy underline"
+              >
+                {t.accountExistsSignIn}
+              </Link>
+              <Link to={ROUTES.FORGOT_PASSWORD} className="font-medium text-auth-navy underline">
+                {t.accountExistsReset}
+              </Link>
+            </span>
+          )}
         </div>
       )}
 

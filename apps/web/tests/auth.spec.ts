@@ -225,3 +225,25 @@ test('auth forms fit a narrow screen, resize the Google button and pass accessib
   expect(registerA11y.violations).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('register-mobile.png'), fullPage: true });
 });
+
+test('registration with a taken email offers sign-in with the email and password recovery', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/auth/register', (route) =>
+    route.fulfill({ status: 409, json: { message: 'Raw backend English conflict' } }),
+  );
+  await page.goto(fixture);
+  await page.getByRole('link', { name: 'Create an account', exact: true }).click();
+  await page.getByLabel('Full name').fill('Taken Person');
+  await page.getByLabel(/email/i).fill('taken@example.test');
+  await page.getByLabel(/^password$/i).fill('Password123');
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Create new account' }).click();
+
+  const alert = page.getByRole('alert');
+  await expect(alert).toContainText('already exists');
+  await expect(page.getByText('Raw backend English conflict')).toHaveCount(0);
+  await expect(alert.getByRole('link', { name: 'Reset password', exact: true })).toBeVisible();
+  await alert.getByRole('link', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByLabel(/email/i)).toHaveValue('taken@example.test');
+});
