@@ -8,6 +8,8 @@ import { createAssetRegistry } from './tokens.ts';
 import { renderModule } from './render.ts';
 import { CONTENT_TYPES, DOMAINS } from './domains/index.ts';
 import { WEB_ROOT, hasFlag, printList, runScript } from './cli.ts';
+import { pullHomePublications } from './records.ts';
+import { resolveSiteUrl } from '../site-url.ts';
 
 const unique = (lines: string[]) => [...new Set(lines)];
 
@@ -29,6 +31,15 @@ const pull = async () => {
   printList('Issues', unique(issues));
   if (issues.length > 0) {
     throw new Error('Pull aborted: fix the entries above in Contentful. No files were written.');
+  }
+
+  const apiOrigin = resolveSiteUrl(process.env.VITE_SITE_URL);
+  try {
+    modules.push(await pullHomePublications(collection, config.locales.en, apiOrigin));
+  } catch (error) {
+    console.warn(
+      `Home page publications were not refreshed from ${apiOrigin}, keeping the committed snapshot: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 
   const synced = await syncAssets(assets.ids, collection.assets, config.locales);

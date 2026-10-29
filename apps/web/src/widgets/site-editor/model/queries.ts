@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type {
-  CreateRecordRequestDto,
-  RecordResource,
-  SaveContentEntryRequestDto,
-  SaveRecordRequestDto,
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import {
+  recordResourceOf,
+  type CreateRecordRequestDto,
+  type RecordResource,
+  type SaveContentEntryRequestDto,
+  type SaveRecordRequestDto,
 } from '@viratec/contracts';
 import {
   PREVIEW_CONTENT_QUERY_KEY,
@@ -15,7 +16,6 @@ import {
   createEditorEntry,
   createRecord,
   deleteRecord,
-  discardContentChange,
   fetchContentChanges,
   fetchEditorAsset,
   fetchEditorEntry,
@@ -26,20 +26,48 @@ import {
   saveRecord,
   uploadEditorAsset,
 } from '../api/editorApi';
+import { discardChange } from './discard';
 
 export const EDITOR_QUERY_KEY = ['site-editor'] as const;
+
+export const editorKeys = {
+  entry: (id: string | null) => [...EDITOR_QUERY_KEY, 'entry', id] as const,
+  record: (resource: RecordResource | null, key: string | null) =>
+    [...EDITOR_QUERY_KEY, 'record', resource, key] as const,
+};
 
 const noRetryOnClientErrors = (failureCount: number, error: unknown) =>
   failureCount < 2 && !(error instanceof Error && 'status' in error && Number(error.status) < 500);
 
 export const useEditorEntry = (id: string | null) =>
   useQuery({
-    queryKey: [...EDITOR_QUERY_KEY, 'entry', id],
+    queryKey: editorKeys.entry(id),
     queryFn: () => fetchEditorEntry(id ?? ''),
     enabled: Boolean(id),
     retry: noRetryOnClientErrors,
     staleTime: 0,
   });
+
+const PREFETCH_STALE_MS = 10_000;
+
+export const prefetchEditorSource = (
+  queryClient: QueryClient,
+  contentTypeId: string,
+  id: string,
+) => {
+  const resource = recordResourceOf(contentTypeId);
+  return resource
+    ? queryClient.prefetchQuery({
+        queryKey: editorKeys.record(resource, id),
+        queryFn: () => fetchRecord(resource, id),
+        staleTime: PREFETCH_STALE_MS,
+      })
+    : queryClient.prefetchQuery({
+        queryKey: editorKeys.entry(id),
+        queryFn: () => fetchEditorEntry(id),
+        staleTime: PREFETCH_STALE_MS,
+      });
+};
 
 export const useEditorAsset = (id: string | null) =>
   useQuery({
@@ -65,14 +93,16 @@ export const useContentChanges = () =>
     refetchInterval: 30_000,
   });
 
+export const refreshRecordQueries = (queryClient: QueryClient) => {
+  invalidateRecordDrafts();
+  return queryClient.invalidateQueries({
+    predicate: (query) => RECORD_QUERY_ROOTS.includes(String(query.queryKey[0])),
+  });
+};
+
 export const useRefreshRecordQueries = () => {
   const queryClient = useQueryClient();
-  return useCallback(() => {
-    invalidateRecordDrafts();
-    return queryClient.invalidateQueries({
-      predicate: (query) => RECORD_QUERY_ROOTS.includes(String(query.queryKey[0])),
-    });
-  }, [queryClient]);
+  return useCallback(() => refreshRecordQueries(queryClient), [queryClient]);
 };
 
 const useRefreshAfter = () => {
@@ -95,7 +125,7 @@ const useRefreshRecordsAfter = () => {
 
 export const useEditorRecord = (resource: RecordResource | null, key: string | null) =>
   useQuery({
-    queryKey: [...EDITOR_QUERY_KEY, 'record', resource, key],
+    queryKey: editorKeys.record(resource, key),
     queryFn: () => fetchRecord(resource ?? 'project', key ?? ''),
     enabled: Boolean(resource && key),
     retry: noRetryOnClientErrors,
@@ -167,7 +197,7 @@ export const useUploadAsset = () => {
 
 export const useDiscardChange = () => {
   const refresh = useRefreshAfter();
-  return useMutation({ mutationFn: discardContentChange, onSuccess: refresh });
+  return useMutation({ mutationFn: discardChange, onSuccess: refresh });
 };
 
 export const usePublishContent = () => {

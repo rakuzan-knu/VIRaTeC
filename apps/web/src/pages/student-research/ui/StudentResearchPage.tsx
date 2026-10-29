@@ -56,6 +56,7 @@ export function StudentResearchPage() {
                   <li key={project.title}>
                     <InfoCard
                       image={project.image}
+                      imageAlt={project.imageAlt}
                       title={project.title}
                       description={project.description}
                       linkLabel={common.viewProject}

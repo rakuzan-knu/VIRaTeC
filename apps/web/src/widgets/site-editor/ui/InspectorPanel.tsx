@@ -1,30 +1,39 @@
-import { useState } from 'react';
 import { AdminPermission } from '@viratec/contracts';
 import { useSessionStore } from '@/entities/session';
 import { NO_PERMISSIONS } from '../model/permissions';
 import { useLocale } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
+import { entrySaveKey } from '../model/autosave';
+import { flushDrafts } from '../model/autosaveRegistry';
 import {
-  changeLabel,
   entryLabel,
   findContentType,
-  normalizeFields,
-  sameFields,
+  isCollectionType,
   withFieldValue,
 } from '../model/contentModel';
-import { isConflict, useEditorErrorMessage } from '../model/errors';
-import { entrySaveAction } from '../model/history';
+import { useState } from 'react';
+import { useEditorErrorMessage } from '../model/errors';
+import { entryDiff } from '../model/revisionDiff';
+import { typeName } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
-import { useEditorEntry, useEntryReferences, useSaveEntry } from '../model/queries';
+import { useEditorEntry, useEntryReferences } from '../model/queries';
 import { useCurrentSelection, useSiteEditorStore } from '../model/store';
-import { SHORTCUTS } from '../model/shortcuts';
+import { AddSiblingEntryButton } from './AddSiblingEntryButton';
 import { EditorPanel, useSaveShortcut } from './EditorPanel';
-import { FieldEditor } from './FieldEditor';
+import { EntryFieldList } from './EntryFieldList';
+import { SaveStatusLine } from './SaveStatusLine';
+import { TranslateAllButton } from './TranslateAllButton';
+import {
+  applyEntryTranslations,
+  missingEntryTranslations,
+  translateMissing,
+} from '../model/translateAll';
+import { VersionHistoryDialog } from './VersionHistoryDialog';
 
 export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
   const selection = useCurrentSelection();
-  const { open, setDraft, dropDraft, pushAction, announce } = useSiteEditorStore.getState();
+  const { open, setDraft } = useSiteEditorStore.getState();
   const entryId = selection?.entryId ?? null;
   const draft = useSiteEditorStore((state) => (entryId ? state.drafts[entryId] : undefined));
   const permissions = useSessionStore((state) => state.user?.permissions ?? NO_PERMISSIONS);
@@ -33,119 +42,56 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
 
   const entry = useEditorEntry(entryId);
   const references = useEntryReferences(entryId);
-  const save = useSaveEntry();
-  const saveError = useEditorErrorMessage(save.error);
   const loadError = useEditorErrorMessage(entry.error);
-  const [savedAt, setSavedAt] = useState<number | null>(null);
 
   const data = entry.data;
   const type = findContentType(data?.contentTypeId);
   const fields = draft?.fields ?? data?.fields ?? {};
-  const isStale = Boolean(draft && data && draft.version !== data.version);
+  const saveKey = entryId ? entrySaveKey(entryId) : null;
+  const [isHistoryOpen, setHistoryOpen] = useState(false);
 
   const updateField = (fieldId: string, localeCode: string, value: unknown) => {
     if (!data) return;
-    const next = withFieldValue(fields, fieldId, localeCode, value);
-    setSavedAt(null);
-    if (sameFields(next, data.fields)) dropDraft(data.id);
-    else setDraft(data.id, { version: draft?.version ?? data.version, fields: next });
+    setDraft(data.id, {
+      version: draft?.version ?? data.version,
+      base: draft?.base ?? data.fields,
+      fields: withFieldValue(fields, fieldId, localeCode, value),
+    });
   };
 
-  const submit = () => {
-    if (!data || !draft || !type) return;
-    const fieldsToSave = normalizeFields(draft.fields);
-    const label = changeLabel(
-      type.name,
-      entryLabel(data.contentTypeId, draft.fields, data.locales, locale),
-    );
-    save.mutate(
-      { id: data.id, dto: { version: draft.version, fields: fieldsToSave, label } },
-      {
-        onSuccess: () => {
-          dropDraft(data.id);
-          setSavedAt(Date.now());
-          pushAction(
-            entrySaveAction({
-              entry: data,
-              after: fieldsToSave,
-              label: t.history.saved(label),
-              changeLabel: label,
-            }),
-          );
-          announce(t.announce.saved);
-        },
-      },
-    );
+  const persistField = (fieldId: string, localeCode: string, value: unknown) => {
+    if (!saveKey) return;
+    updateField(fieldId, localeCode, value);
+    void flushDrafts(saveKey);
   };
 
-  useSaveShortcut(submit);
+  useSaveShortcut(() => {
+    if (saveKey) void flushDrafts(saveKey);
+  });
 
   if (!selection) return null;
 
   const label = data ? entryLabel(data.contentTypeId, fields, data.locales, locale) : t.loading;
   const status = !data
     ? null
-    : draft
-      ? null
-      : data.publishedVersion === null
-        ? t.inspector.notPublished
-        : data.version > data.publishedVersion + 1
-          ? t.inspector.draft
-          : t.inspector.published;
+    : data.publishedVersion === null
+      ? t.inspector.notPublished
+      : data.version > data.publishedVersion + 1
+        ? t.inspector.draft
+        : t.inspector.published;
 
   return (
     <EditorPanel
       t={t}
       label={t.inspector.title}
-      kicker={type?.name ?? t.inspector.title}
+      kicker={type ? typeName(t.fields, type.id, type.name) : t.inspector.title}
       title={label}
       status={status}
+      focusTitle={!selection.fieldId}
+      saveKey={saveKey ?? undefined}
+      onHistory={data && type ? () => setHistoryOpen(true) : undefined}
       footer={
-        data && type && canEdit ? (
-          <>
-            {(isStale || isConflict(save.error)) && (
-              <div role="alert" className="flex items-center gap-3 text-[14px] text-state-error">
-                <span className="flex-1">{t.inspector.conflict}</span>
-                <Button
-                  label={t.inspector.reload}
-                  variant="secondary"
-                  onClick={() => {
-                    dropDraft(data.id);
-                    save.reset();
-                    void entry.refetch();
-                  }}
-                />
-              </div>
-            )}
-            {saveError && !isConflict(save.error) && (
-              <p role="alert" className="text-[14px] text-state-error">
-                {saveError}
-              </p>
-            )}
-            {savedAt && !draft && (
-              <p role="status" className="text-[14px] text-viratec-cyan">
-                {t.inspector.saved}
-              </p>
-            )}
-            <div className="flex gap-3">
-              <Button
-                label={t.inspector.save}
-                aria-keyshortcuts={SHORTCUTS.save.aria}
-                className="flex-1"
-                disabled={!draft || isStale}
-                loading={save.isPending}
-                onClick={submit}
-              />
-              <Button
-                label={t.inspector.reset}
-                variant="secondary"
-                disabled={!draft || save.isPending}
-                onClick={() => dropDraft(data.id)}
-              />
-            </div>
-            <p className="text-caption text-text-subtle">{t.saveHint(SHORTCUTS.save.label)}</p>
-          </>
-        ) : null
+        data && type && canEdit && saveKey ? <SaveStatusLine saveKey={saveKey} t={t} /> : null
       }
     >
       <p className="text-[13px] text-text-muted">{t.inspectorHint}</p>
@@ -191,22 +137,55 @@ export function InspectorPanel({ t }: { t: SiteEditorMessages }) {
               })}
             </nav>
           )}
-          {type.fields.map((field) => (
-            <FieldEditor
-              key={field.id}
-              field={field}
-              values={fields[field.id]}
-              locales={data.locales}
-              focusLocale={selection.locale ?? locale}
-              isFocused={field.id === selection.fieldId}
-              readOnly={
-                !canEdit || (field.type === 'Link' && field.linkType === 'Asset' && !canUpload)
-              }
+          {canEdit && isCollectionType(type.id) && (
+            <AddSiblingEntryButton type={type} fields={fields} locales={data.locales} t={t} />
+          )}
+          {canEdit && (
+            <TranslateAllButton
+              count={missingEntryTranslations(data.contentTypeId, fields, data.locales).length}
               t={t}
-              onChange={(localeCode, value) => updateField(field.id, localeCode, value)}
+              onRun={async () => {
+                const results = await translateMissing(
+                  missingEntryTranslations(data.contentTypeId, fields, data.locales),
+                );
+                const current = useSiteEditorStore.getState().drafts[data.id];
+                setDraft(data.id, {
+                  version: current?.version ?? data.version,
+                  base: current?.base ?? data.fields,
+                  fields: applyEntryTranslations(
+                    current?.fields ?? data.fields,
+                    data.locales,
+                    results,
+                  ),
+                });
+                return results.length;
+              }}
             />
-          ))}
+          )}
+          <EntryFieldList
+            type={type}
+            fields={fields}
+            locales={data.locales}
+            focusedFieldId={selection.fieldId}
+            focusLocale={selection.locale ?? locale}
+            canEdit={canEdit}
+            canUpload={canUpload}
+            t={t}
+            onChange={updateField}
+            onPersist={persistField}
+          />
         </>
+      )}
+      {data && type && (
+        <VersionHistoryDialog
+          open={isHistoryOpen}
+          contentTypeId={data.contentTypeId}
+          id={data.id}
+          title={label}
+          t={t}
+          diffOf={(version) => entryDiff(data.contentTypeId, fields, version, data.locales, t)}
+          onClose={() => setHistoryOpen(false)}
+        />
       )}
     </EditorPanel>
   );

@@ -92,6 +92,7 @@ export function AboutInitiativePage() {
                 <ResponsiveImage
                   src={content.founderPhoto}
                   sizes="(min-width: 1024px) 320px, 160px"
+                  faceCrop={1}
                   alt={content.founderName}
                   width={320}
                   height={320}

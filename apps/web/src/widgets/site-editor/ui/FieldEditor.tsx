@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import type { ContentLocales } from '@viratec/contracts';
 import { LOCALES, type Locale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
@@ -7,11 +7,19 @@ import { Input } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
 import { allowedValues, type FieldDefinition } from '../model/contentModel';
+import { fieldText, optionName } from '../model/fieldText';
+import { entryLengthLimit, withLengthHint } from '../model/lengthLimits';
 import type { SiteEditorMessages } from '../model/messages';
 import { AssetField } from './AssetField';
 import { EntryLinksField } from './EntryLinksField';
+import { PublicationKeysField } from './PublicationKeysField';
+import { AltHint } from './AltHint';
+import { TranslationHint } from './TranslationHint';
+
+const ALT_FIELD_ID = 'imageAlt';
 
 export interface FieldEditorProps {
+  contentTypeId: string;
   field: FieldDefinition;
   values: Record<string, unknown> | undefined;
   locales: ContentLocales;
@@ -20,13 +28,17 @@ export interface FieldEditorProps {
   readOnly: boolean;
   t: SiteEditorMessages;
   onChange: (localeCode: string, value: unknown) => void;
+  onPersist?: (localeCode: string, value: unknown) => void;
 }
 
 const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 
 function ScalarInput({
   field,
+  limit,
   label,
+  lang,
+  helperText,
   value,
   readOnly,
   autoFocus,
@@ -34,14 +46,16 @@ function ScalarInput({
   onChange,
 }: {
   field: FieldDefinition;
+  limit?: number;
   label: string;
+  lang?: Locale;
+  helperText: string | undefined;
   value: unknown;
   readOnly: boolean;
   autoFocus: boolean;
   t: SiteEditorMessages;
   onChange: (value: unknown) => void;
 }) {
-  const helperText = field.help;
   const options = allowedValues(field);
 
   if (field.type === 'Boolean') {
@@ -53,7 +67,10 @@ function ScalarInput({
           autoFocus={autoFocus}
           onChange={(event) => onChange(event.target.checked)}
         />
-        {label}
+        <span className="flex flex-col">
+          {label}
+          {helperText && <span className="text-[13px] text-text-muted">{helperText}</span>}
+        </span>
       </label>
     );
   }
@@ -66,7 +83,7 @@ function ScalarInput({
         disabled={readOnly}
         autoFocus={autoFocus}
         placeholder={t.inspector.noValue}
-        options={options.map((option) => ({ value: option, label: option }))}
+        options={options.map((option) => ({ value: option, label: optionName(t.fields, option) }))}
         onChange={(event) => onChange(event.target.value || undefined)}
       />
     );
@@ -75,7 +92,8 @@ function ScalarInput({
     return (
       <Textarea
         label={label}
-        helperText={helperText}
+        lang={lang}
+        helperText={withLengthHint(helperText, value, limit, t)}
         value={asString(value)}
         readOnly={readOnly}
         autoFocus={autoFocus}
@@ -89,6 +107,7 @@ function ScalarInput({
     return (
       <Textarea
         label={label}
+        lang={lang}
         helperText={[helperText, t.inspector.onePerLine].filter(Boolean).join(' ')}
         value={lines.join('\n')}
         readOnly={readOnly}
@@ -105,6 +124,7 @@ function ScalarInput({
     return (
       <Input
         label={label}
+        lang={lang}
         helperText={helperText}
         type="number"
         inputMode="numeric"
@@ -123,6 +143,7 @@ function ScalarInput({
     return (
       <Input
         label={label}
+        lang={lang}
         helperText={helperText}
         type="date"
         value={asString(value).slice(0, 10)}
@@ -135,7 +156,8 @@ function ScalarInput({
   return (
     <Input
       label={label}
-      helperText={helperText}
+      lang={lang}
+      helperText={withLengthHint(helperText, value, limit, t)}
       value={asString(value)}
       readOnly={readOnly}
       autoFocus={autoFocus}
@@ -146,6 +168,7 @@ function ScalarInput({
 }
 
 export function FieldEditor({
+  contentTypeId,
   field,
   values,
   locales,
@@ -154,9 +177,13 @@ export function FieldEditor({
   readOnly,
   t,
   onChange,
+  onPersist,
 }: FieldEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const title = field.required ? `${field.name} · ${t.inspector.required}` : field.name;
+  const helpId = useId();
+  const text = fieldText(t.fields, contentTypeId, field);
+  const title = field.required ? `${text.label} · ${t.inspector.required}` : text.label;
+  const limit = entryLengthLimit(contentTypeId, field.id);
 
   useEffect(() => {
     if (isFocused) ref.current?.scrollIntoView({ block: 'center' });
@@ -164,10 +191,22 @@ export function FieldEditor({
 
   const isLink = field.type === 'Link' || (field.type === 'Array' && field.items?.type === 'Link');
   let body;
-  if (field.type === 'Link' && field.linkType === 'Asset') {
+  if (field.source === 'publication') {
+    body = (
+      <PublicationKeysField
+        label={title}
+        help={text.help}
+        value={values?.[locales.en]}
+        readOnly={readOnly}
+        t={t}
+        onChange={(value) => onChange(locales.en, value)}
+      />
+    );
+  } else if (field.type === 'Link' && field.linkType === 'Asset') {
     body = (
       <AssetField
         label={title}
+        help={text.help}
         value={values?.[locales.en]}
         readOnly={readOnly}
         required={field.required}
@@ -180,22 +219,45 @@ export function FieldEditor({
       <EntryLinksField
         field={field}
         label={title}
+        help={text.help}
         value={values?.[locales.en]}
         locales={locales}
         readOnly={readOnly}
         t={t}
         onChange={(value) => onChange(locales.en, value)}
+        onPersist={onPersist && ((value) => onPersist(locales.en, value))}
       />
     );
   } else if (field.localized && field.type !== 'Boolean') {
     body = (
-      <fieldset className="flex min-w-0 flex-col gap-3">
-        <legend className="mb-2 text-label font-medium text-text-primary">{title}</legend>
+      <fieldset
+        aria-describedby={text.help ? helpId : undefined}
+        className="flex min-w-0 flex-col gap-3"
+      >
+        <legend className="mb-1 text-label font-medium text-text-primary">{title}</legend>
+        {text.help && (
+          <p id={helpId} className="-mt-1 text-[13px] text-text-muted">
+            {text.help}
+          </p>
+        )}
+        <TranslationHint
+          values={{ en: values?.[locales.en], uk: values?.[locales.uk] }}
+          readOnly={readOnly}
+          t={t}
+          onCopy={(from, to) => onChange(locales[to], values?.[locales[from]])}
+          onTranslated={(to, text) => onChange(locales[to], text)}
+        />
+        {field.id === ALT_FIELD_ID && (
+          <AltHint values={{ en: values?.[locales.en], uk: values?.[locales.uk] }} t={t} />
+        )}
         {LOCALES.map((locale) => (
           <ScalarInput
             key={locale}
             field={field}
+            limit={limit}
             label={t.locales[locale]}
+            lang={locale}
+            helperText={undefined}
             value={values?.[locales[locale]]}
             readOnly={readOnly}
             autoFocus={isFocused && locale === focusLocale}
@@ -209,7 +271,9 @@ export function FieldEditor({
     body = (
       <ScalarInput
         field={field}
+        limit={limit}
         label={title}
+        helperText={text.help}
         value={values?.[locales.en]}
         readOnly={readOnly}
         autoFocus={isFocused}

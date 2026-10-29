@@ -1,9 +1,14 @@
 import { z } from 'zod';
 import { ProjectStatus, FacultyDivision } from './enums.js';
 
+export const COVER_FOCUS_PATTERN = /^(100|[1-9]?\d)% (100|[1-9]?\d)%$/;
+
+export const CoverFocusSchema = z.string().regex(COVER_FOCUS_PATTERN);
+
 export const ProjectTextSchema = z.object({
   title: z.string(),
   description: z.string(),
+  coverAlt: z.string().max(300).optional(),
 });
 
 export const ProjectTranslationsSchema = z.object({
@@ -22,6 +27,8 @@ export const ProjectSchema = z.object({
   tags: z.array(z.string()).default([]),
   repositoryUrl: z.string().url().optional(),
   demoUrl: z.string().url().optional(),
+  coverUrl: z.string().url().nullable().optional(),
+  coverFocus: CoverFocusSchema.nullable().optional(),
   translations: ProjectTranslationsSchema.nullable(),
   leadId: z.string().uuid().nullable(),
   createdAt: z.date(),

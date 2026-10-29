@@ -29,7 +29,7 @@ export function DesktopNavDropdown({
         aria-controls={menuId}
         onClick={(event) => (event.detail === 0 ? onToggle() : onOpen())}
         className={cn(
-          'flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-2 text-[15px] transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime',
+          'flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-2 text-[15px] whitespace-nowrap transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime',
           isOpen ? 'text-white' : 'text-viratec-light/72',
         )}
       >

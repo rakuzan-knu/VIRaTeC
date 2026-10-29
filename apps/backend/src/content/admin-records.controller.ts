@@ -9,6 +9,7 @@ import { Client, type ClientContext } from '../common/decorators/client-context.
 import type { AuthenticatedUser } from '../security/authenticated-user';
 import { CreateRecordDto, DeleteRecordDto, SaveRecordDto } from './dto/record-editor.dto';
 import { RecordKeyPipe, RecordResourcePipe } from './record.pipes';
+import { RecordEditGuard } from './record-edit.guard';
 import { RecordEditorService } from './record-editor.service';
 
 @ApiTags('Content editor')
@@ -37,6 +38,7 @@ export class AdminRecordsController {
   }
 
   @Put(':resource/:key')
+  @UseGuards(RecordEditGuard)
   @ApiOperation({ summary: 'Save a draft of a record' })
   save(
     @CurrentUser() actor: AuthenticatedUser,
@@ -49,6 +51,7 @@ export class AdminRecordsController {
   }
 
   @Post(':resource')
+  @UseGuards(RecordEditGuard)
   @ApiOperation({ summary: 'Create a draft of a new record' })
   create(
     @CurrentUser() actor: AuthenticatedUser,
@@ -60,6 +63,7 @@ export class AdminRecordsController {
   }
 
   @Delete(':resource/:key')
+  @UseGuards(RecordEditGuard)
   @ApiOperation({ summary: 'Mark a record for deletion on the next publish' })
   remove(
     @CurrentUser() actor: AuthenticatedUser,

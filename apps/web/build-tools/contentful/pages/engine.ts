@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { RecordResource } from '@viratec/contracts';
 import { type Locale } from '../../../src/shared/i18n/model/types.ts';
 import {
   entryListField,
@@ -14,6 +15,7 @@ import {
   entryLinksSchema,
   nonEmpty,
   type EntryReader,
+  entryTarget,
 } from '../entry-reader.ts';
 import { type ContentDomain, type PullContext } from '../domain.ts';
 import {
@@ -31,6 +33,7 @@ export interface CardMapping {
   linkLabel?: string;
   link?: string;
   image?: string;
+  imageAlt?: string;
 }
 
 type FieldKind =
@@ -40,6 +43,7 @@ type FieldKind =
   | { kind: 'stats' }
   | { kind: 'steps' }
   | { kind: 'cards'; card: CardMapping }
+  | { kind: 'recordKeys'; resource: RecordResource }
   | { kind: 'image' };
 
 export type PageField = FieldKind & { path: string; help?: string };
@@ -56,7 +60,7 @@ type Json = Record<string, unknown>;
 
 const PARAGRAPH_SEPARATOR = /\n\s*\n/;
 
-const fieldId = (fieldPath: string) =>
+export const fieldId = (fieldPath: string) =>
   fieldPath
     .split('.')
     .map((part, index) => (index === 0 ? part : part[0]?.toUpperCase() + part.slice(1)))
@@ -108,6 +112,12 @@ const toDefinition = (spec: PageField): FieldDefinition => {
       return entryListField(id, name, [CARD_TYPE_ID], options);
     case 'image':
       return imageField(id, name, options);
+    case 'recordKeys':
+      return field(id, name, 'Array', {
+        help: spec.help,
+        items: { type: 'Symbol', validations: [] },
+        source: spec.resource,
+      });
   }
 };
 
@@ -132,6 +142,7 @@ const pullPage = (spec: PageSpec, context: PullContext) => {
   if (entries.length !== 1) {
     context.diagnostics.report(
       `${spec.name}: expected exactly 1 published entry, found ${entries.length}`,
+      { kind: 'singleEntry', value: spec.typeId, count: entries.length },
     );
     return [];
   }
@@ -151,6 +162,8 @@ const pullPage = (spec: PageSpec, context: PullContext) => {
         value = item.optional
           ? reader.read(id, nonEmpty, locale)
           : reader.require(id, nonEmpty, locale);
+      } else if (item.kind === 'recordKeys') {
+        value = reader.read(id, z.array(nonEmpty)) ?? [];
       } else if (item.kind === 'symbols') {
         value = reader.require(id, z.array(nonEmpty), locale);
       } else if (item.kind === 'paragraphs') {
@@ -200,6 +213,7 @@ const pullPage = (spec: PageSpec, context: PullContext) => {
             if (!cardReader.target?.to) {
               context.diagnostics.report(
                 `${fieldLabel} ${child.sys.id}: needs a link to a site page`,
+                { kind: 'needsPageLink', target: entryTarget(child, 'link') },
               );
             }
             output[card.link] = cardReader.target?.to;
@@ -207,6 +221,9 @@ const pullPage = (spec: PageSpec, context: PullContext) => {
           if (card.image) {
             const imageId = cardReader.reader.read('image', assetLinkSchema)?.sys.id;
             if (imageId) output[card.image] = context.assets.reference(imageId);
+          }
+          if (card.imageAlt) {
+            output[card.imageAlt] = cardReader.reader.read('imageAlt', nonEmpty, locale) ?? '';
           }
           return [output];
         });

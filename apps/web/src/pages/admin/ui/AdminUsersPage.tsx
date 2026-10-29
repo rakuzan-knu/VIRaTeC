@@ -16,31 +16,10 @@ import {
 import { useRunWithStepUp } from '../model/stepUp';
 import { ADMIN_CARD_CLASS, AdminSectionHeader } from './AdminLayout';
 import { AccessDialog } from './AccessDialog';
+import { Badge } from './Badge';
 
 const ACTION_CLASS =
   'rounded-full border border-white/16 px-3 py-1.5 text-xs font-medium text-white whitespace-nowrap transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime disabled:opacity-50';
-
-function Badge({
-  tone,
-  children,
-}: {
-  tone: 'lime' | 'cyan' | 'muted' | 'error';
-  children: string;
-}) {
-  return (
-    <span
-      className={cn(
-        'inline-flex rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap',
-        tone === 'lime' && 'bg-viratec-lime/14 text-viratec-lime',
-        tone === 'cyan' && 'bg-viratec-cyan/14 text-viratec-cyan',
-        tone === 'muted' && 'bg-white/8 text-viratec-soft',
-        tone === 'error' && 'bg-red-500/14 text-red-300',
-      )}
-    >
-      {children}
-    </span>
-  );
-}
 
 export function AdminUsersPage() {
   const t = useAdminMessages();

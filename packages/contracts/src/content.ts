@@ -14,6 +14,37 @@ export interface ContentLocales {
   uk: string;
 }
 
+export type ContentLocaleKey = keyof ContentLocales;
+
+export const TRANSLATION_LIMITS = { maxTexts: 20, maxTextLength: 4000 } as const;
+
+export const PRESENCE_LIMITS = {
+  maxKeys: 20,
+  maxKeyLength: 200,
+  activeMs: 45_000,
+  heartbeatMs: 20_000,
+} as const;
+
+export interface UpdatePresenceRequestDto {
+  resourceKeys: string[];
+}
+
+export interface EditorPresenceDto {
+  resourceKey: string;
+  userId: string;
+  name: string;
+}
+
+export interface TranslateContentRequestDto {
+  from: ContentLocaleKey;
+  to: ContentLocaleKey;
+  texts: string[];
+}
+
+export interface TranslateContentResultDto {
+  translations: string[];
+}
+
 export interface ContentEntryDto {
   id: string;
   contentTypeId: string;
@@ -55,6 +86,26 @@ export interface ContentAssetDto {
 }
 
 export type ContentResourceKind = 'ENTRY' | 'ASSET' | 'PROJECT' | 'EVENT' | 'PUBLICATION';
+
+export type ContentRevisionSource = 'site' | 'contentful';
+
+export const CONTENT_REVISION_LIMIT = 30;
+
+export interface ContentRevisionDto {
+  id: string;
+  source: ContentRevisionSource;
+  createdAt: string;
+  label: string | null;
+  actor: { id: string; name: string } | null;
+  data: Record<string, unknown>;
+}
+
+export interface RestoreContentRevisionRequestDto {
+  resourceType: Exclude<ContentResourceKind, 'ASSET'>;
+  resourceId: string;
+  revisionId: string;
+  label?: string;
+}
 
 export interface ContentChangeDto {
   id: string;

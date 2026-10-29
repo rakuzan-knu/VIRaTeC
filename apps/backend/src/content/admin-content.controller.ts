@@ -13,7 +13,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ContentResourceType } from '@prisma/client';
 import { AdminPermission } from '@viratec/contracts';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { StaffGuard } from '../common/guards/staff.guard';
@@ -25,8 +26,15 @@ import { parseContentTypes } from './content.controller';
 import { ContentService } from './content.service';
 import { ContentEditorService } from './content-editor.service';
 import { ContentIdPipe } from './content-id.pipe';
+import { PresenceService } from './presence.service';
+import { TranslationService } from './translation.service';
 import {
   CreateContentEntryDto,
+  DeleteContentEntryDto,
+  TranslateContentDto,
+  UpdatePresenceDto,
+  ListContentRevisionsQueryDto,
+  RestoreContentRevisionDto,
   PublishContentDto,
   SaveContentEntryDto,
   UploadContentAssetDto,
@@ -40,6 +48,8 @@ export class AdminContentController {
   constructor(
     private readonly content: ContentService,
     private readonly editor: ContentEditorService,
+    private readonly translation: TranslationService,
+    private readonly presence: PresenceService,
   ) {}
 
   @Get('preview')
@@ -90,6 +100,45 @@ export class AdminContentController {
     return this.editor.createEntry(actor, dto, client);
   }
 
+  @Delete('entries/:id')
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
+  @ApiOperation({
+    summary: 'Delete an entry: a draft is archived now, a published entry is archived on publish',
+  })
+  @ApiResponse({ status: 404, description: 'Entry not found' })
+  remove(
+    @CurrentUser() actor: AuthenticatedUser,
+    @Param('id', ContentIdPipe) id: string,
+    @Body() dto: DeleteContentEntryDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.editor.deleteEntry(actor, id, dto.label, client);
+  }
+
+  @Put('presence')
+  @RequirePermissions(AdminPermission.CONTENT_VIEW)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({
+    summary: 'Mark what the editor has open and list other editors active on the same items',
+  })
+  updatePresence(@CurrentUser() actor: AuthenticatedUser, @Body() dto: UpdatePresenceDto) {
+    return this.presence.heartbeat(actor.id, dto);
+  }
+
+  @Post('translate')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
+  @ApiOperation({ summary: 'Translate short texts between Ukrainian and English' })
+  @ApiResponse({ status: 422, description: 'TRANSLATION_REFUSED: the text cannot be translated' })
+  @ApiResponse({ status: 429, description: 'Too many translations in an hour' })
+  @ApiResponse({
+    status: 503,
+    description: 'TRANSLATION_NOT_CONFIGURED or TRANSLATION_UNAVAILABLE',
+  })
+  translate(@CurrentUser() actor: AuthenticatedUser, @Body() dto: TranslateContentDto) {
+    return this.translation.translate(actor, dto);
+  }
+
   @Get('assets/:id')
   @RequirePermissions(AdminPermission.CONTENT_VIEW)
   @Header('Cache-Control', 'no-store')
@@ -107,6 +156,27 @@ export class AdminContentController {
     @Client() client: ClientContext,
   ) {
     return this.editor.uploadAsset(actor, dto, client);
+  }
+
+  @Get('revisions')
+  @RequirePermissions(AdminPermission.CONTENT_VIEW)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Published versions of an entry or a record, newest first' })
+  revisions(@Query() query: ListContentRevisionsQueryDto) {
+    return this.editor.listRevisions(ContentResourceType[query.resourceType], query.resourceId);
+  }
+
+  @Post('revisions/restore')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermissions(AdminPermission.CONTENT_EDIT)
+  @ApiOperation({ summary: 'Turn a published version back into a draft' })
+  @ApiResponse({ status: 404, description: 'Version not found' })
+  restore(
+    @CurrentUser() actor: AuthenticatedUser,
+    @Body() dto: RestoreContentRevisionDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.editor.restoreRevision(actor, dto, client);
   }
 
   @Get('changes')
@@ -131,7 +201,7 @@ export class AdminContentController {
   @Post('publish')
   @HttpCode(HttpStatus.OK)
   @RequirePermissions(AdminPermission.CONTENT_PUBLISH)
-  @RequireStepUp()
+  @RequireStepUp('publish')
   @ApiOperation({ summary: 'Publish saved drafts' })
   publish(
     @CurrentUser() actor: AuthenticatedUser,

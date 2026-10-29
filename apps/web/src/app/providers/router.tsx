@@ -87,6 +87,10 @@ export const routes: RouteObject[] = [
             path: ROUTES.ADMIN_AUDIT,
             lazy: async () => ({ Component: (await import('@/pages/admin')).AdminAuditPage }),
           },
+          {
+            path: ROUTES.ADMIN_CONTENT,
+            lazy: async () => ({ Component: (await import('@/pages/admin')).AdminContentPage }),
+          },
         ],
       },
       {

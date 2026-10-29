@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Eye, EyeOff, LocateFixed, Pencil, Plus, Trash2 } from 'lucide-react';
 import { AdminPermission } from '@viratec/contracts';
 import { useSessionStore } from '@/entities/session';
+import { PAGE_BLOCK_TYPE_ID } from '@/shared/config/pageBlock';
+import { PAGE_BLOCKS } from '@/shared/config/pageBlocks.generated';
 import {
   CUSTOM_SECTION_TYPES,
   PAGE_LABELS,
@@ -10,8 +12,8 @@ import {
   type CustomSectionType,
   type PageSectionItem,
 } from '@/shared/config/pageLayout';
-import { useLocale } from '@/shared/i18n';
-import { cn, useContentPreviewStore } from '@/shared/lib';
+import { useLocale, type Locale } from '@/shared/i18n';
+import { cn, useContentPreviewStore, useLiveContent } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
 import { Select } from '@/shared/ui/Select';
 import { isConflict, useEditorErrorMessage } from '../model/errors';
@@ -21,6 +23,7 @@ import type { SiteEditorMessages } from '../model/messages';
 import { NO_PERMISSIONS } from '../model/permissions';
 import { useCreateEntry, useEditorEntry, useSaveEntry } from '../model/queries';
 import { useSiteEditorStore } from '../model/store';
+import { findSectionField } from '../model/useCanvasTargets';
 import { ConfirmDialog } from './ConfirmDialog';
 import { IconButton } from './IconButton';
 import { SHORTCUTS } from '../model/shortcuts';
@@ -33,8 +36,31 @@ const scrollToSection = (sectionId: string) =>
     block: 'start',
   });
 
+const editBuiltinSection = (sectionId: string) => {
+  scrollToSection(sectionId);
+  const address = findSectionField(sectionId);
+  if (!address) return;
+  useSiteEditorStore.getState().select({
+    entryId: address.entryId,
+    contentTypeId: address.contentTypeId,
+    fieldId: address.fieldId,
+    locale: address.locale,
+  });
+};
+
+const editBlock = (sectionId: string, blockId: string, locale: Locale) => {
+  scrollToSection(sectionId);
+  useSiteEditorStore.getState().select({
+    entryId: blockId,
+    contentTypeId: PAGE_BLOCK_TYPE_ID,
+    fieldId: 'title',
+    locale,
+  });
+};
+
 export function StructurePanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
+  const blocks = useLiveContent(PAGE_BLOCK_TYPE_ID, 'PAGE_BLOCKS', PAGE_BLOCKS)[locale];
   const activeLayout = useContentPreviewStore((state) => state.activeLayout);
   const focus = useSiteEditorStore((state) => state.structure);
   const page = activeLayout?.page ?? null;
@@ -232,8 +258,9 @@ export function StructurePanel({ t }: { t: SiteEditorMessages }) {
       ) : (
         <ol className="flex flex-col gap-2">
           {sections.map((section, index) => {
-            const label = sectionLabel(section, page, locale, t);
-            const isExpanded = expanded === section.id && section.type !== 'builtin';
+            const label = sectionLabel(section, page, locale, t, blocks);
+            const isExpanded =
+              expanded === section.id && section.type !== 'builtin' && section.type !== 'block';
             return (
               <li
                 key={section.id}
@@ -269,7 +296,23 @@ export function StructurePanel({ t }: { t: SiteEditorMessages }) {
                   )}
                   {canEdit && (
                     <>
-                      {section.type !== 'builtin' && (
+                      {section.type === 'builtin' ? (
+                        !section.hidden && (
+                          <IconButton
+                            size="sm"
+                            icon={Pencil}
+                            label={t.structure.edit(label)}
+                            onClick={() => editBuiltinSection(section.id)}
+                          />
+                        )
+                      ) : section.type === 'block' ? (
+                        <IconButton
+                          size="sm"
+                          icon={Pencil}
+                          label={t.structure.edit(label)}
+                          onClick={() => editBlock(section.id, section.blockId, locale)}
+                        />
+                      ) : (
                         <IconButton
                           size="sm"
                           icon={Pencil}
@@ -371,8 +414,14 @@ export function StructurePanel({ t }: { t: SiteEditorMessages }) {
       )}
       <ConfirmDialog
         open={Boolean(deleting)}
-        title={deleting ? t.structure.deleteTitle(sectionLabel(deleting, page, locale, t)) : ''}
-        description={t.structure.deleteText}
+        title={
+          deleting ? t.structure.deleteTitle(sectionLabel(deleting, page, locale, t, blocks)) : ''
+        }
+        description={
+          deleting?.type === 'block'
+            ? `${t.structure.deleteText} ${t.structure.blockKept}`
+            : t.structure.deleteText
+        }
         confirmLabel={t.structure.deleteConfirm}
         cancelLabel={t.keepEditing}
         closeLabel={t.close}

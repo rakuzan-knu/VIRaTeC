@@ -91,6 +91,7 @@ export function GlobalCollaborationPage() {
                   <li key={format.title}>
                     <InfoCard
                       image={format.image}
+                      imageAlt={format.imageAlt}
                       title={format.title}
                       description={format.description}
                       linkLabel={common.learnMore}

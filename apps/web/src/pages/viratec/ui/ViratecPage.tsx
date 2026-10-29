@@ -119,6 +119,7 @@ export function ViratecPage() {
                   <li key={principle.title}>
                     <InfoCard
                       image={principle.image}
+                      imageAlt={principle.imageAlt}
                       title={principle.title}
                       description={principle.description}
                       linkLabel={common.learnMore}

@@ -1,7 +1,12 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AdminPermission, StaffRole } from '@viratec/contracts';
-import { OWNER_ONLY_KEY, PERMISSIONS_KEY, STEP_UP_KEY } from '../decorators/staff.decorator';
+import {
+  OWNER_ONLY_KEY,
+  PERMISSIONS_KEY,
+  STEP_UP_KEY,
+  type StepUpScope,
+} from '../decorators/staff.decorator';
 import type { AuthenticatedUser } from '../../security/authenticated-user';
 
 export const STAFF_SESSION_MAX_AGE_MS = 12 * 60 * 60_000;
@@ -16,6 +21,11 @@ export type StaffAccessErrorCode =
 
 const deny = (code: StaffAccessErrorCode, message: string) =>
   new ForbiddenException({ message, code });
+
+const isFuture = (date: Date | null) => Boolean(date && date.getTime() >= Date.now());
+
+const isElevated = (user: AuthenticatedUser, scope: StepUpScope) =>
+  isFuture(user.elevatedUntil) || (scope === 'publish' && isFuture(user.publishElevatedUntil));
 
 @Injectable()
 export class StaffGuard implements CanActivate {
@@ -53,10 +63,8 @@ export class StaffGuard implements CanActivate {
       throw deny('PERMISSION_DENIED', 'You do not have permission to perform this action');
     }
 
-    if (
-      this.read<boolean>(STEP_UP_KEY, context) &&
-      (!user.elevatedUntil || user.elevatedUntil.getTime() < Date.now())
-    ) {
+    const stepUp = this.read<StepUpScope>(STEP_UP_KEY, context);
+    if (stepUp && !isElevated(user, stepUp)) {
       throw deny('STEP_UP_REQUIRED', 'Confirm this action with a two-factor code');
     }
 

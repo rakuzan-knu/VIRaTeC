@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { hasStatus } from './support.ts';
+import { hasCode, hasStatus } from './support.ts';
 import { RecordEditorService, RecordPublishError } from '../dist/content/record-editor.service.js';
+import { RecordEditGuard } from '../dist/content/record-edit.guard.js';
 
 interface Translation {
   title: string;
@@ -14,6 +15,7 @@ interface ProjectData {
   tags: string[];
   repositoryUrl: string | null;
   demoUrl: string | null;
+  coverUrl: string | null;
   translations: Record<'en' | 'uk', Translation>;
 }
 
@@ -62,6 +64,7 @@ const projectRow = (overrides: Partial<ProjectRow> = {}): ProjectRow => ({
   tags: ['ai'],
   repositoryUrl: null,
   demoUrl: null,
+  coverUrl: null,
   translations: {
     en: { title: 'Old title', description: 'Old description' },
     uk: { title: 'Стара назва', description: 'Старий опис' },
@@ -76,6 +79,7 @@ const projectData = (overrides: Partial<ProjectData> = {}): ProjectData => ({
   tags: ['ai'],
   repositoryUrl: null,
   demoUrl: null,
+  coverUrl: null,
   translations: {
     en: { title: 'New title', description: 'New description' },
     uk: { title: 'Нова назва', description: 'Новий опис' },
@@ -268,4 +272,26 @@ test('publishing refuses drafts with empty required fields', async () => {
       error instanceof RecordPublishError && error.message.includes('translations.uk.title'),
   );
   assert.equal(calls.updates.length, 0);
+});
+
+const guardContext = (user: { id: string; permissions: string[] }, resource: string) => ({
+  switchToHttp: () => ({ getRequest: () => ({ user, params: { resource } }) }),
+});
+
+test('the record edit guard blocks staff who can only view content', () => {
+  const guard = new RecordEditGuard();
+  assert.throws(
+    () => guard.canActivate(guardContext(viewer, 'project')),
+    hasCode(403, 'PERMISSION_DENIED'),
+  );
+  assert.equal(guard.canActivate(guardContext(editor, 'project')), true);
+});
+
+test('the record edit guard lets event moderators edit events only', () => {
+  const guard = new RecordEditGuard();
+  assert.equal(guard.canActivate(guardContext(eventsModerator, 'event')), true);
+  assert.throws(
+    () => guard.canActivate(guardContext(eventsModerator, 'publication')),
+    hasCode(403, 'PERMISSION_DENIED'),
+  );
 });

@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useLocale } from '@/shared/i18n';
-import { fetchProject, fetchProjects } from '../api/projectApi';
+import { useRecordOverlay } from '@/shared/lib';
+import { PROJECT_PREVIEW, fetchProject, fetchProjects } from '../api/projectApi';
 import { localizeProject } from '../lib/localize';
 import type { Project } from './types';
 
@@ -13,9 +14,10 @@ export const projectKeys = {
 
 export function useProjects(tag?: string) {
   const locale = useLocale();
+  const overlay = useRecordOverlay(PROJECT_PREVIEW);
   const localize = useCallback(
-    (projects: Project[]) => projects.map((project) => localizeProject(project, locale)),
-    [locale],
+    (projects: Project[]) => overlay(projects).map((project) => localizeProject(project, locale)),
+    [locale, overlay],
   );
   return useQuery({
     queryKey: projectKeys.list(tag),
@@ -28,7 +30,11 @@ export function useProjects(tag?: string) {
 
 export function useProject(projectId: string | undefined) {
   const locale = useLocale();
-  const localize = useCallback((project: Project) => localizeProject(project, locale), [locale]);
+  const overlay = useRecordOverlay(PROJECT_PREVIEW);
+  const localize = useCallback(
+    (project: Project) => localizeProject(overlay([project])[0] ?? project, locale),
+    [locale, overlay],
+  );
   return useQuery({
     queryKey: projectKeys.detail(projectId ?? ''),
     queryFn: () => fetchProject(projectId ?? ''),

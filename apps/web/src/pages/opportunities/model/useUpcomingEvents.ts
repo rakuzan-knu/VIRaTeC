@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ROUTES } from '@/shared/config/routes';
 import { INTL_LOCALE, defineMessages, useLocale, type Locale } from '@/shared/i18n';
-import { fetchEvents, type EventResponse } from '../api/eventsApi';
+import { useRecordOverlay } from '@/shared/lib';
+import { EVENT_PREVIEW, fetchEvents, type EventResponse } from '../api/eventsApi';
 import type { Opportunity } from './content';
 
 const eventKeys = {
@@ -31,15 +32,16 @@ const toOpportunity = (event: EventResponse, locale: Locale): Opportunity => {
 
 export function useUpcomingEvents() {
   const locale = useLocale();
+  const overlay = useRecordOverlay(EVENT_PREVIEW);
   const select = useCallback(
     (events: EventResponse[]) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return events
+      return overlay(events)
         .filter((event) => new Date(event.endDate) >= today)
         .map((event) => toOpportunity(event, locale));
     },
-    [locale],
+    [locale, overlay],
   );
   const query = useQuery({
     queryKey: eventKeys.upcoming(),

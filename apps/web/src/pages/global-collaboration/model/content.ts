@@ -13,6 +13,7 @@ interface Format {
   description: string;
   to: string;
   image?: string;
+  imageAlt?: string;
 }
 
 export interface GlobalCollaborationContent {

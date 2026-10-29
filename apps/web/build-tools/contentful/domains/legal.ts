@@ -13,7 +13,13 @@ import {
   localizedField,
   type ContentTypeDefinition,
 } from '../content-types.ts';
-import { createReader, entryLinksSchema, nonEmpty, type EntryReader } from '../entry-reader.ts';
+import {
+  createReader,
+  entryLinksSchema,
+  entryTarget,
+  nonEmpty,
+  type EntryReader,
+} from '../entry-reader.ts';
 import { type ContentDomain, type PullContext } from '../domain.ts';
 import { resolveEntry } from './blocks.ts';
 
@@ -131,6 +137,11 @@ const readSection = (
     if (!header || rows.some((row) => row.length !== header.length)) {
       context.diagnostics.report(
         `${label} (${locale}): every table line needs ${header?.length ?? 0} cells`,
+        {
+          kind: 'tableCells',
+          target: entryTarget(reader.entry, 'table', locale),
+          count: header?.length ?? 0,
+        },
       );
       return undefined;
     }
@@ -158,7 +169,10 @@ export const legalDomain: ContentDomain = {
     const [settings] = context.collection.byType.get('siteSettings') ?? [];
     const email = settings?.fields.contactEmail?.[context.locales.en];
     if (typeof email !== 'string') {
-      context.diagnostics.report('legal: the contact email from Site settings is required');
+      context.diagnostics.report('legal: the contact email from Site settings is required', {
+        kind: 'contactEmailMissing',
+        ...(settings && { target: entryTarget(settings, 'contactEmail') }),
+      });
       return [];
     }
     const withEmail = (text: string) => {
@@ -212,7 +226,10 @@ export const legalDomain: ContentDomain = {
 
     const missing = DOCUMENT_KEYS.filter((key) => !documents.has(key));
     if (missing.length > 0) {
-      context.diagnostics.report(`legal: missing published documents ${missing.join(', ')}`);
+      context.diagnostics.report(`legal: missing published documents ${missing.join(', ')}`, {
+        kind: 'legalDocumentsMissing',
+        value: missing.join(', '),
+      });
       return [];
     }
 

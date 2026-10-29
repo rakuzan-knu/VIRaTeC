@@ -1,11 +1,25 @@
 import { z } from 'zod';
 import { PublicationType } from './enums.js';
+import { CoverFocusSchema } from './projects.js';
 
 export const PublicationBlockSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('paragraph'), text: z.string() }),
   z.object({ kind: z.literal('heading'), text: z.string() }),
   z.object({ kind: z.literal('quote'), text: z.string(), author: z.string() }),
+  z.object({
+    kind: z.literal('list'),
+    ordered: z.boolean(),
+    items: z.array(z.string().max(2000)).max(200),
+  }),
+  z.object({
+    kind: z.literal('image'),
+    url: z.string().url().max(2048),
+    alt: z.string().max(300),
+    caption: z.string().max(300),
+  }),
 ]);
+
+export type PublicationBlockDto = z.infer<typeof PublicationBlockSchema>;
 
 export const PublicationDetailTextSchema = z.object({
   heroTitle: z.string(),
@@ -24,6 +38,7 @@ export const PublicationTextSchema = z.object({
   title: z.string(),
   source: z.string(),
   excerpt: z.string(),
+  coverAlt: z.string().max(300).optional(),
   detail: PublicationDetailTextSchema.optional(),
 });
 
@@ -43,6 +58,7 @@ export const PublicationSchema = z.object({
   isFeatured: z.boolean(),
   readMoreLink: z.boolean(),
   coverKey: z.string().nullable(),
+  coverFocus: CoverFocusSchema.nullable().optional(),
   sourceUrl: z.string().nullable(),
   pdfUrl: z.string().nullable(),
   detailSource: z.string().nullable(),

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { EventType, FacultyDivision, ProjectStatus, PublicationType } from './enums.js';
 import { EventTextSchema } from './events.js';
-import { ProjectTextSchema } from './projects.js';
+import { CoverFocusSchema, ProjectTextSchema } from './projects.js';
 import { PublicationContentSchema } from './publications.js';
 
 export const RECORD_RESOURCES = ['project', 'event', 'publication'] as const;
@@ -81,6 +81,16 @@ export const RECORD_DEFINITIONS: Record<RecordResource, RecordDefinition> = {
       { path: 'tags', name: 'Tags', kind: 'stringList', help: 'Tags filter the project list.' },
       { path: 'repositoryUrl', name: 'Repository URL', kind: 'url' },
       { path: 'demoUrl', name: 'Demo URL', kind: 'url' },
+      {
+        path: 'coverUrl',
+        name: 'Cover photo',
+        kind: 'url',
+        help: 'Without a photo the card shows a picture for the research area.',
+      },
+      { path: 'coverFocus', name: 'Photo focus', kind: 'text' },
+      localized('translations.{locale}.coverAlt', 'Photo description', 'text', {
+        help: 'Describe what is in the photo. Blind visitors hear this text.',
+      }),
     ],
   },
   event: {
@@ -142,6 +152,10 @@ export const RECORD_DEFINITIONS: Record<RecordResource, RecordDefinition> = {
       { path: 'sourceUrl', name: 'Source URL', kind: 'url' },
       { path: 'pdfUrl', name: 'PDF URL', kind: 'url' },
       { path: 'coverKey', name: 'Cover image key', kind: 'text' },
+      { path: 'coverFocus', name: 'Photo focus', kind: 'text' },
+      localized('content.{locale}.coverAlt', 'Photo description', 'text', {
+        help: 'Describe what is in the photo. Blind visitors hear this text.',
+      }),
       { path: 'detailSource', name: 'Detail source', kind: 'text' },
       localized('content.{locale}.detail.heroTitle', 'Detail title', 'text'),
       localized('content.{locale}.detail.heroAccent', 'Detail title accent', 'text'),
@@ -172,6 +186,8 @@ export const ProjectRecordSchema = z.object({
   tags: z.array(z.string().max(64)).max(30),
   repositoryUrl: optionalUrl,
   demoUrl: optionalUrl,
+  coverUrl: optionalUrl.default(null),
+  coverFocus: CoverFocusSchema.nullable().default(null),
   translations: z.object({ en: ProjectTextSchema, uk: ProjectTextSchema }),
 });
 
@@ -198,6 +214,7 @@ export const PublicationRecordSchema = z.object({
   isFeatured: z.boolean(),
   readMoreLink: z.boolean(),
   coverKey: z.string().max(200).nullable(),
+  coverFocus: CoverFocusSchema.nullable().default(null),
   sourceUrl: optionalUrl,
   pdfUrl: optionalUrl,
   detailSource: z.string().max(2048).nullable(),

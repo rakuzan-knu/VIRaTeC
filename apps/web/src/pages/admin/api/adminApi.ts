@@ -5,6 +5,9 @@ import type {
   AdminPermission,
   AdminUserDto,
   AuditLogEntryDto,
+  RecordData,
+  RecordDraftDto,
+  RecordResource,
   StaffRole,
   UpdateStaffAccessRequestDto,
 } from '@viratec/contracts';
@@ -54,3 +57,47 @@ export const revokeUserSessions = (userId: string) =>
     `/admin/users/${encodeURIComponent(userId)}/sessions/revoke`,
     undefined,
   );
+
+export type ContentItemStatus = 'published' | 'draft' | 'new' | 'deleted';
+
+export interface ContentListItem {
+  key: string;
+  data: RecordData;
+  status: ContentItemStatus;
+}
+
+const CONTENT_LIST_PATHS: Record<RecordResource, string> = {
+  publication: '/publications',
+  event: '/events?limit=100',
+  project: '/projects?limit=100',
+};
+
+const contentKeyOf = (resource: RecordResource, data: RecordData) =>
+  String(resource === 'publication' ? data.slug : data.id);
+
+const draftStatus = (draft: RecordDraftDto): ContentItemStatus =>
+  draft.isDeleted ? 'deleted' : draft.isNew ? 'new' : 'draft';
+
+export const fetchContentList = async (resource: RecordResource): Promise<ContentListItem[]> => {
+  const [published, drafts] = await Promise.all([
+    api.get<RecordData[]>(CONTENT_LIST_PATHS[resource], { cache: 'no-cache' }),
+    api.get<RecordDraftDto[]>('/admin/records/drafts'),
+  ]);
+  const own = new Map(
+    drafts.filter((draft) => draft.resource === resource).map((draft) => [draft.key, draft]),
+  );
+  const existing = published.map((data): ContentListItem => {
+    const key = contentKeyOf(resource, data);
+    const draft = own.get(key);
+    own.delete(key);
+    return draft
+      ? { key, data: { ...data, ...draft.data }, status: draftStatus(draft) }
+      : { key, data, status: 'published' };
+  });
+  const created = [...own.values()].map((draft): ContentListItem => ({
+    key: draft.key,
+    data: draft.data,
+    status: draftStatus(draft),
+  }));
+  return [...created, ...existing];
+};

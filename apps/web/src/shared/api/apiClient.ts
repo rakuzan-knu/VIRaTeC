@@ -27,6 +27,7 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface RequestOptions {
   retryOnUnauthorized?: boolean;
+  cache?: RequestCache;
 }
 
 type UnauthorizedHandler = () => Promise<boolean>;
@@ -108,7 +109,7 @@ class ApiClient {
     method: HttpMethod,
     endpoint: string,
     body: unknown,
-    { retryOnUnauthorized = true }: RequestOptions,
+    { retryOnUnauthorized = true, cache }: RequestOptions,
     retriedCsrf = false,
   ): Promise<T> {
     let res: Response;
@@ -118,6 +119,7 @@ class ApiClient {
         credentials: 'include',
         headers: await this.getHeaders(method, body !== undefined),
         body: body === undefined ? undefined : JSON.stringify(body),
+        cache,
       });
     } catch {
       throw new ApiError(NETWORK_ERROR_STATUS, 'Network request failed');
@@ -126,7 +128,13 @@ class ApiClient {
     if (res.status === 401 && retryOnUnauthorized && this.unauthorizedHandler) {
       const refreshed = await this.unauthorizedHandler();
       if (refreshed) {
-        return this.request<T>(method, endpoint, body, { retryOnUnauthorized: false }, retriedCsrf);
+        return this.request<T>(
+          method,
+          endpoint,
+          body,
+          { retryOnUnauthorized: false, cache },
+          retriedCsrf,
+        );
       }
     }
 
@@ -140,7 +148,7 @@ class ApiClient {
 
       if (res.status === 403 && !retriedCsrf && extractErrorCode(errData) === 'CSRF_INVALID') {
         await this.refreshCsrfToken();
-        return this.request<T>(method, endpoint, body, { retryOnUnauthorized }, true);
+        return this.request<T>(method, endpoint, body, { retryOnUnauthorized, cache }, true);
       }
 
       const message = extractMessage(errData) ?? `API Error: ${res.status} ${res.statusText}`;

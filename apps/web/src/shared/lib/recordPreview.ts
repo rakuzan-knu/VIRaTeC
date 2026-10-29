@@ -1,6 +1,9 @@
+import { useCallback, useDeferredValue } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import {
   LOCALE_PLACEHOLDER,
   RECORD_DEFINITIONS,
+  readRecordValue,
   recordTypeId,
   type RecordData,
   type RecordDraftDto,
@@ -8,7 +11,12 @@ import {
 } from '@viratec/contracts';
 import { api } from '@/shared/api/apiClient';
 import { LOCALES } from '@/shared/i18n';
-import { encodeFieldMark, useContentPreviewStore } from './contentPreview';
+import {
+  contentAssetIdFromUrl,
+  encodeFieldMark,
+  registerAssetAddress,
+  useContentPreviewStore,
+} from './contentPreview';
 
 export const RECORD_QUERY_ROOTS: readonly string[] = ['projects', 'publications', 'events'];
 
@@ -25,6 +33,8 @@ const loadDrafts = () =>
   }));
 
 const MARKED_KINDS = new Set(['text', 'longText', 'blocks']);
+
+const MARKED_BLOCK_KEYS = new Set(['text', 'author', 'caption']);
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -48,7 +58,9 @@ const markValue = (value: unknown, marker: string): unknown => {
         ? Object.fromEntries(
             Object.entries(block).map(([key, item]) => [
               key,
-              key !== 'kind' && typeof item === 'string' && item.trim() ? `${item}${marker}` : item,
+              MARKED_BLOCK_KEYS.has(key) && typeof item === 'string' && item.trim()
+                ? `${item}${marker}`
+                : item,
             ]),
           )
         : block,
@@ -60,6 +72,15 @@ const markValue = (value: unknown, marker: string): unknown => {
 const markRecord = <T>(resource: RecordResource, key: string, item: T): T => {
   let marked: unknown = item;
   for (const field of RECORD_DEFINITIONS[resource].fields) {
+    const value = field.localized ? undefined : readRecordValue(item, field.path);
+    const assetId = typeof value === 'string' ? contentAssetIdFromUrl(value) : null;
+    if (assetId) {
+      registerAssetAddress(assetId, {
+        entryId: key,
+        contentTypeId: recordTypeId(resource),
+        fieldId: field.path,
+      });
+    }
     if (!field.localized || !MARKED_KINDS.has(field.kind)) continue;
     for (const locale of LOCALES) {
       const marker = encodeFieldMark({
@@ -101,4 +122,35 @@ export async function previewRecords<T>(
     }
   }
   return merged.map((item) => markRecord(resource, keyOf(item), item));
+}
+
+type RecordOverlayOptions<T> = Pick<RecordPreviewOptions<T>, 'resource' | 'keyOf' | 'merge'>;
+
+const NO_RECORD_OVERRIDES: Record<string, RecordData> = {};
+
+const pickRecordOverrides = (overrides: Record<string, RecordData>, resource: RecordResource) => {
+  const prefix = `${resource}:`;
+  const picked = Object.entries(overrides).filter(([key]) => key.startsWith(prefix));
+  return picked.length > 0
+    ? Object.fromEntries(picked.map(([key, data]) => [key.slice(prefix.length), data]))
+    : NO_RECORD_OVERRIDES;
+};
+
+export function useRecordOverlay<T>({ resource, keyOf, merge }: RecordOverlayOptions<T>) {
+  const overrides = useDeferredValue(
+    useContentPreviewStore(
+      useShallow((state) => pickRecordOverrides(state.recordOverrides, resource)),
+    ),
+  );
+  return useCallback(
+    (items: readonly T[]): T[] =>
+      overrides === NO_RECORD_OVERRIDES
+        ? [...items]
+        : items.map((item) => {
+            const key = keyOf(item);
+            const data = overrides[key];
+            return data ? merge(item, markRecord(resource, key, data)) : item;
+          }),
+    [overrides, resource, keyOf, merge],
+  );
 }

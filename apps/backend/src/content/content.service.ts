@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ContentResourceType } from '@prisma/client';
 import { TtlCache } from '../common/cache/ttl-cache';
 import { PrismaService } from '../prisma/prisma.service';
 import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
@@ -62,8 +63,22 @@ export class ContentService {
     });
   }
 
-  getPreviewEntries(types: readonly string[]): Promise<ContentEntriesResponse> {
-    return this.load('preview', types);
+  async getPreviewEntries(types: readonly string[]): Promise<ContentEntriesResponse> {
+    const [response, deleted] = await Promise.all([
+      this.load('preview', types),
+      this.prisma.contentChange.findMany({
+        where: { resourceType: ContentResourceType.ENTRY, isDeleted: true },
+        select: { resourceId: true },
+      }),
+    ]);
+    if (deleted.length === 0) return response;
+    const hidden = new Set(deleted.map((change) => change.resourceId));
+    const isVisible = (item: ContentfulItem) => !hidden.has(item.sys.id);
+    return {
+      ...response,
+      items: response.items.filter(isVisible),
+      includes: { ...response.includes, entries: response.includes.entries.filter(isVisible) },
+    };
   }
 
   async invalidate() {

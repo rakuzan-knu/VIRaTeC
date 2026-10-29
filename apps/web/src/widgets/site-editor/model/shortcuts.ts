@@ -8,4 +8,8 @@ export const SHORTCUTS = {
   redo: { label: isMac ? '⇧⌘Z' : 'Ctrl+Shift+Z', aria: 'Control+Shift+Z Meta+Shift+Z' },
   close: { label: 'Esc', aria: 'Escape' },
   link: { label: isMac ? '⌥' : 'Alt', aria: 'Alt' },
+  next: { label: isMac ? '⌥↓' : 'Alt+↓', aria: 'Alt+ArrowDown' },
+  previous: { label: isMac ? '⌥↑' : 'Alt+↑', aria: 'Alt+ArrowUp' },
+  open: { label: 'Enter', aria: 'Enter' },
+  search: { label: isMac ? '⌘K' : 'Ctrl+K', aria: 'Control+K Meta+K' },
 } as const satisfies Record<string, Shortcut>;

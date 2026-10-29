@@ -101,6 +101,8 @@ function ProjectBody({ project }: { project: Project }) {
       <div className="flex flex-1 flex-col gap-5">
         <MediaPlaceholder
           src={getProjectCover(project)}
+          alt={project.coverAlt}
+          focus={project.coverFocus}
           sizes="(min-width: 1440px) 1270px, 100vw"
           className="h-[220px] rounded-[24px] lg:h-[420px] lg:rounded-[32px]"
         />

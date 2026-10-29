@@ -103,6 +103,7 @@ const staffUser = {
   twoFactorEnabled: true,
   mfaVerifiedAt: new Date(),
   elevatedUntil: null,
+  publishElevatedUntil: null,
 };
 
 const expectCode = (fn: () => unknown, code: string) => assert.throws(fn, hasCode(403, code));
@@ -151,6 +152,24 @@ test('the staff guard enforces role, 2FA, permissions, ownership and step-up', (
       guardContext({ ...staffUser, elevatedUntil: new Date(Date.now() + 60_000) }),
     ),
     true,
+  );
+});
+
+test('a publish step-up lasts the staff session but does not unlock other actions', () => {
+  const guard = (metadata: Record<string, unknown>) => new StaffGuard(reflector(metadata));
+  const publisher = { ...staffUser, publishElevatedUntil: new Date(Date.now() + 3 * 3600_000) };
+
+  assert.equal(guard({ 'staff:stepUp': 'publish' }).canActivate(guardContext(publisher)), true);
+  expectCode(
+    () => guard({ 'staff:stepUp': 'action' }).canActivate(guardContext(publisher)),
+    'STEP_UP_REQUIRED',
+  );
+  expectCode(
+    () =>
+      guard({ 'staff:stepUp': 'publish' }).canActivate(
+        guardContext({ ...staffUser, publishElevatedUntil: new Date(Date.now() - 1000) }),
+      ),
+    'STEP_UP_REQUIRED',
   );
 });
 

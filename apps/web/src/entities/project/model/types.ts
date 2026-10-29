@@ -9,4 +9,5 @@ export type Project = Omit<ProjectDto, 'createdAt' | 'updatedAt'> & {
   createdAt: string;
   updatedAt: string;
   lead?: ProjectLead | null;
+  coverAlt?: string;
 };

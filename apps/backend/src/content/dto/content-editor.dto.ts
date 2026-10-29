@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   ArrayUnique,
+  IsIn,
   IsArray,
   IsInt,
   IsNotEmpty,
@@ -13,9 +15,18 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { CONTENT_EDITOR_LIMITS, type ContentFields } from '@viratec/contracts';
+import {
+  CONTENT_EDITOR_LIMITS,
+  PRESENCE_LIMITS,
+  TRANSLATION_LIMITS,
+  type ContentFields,
+  type ContentLocaleKey,
+} from '@viratec/contracts';
 
 export const CONTENTFUL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/;
+
+const REVISION_RESOURCE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$/;
+const REVISION_ID_PATTERN = /^(contentful:)?[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/;
 
 const DATA_URL_OVERHEAD = 64;
 
@@ -52,6 +63,14 @@ export class CreateContentEntryDto {
   label?: string;
 }
 
+export class DeleteContentEntryDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  label?: string;
+}
+
 export class UploadContentAssetDto {
   @ApiProperty({ example: 'team-photo.webp' })
   @IsString()
@@ -80,4 +99,63 @@ export class PublishContentDto {
   @ArrayMaxSize(CONTENT_EDITOR_LIMITS.maxPublishBatch)
   @IsUUID('4', { each: true })
   changeIds?: string[];
+}
+
+const CONTENT_LOCALE_KEYS: readonly ContentLocaleKey[] = ['en', 'uk'];
+
+export class UpdatePresenceDto {
+  @ApiProperty({ type: [String], example: ['entry:3xYp9', 'record:project:2f1c'] })
+  @IsArray()
+  @ArrayMaxSize(PRESENCE_LIMITS.maxKeys)
+  @IsString({ each: true })
+  @MaxLength(PRESENCE_LIMITS.maxKeyLength, { each: true })
+  resourceKeys!: string[];
+}
+
+export class TranslateContentDto {
+  @ApiProperty({ enum: CONTENT_LOCALE_KEYS, example: 'uk' })
+  @IsIn(CONTENT_LOCALE_KEYS)
+  from!: ContentLocaleKey;
+
+  @ApiProperty({ enum: CONTENT_LOCALE_KEYS, example: 'en' })
+  @IsIn(CONTENT_LOCALE_KEYS)
+  to!: ContentLocaleKey;
+
+  @ApiProperty({ type: [String], example: ['Створюймо дослідження разом'] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(TRANSLATION_LIMITS.maxTexts)
+  @IsString({ each: true })
+  @MaxLength(TRANSLATION_LIMITS.maxTextLength, { each: true })
+  texts!: string[];
+}
+
+const REVISION_RESOURCE_TYPES = ['ENTRY', 'PROJECT', 'EVENT', 'PUBLICATION'] as const;
+
+type RevisionResourceType = (typeof REVISION_RESOURCE_TYPES)[number];
+
+export class ListContentRevisionsQueryDto {
+  @ApiProperty({ enum: REVISION_RESOURCE_TYPES })
+  @IsIn(REVISION_RESOURCE_TYPES)
+  resourceType!: RevisionResourceType;
+
+  @ApiProperty({ example: '4kXrJ2' })
+  @IsString()
+  @Matches(REVISION_RESOURCE_ID_PATTERN)
+  resourceId!: string;
+}
+
+export class RestoreContentRevisionDto extends ListContentRevisionsQueryDto {
+  @ApiProperty({
+    description: 'Version id from the list; Contentful versions start with contentful:',
+  })
+  @IsString()
+  @Matches(REVISION_ID_PATTERN)
+  revisionId!: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  label?: string;
 }

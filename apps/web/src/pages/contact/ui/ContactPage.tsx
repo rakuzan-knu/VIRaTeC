@@ -95,6 +95,7 @@ export function ContactPage() {
                     <ResponsiveImage
                       src={content.chairPhoto}
                       sizes="64px"
+                      faceCrop={1}
                       alt=""
                       width={64}
                       height={64}

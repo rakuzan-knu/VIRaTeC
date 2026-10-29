@@ -52,7 +52,9 @@ export const pageSeoDomain: ContentDomain = {
     pages.sort((a, b) => LINKABLE_ROUTES.indexOf(a.route) - LINKABLE_ROUTES.indexOf(b.route));
     const home = pages.find((page) => page.route === 'HOME');
     if (!home) {
-      diagnostics.report('page SEO: the HOME entry is required, it is the default for all pages');
+      diagnostics.report('page SEO: the HOME entry is required, it is the default for all pages', {
+        kind: 'homeSeoMissing',
+      });
       return [];
     }
 

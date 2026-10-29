@@ -1,16 +1,38 @@
-import { useEffect, useRef } from 'react';
-import { readRecordValue, type RecordData, type RecordFieldDefinition } from '@viratec/contracts';
+import { lazy, Suspense, useEffect, useId, useRef } from 'react';
+import {
+  AdminPermission,
+  readRecordValue,
+  type RecordData,
+  type RecordFieldDefinition,
+  type RecordResource,
+} from '@viratec/contracts';
+import { useProjectLabels } from '@/entities/project';
+import { useSessionStore } from '@/entities/session';
+import { getPublicationCover } from '@/entities/publication';
 import { LOCALES, type Locale } from '@/shared/i18n';
-import { cn } from '@/shared/lib';
+import { absoluteImageUrl, cn, contentCoverSrc } from '@/shared/lib';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/Select';
 import { Textarea } from '@/shared/ui/Textarea';
+import { COVER_FOCUS_PATH, imageRecordSchema, recordFieldText } from '../model/fieldText';
 import type { SiteEditorMessages } from '../model/messages';
+import { recordLengthLimit, withLengthHint } from '../model/lengthLimits';
+import { NO_PERMISSIONS } from '../model/permissions';
 import { fromLocalDateTime, localizedPath, toLocalDateTime } from '../model/recordModel';
-import { BlocksField } from './BlocksField';
+import { ImageUploadField } from './ImageUploadField';
+import { AltHint } from './AltHint';
+import { FocusPicker } from './FocusPicker';
+import { TranslationHint } from './TranslationHint';
+
+const ALT_SUFFIX = '.coverAlt';
+
+const ArticleEditor = lazy(() =>
+  import('./ArticleEditor').then((module) => ({ default: module.ArticleEditor })),
+);
 
 interface RecordFieldEditorProps {
+  resource: RecordResource;
   field: RecordFieldDefinition;
   data: RecordData;
   focusLocale?: Locale;
@@ -24,7 +46,10 @@ const asString = (value: unknown) => (typeof value === 'string' ? value : '');
 
 function RecordInput({
   field,
+  limit,
   label,
+  lang,
+  helperText,
   value,
   readOnly,
   autoFocus,
@@ -32,7 +57,10 @@ function RecordInput({
   onChange,
 }: {
   field: RecordFieldDefinition;
+  limit?: number;
   label: string;
+  lang?: Locale;
+  helperText: string | undefined;
   value: unknown;
   readOnly: boolean;
   autoFocus: boolean;
@@ -40,7 +68,16 @@ function RecordInput({
   onChange: (value: unknown) => void;
 }) {
   const nullable = !field.localized && !field.required;
-  const helperText = field.help;
+  const projectLabels = useProjectLabels();
+  const optionLabels: Record<string, string> = {
+    ...t.fields.options,
+    ...projectLabels.status,
+    ...projectLabels.faculty,
+  };
+  const optionLabel = (option: string) => optionLabels[option] ?? option;
+  const canUpload = useSessionStore((state) =>
+    (state.user?.permissions ?? NO_PERMISSIONS).includes(AdminPermission.MEDIA_MANAGE),
+  );
 
   switch (field.kind) {
     case 'boolean':
@@ -52,7 +89,10 @@ function RecordInput({
             autoFocus={autoFocus}
             onChange={(event) => onChange(event.target.checked)}
           />
-          {label}
+          <span className="flex flex-col">
+            {label}
+            {helperText && <span className="text-[13px] text-text-muted">{helperText}</span>}
+          </span>
         </label>
       );
     case 'enum':
@@ -63,7 +103,10 @@ function RecordInput({
           value={asString(value)}
           disabled={readOnly}
           autoFocus={autoFocus}
-          options={(field.options ?? []).map((option) => ({ value: option, label: option }))}
+          options={(field.options ?? []).map((option) => ({
+            value: option,
+            label: optionLabel(option),
+          }))}
           onChange={(event) => onChange(event.target.value)}
         />
       );
@@ -86,7 +129,7 @@ function RecordInput({
                     )
                   }
                 />
-                {option}
+                {optionLabel(option)}
               </label>
             ))}
           </div>
@@ -98,6 +141,7 @@ function RecordInput({
       return (
         <Textarea
           label={label}
+          lang={lang}
           helperText={[helperText, t.inspector.onePerLine].filter(Boolean).join(' ')}
           value={lines.join('\n')}
           readOnly={readOnly}
@@ -111,6 +155,7 @@ function RecordInput({
       return (
         <Input
           label={label}
+          lang={lang}
           helperText={helperText}
           type="number"
           inputMode="numeric"
@@ -128,6 +173,7 @@ function RecordInput({
       return (
         <Input
           label={label}
+          lang={lang}
           helperText={helperText}
           type="datetime-local"
           value={toLocalDateTime(value)}
@@ -140,7 +186,8 @@ function RecordInput({
       return (
         <Textarea
           label={label}
-          helperText={helperText}
+          lang={lang}
+          helperText={withLengthHint(helperText, value, limit, t)}
           value={asString(value)}
           readOnly={readOnly}
           autoFocus={autoFocus}
@@ -150,16 +197,24 @@ function RecordInput({
       );
     case 'blocks':
       return (
-        <div className="flex min-w-0 flex-col gap-2">
-          <span className="text-label font-medium text-text-muted">{label}</span>
-          <BlocksField value={value} readOnly={readOnly} t={t} onChange={onChange} />
-        </div>
+        <Suspense fallback={<p className="text-[14px] text-text-muted">{t.loading}</p>}>
+          <ArticleEditor
+            label={label}
+            value={value}
+            lang={lang ?? 'uk'}
+            readOnly={readOnly}
+            canUpload={canUpload}
+            t={t}
+            onChange={onChange}
+          />
+        </Suspense>
       );
     default:
       return (
         <Input
           label={label}
-          helperText={helperText}
+          lang={lang}
+          helperText={withLengthHint(helperText, value, limit, t)}
           type={field.kind === 'url' ? 'url' : 'text'}
           value={asString(value)}
           readOnly={readOnly || Boolean(field.createOnly)}
@@ -175,6 +230,7 @@ function RecordInput({
 }
 
 export function RecordFieldEditor({
+  resource,
   field,
   data,
   focusLocale,
@@ -184,7 +240,17 @@ export function RecordFieldEditor({
   onChange,
 }: RecordFieldEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const title = field.required ? `${field.name} · ${t.inspector.required}` : field.name;
+  const helpId = useId();
+  const text = recordFieldText(t.fields, resource, field);
+  const title = field.required ? `${text.label} · ${t.inspector.required}` : text.label;
+  const imageSchema = imageRecordSchema(resource, field.path);
+  const imageValue = asString(readRecordValue(data, field.path));
+  const imagePreview =
+    resource === 'publication'
+      ? getPublicationCover(imageValue)
+      : imageValue
+        ? contentCoverSrc(imageValue)
+        : undefined;
 
   useEffect(() => {
     if (isFocused) ref.current?.scrollIntoView({ block: 'center' });
@@ -198,16 +264,78 @@ export function RecordFieldEditor({
         isFocused ? 'border-viratec-cyan/70 bg-viratec-cyan/6' : 'border-white/8',
       )}
     >
-      {field.localized ? (
-        <fieldset className="flex min-w-0 flex-col gap-3">
-          <legend className="mb-2 text-label font-medium text-text-primary">{title}</legend>
+      {imageSchema ? (
+        <div className="flex min-w-0 flex-col gap-5">
+          <ImageUploadField
+            label={title}
+            help={text.help}
+            previewSrc={imagePreview}
+            previewAlt=""
+            hasValue={Boolean(imageValue)}
+            canRemove={!field.required}
+            readOnly={readOnly}
+            uploadName="cover"
+            t={t}
+            onUploaded={(asset) => {
+              const url = absoluteImageUrl(asset.url);
+              if (!imageSchema.safeParse(url).success) return t.inspector.imageNotSaved;
+              onChange(field.path, url);
+              return null;
+            }}
+            onRemove={() => onChange(field.path, null)}
+          />
+          {imageValue && imagePreview && (
+            <FocusPicker
+              src={imagePreview}
+              value={asString(readRecordValue(data, COVER_FOCUS_PATH)) || null}
+              readOnly={readOnly}
+              t={t}
+              onChange={(value) => onChange(COVER_FOCUS_PATH, value)}
+            />
+          )}
+        </div>
+      ) : field.localized ? (
+        <fieldset
+          aria-describedby={text.help ? helpId : undefined}
+          className="flex min-w-0 flex-col gap-3"
+        >
+          <legend className="mb-1 text-label font-medium text-text-primary">{title}</legend>
+          {text.help && (
+            <p id={helpId} className="-mt-1 text-[13px] text-text-muted">
+              {text.help}
+            </p>
+          )}
+          <TranslationHint
+            values={{
+              en: readRecordValue(data, localizedPath(field, 'en')),
+              uk: readRecordValue(data, localizedPath(field, 'uk')),
+            }}
+            readOnly={readOnly}
+            t={t}
+            onCopy={(from, to) =>
+              onChange(localizedPath(field, to), readRecordValue(data, localizedPath(field, from)))
+            }
+            onTranslated={(to, text) => onChange(localizedPath(field, to), text)}
+          />
+          {field.path.endsWith(ALT_SUFFIX) && (
+            <AltHint
+              values={{
+                en: readRecordValue(data, localizedPath(field, 'en')),
+                uk: readRecordValue(data, localizedPath(field, 'uk')),
+              }}
+              t={t}
+            />
+          )}
           {LOCALES.map((locale) => {
             const path = localizedPath(field, locale);
             return (
               <RecordInput
                 key={locale}
                 field={field}
+                limit={recordLengthLimit(resource, field.path)}
                 label={t.locales[locale]}
+                lang={locale}
+                helperText={undefined}
                 value={readRecordValue(data, path)}
                 readOnly={readOnly}
                 autoFocus={isFocused && locale === focusLocale}
@@ -221,6 +349,7 @@ export function RecordFieldEditor({
         <RecordInput
           field={field}
           label={title}
+          helperText={text.help}
           value={readRecordValue(data, field.path)}
           readOnly={readOnly}
           autoFocus={isFocused}

@@ -11,6 +11,7 @@ interface TitledText {
 
 export interface StudentProject extends TitledText {
   image?: string;
+  imageAlt?: string;
 }
 
 export interface StudentResearchContent {

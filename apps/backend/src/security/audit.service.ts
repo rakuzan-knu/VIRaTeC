@@ -28,6 +28,7 @@ export type AuditAction =
   | 'admin.sessions_revoked'
   | 'content.entry_saved'
   | 'content.entry_created'
+  | 'content.entry_deleted'
   | 'content.asset_uploaded'
   | 'content.change_discarded'
   | 'content.record_saved'

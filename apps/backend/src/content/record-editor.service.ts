@@ -2,13 +2,11 @@ import { randomUUID } from 'node:crypto';
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { ContentResourceType, Prisma, type ContentChange } from '@prisma/client';
 import {
-  AdminPermission,
   CONTENT_EDITOR_LIMITS,
   EventType,
   FacultyDivision,
@@ -28,6 +26,7 @@ import {
   type RecordResource,
 } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
+import { canEditRecord, recordEditDenied } from './record-edit.guard';
 import { AuditService } from '../security/audit.service';
 import { ProjectsService } from '../projects/projects.service';
 import { EventsService } from '../events/events.service';
@@ -96,15 +95,7 @@ export class RecordEditorService {
   ) {}
 
   private assertCanEdit(user: AuthenticatedUser, resource: RecordResource) {
-    const allowed =
-      user.permissions.includes(AdminPermission.CONTENT_EDIT) ||
-      (resource === 'event' && user.permissions.includes(AdminPermission.EVENTS_MANAGE));
-    if (!allowed) {
-      throw new ForbiddenException({
-        message: 'You do not have permission to perform this action',
-        code: 'PERMISSION_DENIED',
-      });
-    }
+    if (!canEditRecord(user, resource)) throw recordEditDenied();
   }
 
   private parseData(resource: RecordResource, data: unknown): RecordData {
@@ -145,6 +136,7 @@ export class RecordEditorService {
         isFeatured: publication.isFeatured,
         readMoreLink: publication.readMoreLink,
         coverKey: publication.coverKey,
+        coverFocus: publication.coverFocus,
         sourceUrl: publication.sourceUrl,
         pdfUrl: publication.pdfUrl,
         detailSource: publication.detailSource,
@@ -164,6 +156,8 @@ export class RecordEditorService {
         tags: project.tags,
         repositoryUrl: project.repositoryUrl,
         demoUrl: project.demoUrl,
+        coverUrl: project.coverUrl,
+        coverFocus: project.coverFocus,
         translations: project.translations
           ? ProjectTranslationsSchema.parse(project.translations)
           : { en: fallback, uk: fallback },
@@ -428,6 +422,8 @@ export class RecordEditorService {
           tags: record.tags,
           repositoryUrl: record.repositoryUrl,
           demoUrl: record.demoUrl,
+          coverUrl: record.coverUrl,
+          coverFocus: record.coverFocus,
           translations: record.translations,
         };
         if (change.isDeleted) await tx.project.delete({ where: { id: key } });

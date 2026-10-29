@@ -13,6 +13,7 @@ export interface InfoCardProps {
   meta?: string;
   withImage?: boolean;
   image?: string;
+  imageAlt?: string;
   logo?: string;
   linkLabel?: string;
   to?: string;
@@ -34,6 +35,7 @@ export function InfoCard({
   meta,
   withImage,
   image,
+  imageAlt,
   logo,
   linkLabel,
   to,
@@ -56,6 +58,7 @@ export function InfoCard({
       {(withImage || image) && (
         <MediaPlaceholder
           src={image}
+          alt={imageAlt}
           className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]"
         />
       )}

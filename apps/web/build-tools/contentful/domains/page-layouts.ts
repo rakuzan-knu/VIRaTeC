@@ -5,7 +5,7 @@ import {
   type PageLayouts,
 } from '../../../src/shared/config/pageLayout.ts';
 import { field, type ContentTypeDefinition } from '../content-types.ts';
-import { createReader } from '../entry-reader.ts';
+import { createReader, entryTarget } from '../entry-reader.ts';
 import type { ContentDomain } from '../domain.ts';
 
 const TYPE_ID = 'pageLayout';
@@ -45,7 +45,11 @@ export const pageLayoutsDomain: ContentDomain = {
       const sections = reader.require('sections', pageSectionsSchema);
       if (!page || !sections) continue;
       if (page in layouts) {
-        context.diagnostics.report(`${label}: another layout already exists for ${page}`);
+        context.diagnostics.report(`${label}: another layout already exists for ${page}`, {
+          kind: 'duplicateLayout',
+          target: entryTarget(entry, 'page'),
+          value: page,
+        });
         continue;
       }
       layouts[page as keyof PageLayouts] = { entryId: entry.sys.id, sections };

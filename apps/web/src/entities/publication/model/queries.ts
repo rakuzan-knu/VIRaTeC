@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { PublicationDto } from '@viratec/contracts';
 import { useLocale } from '@/shared/i18n';
-import { fetchPublications } from '../api/publicationApi';
+import { useRecordOverlay } from '@/shared/lib';
+import { PUBLICATION_PREVIEW, fetchPublications } from '../api/publicationApi';
 import { toPublication } from './data';
 import type { Publication } from './types';
 
@@ -14,9 +15,11 @@ const NO_PUBLICATIONS: Publication[] = [];
 
 export function usePublications() {
   const locale = useLocale();
+  const overlay = useRecordOverlay(PUBLICATION_PREVIEW);
   const localize = useCallback(
-    (publications: PublicationDto[]) => publications.map((dto) => toPublication(dto, locale)),
-    [locale],
+    (publications: PublicationDto[]) =>
+      overlay(publications).map((dto) => toPublication(dto, locale)),
+    [locale, overlay],
   );
   const query = useQuery({
     queryKey: publicationKeys.all,

@@ -1,3 +1,5 @@
+import type { RecordResource } from '@viratec/contracts';
+
 export type FieldValidation =
   | { unique: true }
   | { in: readonly (string | number)[] }
@@ -21,6 +23,8 @@ export interface FieldDefinition {
   required: boolean;
   validations: readonly FieldValidation[];
   help?: string;
+  source?: RecordResource;
+  editableOnPage?: boolean;
 }
 
 export interface ContentTypeDefinition {

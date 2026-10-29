@@ -1,6 +1,9 @@
 import type { HtmlTagDescriptor, Plugin } from 'vite';
 
-const CRITICAL_FONTS = [/\/dm-sans-latin-400-normal-[^/]+\.woff2$/];
+const CRITICAL_FONTS = [
+  /\/dm-sans-latin-400-normal-[^/]+\.woff2$/,
+  /\/instrument-sans-latin-500-normal-[^/]+\.woff2$/,
+];
 
 export function fontPreloadPlugin(): Plugin {
   return {

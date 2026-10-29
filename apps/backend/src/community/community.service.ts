@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import type { PostLikeResultDto } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
+import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { ListPostsQueryDto } from './dto/list-posts-query.dto';
 import { cursorArgs, toCursorPage } from '../common/pagination/cursor-page';
@@ -16,7 +17,10 @@ const AUTHOR_SELECT = {
 
 @Injectable()
 export class CommunityService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private rateLimit: RateLimitService,
+  ) {}
 
   async findAll(query: ListPostsQueryDto, viewerId: string | null) {
     const { tag } = query;
@@ -51,6 +55,7 @@ export class CommunityService {
   }
 
   async create(dto: CreatePostDto, authorId: string) {
+    await this.rateLimit.consume(`community:post:${authorId}`, RATE_LIMITS.communityPostPerAccount);
     const post = await this.prisma.communityPost.create({
       data: { ...dto, authorId },
       include: { author: { select: AUTHOR_SELECT } },
@@ -59,6 +64,7 @@ export class CommunityService {
   }
 
   async toggleLike(postId: string, userId: string): Promise<PostLikeResultDto> {
+    await this.rateLimit.consume(`community:like:${userId}`, RATE_LIMITS.communityLikePerAccount);
     const post = await this.prisma.communityPost.findUnique({
       where: { id: postId },
       select: { id: true },

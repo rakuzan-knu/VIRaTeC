@@ -25,6 +25,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
     >
       <MediaPlaceholder
         src={getProjectCover(project)}
+        alt={project.coverAlt}
+        focus={project.coverFocus}
         className="h-[160px] rounded-2xl lg:h-[190px] lg:rounded-[18px]"
       />
       <div className="flex flex-col gap-3 px-2">

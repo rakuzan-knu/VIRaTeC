@@ -51,7 +51,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         refreshTokens: payload.sid
           ? {
               where: { sessionId: payload.sid, revoked: false, expiresAt: { gt: new Date() } },
-              select: { id: true, mfaVerifiedAt: true, elevatedUntil: true },
+              select: {
+                id: true,
+                mfaVerifiedAt: true,
+                elevatedUntil: true,
+                publishElevatedUntil: true,
+              },
               orderBy: { createdAt: 'desc' },
               take: 1,
             }
@@ -86,6 +91,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       emailVerified: Boolean(user.emailVerifiedAt),
       mfaVerifiedAt: session?.mfaVerifiedAt ?? null,
       elevatedUntil: session?.elevatedUntil ?? null,
+      publishElevatedUntil: session?.publishElevatedUntil ?? null,
     };
   }
 }

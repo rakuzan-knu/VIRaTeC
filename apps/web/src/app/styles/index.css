@@ -138,6 +138,18 @@
   --animate-hero-drift: hero-drift 14s ease-in-out infinite alternate;
   --animate-hero-drift-reverse: hero-drift 14s ease-in-out -7s infinite alternate-reverse;
   --animate-hero-fade: hero-fade 1.4s var(--ease-apple) both;
+  --animate-editor-badge-in: editor-badge-in 180ms var(--ease-apple) both;
+
+  @keyframes editor-badge-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 
   @keyframes hero-reveal {
     from {
@@ -1180,4 +1192,46 @@
 [data-offscreen],
 [data-offscreen] * {
   animation-play-state: paused;
+}
+
+::highlight(site-editor-inline) {
+  color: transparent;
+}
+
+@keyframes editor-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes editor-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility editor-pop-in {
+  animation: editor-pop-in 160ms ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility editor-slide-up {
+  animation: editor-slide-up 220ms ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }

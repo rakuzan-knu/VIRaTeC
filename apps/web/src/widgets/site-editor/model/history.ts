@@ -10,13 +10,14 @@ import type {
 import { PREVIEW_CONTENT_QUERY_KEY } from '@/shared/lib';
 import {
   deleteRecord,
-  discardContentChange,
   fetchContentChanges,
   fetchEditorEntry,
   fetchRecord,
   saveEditorEntry,
   saveRecord,
 } from '../api/editorApi';
+import { flushDrafts } from './autosaveRegistry';
+import { discardChange } from './discard';
 import { useSiteEditorMessages } from './messages';
 import { EDITOR_QUERY_KEY, useRefreshRecordQueries } from './queries';
 import { useSiteEditorStore, type EditorAction } from './store';
@@ -31,7 +32,7 @@ const discard = async (kind: ContentResourceKind, resourceId: string) => {
   const change = (await fetchContentChanges()).find(
     (item) => item.resourceType === kind && item.resourceId === resourceId,
   );
-  if (change) await discardContentChange(change.id);
+  if (change) await discardChange(change);
 };
 
 const saveEntryFields = async (id: string, fields: ContentFields, label: string) => {
@@ -67,6 +68,11 @@ export const entrySaveAction = (options: {
 });
 
 export const entryCreateAction = (options: { id: string; label: string }): EditorAction => ({
+  label: options.label,
+  undo: () => discard('ENTRY', options.id),
+});
+
+export const entryDeleteAction = (options: { id: string; label: string }): EditorAction => ({
   label: options.label,
   undo: () => discard('ENTRY', options.id),
 });
@@ -130,6 +136,7 @@ export function useEditorHistory() {
 
   const step = useCallback(
     async (direction: 'undo' | 'redo') => {
+      await flushDrafts();
       const store = useSiteEditorStore.getState();
       const stack = direction === 'undo' ? store.past : store.future;
       const action = stack[stack.length - 1];

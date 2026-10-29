@@ -15,6 +15,8 @@ const getInitials = (name: string) =>
     .slice(0, 2)
     .toUpperCase();
 
+const PORTRAIT_ASPECT = 4 / 5;
+
 export function PersonCard({ name, role, photo }: PersonCardProps) {
   const common = useCommonMessages();
   const placeholderLabel = common.unavailable(common.photo);
@@ -25,6 +27,7 @@ export function PersonCard({ name, role, photo }: PersonCardProps) {
         <ResponsiveImage
           src={photo}
           sizes="(min-width: 1024px) 320px, 64px"
+          faceCrop={PORTRAIT_ASPECT}
           alt=""
           width={320}
           height={400}

@@ -228,15 +228,19 @@ export class UsersService {
     return toAccount(user);
   }
 
-  async findAvatar(userId: string) {
-    const avatar = await this.prisma.userAvatar.findUnique({
-      where: { userId },
-      select: { data: true, mimeType: true },
+  async findAvatar(userId: string, viewerId: string | null) {
+    const avatar = await this.prisma.userAvatar.findFirst({
+      where: { userId, user: visibleTo(viewerId) },
+      select: { data: true, mimeType: true, user: { select: { visibility: true } } },
     });
     if (!avatar) {
       throw new NotFoundException('Avatar not found');
     }
-    return avatar;
+    return {
+      data: avatar.data,
+      mimeType: avatar.mimeType,
+      isPublic: avatar.user.visibility === ProfileVisibility.PUBLIC,
+    };
   }
 
   async deleteAccount(userId: string, dto: DeleteAccountDto) {

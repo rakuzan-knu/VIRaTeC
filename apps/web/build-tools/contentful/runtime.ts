@@ -6,6 +6,7 @@ import {
   createDiagnostics,
   rawAssetSchema,
   rawEntrySchema,
+  type ContentIssue,
   type EntryCollection,
 } from './entry-reader.ts';
 import { assetUrl, createAssetRegistry } from './tokens.ts';
@@ -27,11 +28,11 @@ export type FieldMarker = (address: FieldAddress) => string;
 
 export interface LiveExportOptions {
   strict?: boolean;
-  onIssues?: (issues: readonly string[]) => void;
+  onIssues?: (issues: readonly ContentIssue[]) => void;
 }
 
 const isMarkableText = (definition: FieldDefinition) =>
-  definition.localized &&
+  (definition.localized || definition.editableOnPage) &&
   (definition.type === 'Symbol' ||
     definition.type === 'Text' ||
     (definition.type === 'Array' && definition.items?.type === 'Symbol'));
@@ -86,7 +87,7 @@ export const markPreviewPayload = (
       }
       if (!isMarkableText(field)) continue;
       const marked: Record<string, unknown> = { ...values };
-      for (const locale of LOCALES) {
+      for (const locale of field.localized ? LOCALES : [DEFAULT_LOCALE]) {
         const code = payload.locales[locale];
         if (values[code] === undefined) continue;
         const marker = mark({ entryId: entry.sys.id, contentTypeId, fieldId: field.id, locale });
@@ -149,14 +150,14 @@ export const buildLiveExports = (
   { strict = true, onIssues }: LiveExportOptions = {},
 ): Record<string, unknown> => {
   const collection = toCollection(payload);
-  const { issues, diagnostics } = createDiagnostics();
+  const { issues, details, diagnostics } = createDiagnostics();
   const modules = findDomain(domainId).pull({
     collection,
     locales: payload.locales,
     diagnostics,
     assets: createAssetRegistry(),
   });
-  onIssues?.(issues);
+  onIssues?.(details);
   if (strict && issues.length > 0) {
     throw new Error(`Live content ${domainId} is invalid: ${issues[0]}`);
   }

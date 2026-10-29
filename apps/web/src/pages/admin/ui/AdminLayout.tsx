@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard,
+  Newspaper,
   PencilRuler,
   ScrollText,
   ShieldAlert,
@@ -39,6 +40,12 @@ const NAV_ITEMS = [
     key: 'audit',
     icon: ScrollText,
     permission: AdminPermission.AUDIT_VIEW,
+  },
+  {
+    to: ROUTES.ADMIN_CONTENT,
+    key: 'content',
+    icon: Newspaper,
+    permission: AdminPermission.CONTENT_VIEW,
   },
   {
     to: SITE_EDITOR_PATH,

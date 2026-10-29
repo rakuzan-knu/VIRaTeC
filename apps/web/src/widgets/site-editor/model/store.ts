@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { ContentFields, RecordData } from '@viratec/contracts';
+import type { ContentFields, PublishContentResultDto, RecordData } from '@viratec/contracts';
 import type { PageSectionItem } from '@/shared/config/pageLayout';
 import type { Locale } from '@/shared/i18n';
 
@@ -12,8 +12,19 @@ export interface EditorSelection {
 
 export interface EntryDraft {
   version: number;
+  base: ContentFields;
   fields: ContentFields;
 }
+
+export interface RecordDraft {
+  baseUpdatedAt: string | null;
+  base: RecordData;
+  data: RecordData;
+}
+
+export type SaveStatus = 'saving' | 'saved' | 'error' | 'conflict';
+
+export type PreviewDevice = 'desktop' | 'tablet' | 'phone';
 
 export type EditorMode = 'edit' | 'preview';
 
@@ -28,6 +39,7 @@ export interface StructureFocus {
 
 export interface EditorAction {
   label: string;
+  group?: string;
   undo: () => Promise<unknown>;
   redo?: () => Promise<unknown>;
 }
@@ -42,7 +54,11 @@ interface SiteEditorState {
   history: EditorSelection[];
   isSummaryOpen: boolean;
   drafts: Record<string, EntryDraft>;
-  recordDrafts: Record<string, RecordData>;
+  recordDrafts: Record<string, RecordDraft>;
+  saveStates: Record<string, SaveStatus>;
+  openGroup: string | null;
+  publishResult: PublishContentResultDto | null;
+  device: PreviewDevice;
   layoutDrafts: Record<string, LayoutDraft>;
   structure: StructureFocus | null;
   past: EditorAction[];
@@ -59,7 +75,11 @@ interface SiteEditorState {
   setSummaryOpen: (open: boolean) => void;
   setDraft: (entryId: string, draft: EntryDraft) => void;
   dropDraft: (entryId: string) => void;
-  setRecordDraft: (key: string, data: RecordData) => void;
+  setRecordDraft: (key: string, draft: RecordDraft) => void;
+  setSaveState: (key: string, status: SaveStatus | null) => void;
+  closeGroup: () => void;
+  setPublishResult: (result: PublishContentResultDto | null) => void;
+  setDevice: (device: PreviewDevice) => void;
   dropRecordDraft: (key: string) => void;
   setLayoutDraft: (page: string, draft: LayoutDraft) => void;
   dropLayoutDraft: (page: string) => void;
@@ -79,6 +99,10 @@ export const useSiteEditorStore = create<SiteEditorState>((set) => ({
   isSummaryOpen: false,
   drafts: {},
   recordDrafts: {},
+  saveStates: {},
+  openGroup: null,
+  publishResult: null,
+  device: 'desktop',
   layoutDrafts: {},
   structure: null,
   past: [],
@@ -100,8 +124,16 @@ export const useSiteEditorStore = create<SiteEditorState>((set) => ({
       const { [entryId]: _dropped, ...drafts } = state.drafts;
       return { drafts };
     }),
-  setRecordDraft: (key, data) =>
-    set((state) => ({ recordDrafts: { ...state.recordDrafts, [key]: data } })),
+  setRecordDraft: (key, draft) =>
+    set((state) => ({ recordDrafts: { ...state.recordDrafts, [key]: draft } })),
+  setSaveState: (key, status) =>
+    set((state) => {
+      const { [key]: _previous, ...rest } = state.saveStates;
+      return { saveStates: status ? { ...rest, [key]: status } : rest };
+    }),
+  closeGroup: () => set({ openGroup: null }),
+  setPublishResult: (publishResult) => set({ publishResult }),
+  setDevice: (device) => set({ device }),
   dropRecordDraft: (key) =>
     set((state) => {
       const { [key]: _dropped, ...recordDrafts } = state.recordDrafts;
@@ -117,8 +149,20 @@ export const useSiteEditorStore = create<SiteEditorState>((set) => ({
   openStructure: (structure) => set({ structure, history: [], isSummaryOpen: false }),
   closeStructure: () => set({ structure: null }),
   pushAction: (action) =>
-    set((state) => ({ past: [...state.past, action], future: [], hasHistoryError: false })),
-  setHistory: (past, future) => set({ past, future }),
+    set((state) => {
+      const last = state.past[state.past.length - 1];
+      const merged =
+        action.group && action.group === state.openGroup && last?.group === action.group
+          ? { ...action, undo: last.undo }
+          : null;
+      return {
+        past: merged ? [...state.past.slice(0, -1), merged] : [...state.past, action],
+        future: [],
+        hasHistoryError: false,
+        openGroup: action.group ?? null,
+      };
+    }),
+  setHistory: (past, future) => set({ past, future, openGroup: null }),
   setHistoryStatus: ({ busy, error }) => set({ isHistoryBusy: busy, hasHistoryError: error }),
   announce: (text) =>
     set((state) => ({ announcement: { id: (state.announcement?.id ?? 0) + 1, text } })),
@@ -130,6 +174,10 @@ export const useSiteEditorStore = create<SiteEditorState>((set) => ({
       isSummaryOpen: false,
       drafts: {},
       recordDrafts: {},
+      saveStates: {},
+      openGroup: null,
+      publishResult: null,
+      device: 'desktop',
       layoutDrafts: {},
       structure: null,
       past: [],

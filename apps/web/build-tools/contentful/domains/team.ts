@@ -70,6 +70,7 @@ export const teamDomain: ContentDomain = {
     if (founders.length !== 1) {
       context.diagnostics.report(
         `team: exactly one person must be the founder, found ${founders.length}`,
+        { kind: 'founderCount', count: founders.length },
       );
       return [];
     }
