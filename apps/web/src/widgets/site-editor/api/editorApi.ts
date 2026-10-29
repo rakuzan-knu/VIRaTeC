@@ -14,6 +14,8 @@ import type {
   RecordResource,
   SaveContentEntryRequestDto,
   SaveRecordRequestDto,
+  TranslateContentRequestDto,
+  TranslateContentResultDto,
   UploadContentAssetRequestDto,
 } from '@viratec/contracts';
 
@@ -77,3 +79,6 @@ export const fetchContentForSearch = (types: readonly string[]) =>
 
 export const fetchRecordList = <T>(resource: RecordResource) =>
   api.get<T[]>(RECORD_LIST_PATHS[resource]);
+
+export const translateTexts = (dto: TranslateContentRequestDto) =>
+  api.post<TranslateContentResultDto>('/admin/content/translate', dto);

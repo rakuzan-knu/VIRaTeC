@@ -74,6 +74,9 @@ export default () => {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
     },
+    anthropic: {
+      apiKey: process.env.ANTHROPIC_API_KEY?.trim() || '',
+    },
     redis: {
       url: process.env.REDIS_URL || 'redis://localhost:6379',
     },

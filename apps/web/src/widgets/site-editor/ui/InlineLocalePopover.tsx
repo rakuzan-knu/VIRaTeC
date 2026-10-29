@@ -63,6 +63,7 @@ export function InlineLocalePopover({
             readOnly={false}
             t={t}
             onCopy={(from, to) => edit.write(to, edit.values[from])}
+            onTranslated={(to, text) => edit.write(to, text)}
           />
           {multiline ? (
             <Textarea

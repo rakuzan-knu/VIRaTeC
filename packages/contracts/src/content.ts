@@ -14,6 +14,20 @@ export interface ContentLocales {
   uk: string;
 }
 
+export type ContentLocaleKey = keyof ContentLocales;
+
+export const TRANSLATION_LIMITS = { maxTexts: 20, maxTextLength: 4000 } as const;
+
+export interface TranslateContentRequestDto {
+  from: ContentLocaleKey;
+  to: ContentLocaleKey;
+  texts: string[];
+}
+
+export interface TranslateContentResultDto {
+  translations: string[];
+}
+
 export interface ContentEntryDto {
   id: string;
   contentTypeId: string;

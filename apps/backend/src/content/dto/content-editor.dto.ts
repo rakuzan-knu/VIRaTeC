@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   ArrayUnique,
+  IsIn,
   IsArray,
   IsInt,
   IsNotEmpty,
@@ -13,7 +15,12 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { CONTENT_EDITOR_LIMITS, type ContentFields } from '@viratec/contracts';
+import {
+  CONTENT_EDITOR_LIMITS,
+  TRANSLATION_LIMITS,
+  type ContentFields,
+  type ContentLocaleKey,
+} from '@viratec/contracts';
 
 export const CONTENTFUL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/;
 
@@ -88,4 +95,24 @@ export class PublishContentDto {
   @ArrayMaxSize(CONTENT_EDITOR_LIMITS.maxPublishBatch)
   @IsUUID('4', { each: true })
   changeIds?: string[];
+}
+
+const CONTENT_LOCALE_KEYS: readonly ContentLocaleKey[] = ['en', 'uk'];
+
+export class TranslateContentDto {
+  @ApiProperty({ enum: CONTENT_LOCALE_KEYS, example: 'uk' })
+  @IsIn(CONTENT_LOCALE_KEYS)
+  from!: ContentLocaleKey;
+
+  @ApiProperty({ enum: CONTENT_LOCALE_KEYS, example: 'en' })
+  @IsIn(CONTENT_LOCALE_KEYS)
+  to!: ContentLocaleKey;
+
+  @ApiProperty({ type: [String], example: ['Створюймо дослідження разом'] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(TRANSLATION_LIMITS.maxTexts)
+  @IsString({ each: true })
+  @MaxLength(TRANSLATION_LIMITS.maxTextLength, { each: true })
+  texts!: string[];
 }

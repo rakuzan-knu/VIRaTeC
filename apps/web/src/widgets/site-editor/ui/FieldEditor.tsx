@@ -241,6 +241,7 @@ export function FieldEditor({
           readOnly={readOnly}
           t={t}
           onCopy={(from, to) => onChange(locales[to], values?.[locales[from]])}
+          onTranslated={(to, text) => onChange(locales[to], text)}
         />
         {field.id === ALT_FIELD_ID && (
           <AltHint values={{ en: values?.[locales.en], uk: values?.[locales.uk] }} t={t} />

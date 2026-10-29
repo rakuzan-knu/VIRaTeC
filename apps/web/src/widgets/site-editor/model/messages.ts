@@ -217,6 +217,13 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       missingIn: { en: 'No English yet', uk: 'No Ukrainian yet' },
       copyFrom: { en: 'Copy from English', uk: 'Copy from Ukrainian' },
       copied: 'Copied. Check the text and adjust it if needed.',
+      translate: { en: 'Translate into English', uk: 'Translate into Ukrainian' },
+      translating: 'Translating…',
+      translated: 'Translated. Check the text before publishing.',
+      notConfigured:
+        'Automatic translation is not set up yet. Copy the text and translate it by hand.',
+      refused: 'This text cannot be translated automatically. Translate it by hand.',
+      failed: 'The text was not translated. Try again or translate it by hand.',
     },
     inline: {
       label: (field: string) => `Editing: ${field}`,
@@ -693,6 +700,13 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       missingIn: { en: 'Немає англійської', uk: 'Немає української' },
       copyFrom: { en: 'Скопіювати з англійської', uk: 'Скопіювати з української' },
       copied: 'Скопійовано. Перевірте текст і за потреби виправте.',
+      translate: { en: 'Перекласти англійською', uk: 'Перекласти українською' },
+      translating: 'Перекладаємо…',
+      translated: 'Перекладено. Перевірте текст перед публікацією.',
+      notConfigured:
+        'Автоматичний переклад ще не налаштовано. Скопіюйте текст і перекладіть вручну.',
+      refused: 'Цей текст не вдалося перекласти автоматично. Перекладіть його вручну.',
+      failed: 'Текст не перекладено. Спробуйте ще раз або перекладіть вручну.',
     },
     inline: {
       label: (field: string) => `Редагування: ${field}`,

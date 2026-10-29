@@ -312,6 +312,7 @@ export function RecordFieldEditor({
             onCopy={(from, to) =>
               onChange(localizedPath(field, to), readRecordValue(data, localizedPath(field, from)))
             }
+            onTranslated={(to, text) => onChange(localizedPath(field, to), text)}
           />
           {field.path.endsWith(ALT_SUFFIX) && (
             <AltHint
