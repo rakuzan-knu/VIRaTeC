@@ -292,12 +292,7 @@ export class ContentEditorService {
         update: { isDeleted: true, actorId: actor.id, ...(label ? { label } : {}) },
       });
     } else {
-      await this.cma(label ?? id, () =>
-        this.contentful.request('management', path, {
-          method: 'DELETE',
-          version: current.sys.version,
-        }),
-      );
+      await this.cma(label ?? id, () => this.unpublishAndArchive(path, current));
       await this.prisma.contentChange.deleteMany({
         where: { resourceType: ContentResourceType.ENTRY, resourceId: id },
       });
