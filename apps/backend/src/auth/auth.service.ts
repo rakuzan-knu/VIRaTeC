@@ -29,6 +29,10 @@ import { SessionsService } from './sessions.service';
 const MFA_CHALLENGE_TTL_MS = 5 * 60_000;
 const MFA_CHALLENGE_MAX_ATTEMPTS = 5;
 const DEFAULT_REFRESH_TTL_MS = 7 * 24 * 60 * 60_000;
+const INVALID_CREDENTIALS = 'Invalid email or password';
+
+let timingHash: Promise<string> | null = null;
+const getTimingHash = () => (timingHash ??= argon2.hash(randomToken()));
 
 interface SessionCarry {
   mfaVerifiedAt?: Date | null;
@@ -124,18 +128,15 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
-
-    if (!user.passwordHash) {
-      throw new UnauthorizedException('This account uses Google sign-in');
+    if (!user?.passwordHash) {
+      await argon2.verify(await getTimingHash(), dto.password);
+      throw new UnauthorizedException(INVALID_CREDENTIALS);
     }
 
     const isValid = await argon2.verify(user.passwordHash, dto.password);
     if (!isValid) {
       void this.audit?.record({ action: 'auth.login_failed', actorId: user.id, client });
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(INVALID_CREDENTIALS);
     }
 
     await this.rateLimit?.reset(accountKey);
