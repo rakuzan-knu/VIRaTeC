@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, Check, Eye, EyeOff } from 'lucide-react';
+import { readAuthNavigationState } from '@/entities/session';
 import { ApiError, NETWORK_ERROR_STATUS, getApiErrorCode } from '@/shared/api/apiClient';
 import { ROUTES } from '@/shared/config/routes';
 import { CONTACT_EMAIL } from '@/shared/config/navigation';
@@ -49,6 +50,7 @@ function RequestStep({
 }) {
   const t = useResetPasswordMessages();
   const common = useCommonMessages();
+  const location = useLocation();
   const schema = useMemo(() => createRequestCodeSchema(t.validation), [t]);
   const {
     register,
@@ -56,7 +58,7 @@ function RequestStep({
     formState: { errors },
   } = useForm<RequestCodeValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '' },
+    defaultValues: { email: readAuthNavigationState(location.state).email ?? '' },
   });
 
   return (
@@ -65,7 +67,7 @@ function RequestStep({
       <StepHeader title={t.request.title} description={t.request.description} />
       <form
         onSubmit={handleSubmit((values) => onSubmit(values.email))}
-        className="space-y-4 pt-6"
+        className="space-y-4 pt-6 lg:pt-[clamp(12px,2.5svh,24px)]"
         noValidate
       >
         <div className="space-y-1.5">
@@ -113,7 +115,7 @@ function RequestStep({
           </p>
         </div>
       )}
-      <div className="mt-5 rounded-[10px] border border-auth-border bg-auth-surface px-4 py-3.5">
+      <div className="mt-5 lg:mt-[clamp(10px,2svh,20px)] rounded-[10px] border border-auth-border bg-auth-surface px-4 py-3.5">
         <p className="text-xs font-medium text-auth-navy">{t.request.secureTitle}</p>
         <p className="mt-1 text-[11px] leading-[16.5px] text-auth-muted">
           {t.request.secureDescription}
@@ -166,7 +168,7 @@ function VerifyStep({
       />
       <form
         onSubmit={handleSubmit((values) => onSubmit(values.code))}
-        className="space-y-4 pt-6"
+        className="space-y-4 pt-6 lg:pt-[clamp(12px,2.5svh,24px)]"
         noValidate
       >
         <div className="space-y-1.5">
@@ -257,7 +259,7 @@ function ResetStep({
       <StepHeader title={t.reset.title} description={t.reset.description} />
       <form
         onSubmit={handleSubmit((values) => onSubmit(values.password))}
-        className="space-y-4 pt-6"
+        className="space-y-4 pt-6 lg:pt-[clamp(12px,2.5svh,24px)]"
         noValidate
       >
         <div className="space-y-1.5">

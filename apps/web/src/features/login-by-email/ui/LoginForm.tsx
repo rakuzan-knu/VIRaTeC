@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
@@ -73,12 +73,14 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(schema),
     defaultValues: { email: readAuthNavigationState(location.state).email ?? '', password: '' },
   });
 
+  const typedEmail = useWatch({ control, name: 'email' });
   const serverErrorMessage = getErrorMessage(error, t, common.networkError);
 
   return (
@@ -170,7 +172,11 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
 
         <p className="text-right text-xs text-auth-muted">
           {t.forgotPassword}{' '}
-          <Link to={ROUTES.FORGOT_PASSWORD} className="font-medium text-auth-navy hover:underline">
+          <Link
+            to={ROUTES.FORGOT_PASSWORD}
+            state={{ ...readAuthNavigationState(location.state), email: typedEmail }}
+            className="font-medium text-auth-navy hover:underline"
+          >
             {t.resetIt}
           </Link>
         </p>

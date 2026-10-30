@@ -18,7 +18,7 @@ import { useRegister } from '../model/useRegister';
 const REGISTER_MESSAGES = defineMessages({
   en: {
     title: 'Get started',
-    subtitle: 'Create your profile to join the VIRaTeC research community.',
+    subtitle: 'Join the VIRaTeC research community.',
     fullName: 'Full name',
     fullNamePlaceholder: 'Enter your full name',
     passwordPlaceholder: 'At least 8 characters',
@@ -43,7 +43,7 @@ const REGISTER_MESSAGES = defineMessages({
   },
   uk: {
     title: 'Почнімо',
-    subtitle: 'Створіть профіль, щоб долучитися до дослідницької спільноти VIRaTeC.',
+    subtitle: 'Долучайтеся до дослідницької спільноти VIRaTeC.',
     fullName: 'Повне ім’я',
     fullNamePlaceholder: 'Введіть своє повне ім’я',
     passwordPlaceholder: 'Щонайменше 8 символів',
@@ -113,7 +113,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(8px,1.4svh,20px)]">
-      <BrandLogo className="mx-auto h-[66px] w-[260px] lg:h-[clamp(36px,5.5svh,66px)] lg:w-[clamp(142px,21.7svh,260px)]" />
+      <BrandLogo className="mx-auto h-[66px] w-[260px] lg:h-[clamp(30px,5svh,66px)] lg:w-[clamp(118px,19.7svh,260px)]" />
 
       <div className="space-y-2">
         <h2 className="font-auth text-[34px] lg:text-[clamp(30px,4.8svh,44px)] font-medium leading-[1.05] tracking-[-0.045em] text-auth-heading">
@@ -146,7 +146,11 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
               >
                 {t.accountExistsSignIn}
               </Link>
-              <Link to={ROUTES.FORGOT_PASSWORD} className="font-medium text-auth-navy underline">
+              <Link
+                to={ROUTES.FORGOT_PASSWORD}
+                state={{ ...readAuthNavigationState(location.state), email: variables?.email }}
+                className="font-medium text-auth-navy underline"
+              >
                 {t.accountExistsReset}
               </Link>
             </span>
@@ -170,7 +174,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
             placeholder={t.fullNamePlaceholder}
             error={!!errors.name}
             aria-describedby={errors.name ? 'register-name-error' : undefined}
-            className="h-[54px] lg:h-[clamp(42px,6svh,54px)] text-base"
+            className="h-[54px] lg:h-[clamp(40px,6svh,54px)] text-base"
           />
           {errors.name && (
             <p id="register-name-error" className={FIELD_ERROR_CLASS}>
@@ -191,7 +195,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
             placeholder="name@knu.ua"
             error={!!errors.email}
             aria-describedby={errors.email ? 'register-email-error' : undefined}
-            className="h-[54px] lg:h-[clamp(42px,6svh,54px)] text-base"
+            className="h-[54px] lg:h-[clamp(40px,6svh,54px)] text-base"
           />
           {errors.email && (
             <p id="register-email-error" className={FIELD_ERROR_CLASS}>
@@ -213,7 +217,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
               placeholder={t.passwordPlaceholder}
               error={!!errors.password}
               aria-describedby={errors.password ? 'register-password-error' : undefined}
-              className="h-[54px] lg:h-[clamp(42px,6svh,54px)] pr-14 text-base"
+              className="h-[54px] lg:h-[clamp(40px,6svh,54px)] pr-14 text-base"
             />
             <Tooltip
               text={showPassword ? common.hidePassword : common.showPassword}
@@ -267,7 +271,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
           type="submit"
           isLoading={isPending}
           disabled={isPending}
-          className="h-[58px] lg:h-[clamp(42px,6svh,58px)] justify-between rounded-[9px] bg-auth-navy px-5 hover:bg-auth-navy-hover"
+          className="h-[58px] lg:h-[clamp(40px,6svh,58px)] justify-between rounded-[9px] bg-auth-navy px-5 hover:bg-auth-navy-hover"
         >
           {t.submit}
           <ArrowRight className="w-4 h-4" />

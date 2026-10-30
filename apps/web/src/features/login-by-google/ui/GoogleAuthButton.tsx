@@ -25,10 +25,6 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     invalidCredential: 'We could not verify your Google account. Please try again.',
     notConfigured: 'Google sign-in is temporarily unavailable.',
     unexpectedError: 'An unexpected error occurred. Please try again later.',
-    agreePrefix: 'By continuing with Google, you agree to the',
-    termsLink: 'Terms of Service',
-    agreeAnd: 'and',
-    privacyLink: 'Privacy Policy',
   },
   uk: {
     loadFailed:
@@ -45,10 +41,6 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     invalidCredential: 'Не вдалося підтвердити ваш обліковий запис Google. Спробуйте ще раз.',
     notConfigured: 'Вхід через Google тимчасово недоступний.',
     unexpectedError: 'Сталася неочікувана помилка. Спробуйте пізніше.',
-    agreePrefix: 'Продовжуючи з Google, ви погоджуєтеся з',
-    termsLink: 'Умовами використання',
-    agreeAnd: 'та',
-    privacyLink: 'Політикою конфіденційності',
   },
 });
 
@@ -119,17 +111,6 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
           {isPending ? t.signingIn : t.loading}
         </p>
       )}
-      <p className="text-center text-xs leading-5 text-auth-muted">
-        {t.agreePrefix}{' '}
-        <Link to={ROUTES.TERMS} className="font-medium text-auth-navy underline">
-          {t.termsLink}
-        </Link>{' '}
-        {t.agreeAnd}{' '}
-        <Link to={ROUTES.PRIVACY} className="font-medium text-auth-navy underline">
-          {t.privacyLink}
-        </Link>
-        .
-      </p>
       {errorMessage && (
         <p role="alert" className="text-center text-xs text-auth-error">
           {errorMessage}

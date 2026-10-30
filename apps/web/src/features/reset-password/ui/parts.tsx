@@ -65,7 +65,7 @@ interface StepHeaderProps {
 export function StepHeader({ title, description, centered }: StepHeaderProps) {
   return (
     <>
-      <BrandLogo className="mx-auto my-6 h-[83px] w-[232px] lg:my-[clamp(8px,2svh,24px)] lg:h-[clamp(40px,7svh,83px)] lg:w-[clamp(112px,19.5svh,232px)]" />
+      <BrandLogo className="mx-auto my-6 h-[83px] w-[232px] lg:my-[clamp(4px,1svh,24px)] lg:h-[clamp(40px,7svh,83px)] lg:w-[clamp(112px,19.5svh,232px)]" />
       <div className={centered ? 'space-y-2 text-center' : 'space-y-2'}>
         <h2
           tabIndex={-1}
@@ -83,7 +83,7 @@ export function SupportLine() {
   const t = useResetPasswordMessages();
 
   return (
-    <p className="pt-5 text-center text-xs text-auth-muted">
+    <p className="pt-5 lg:pt-[clamp(10px,2svh,20px)] text-center text-xs text-auth-muted">
       {t.needHelp}{' '}
       <Link to={ROUTES.CONTACT} className="font-medium text-auth-navy hover:underline">
         {t.contactSupport}

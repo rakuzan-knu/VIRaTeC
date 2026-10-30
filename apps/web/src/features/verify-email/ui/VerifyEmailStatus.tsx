@@ -4,6 +4,7 @@ import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
 import { ROUTES } from '@/shared/config/routes';
 import { useCommonMessages } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
+import { BrandLogo } from '@/shared/ui/brand-logo';
 import { useVerifyEmailMessages } from '../model/messages';
 import { useVerifyEmailToken } from '../model/useVerifyEmailToken';
 
@@ -32,6 +33,7 @@ export function VerifyEmailStatus() {
 
   return (
     <div className="w-full space-y-5" aria-live="polite">
+      <BrandLogo className="mx-auto h-[66px] w-[260px] lg:h-[clamp(36px,5.5svh,66px)] lg:w-[clamp(142px,21.7svh,260px)]" />
       <span
         className={cn(
           'flex size-14 items-center justify-center rounded-2xl',

@@ -17,7 +17,7 @@ export function RegisterPage() {
     <AuthLayout>
       <RegisterForm
         socialAuth={
-          <GoogleAuthButton text="signup_with" className="h-[58px] lg:h-[clamp(42px,6svh,58px)]" />
+          <GoogleAuthButton text="signup_with" className="h-[58px] lg:h-[clamp(40px,6svh,58px)]" />
         }
       />
     </AuthLayout>
