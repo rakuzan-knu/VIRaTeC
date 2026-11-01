@@ -3,7 +3,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { AppRouter, createAppRouter } from './app/providers/router';
 import { CLIENT_RENDER_ATTRIBUTE, PRERENDERED_PATH_ATTRIBUTE } from './shared/config/prerender';
-import { beginHydration } from './shared/lib';
+import { beginHydration, loadPlerdy } from './shared/lib';
 import './app/styles/index.css';
 
 const container = document.getElementById('root')!;
@@ -37,3 +37,4 @@ async function start() {
 }
 
 void start();
+loadPlerdy();
