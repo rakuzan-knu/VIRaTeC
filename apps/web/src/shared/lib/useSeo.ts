@@ -59,7 +59,7 @@ export function useSeo(
 
   useEffect(() => {
     const path = normalizePath(window.location.pathname);
-    const fullTitle = formatTitle(title);
+    const fullTitle = formatTitle(PAGE_SEO[path]?.[locale].title ?? title, locale);
     const pageDescription = toMetaDescription(
       description ?? PAGE_SEO[path]?.[locale].description ?? DEFAULT_SEO[locale].description,
     );

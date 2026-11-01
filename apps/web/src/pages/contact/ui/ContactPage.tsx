@@ -118,8 +118,7 @@ export function ContactPage() {
                     {content.locationTitle}
                   </h3>
                   <address className="text-lg leading-7 text-white not-italic">
-                    {common.university}
-                    <br />
+                    {common.university} <br />
                     {common.kyivUkraine}
                   </address>
                   <ul className="mt-auto flex flex-wrap gap-x-6 gap-y-3 pt-4">

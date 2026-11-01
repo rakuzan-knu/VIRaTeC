@@ -46,8 +46,7 @@ export function PartnerNetwork() {
             />
             {partner.caption && (
               <span className="text-xs leading-[15px] font-semibold whitespace-nowrap text-white lg:text-[15px] lg:leading-[18px]">
-                {partner.caption[0]}
-                <br />
+                {partner.caption[0]} <br />
                 {partner.caption[1]}
               </span>
             )}

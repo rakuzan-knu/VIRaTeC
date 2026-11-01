@@ -152,7 +152,7 @@ const staticPages = (site: Site): (PageHead & { path: string })[] =>
   Object.entries(PAGE_SEO).flatMap(([path, seo]) => {
     if (!seo) return [];
     const { title, description } = seo[SEO_LOCALE];
-    const fullTitle = formatTitle(title);
+    const fullTitle = formatTitle(title, SEO_LOCALE);
     const metaDescription = toMetaDescription(description);
     return [
       {
@@ -226,7 +226,7 @@ const findEmittedAsset = (site: Site, bundle: Rollup.OutputBundle, source: strin
 const publicationPages = (site: Site, publications: Publication[], bundle: Rollup.OutputBundle) =>
   publications.map((publication): PageHead & { path: string } => {
     const path = buildPublicationPath(publication.slug);
-    const title = formatTitle(publication.title);
+    const title = formatTitle(publication.title, SEO_LOCALE);
     const description = toMetaDescription(publication.detail?.lead ?? publication.excerpt);
     const coverUrl = findEmittedAsset(site, bundle, publication.image);
     const image = coverUrl ? { url: coverUrl, alt: publication.title } : site.defaultImage;
@@ -272,7 +272,7 @@ const toHtmlFileName = (path: string) =>
 
 const homeHead = (site: Site): PageHead => ({
   path: ROUTES.HOME,
-  title: formatTitle(),
+  title: formatTitle(undefined, SEO_LOCALE),
   description: toMetaDescription(DEFAULT_SEO[SEO_LOCALE].description),
   type: 'website',
   image: site.defaultImage,

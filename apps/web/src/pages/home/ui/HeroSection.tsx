@@ -57,7 +57,7 @@ export function HeroSection() {
         <h1 className="font-display text-[42px] leading-[44px] font-medium tracking-[-0.035em] text-viratec-light lg:text-[clamp(56px,9svh,96px)] lg:leading-[0.98] lg:tracking-[-0.045em]">
           <span className={`inline-block ${HERO_TEXT_CLASS}`} style={revealDelay(300)}>
             {hero.titleLine}
-          </span>
+          </span>{' '}
           <br />
           <span className={`inline-block ${HERO_TEXT_CLASS}`} style={revealDelay(450)}>
             <span className="hero-shimmer-text lg:animate-hero-shimmer">{hero.titleAccent}</span>
