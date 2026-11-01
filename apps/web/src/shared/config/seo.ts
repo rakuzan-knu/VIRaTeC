@@ -1,9 +1,12 @@
-import type { Localized } from '../i18n/model/types';
+import type { Locale, Localized } from '../i18n/model/types';
 import { ROUTES } from './routes';
 import { DEFAULT_SEO, PAGE_SEO_ENTRIES } from './seo.generated';
 
 export const SITE_NAME = 'VIRaTeC';
-export const DEFAULT_TITLE = 'VIRaTeC — Virtual Innovating Research & Technology Community (КНУ)';
+export const DEFAULT_TITLE: Localized<string> = {
+  en: 'VIRaTeC — International Research Community at KNU, Kyiv',
+  uk: 'VIRaTeC — міжнародна наукова спільнота КНУ імені Шевченка',
+};
 
 export const OG_IMAGE = {
   path: '/og-image.jpg',
@@ -51,7 +54,8 @@ export const normalizePath = (pathname: string) =>
 export const absoluteUrl = (pathname: string, siteUrl: string) =>
   new URL(normalizePath(pathname), siteUrl).href;
 
-export const formatTitle = (title?: string) => (title ? `${title} — ${SITE_NAME}` : DEFAULT_TITLE);
+export const formatTitle = (title: string | undefined, locale: Locale) =>
+  title ? `${title} — ${SITE_NAME}` : DEFAULT_TITLE[locale];
 
 export const toMetaDescription = (text: string) => {
   const collapsed = text.replace(/\s+/g, ' ').trim();

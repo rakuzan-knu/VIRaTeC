@@ -97,6 +97,7 @@ export function PageIntro({
           <SplitWords text={title} />
           {accent && (
             <>
+              {' '}
               <br />
               <span className="text-white/50">
                 <SplitWords text={accent} offset={countWords(title)} />
