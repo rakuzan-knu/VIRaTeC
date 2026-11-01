@@ -19,7 +19,6 @@ import { toRoutePath } from './route-preload-plugin';
 const SERVER_ENTRY = 'entry-server.js';
 const SPA_FALLBACK_FILE = 'spa.html';
 const EMPTY_ROOT = '<div id="root"></div>';
-const VERCEL_CONFIG = '../../vercel.json';
 const CSP_HEADER = 'Content-Security-Policy';
 const INLINE_SCRIPT =
   /<script(?![^>]*\bsrc=)(?![^>]*type="application\/(?:ld\+)?json")[^>]*>([\s\S]*?)<\/script>/g;
@@ -28,19 +27,41 @@ interface VercelConfig {
   headers?: { headers: { key: string; value: string }[] }[];
 }
 
+const CSP_SOURCES = [
+  {
+    file: '../../vercel.json',
+    read: (text: string) =>
+      (JSON.parse(text) as VercelConfig).headers
+        ?.flatMap((rule) => rule.headers)
+        .find((header) => header.key === CSP_HEADER)?.value,
+  },
+  {
+    file: 'docker/security-headers.inc.template',
+    read: (text: string) => /add_header Content-Security-Policy "([^"]*)"/.exec(text)?.[1],
+  },
+];
+
 const scriptHash = (source: string) =>
   `'sha256-${createHash('sha256').update(source).digest('base64')}'`;
 
-async function readAllowedScripts(root: string) {
-  const config = JSON.parse(await readFile(resolve(root, VERCEL_CONFIG), 'utf8')) as VercelConfig;
-  const policy =
-    config.headers?.flatMap((rule) => rule.headers).find((header) => header.key === CSP_HEADER)
-      ?.value ?? '';
-  const scriptSrc = policy
-    .split(';')
-    .map((directive) => directive.trim())
-    .find((directive) => directive.startsWith('script-src '));
-  return new Set(scriptSrc?.split(/\s+/).slice(1) ?? []);
+const allowedScripts = (policy: string) =>
+  new Set(
+    policy
+      .split(';')
+      .map((directive) => directive.trim())
+      .find((directive) => directive.startsWith('script-src '))
+      ?.split(/\s+/)
+      .slice(1) ?? [],
+  );
+
+async function readScriptPolicies(root: string) {
+  const policies: { file: string; allowed: Set<string> }[] = [];
+  for (const source of CSP_SOURCES) {
+    const text = await readFile(resolve(root, source.file), 'utf8').catch(() => null);
+    const policy = text === null ? undefined : source.read(text);
+    if (policy) policies.push({ file: source.file, allowed: allowedScripts(policy) });
+  }
+  return policies;
 }
 
 interface ClientRenderCheck {
@@ -116,8 +137,7 @@ export function prerenderPlugin(clientOutDir: string): Plugin {
         render: (pathname: string) => Promise<string>;
       };
 
-      const allowedScripts = await readAllowedScripts(root);
-      const blockedScripts = new Set<string>();
+      const inlineScripts = new Set<string>();
 
       for (const fileName of await listHtmlFiles(clientOutDir)) {
         const filePath = join(clientOutDir, fileName);
@@ -135,16 +155,18 @@ export function prerenderPlugin(clientOutDir: string): Plugin {
             `<div id="root" ${PRERENDERED_PATH_ATTRIBUTE}="${pathname}">${markup}</div>`,
           );
         for (const [, source = ''] of page.matchAll(INLINE_SCRIPT)) {
-          const hash = scriptHash(source);
-          if (!allowedScripts.has(hash)) blockedScripts.add(hash);
+          inlineScripts.add(scriptHash(source));
         }
         await writeFile(filePath, page);
       }
 
-      if (blockedScripts.size > 0) {
-        throw new Error(
-          `Prerendered pages have inline scripts that the Content-Security-Policy in vercel.json blocks. Add to script-src: ${[...blockedScripts].join(' ')}`,
-        );
+      for (const { file, allowed } of await readScriptPolicies(root)) {
+        const blocked = [...inlineScripts].filter((hash) => !allowed.has(hash));
+        if (blocked.length > 0) {
+          throw new Error(
+            `Prerendered pages have inline scripts that the Content-Security-Policy in ${file} blocks. Add to script-src: ${blocked.join(' ')}`,
+          );
+        }
       }
     },
   };
