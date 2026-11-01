@@ -19,7 +19,7 @@
         { "src": "/assets/(.*)", "status": 404 },
         { "src": "/(.*)", "dest": "/$1.html", "check": true },
         {
-          "src": "/(login|register|forgot-password|verify-email|account|admin(?:/.*)?|people(?:/[^/]+)?|publications/[^/]+|research/projects/[^/]+)",
+          "src": "/(login|register|forgot-password|verify-email|account|admin(?:/.*)?|people(?:/[^/]+)?|publications/[^/]+|research/projects/[^/]+)(?:\\.html)?",
           "dest": "/spa.html"
         },
         { "src": "/(.*)", "dest": "/spa.html", "status": 404 }
