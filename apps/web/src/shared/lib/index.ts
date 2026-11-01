@@ -19,6 +19,7 @@ export { usePauseOffscreen } from './usePauseOffscreen';
 export { trackSpotlight } from './trackSpotlight';
 export { isStaleChunkError, reloadForStaleChunk } from './staleChunk';
 export { beginHydration, endHydration, isHydrating } from './hydration';
+export { loadPlerdy } from './plerdy';
 export { useLiveContent, PREVIEW_CONTENT_QUERY_KEY } from './useLiveContent';
 export {
   useContentPreviewStore,
