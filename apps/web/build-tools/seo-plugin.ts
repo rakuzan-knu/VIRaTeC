@@ -4,7 +4,9 @@ import { createServer, type Plugin, type ResolvedConfig, type Rollup } from 'vit
 import type { PublicationDto } from '@viratec/contracts';
 import type { Locale } from '../src/shared/i18n/model/types';
 import type { Publication } from '../src/entities/publication/model/types';
-import { ROUTES, buildPublicationPath } from '../src/shared/config/routes';
+import type { Project } from '../src/entities/project/model/types';
+import { localizeProject } from '../src/entities/project/lib/localize';
+import { ROUTES, buildProjectPath, buildPublicationPath } from '../src/shared/config/routes';
 import {
   DEFAULT_SEO,
   OG_IMAGE,
@@ -16,13 +18,12 @@ import {
   formatTitle,
   toMetaDescription,
 } from '../src/shared/config/seo';
+import { fetchRecords, saveRecords } from './prerender-records';
 
 const HEAD_PLACEHOLDER = '<!--seo-head-->';
 const SEO_LOCALE = 'uk';
 const SPA_FALLBACK_FILE = 'spa.html';
 const PUBLICATIONS_MODULE = '/src/entities/publication/model/data.ts';
-const PUBLICATIONS_ENDPOINT = '/api/v1/publications';
-const API_TIMEOUT_MS = 15_000;
 
 interface HeadImage {
   url: string;
@@ -148,6 +149,19 @@ const publicationJsonLd = (
   isPartOf: { '@id': site.websiteId },
 });
 
+const projectJsonLd = (site: Site, project: Project, path: string, description: string) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ResearchProject',
+  '@id': `${site.url(path)}#project`,
+  url: site.url(path),
+  name: project.title,
+  description,
+  inLanguage: 'uk-UA',
+  ...(project.tags.length > 0 && { keywords: project.tags.join(', ') }),
+  parentOrganization: { '@id': site.organizationId },
+  isPartOf: { '@id': site.websiteId },
+});
+
 const staticPages = (site: Site): (PageHead & { path: string })[] =>
   Object.entries(PAGE_SEO).flatMap(([path, seo]) => {
     if (!seo) return [];
@@ -167,32 +181,8 @@ const staticPages = (site: Site): (PageHead & { path: string })[] =>
     ];
   });
 
-const fetchPublications = async (site: Site): Promise<PublicationDto[]> => {
-  const response = await fetch(site.url(PUBLICATIONS_ENDPOINT), {
-    signal: AbortSignal.timeout(API_TIMEOUT_MS),
-  });
-  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-  const body = (await response.json()) as { data?: PublicationDto[] };
-  if (!Array.isArray(body.data)) throw new Error('unexpected response shape');
-  return body.data;
-};
-
-const loadPublications = async (
-  config: ResolvedConfig,
-  site: Site,
-  warn: (message: string) => void,
-) => {
-  let publications: PublicationDto[];
-  try {
-    publications = await fetchPublications(site);
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    warn(
-      `Publication pages were not prerendered: ${site.url(PUBLICATIONS_ENDPOINT)} is unavailable (${reason})`,
-    );
-    return [];
-  }
-
+const localizePublications = async (config: ResolvedConfig, publications: PublicationDto[]) => {
+  if (publications.length === 0) return [];
   const server = await createServer({
     configFile: false,
     root: config.root,
@@ -241,6 +231,25 @@ const publicationPages = (site: Site, publications: Publication[], bundle: Rollu
     };
   });
 
+const projectPages = (site: Site, projects: Project[]) =>
+  projects.map((source): PageHead & { path: string } => {
+    const project = localizeProject(source, SEO_LOCALE);
+    const path = buildProjectPath(project.id);
+    const description = toMetaDescription(project.description);
+    const image = project.coverUrl?.startsWith('https://')
+      ? { url: project.coverUrl, alt: project.coverAlt ?? project.title }
+      : site.defaultImage;
+
+    return {
+      path,
+      title: formatTitle(project.title, SEO_LOCALE),
+      description,
+      type: 'article',
+      image,
+      jsonLd: projectJsonLd(site, project, path, description),
+    };
+  });
+
 const renderSitemap = (site: Site, entries: SitemapEntry[], lastmod: string) =>
   [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -257,6 +266,8 @@ const sitemapEntry = (path: string): SitemapEntry => {
   if (path === ROUTES.HOME) return { path, priority: '1.0', changefreq: 'weekly' };
   if (path.startsWith(ROUTES.PUBLICATIONS + '/'))
     return { path, priority: '0.6', changefreq: 'yearly' };
+  if (path.startsWith(ROUTES.PROJECTS + '/'))
+    return { path, priority: '0.6', changefreq: 'monthly' };
   if (
     [ROUTES.TERMS, ROUTES.PRIVACY, ROUTES.COOKIES, ROUTES.GUIDELINES].some(
       (legal) => legal === path,
@@ -310,13 +321,12 @@ export function seoPlugin(siteUrl: string): Plugin {
         this.error(`index.html must contain ${HEAD_PLACEHOLDER}`);
       }
 
+      const records = await fetchRecords(site.url, (message) => this.warn(message));
+      await saveRecords(config.root, records);
       const pages = [
         ...staticPages(site),
-        ...publicationPages(
-          site,
-          await loadPublications(config, site, (message) => this.warn(message)),
-          bundle,
-        ),
+        ...publicationPages(site, await localizePublications(config, records.publications), bundle),
+        ...projectPages(site, records.projects),
       ];
 
       for (const page of pages) {

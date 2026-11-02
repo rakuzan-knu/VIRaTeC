@@ -21,6 +21,7 @@ const ROUTE_PAGES: Partial<Record<string, string>> = {
 };
 
 const PUBLICATION_DETAIL_PAGE = 'publication-detail';
+const PROJECT_DETAIL_PAGE = 'project-detail';
 const PAGE_ENTRY = /\/src\/pages\/([^/]+)\/index\.ts$/;
 
 export const toRoutePath = (htmlFileName: string) =>
@@ -28,7 +29,11 @@ export const toRoutePath = (htmlFileName: string) =>
 
 const pageForRoute = (path: string) =>
   ROUTE_PAGES[path] ??
-  (path.startsWith(`${ROUTES.PUBLICATIONS}/`) ? PUBLICATION_DETAIL_PAGE : undefined);
+  (path.startsWith(`${ROUTES.PUBLICATIONS}/`)
+    ? PUBLICATION_DETAIL_PAGE
+    : path.startsWith(`${ROUTES.PROJECTS}/`)
+      ? PROJECT_DETAIL_PAGE
+      : undefined);
 
 const isChunk = (output: Rollup.OutputAsset | Rollup.OutputChunk): output is Rollup.OutputChunk =>
   output.type === 'chunk';

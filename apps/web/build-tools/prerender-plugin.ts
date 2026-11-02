@@ -7,6 +7,7 @@ import {
   CLIENT_RENDER_ATTRIBUTE,
   PRERENDERED_PATH_ATTRIBUTE,
   PRERENDER_LOCALE,
+  QUERY_STATE_ELEMENT_ID,
 } from '../src/shared/config/prerender';
 import {
   LEGACY_TOKEN_STORAGE_KEYS,
@@ -14,6 +15,7 @@ import {
   SESSION_HINT_STORAGE_KEY,
 } from '../src/shared/config/storageKeys';
 import { DEFAULT_LOCALE, LOCALES } from '../src/shared/i18n/model/types';
+import { loadRecords, type PrerenderRecords } from './prerender-records';
 import { toRoutePath } from './route-preload-plugin';
 
 const SERVER_ENTRY = 'entry-server.js';
@@ -134,9 +136,13 @@ export function prerenderPlugin(clientOutDir: string): Plugin {
     },
     async closeBundle() {
       const { render } = (await import(pathToFileURL(join(serverOutDir, SERVER_ENTRY)).href)) as {
-        render: (pathname: string) => Promise<string>;
+        render: (
+          pathname: string,
+          data: PrerenderRecords,
+        ) => Promise<{ markup: string; queryState: unknown }>;
       };
 
+      const records = await loadRecords(root);
       const inlineScripts = new Set<string>();
 
       for (const fileName of await listHtmlFiles(clientOutDir)) {
@@ -147,12 +153,15 @@ export function prerenderPlugin(clientOutDir: string): Plugin {
         }
 
         const pathname = toRoutePath(fileName);
-        const markup = await render(pathname);
+        const { markup, queryState } = await render(pathname, records);
+        const stateTag = queryState
+          ? `\n    <script type="application/json" id="${QUERY_STATE_ELEMENT_ID}">${JSON.stringify(queryState).replace(/</g, '\\u003c')}</script>`
+          : '';
         const page = html
           .replace('</head>', `  ${bootTags}\n  </head>`)
           .replace(
             EMPTY_ROOT,
-            `<div id="root" ${PRERENDERED_PATH_ATTRIBUTE}="${pathname}">${markup}</div>`,
+            `<div id="root" ${PRERENDERED_PATH_ATTRIBUTE}="${pathname}">${markup}</div>${stateTag}`,
           );
         for (const [, source = ''] of page.matchAll(INLINE_SCRIPT)) {
           inlineScripts.add(scriptHash(source));
