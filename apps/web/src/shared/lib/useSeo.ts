@@ -14,6 +14,7 @@ import {
   toMetaDescription,
 } from '@/shared/config/seo';
 import { ENV } from '@/shared/config/env';
+import { hasEnglishPage, stripEnglishPrefix, toEnglishPath } from '@/shared/config/routes';
 
 interface SeoOptions {
   description?: string;
@@ -51,6 +52,26 @@ const setCanonical = (href: string) => {
   element.href = href;
 };
 
+const ALTERNATE_LOCALES = ['uk', 'en', 'x-default'] as const;
+
+const setAlternates = (base: string | null) => {
+  for (const hreflang of ALTERNATE_LOCALES) {
+    const selector = `link[rel="alternate"][hreflang="${hreflang}"]`;
+    let element = document.head.querySelector<HTMLLinkElement>(selector);
+    if (base === null) {
+      element?.remove();
+      continue;
+    }
+    if (!element) {
+      element = document.createElement('link');
+      element.rel = 'alternate';
+      element.hreflang = hreflang;
+      document.head.append(element);
+    }
+    element.href = absoluteUrl(hreflang === 'en' ? toEnglishPath(base) : base, ENV.SITE_URL);
+  }
+};
+
 export function useSeo(
   title?: string,
   { description, image, type = 'website', noindex = false }: SeoOptions = {},
@@ -59,9 +80,10 @@ export function useSeo(
 
   useEffect(() => {
     const path = normalizePath(window.location.pathname);
-    const fullTitle = formatTitle(PAGE_SEO[path]?.[locale].title ?? title, locale);
+    const base = stripEnglishPrefix(path);
+    const fullTitle = formatTitle(PAGE_SEO[base]?.[locale].title ?? title, locale);
     const pageDescription = toMetaDescription(
-      description ?? PAGE_SEO[path]?.[locale].description ?? DEFAULT_SEO[locale].description,
+      description ?? PAGE_SEO[base]?.[locale].description ?? DEFAULT_SEO[locale].description,
     );
     const url = absoluteUrl(path, ENV.SITE_URL);
     const imageUrl = absoluteUrl(image ?? OG_IMAGE.path, ENV.SITE_URL);
@@ -70,6 +92,7 @@ export function useSeo(
 
     document.title = fullTitle;
     setCanonical(url);
+    setAlternates(!noindex && hasEnglishPage(base) ? base : null);
     setMeta('name', 'description', pageDescription);
     setMeta(
       'name',

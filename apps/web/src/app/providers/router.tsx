@@ -10,15 +10,24 @@ import {
 import { GuestRoute } from './GuestRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootLayout, RouteError, RouteFallback } from './RootLayout';
-import { ROUTES } from '@/shared/config/routes';
+import { ENGLISH_ROUTES, ROUTES, toEnglishPath } from '@/shared/config/routes';
 import { endHydration } from '@/shared/lib';
+
+const withEnglishRoutes = (children: RouteObject[]): RouteObject[] => [
+  ...children,
+  ...children.flatMap((route) =>
+    route.path && ENGLISH_ROUTES.includes(route.path)
+      ? [{ ...route, path: toEnglishPath(route.path) }]
+      : [],
+  ),
+];
 
 export const routes: RouteObject[] = [
   {
     element: <RootLayout />,
     hydrateFallbackElement: <RouteFallback />,
     errorElement: <RouteError />,
-    children: [
+    children: withEnglishRoutes([
       {
         path: ROUTES.HOME,
         lazy: async () => ({ Component: (await import('@/pages/home')).HomePage }),
@@ -216,7 +225,7 @@ export const routes: RouteObject[] = [
         path: '*',
         lazy: async () => ({ Component: (await import('@/pages/not-found')).NotFoundPage }),
       },
-    ],
+    ]),
   },
 ];
 

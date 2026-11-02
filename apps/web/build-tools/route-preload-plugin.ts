@@ -1,5 +1,5 @@
 import type { Plugin, Rollup } from 'vite';
-import { ROUTES } from '../src/shared/config/routes';
+import { ROUTES, stripEnglishPrefix } from '../src/shared/config/routes';
 
 const ROUTE_PAGES: Partial<Record<string, string>> = {
   [ROUTES.HOME]: 'home',
@@ -71,7 +71,7 @@ export function routePreloadPlugin(): Plugin {
         if (output.type !== 'asset' || !output.fileName.endsWith('.html')) continue;
         if (typeof output.source !== 'string') continue;
 
-        const page = pageForRoute(toRoutePath(output.fileName));
+        const page = pageForRoute(stripEnglishPrefix(toRoutePath(output.fileName)));
         const pageChunk = page && pageChunks.get(page);
         if (!pageChunk) continue;
 

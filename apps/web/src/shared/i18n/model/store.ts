@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { PRERENDER_LOCALE } from '@/shared/config/prerender';
+import { isEnglishPath } from '@/shared/config/routes';
 import { LOCALE_STORAGE_KEY as STORAGE_KEY } from '@/shared/config/storageKeys';
 import { DEFAULT_LOCALE, isLocale, type Locale } from './types';
 
@@ -30,6 +31,7 @@ export const clearStoredLocale = () => {
 
 const detectLocale = (): Locale => {
   if (import.meta.env.SSR) return PRERENDER_LOCALE;
+  if (isEnglishPath(window.location.pathname)) return 'en';
   const stored = readStoredLocale();
   if (stored) return stored;
   return navigator.language.toLowerCase().startsWith('uk') ? 'uk' : DEFAULT_LOCALE;
@@ -57,6 +59,10 @@ export const useLocaleStore = create<LocaleState>((set) => ({
   },
 }));
 
-export const useLocale = () => useLocaleStore((state) => state.locale);
+const useStoreLocale = () => useLocaleStore((state) => state.locale);
+
+const usePrerenderLocale = () => useLocaleStore.getState().locale;
+
+export const useLocale = import.meta.env.SSR ? usePrerenderLocale : useStoreLocale;
 
 export const useLocalized = <T>(messages: Record<Locale, T>): T => messages[useLocale()];

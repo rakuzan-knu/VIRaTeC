@@ -29,6 +29,44 @@ export const ROUTES = {
   CONTACT: '/contact',
 } as const;
 
+export const ENGLISH_PREFIX = '/en';
+
+export const ENGLISH_ROUTES: readonly string[] = [
+  ROUTES.HOME,
+  ROUTES.ABOUT_INITIATIVE,
+  ROUTES.VIRATEC,
+  ROUTES.GLOBAL_COLLABORATION,
+  ROUTES.RESEARCH_AREAS,
+  ROUTES.PROJECTS,
+  ROUTES.PROJECT_DETAIL,
+  ROUTES.EXPERIENTIAL_LEARNING,
+  ROUTES.STUDENT_RESEARCH,
+  ROUTES.PUBLICATIONS,
+  ROUTES.PUBLICATION_DETAIL,
+  ROUTES.OPPORTUNITIES,
+  ROUTES.CONTACT,
+  ROUTES.TERMS,
+  ROUTES.PRIVACY,
+  ROUTES.COOKIES,
+  ROUTES.GUIDELINES,
+];
+
+const ENGLISH_ROUTE_PATTERNS = ENGLISH_ROUTES.map(
+  (route) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`),
+);
+
+export const toEnglishPath = (path: string) =>
+  path === ROUTES.HOME ? ENGLISH_PREFIX : `${ENGLISH_PREFIX}${path}`;
+
+export const isEnglishPath = (pathname: string) =>
+  pathname === ENGLISH_PREFIX || pathname.startsWith(`${ENGLISH_PREFIX}/`);
+
+export const stripEnglishPrefix = (pathname: string) =>
+  isEnglishPath(pathname) ? pathname.slice(ENGLISH_PREFIX.length) || ROUTES.HOME : pathname;
+
+export const hasEnglishPage = (pathname: string) =>
+  ENGLISH_ROUTE_PATTERNS.some((pattern) => pattern.test(stripEnglishPrefix(pathname)));
+
 export const buildProjectPath = (projectId: string) =>
   ROUTES.PROJECT_DETAIL.replace(':projectId', encodeURIComponent(projectId));
 
