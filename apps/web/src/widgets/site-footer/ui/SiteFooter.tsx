@@ -8,13 +8,7 @@ import {
   useNavigation,
   type NavGroup,
 } from '@/shared/config/navigation';
-import {
-  isLocale,
-  useCommonMessages,
-  useLocaleStore,
-  useLocalized,
-  type Locale,
-} from '@/shared/i18n';
+import { isLocale, useCommonMessages, useLocalized, type Locale } from '@/shared/i18n';
 import { Logo } from '@/shared/ui/logo';
 import { OptionalLink } from '@/shared/ui/optional-link';
 import languageGlobe from '@/shared/assets/icons/language-globe.svg';
@@ -22,6 +16,7 @@ import chevronDown from '@/shared/assets/icons/chevron-down.svg';
 import linkedinIcon from '@/shared/assets/icons/linkedin.svg';
 import scholarIcon from '@/shared/assets/icons/google-scholar.svg';
 import { FOOTER_MESSAGES } from '../model/messages';
+import { useLanguageSwitch } from '../model/useLanguageSwitch';
 
 const LANGUAGES: { value: Locale; label: string }[] = [
   { value: 'en', label: 'English' },
@@ -111,8 +106,7 @@ function AccordionSection({
 }
 
 function LanguageSelect({ label }: { label: string }) {
-  const locale = useLocaleStore((state) => state.locale);
-  const setLocale = useLocaleStore((state) => state.setLocale);
+  const { locale, switchLanguage } = useLanguageSwitch();
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -129,7 +123,7 @@ function LanguageSelect({ label }: { label: string }) {
           id="footer-language"
           value={locale}
           onChange={(event) => {
-            if (isLocale(event.target.value)) setLocale(event.target.value);
+            if (isLocale(event.target.value)) switchLanguage(event.target.value);
           }}
           className="w-full cursor-pointer appearance-none rounded-full border border-white/10 bg-white/4 py-[11px] pr-10 pl-10 text-sm leading-5 text-white transition-colors outline-none hover:border-white/22 focus-visible:border-viratec-lime"
         >

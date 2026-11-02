@@ -32,7 +32,7 @@ Inside `apps/web` the `@/` alias points to `src/`. Types shared with the backend
 
 ## Build, prerender and content
 
-`pnpm --filter @viratec/web build` = `tsc -b` → client `vite build` → SSR build of `src/entry-server.tsx`, after which `prerender-plugin` writes static HTML per route. So page code must render in Node without `window`/`document`/`localStorage` at module top level: browser APIs go into effects or behind an `import.meta.env.SSR` check, as in `shared/i18n/model/store.ts`.
+`pnpm --filter @viratec/web build` = `tsc -b` → client `vite build` → SSR build of `src/entry-server.tsx`, after which `prerender-plugin` writes static HTML per route (with the page's TanStack Query data embedded for publications and projects, and an English copy under `/en`). Inline scripts in that HTML must be allowed by hash in the CSP of `vercel.json` and the nginx template — the build fails with the missing hash otherwise. So page code must render in Node without `window`/`document`/`localStorage` at module top level: browser APIs go into effects or behind an `import.meta.env.SSR` check, as in `shared/i18n/model/store.ts`.
 
 Marketing page content comes from Contentful (`build-tools/contentful`):
 

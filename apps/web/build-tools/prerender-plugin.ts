@@ -15,6 +15,7 @@ import {
   SESSION_HINT_STORAGE_KEY,
 } from '../src/shared/config/storageKeys';
 import { DEFAULT_LOCALE, LOCALES } from '../src/shared/i18n/model/types';
+import { ENGLISH_PREFIX } from '../src/shared/config/routes';
 import { loadRecords, type PrerenderRecords } from './prerender-records';
 import { toRoutePath } from './route-preload-plugin';
 
@@ -69,6 +70,8 @@ async function readScriptPolicies(root: string) {
 interface ClientRenderCheck {
   attribute: string;
   prerenderLocale: string;
+  englishLocale: string;
+  englishPrefix: string;
   locales: readonly string[];
   defaultLocale: string;
   localeKey: string;
@@ -84,9 +87,13 @@ function markClientRender(check: ClientRenderCheck) {
       return null;
     }
   };
+  const path = location.pathname;
+  const isEnglishPage = path === check.englishPrefix || path.startsWith(`${check.englishPrefix}/`);
+  const pageLocale = isEnglishPage ? check.englishLocale : check.prerenderLocale;
   const stored = read(check.localeKey);
-  const locale =
-    stored !== null && check.locales.includes(stored)
+  const locale = isEnglishPage
+    ? check.englishLocale
+    : stored !== null && check.locales.includes(stored)
       ? stored
       : navigator.language.toLowerCase().startsWith('uk')
         ? 'uk'
@@ -95,7 +102,7 @@ function markClientRender(check: ClientRenderCheck) {
     check.sessionKeys.some((key) => read(key) === '1') ||
     check.legacyTokenKeys.some((key) => read(key) !== null);
 
-  if (locale !== check.prerenderLocale || hasSession) {
+  if (locale !== pageLocale || hasSession) {
     document.documentElement.setAttribute(check.attribute, '');
   }
 }
@@ -103,6 +110,8 @@ function markClientRender(check: ClientRenderCheck) {
 const clientRenderCheck: ClientRenderCheck = {
   attribute: CLIENT_RENDER_ATTRIBUTE,
   prerenderLocale: PRERENDER_LOCALE,
+  englishLocale: 'en',
+  englishPrefix: ENGLISH_PREFIX,
   locales: LOCALES,
   defaultLocale: DEFAULT_LOCALE,
   localeKey: LOCALE_STORAGE_KEY,

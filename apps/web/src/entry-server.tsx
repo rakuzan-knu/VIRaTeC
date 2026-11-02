@@ -6,7 +6,14 @@ import { App } from './app/App';
 import { routes } from './app/providers/router';
 import { projectKeys, type Project } from './entities/project';
 import { publicationKeys } from './entities/publication';
-import { ROUTES, buildProjectPath } from './shared/config/routes';
+import {
+  ROUTES,
+  buildProjectPath,
+  isEnglishPath,
+  stripEnglishPrefix,
+} from './shared/config/routes';
+import { PRERENDER_LOCALE } from './shared/config/prerender';
+import { useLocaleStore } from './shared/i18n';
 
 const PRERENDER_ORIGIN = 'http://prerender.local';
 
@@ -40,8 +47,9 @@ export async function render(pathname: string, data: PrerenderData): Promise<Pre
     throw new Error(`Prerender of ${pathname} returned HTTP ${context.status}`);
   }
 
+  useLocaleStore.setState({ locale: isEnglishPath(pathname) ? 'en' : PRERENDER_LOCALE });
   const client = new QueryClient();
-  seedQueries(client, pathname, data);
+  seedQueries(client, stripEnglishPrefix(pathname), data);
 
   const router = createStaticRouter(dataRoutes, context);
   const { prelude } = await prerender(

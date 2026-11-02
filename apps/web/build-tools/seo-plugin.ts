@@ -6,7 +6,12 @@ import type { Locale } from '../src/shared/i18n/model/types';
 import type { Publication } from '../src/entities/publication/model/types';
 import type { Project } from '../src/entities/project/model/types';
 import { localizeProject } from '../src/entities/project/lib/localize';
-import { ROUTES, buildProjectPath, buildPublicationPath } from '../src/shared/config/routes';
+import {
+  ROUTES,
+  buildProjectPath,
+  buildPublicationPath,
+  toEnglishPath,
+} from '../src/shared/config/routes';
 import {
   DEFAULT_SEO,
   OG_IMAGE,
@@ -21,7 +26,10 @@ import {
 import { fetchRecords, saveRecords } from './prerender-records';
 
 const HEAD_PLACEHOLDER = '<!--seo-head-->';
-const SEO_LOCALE = 'uk';
+const SEO_LOCALE: Locale = 'uk';
+const SEO_LOCALES: readonly Locale[] = ['uk', 'en'];
+const IN_LANGUAGE: Record<Locale, string> = { uk: 'uk-UA', en: 'en-GB' };
+const HTML_LANG = /<html lang="[^"]*"/;
 const SPA_FALLBACK_FILE = 'spa.html';
 const PUBLICATIONS_MODULE = '/src/entities/publication/model/data.ts';
 
@@ -42,6 +50,8 @@ interface Site {
 
 interface PageHead {
   path?: string;
+  base?: string;
+  locale: Locale;
   title: string;
   description: string;
   type: 'website' | 'article';
@@ -49,8 +59,11 @@ interface PageHead {
   jsonLd?: Record<string, unknown>;
 }
 
+type Page = PageHead & { path: string; base: string };
+
 interface SitemapEntry {
   path: string;
+  base: string;
   priority: string;
   changefreq: 'weekly' | 'monthly' | 'yearly';
 }
@@ -63,6 +76,10 @@ const escapeText = (value: string) =>
 
 const meta = (attribute: 'name' | 'property', key: string, content: string) =>
   `<meta ${attribute}="${key}" content="${escapeAttribute(content)}" />`;
+
+const localePath = (base: string, locale: Locale) => (locale === 'en' ? toEnglishPath(base) : base);
+
+const otherLocale = (locale: Locale): Locale => (locale === 'en' ? 'uk' : 'en');
 
 const createSite = (siteUrl: string): Site => {
   const url = (pathname: string) => absoluteUrl(pathname, siteUrl);
@@ -80,13 +97,26 @@ const createSite = (siteUrl: string): Site => {
   };
 };
 
-const renderHead = (site: Site, { path, title, description, type, image, jsonLd }: PageHead) => {
+const alternateLinks = (site: Site, base: string) =>
+  [
+    ...SEO_LOCALES.map((locale) => [locale, site.url(localePath(base, locale))]),
+    ['x-default', site.url(base)],
+  ].map(
+    ([hreflang, href]) =>
+      `<link rel="alternate" hreflang="${hreflang}" href="${escapeAttribute(href)}" />`,
+  );
+
+const renderHead = (
+  site: Site,
+  { path, base, locale, title, description, type, image, jsonLd }: PageHead,
+) => {
   const url = path === undefined ? undefined : site.url(path);
   const tags = [
     `<title>${escapeText(title)}</title>`,
     meta('name', 'description', description),
     meta('name', 'robots', ROBOTS_INDEX),
     url && `<link rel="canonical" href="${escapeAttribute(url)}" />`,
+    ...(base === undefined ? [] : alternateLinks(site, base)),
     meta('property', 'og:type', type),
     url && meta('property', 'og:url', url),
     meta('property', 'og:title', title),
@@ -96,8 +126,8 @@ const renderHead = (site: Site, { path, title, description, type, image, jsonLd 
     image.width && meta('property', 'og:image:width', String(image.width)),
     image.height && meta('property', 'og:image:height', String(image.height)),
     meta('property', 'og:image:alt', image.alt),
-    meta('property', 'og:locale', SOCIAL_LOCALE[SEO_LOCALE]),
-    meta('property', 'og:locale:alternate', SOCIAL_LOCALE.en),
+    meta('property', 'og:locale', SOCIAL_LOCALE[locale]),
+    meta('property', 'og:locale:alternate', SOCIAL_LOCALE[otherLocale(locale)]),
     meta('name', 'twitter:title', title),
     meta('name', 'twitter:description', description),
     meta('name', 'twitter:image', image.url),
@@ -109,14 +139,20 @@ const renderHead = (site: Site, { path, title, description, type, image, jsonLd 
   return tags.filter(Boolean).join('\n    ');
 };
 
-const webPageJsonLd = (site: Site, path: string, title: string, description: string) => ({
+const webPageJsonLd = (
+  site: Site,
+  path: string,
+  title: string,
+  description: string,
+  locale: Locale,
+) => ({
   '@context': 'https://schema.org',
   '@type': 'WebPage',
   '@id': `${site.url(path)}#webpage`,
   url: site.url(path),
   name: title,
   description,
-  inLanguage: 'uk-UA',
+  inLanguage: IN_LANGUAGE[locale],
   isPartOf: { '@id': site.websiteId },
   about: { '@id': site.organizationId },
   primaryImageOfPage: site.defaultImage.url,
@@ -128,6 +164,7 @@ const publicationJsonLd = (
   path: string,
   description: string,
   image: string,
+  locale: Locale,
 ) => ({
   '@context': 'https://schema.org',
   '@type': publication.type === 'paper' ? 'ScholarlyArticle' : 'Article',
@@ -138,7 +175,7 @@ const publicationJsonLd = (
   description,
   image,
   datePublished: String(publication.year),
-  inLanguage: 'uk-UA',
+  inLanguage: IN_LANGUAGE[locale],
   ...(publication.detail?.authors && {
     author: publication.detail.authors.split(/,\s*/).map((name) => ({ '@type': 'Person', name })),
   }),
@@ -149,40 +186,54 @@ const publicationJsonLd = (
   isPartOf: { '@id': site.websiteId },
 });
 
-const projectJsonLd = (site: Site, project: Project, path: string, description: string) => ({
+const projectJsonLd = (
+  site: Site,
+  project: Project,
+  path: string,
+  description: string,
+  locale: Locale,
+) => ({
   '@context': 'https://schema.org',
   '@type': 'ResearchProject',
   '@id': `${site.url(path)}#project`,
   url: site.url(path),
   name: project.title,
   description,
-  inLanguage: 'uk-UA',
+  inLanguage: IN_LANGUAGE[locale],
   ...(project.tags.length > 0 && { keywords: project.tags.join(', ') }),
   parentOrganization: { '@id': site.organizationId },
   isPartOf: { '@id': site.websiteId },
 });
 
-const staticPages = (site: Site): (PageHead & { path: string })[] =>
-  Object.entries(PAGE_SEO).flatMap(([path, seo]) => {
+const staticPages = (site: Site, locale: Locale): Page[] =>
+  Object.entries(PAGE_SEO).flatMap(([base, seo]) => {
     if (!seo) return [];
-    const { title, description } = seo[SEO_LOCALE];
-    const fullTitle = formatTitle(title, SEO_LOCALE);
+    const path = localePath(base, locale);
+    const { title, description } = seo[locale];
+    const fullTitle = formatTitle(title, locale);
     const metaDescription = toMetaDescription(description);
     return [
       {
         path,
+        base,
+        locale,
         title: fullTitle,
         description: metaDescription,
         type: 'website' as const,
         image: site.defaultImage,
         jsonLd:
-          path === ROUTES.HOME ? undefined : webPageJsonLd(site, path, fullTitle, metaDescription),
+          base === ROUTES.HOME
+            ? undefined
+            : webPageJsonLd(site, path, fullTitle, metaDescription, locale),
       },
     ];
   });
 
-const localizePublications = async (config: ResolvedConfig, publications: PublicationDto[]) => {
-  if (publications.length === 0) return [];
+const localizePublications = async (
+  config: ResolvedConfig,
+  publications: PublicationDto[],
+): Promise<Record<Locale, Publication[]>> => {
+  if (publications.length === 0) return { uk: [], en: [] };
   const server = await createServer({
     configFile: false,
     root: config.root,
@@ -197,7 +248,10 @@ const localizePublications = async (config: ResolvedConfig, publications: Public
     const module = (await server.ssrLoadModule(PUBLICATIONS_MODULE)) as {
       toPublication: (dto: PublicationDto, locale: Locale) => Publication;
     };
-    return publications.map((dto) => module.toPublication(dto, SEO_LOCALE));
+    return {
+      uk: publications.map((dto) => module.toPublication(dto, 'uk')),
+      en: publications.map((dto) => module.toPublication(dto, 'en')),
+    };
   } finally {
     await server.close();
   }
@@ -213,28 +267,37 @@ const findEmittedAsset = (site: Site, bundle: Rollup.OutputBundle, source: strin
   return asset && site.url(`/${asset.fileName}`);
 };
 
-const publicationPages = (site: Site, publications: Publication[], bundle: Rollup.OutputBundle) =>
-  publications.map((publication): PageHead & { path: string } => {
-    const path = buildPublicationPath(publication.slug);
-    const title = formatTitle(publication.title, SEO_LOCALE);
+const publicationPages = (
+  site: Site,
+  publications: Publication[],
+  bundle: Rollup.OutputBundle,
+  locale: Locale,
+) =>
+  publications.map((publication): Page => {
+    const base = buildPublicationPath(publication.slug);
+    const path = localePath(base, locale);
+    const title = formatTitle(publication.title, locale);
     const description = toMetaDescription(publication.detail?.lead ?? publication.excerpt);
     const coverUrl = findEmittedAsset(site, bundle, publication.image);
     const image = coverUrl ? { url: coverUrl, alt: publication.title } : site.defaultImage;
 
     return {
       path,
+      base,
+      locale,
       title,
       description,
       type: 'article',
       image,
-      jsonLd: publicationJsonLd(site, publication, path, description, image.url),
+      jsonLd: publicationJsonLd(site, publication, path, description, image.url, locale),
     };
   });
 
-const projectPages = (site: Site, projects: Project[]) =>
-  projects.map((source): PageHead & { path: string } => {
-    const project = localizeProject(source, SEO_LOCALE);
-    const path = buildProjectPath(project.id);
+const projectPages = (site: Site, projects: Project[], locale: Locale) =>
+  projects.map((source): Page => {
+    const project = localizeProject(source, locale);
+    const base = buildProjectPath(project.id);
+    const path = localePath(base, locale);
     const description = toMetaDescription(project.description);
     const image = project.coverUrl?.startsWith('https://')
       ? { url: project.coverUrl, alt: project.coverAlt ?? project.title }
@@ -242,40 +305,49 @@ const projectPages = (site: Site, projects: Project[]) =>
 
     return {
       path,
-      title: formatTitle(project.title, SEO_LOCALE),
+      base,
+      locale,
+      title: formatTitle(project.title, locale),
       description,
       type: 'article',
       image,
-      jsonLd: projectJsonLd(site, project, path, description),
+      jsonLd: projectJsonLd(site, project, path, description, locale),
     };
   });
 
 const renderSitemap = (site: Site, entries: SitemapEntry[], lastmod: string) =>
   [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...entries.map(
-      ({ path, priority, changefreq }) =>
-        `  <url><loc>${escapeText(site.url(path))}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`,
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+    ...entries.map(({ path, base, priority, changefreq }) =>
+      [
+        `  <url><loc>${escapeText(site.url(path))}</loc>`,
+        ...SEO_LOCALES.map(
+          (locale) =>
+            `<xhtml:link rel="alternate" hreflang="${locale}" href="${escapeText(site.url(localePath(base, locale)))}" />`,
+        ),
+        `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeText(site.url(base))}" />`,
+        `<lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`,
+      ].join(''),
     ),
     '</urlset>',
     '',
   ].join('\n');
 
-const sitemapEntry = (path: string): SitemapEntry => {
-  if (path === ROUTES.HOME) return { path, priority: '1.0', changefreq: 'weekly' };
-  if (path.startsWith(ROUTES.PUBLICATIONS + '/'))
-    return { path, priority: '0.6', changefreq: 'yearly' };
-  if (path.startsWith(ROUTES.PROJECTS + '/'))
-    return { path, priority: '0.6', changefreq: 'monthly' };
+const sitemapEntry = ({ path, base }: Page): SitemapEntry => {
+  if (base === ROUTES.HOME) return { path, base, priority: '1.0', changefreq: 'weekly' };
+  if (base.startsWith(ROUTES.PUBLICATIONS + '/'))
+    return { path, base, priority: '0.6', changefreq: 'yearly' };
+  if (base.startsWith(ROUTES.PROJECTS + '/'))
+    return { path, base, priority: '0.6', changefreq: 'monthly' };
   if (
     [ROUTES.TERMS, ROUTES.PRIVACY, ROUTES.COOKIES, ROUTES.GUIDELINES].some(
-      (legal) => legal === path,
+      (legal) => legal === base,
     )
   ) {
-    return { path, priority: '0.2', changefreq: 'yearly' };
+    return { path, base, priority: '0.2', changefreq: 'yearly' };
   }
-  return { path, priority: '0.8', changefreq: 'monthly' };
+  return { path, base, priority: '0.8', changefreq: 'monthly' };
 };
 
 const toHtmlFileName = (path: string) =>
@@ -283,6 +355,8 @@ const toHtmlFileName = (path: string) =>
 
 const homeHead = (site: Site): PageHead => ({
   path: ROUTES.HOME,
+  base: ROUTES.HOME,
+  locale: SEO_LOCALE,
   title: formatTitle(undefined, SEO_LOCALE),
   description: toMetaDescription(DEFAULT_SEO[SEO_LOCALE].description),
   type: 'website',
@@ -323,14 +397,17 @@ export function seoPlugin(siteUrl: string): Plugin {
 
       const records = await fetchRecords(site.url, (message) => this.warn(message));
       await saveRecords(config.root, records);
-      const pages = [
-        ...staticPages(site),
-        ...publicationPages(site, await localizePublications(config, records.publications), bundle),
-        ...projectPages(site, records.projects),
-      ];
+      const publications = await localizePublications(config, records.publications);
+      const pages = SEO_LOCALES.flatMap((locale) => [
+        ...staticPages(site, locale),
+        ...publicationPages(site, publications[locale], bundle, locale),
+        ...projectPages(site, records.projects, locale),
+      ]);
 
       for (const page of pages) {
-        const source = html.replace(HEAD_PLACEHOLDER, renderHead(site, page));
+        const source = html
+          .replace(HEAD_PLACEHOLDER, renderHead(site, page))
+          .replace(HTML_LANG, `<html lang="${page.locale}"`);
         if (page.path === ROUTES.HOME) {
           template.source = source;
         } else {
@@ -338,7 +415,12 @@ export function seoPlugin(siteUrl: string): Plugin {
         }
       }
 
-      const fallbackHead = { ...homeHead(site), path: undefined, title: SITE_NAME };
+      const fallbackHead = {
+        ...homeHead(site),
+        path: undefined,
+        base: undefined,
+        title: SITE_NAME,
+      };
       this.emitFile({
         type: 'asset',
         fileName: SPA_FALLBACK_FILE,
@@ -348,11 +430,7 @@ export function seoPlugin(siteUrl: string): Plugin {
       this.emitFile({
         type: 'asset',
         fileName: 'sitemap.xml',
-        source: renderSitemap(
-          site,
-          pages.map((page) => sitemapEntry(page.path)),
-          new Date().toISOString().slice(0, 10),
-        ),
+        source: renderSitemap(site, pages.map(sitemapEntry), new Date().toISOString().slice(0, 10)),
       });
     },
   };
