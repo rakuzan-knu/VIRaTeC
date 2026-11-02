@@ -5,3 +5,5 @@ export const PRERENDER_LOCALE: Locale = 'uk';
 export const CLIENT_RENDER_ATTRIBUTE = 'data-csr';
 
 export const PRERENDERED_PATH_ATTRIBUTE = 'data-prerendered-path';
+
+export const QUERY_STATE_ELEMENT_ID = 'prerendered-query-state';
