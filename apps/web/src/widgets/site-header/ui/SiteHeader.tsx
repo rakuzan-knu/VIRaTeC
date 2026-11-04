@@ -69,7 +69,6 @@ export function SiteHeader({ className }: SiteHeaderProps) {
 
   return (
     <>
-      <div aria-hidden="true" className="h-16 xl:h-[88px]" />
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-40 font-viratec transition-transform duration-500 ease-apple [view-transition-name:site-header] focus-within:translate-y-0 motion-reduce:transition-none',
