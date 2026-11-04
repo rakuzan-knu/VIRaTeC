@@ -128,10 +128,10 @@ export function OpportunitiesPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           tone="teal"
           eyebrow={content.eyebrow}
           title={content.title}

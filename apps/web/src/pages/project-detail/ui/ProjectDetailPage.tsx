@@ -205,7 +205,6 @@ export function ProjectDetailPage() {
 
   const intro = project ? (
     <PageIntro
-      header={<SiteHeader />}
       breadcrumb={[...breadcrumbRoot, project.title]}
       title={project.title}
       description={`${labels.status[project.status]} · ${getProjectYear(project)}`}
@@ -216,7 +215,6 @@ export function ProjectDetailPage() {
     </PageIntro>
   ) : (
     <PageIntro
-      header={<SiteHeader />}
       breadcrumb={breadcrumbRoot}
       title={isPending ? t.loadingTitle : t.notFoundTitle}
       description={isPending ? t.loadingDescription : t.notFoundDescription}
@@ -225,7 +223,7 @@ export function ProjectDetailPage() {
   );
 
   return (
-    <PageLayout footer={<SiteFooter />} intro={intro}>
+    <PageLayout header={<SiteHeader />} footer={<SiteFooter />} intro={intro}>
       {project && (
         <>
           <ProjectBody project={project} />

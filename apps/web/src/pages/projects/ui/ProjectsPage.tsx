@@ -73,10 +73,10 @@ export function ProjectsPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           breadcrumb={t.breadcrumb}
           title={t.title}
           accent={t.accent}
@@ -87,6 +87,7 @@ export function ProjectsPage() {
       }
     >
       <section aria-label={t.sectionLabel} className="mx-auto max-w-[1440px] px-5 lg:px-[85px]">
+        <h2 className="sr-only">{t.sectionLabel}</h2>
         <div className="hidden items-start justify-between gap-6 pt-10 lg:flex">
           <ChipGroup
             label={t.researchArea}

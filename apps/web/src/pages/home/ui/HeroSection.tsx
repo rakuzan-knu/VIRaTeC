@@ -1,15 +1,16 @@
-import { useRef, type CSSProperties } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import { ROUTES } from '@/shared/config/routes';
 import { usePauseOffscreen } from '@/shared/lib';
 import { LinkButton } from '@/shared/ui/link-button';
-import { SiteHeader } from '@/widgets/site-header';
 import glowTop from '../assets/glow-top.svg';
 import glowBottom from '../assets/glow-bottom.svg';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { HeroBackgroundVideo } from './HeroBackgroundVideo';
+import { HeroVideoToggle } from './HeroVideoToggle';
 import { PartnerNetwork } from './PartnerNetwork';
 import { useHomeContent } from '../model/content';
+import { useCanPlayHeroVideo } from '../model/useCanPlayHeroVideo';
 
 const HERO_BUTTON_CLASS =
   'w-full lg:w-auto lg:min-w-[220px] lg:px-8 lg:py-[clamp(12px,2svh,18px)] lg:text-[clamp(17px,2.4svh,19px)]';
@@ -24,6 +25,8 @@ export function HeroSection() {
   const { hero } = useHomeContent();
   const glowsRef = useRef<HTMLDivElement>(null);
   usePauseOffscreen(glowsRef);
+  const canPlayVideo = useCanPlayHeroVideo();
+  const [isVideoPaused, setIsVideoPaused] = useState(false);
 
   return (
     <section className="relative overflow-hidden hero-backdrop lg:hero-backdrop-wide">
@@ -44,10 +47,8 @@ export function HeroSection() {
         </div>
       </div>
       <div className="pointer-events-none absolute inset-0 motion-safe:animate-hero-settle motion-reduce:animate-hero-fade">
-        <HeroBackgroundVideo />
+        <HeroBackgroundVideo canPlayVideo={canPlayVideo} isPaused={isVideoPaused} />
       </div>
-
-      <SiteHeader />
 
       <div className="hero-scroll-out relative z-10 mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-14 pb-12 lg:min-h-[calc(100svh-64px)] lg:gap-[clamp(12px,2svh,32px)] lg:px-[85px] lg:pt-[clamp(20px,3svh,104px)] lg:pb-[clamp(16px,2.5svh,64px)] xl:min-h-[calc(100svh-88px)]">
         <div className={HERO_REVEAL_CLASS} style={revealDelay(150)}>
@@ -86,6 +87,12 @@ export function HeroSection() {
           <PartnerNetwork />
         </div>
       </div>
+      {canPlayVideo && (
+        <HeroVideoToggle
+          isPaused={isVideoPaused}
+          onToggle={() => setIsVideoPaused((value) => !value)}
+        />
+      )}
     </section>
   );
 }

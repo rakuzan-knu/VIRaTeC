@@ -7,7 +7,6 @@ import { INTL_LOCALE, useLocale } from '@/shared/i18n';
 import { useIntlNames } from '@/shared/lib/intlNames';
 import { linkButtonClassName } from '@/shared/ui/link-button';
 import { PageIntro } from '@/widgets/page-intro';
-import { SiteHeader } from '@/widgets/site-header';
 import { usePersonMessages } from '../model/messages';
 
 export function ProfileIntro({ profile }: { profile: PublicProfileDto }) {
@@ -37,7 +36,6 @@ export function ProfileIntro({ profile }: { profile: PublicProfileDto }) {
 
   return (
     <PageIntro
-      header={<SiteHeader />}
       breadcrumb={[
         { label: t.home, to: ROUTES.HOME },
         { label: t.community, to: ROUTES.PEOPLE },

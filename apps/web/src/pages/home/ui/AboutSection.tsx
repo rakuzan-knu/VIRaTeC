@@ -1,6 +1,8 @@
 import { ROUTES } from '@/shared/config/routes';
 import { LinkButton } from '@/shared/ui/link-button';
+import { useLocalized } from '@/shared/i18n';
 import { useHomeContent } from '../model/content';
+import { ABOUT_MESSAGES } from '../model/messages';
 import { Eyebrow } from '@/shared/ui/eyebrow';
 import { ExpandableText } from '@/shared/ui/expandable-text';
 import { SECTION_CONTAINER_CLASS, SECTION_TITLE_CLASS } from './styles';
@@ -9,6 +11,7 @@ import { CountUp } from '@/shared/ui/count-up';
 
 export function AboutSection() {
   const { about } = useHomeContent();
+  const t = useLocalized(ABOUT_MESSAGES);
 
   return (
     <section aria-labelledby="about-title">
@@ -31,6 +34,7 @@ export function AboutSection() {
               className="mt-2 hidden lg:inline-flex"
             >
               {about.action}
+              <span className="sr-only"> {t.actionTarget}</span>
             </LinkButton>
           </div>
 
@@ -53,6 +57,7 @@ export function AboutSection() {
 
         <LinkButton to={ROUTES.ABOUT_INITIATIVE} variant="secondary" className="w-full lg:hidden">
           {about.action}
+          <span className="sr-only"> {t.actionTarget}</span>
         </LinkButton>
 
         <dl className="grid gap-px overflow-hidden rounded-[24px] border border-white/10 bg-white/10 lg:grid-cols-3 lg:rounded-[28px]">

@@ -248,10 +248,10 @@ export function PublicationDetailPage() {
   if (!publication) {
     return (
       <PageLayout
+        header={<SiteHeader />}
         footer={<SiteFooter />}
         intro={
           <PageIntro
-            header={<SiteHeader />}
             breadcrumb={breadcrumbRoot}
             title={isPending ? t.loadingTitle : isError ? t.loadError : t.notFoundTitle}
             description={isPending ? t.loadingDescription : t.notFoundDescription}
@@ -282,10 +282,10 @@ export function PublicationDetailPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           breadcrumb={[...breadcrumbRoot, labels.type[publication.type]]}
           title={publication.detail?.heroTitle ?? publication.title}
           accent={publication.detail?.heroAccent}

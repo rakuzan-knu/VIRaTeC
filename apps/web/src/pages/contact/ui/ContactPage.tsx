@@ -39,10 +39,10 @@ export function ContactPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           tone="glow"
           eyebrow={content.eyebrow}
           title={content.title}

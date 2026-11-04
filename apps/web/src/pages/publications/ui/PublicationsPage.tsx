@@ -70,10 +70,10 @@ export function PublicationsPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           eyebrow={t.eyebrow}
           title={t.title}
           accent={t.accent}

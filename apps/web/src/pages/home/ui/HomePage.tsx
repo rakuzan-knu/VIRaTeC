@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
 import { PageSections } from '@/widgets/page-sections';
 import { SiteFooter } from '@/widgets/site-footer';
@@ -20,7 +21,7 @@ export function HomePage() {
   useSeo();
 
   return (
-    <PageLayout footer={<SiteFooter />} intro={<HeroSection />}>
+    <PageLayout header={<SiteHeader />} footer={<SiteFooter />} intro={<HeroSection />}>
       <Suspense fallback={<div className="min-h-screen" />}>
         <PageSections
           page="HOME"

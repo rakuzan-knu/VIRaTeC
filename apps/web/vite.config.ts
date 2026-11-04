@@ -50,7 +50,6 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       ? { target: 'node22', outDir: 'dist-ssr', copyPublicDir: false }
       : {
           target: 'esnext',
-          sourcemap: 'hidden',
           rollupOptions: {
             output: {
               manualChunks(id) {

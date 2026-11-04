@@ -47,10 +47,10 @@ export function AccountPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           breadcrumb={[{ label: t.home, to: ROUTES.HOME }, t.seoTitle]}
           eyebrow={labels.role[account.role]}
           title={t.title}
