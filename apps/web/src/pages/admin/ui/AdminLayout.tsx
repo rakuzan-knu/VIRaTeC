@@ -173,10 +173,10 @@ export function AdminLayout() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           breadcrumb={[{ label: 'VIRaTeC', to: ROUTES.HOME }, t.panel]}
           title={t.panel}
           description={t.description}

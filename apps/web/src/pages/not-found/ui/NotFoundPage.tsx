@@ -28,10 +28,10 @@ export function NotFoundPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           eyebrow="404"
           title={t.title}
           accent={t.accent}

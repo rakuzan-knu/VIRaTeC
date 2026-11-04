@@ -30,10 +30,10 @@ export function PeoplePage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           breadcrumb={[{ label: t.home, to: ROUTES.HOME }, t.breadcrumb]}
           title={t.title}
           accent={t.accent}

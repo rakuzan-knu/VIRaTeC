@@ -12,7 +12,6 @@ export type PageIntroTone = 'blue' | 'teal' | 'glow';
 export type BreadcrumbItem = string | { label: string; to: string };
 
 interface PageIntroProps {
-  header: ReactNode;
   breadcrumb?: BreadcrumbItem[];
   eyebrow?: string;
   title: string;
@@ -30,7 +29,6 @@ const PAGE_INTRO_MESSAGES = defineMessages({
 });
 
 export function PageIntro({
-  header,
   breadcrumb,
   eyebrow,
   title,
@@ -56,8 +54,6 @@ export function PageIntro({
           </div>
         </div>
       )}
-
-      {header}
 
       <div
         className={cn(

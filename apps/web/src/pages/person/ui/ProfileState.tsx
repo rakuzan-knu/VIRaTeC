@@ -15,14 +15,10 @@ export function ProfileState({
 }) {
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
-        <PageIntro
-          header={<SiteHeader />}
-          title={title}
-          description={description}
-          className="lg:pb-28"
-        >
+        <PageIntro title={title} description={description} className="lg:pb-28">
           {action}
         </PageIntro>
       }

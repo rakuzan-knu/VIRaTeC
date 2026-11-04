@@ -66,10 +66,10 @@ export function LegalPage({ kind }: LegalPageProps) {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           eyebrow={t.eyebrow}
           title={content.title}
           accent={content.accent}

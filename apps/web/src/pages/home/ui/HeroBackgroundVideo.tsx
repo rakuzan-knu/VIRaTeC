@@ -1,28 +1,9 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/shared/lib';
 import posterSrc from '../assets/hero-background.webp';
 import av1Src from '../assets/hero-background.av1.mp4';
 import webmSrc from '../assets/hero-background.webm';
 import mp4Src from '../assets/hero-background.mp4';
-
-const VIDEO_MEDIA_QUERY = '(min-width: 1024px)';
-
-type NavigatorWithConnection = Navigator & { connection?: { saveData?: boolean } };
-
-function subscribeToMediaQuery(onChange: () => void) {
-  const mediaQueryList = window.matchMedia(VIDEO_MEDIA_QUERY);
-  mediaQueryList.addEventListener('change', onChange);
-  return () => mediaQueryList.removeEventListener('change', onChange);
-}
-
-function getCanPlayVideo() {
-  const saveData = (navigator as NavigatorWithConnection).connection?.saveData === true;
-  return !saveData && window.matchMedia(VIDEO_MEDIA_QUERY).matches;
-}
-
-function getServerCanPlayVideo() {
-  return false;
-}
 
 function whenPageSettled(callback: () => void): () => void {
   let cancelIdle = () => {};
@@ -49,12 +30,12 @@ function whenPageSettled(callback: () => void): () => void {
   };
 }
 
-export function HeroBackgroundVideo() {
-  const canPlayVideo = useSyncExternalStore(
-    subscribeToMediaQuery,
-    getCanPlayVideo,
-    getServerCanPlayVideo,
-  );
+interface HeroBackgroundVideoProps {
+  canPlayVideo: boolean;
+  isPaused: boolean;
+}
+
+export function HeroBackgroundVideo({ canPlayVideo, isPaused }: HeroBackgroundVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPageSettled, setIsPageSettled] = useState(false);
@@ -72,7 +53,7 @@ export function HeroBackgroundVideo() {
     let isInView = false;
 
     const sync = () => {
-      if (isInView && !document.hidden) {
+      if (isInView && !document.hidden && !isPaused) {
         video.play().catch(() => setIsPlaying(false));
       } else {
         video.pause();
@@ -90,7 +71,7 @@ export function HeroBackgroundVideo() {
       observer.disconnect();
       document.removeEventListener('visibilitychange', sync);
     };
-  }, [shouldRenderVideo]);
+  }, [shouldRenderVideo, isPaused]);
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden lg:block">

@@ -23,10 +23,10 @@ export function GlobalCollaborationPage() {
 
   return (
     <PageLayout
+      header={<SiteHeader />}
       footer={<SiteFooter />}
       intro={
         <PageIntro
-          header={<SiteHeader />}
           breadcrumb={content.breadcrumb}
           title={content.title}
           accent={content.accent}
