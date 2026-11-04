@@ -1,6 +1,7 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import { ROUTES } from '@/shared/config/routes';
 import { usePauseOffscreen } from '@/shared/lib';
+import { HeaderSpacer } from '@/shared/ui/header-spacer';
 import { LinkButton } from '@/shared/ui/link-button';
 import glowTop from '../assets/glow-top.svg';
 import glowBottom from '../assets/glow-bottom.svg';
@@ -49,6 +50,8 @@ export function HeroSection() {
       <div className="pointer-events-none absolute inset-0 motion-safe:animate-hero-settle motion-reduce:animate-hero-fade">
         <HeroBackgroundVideo canPlayVideo={canPlayVideo} isPaused={isVideoPaused} />
       </div>
+
+      <HeaderSpacer />
 
       <div className="hero-scroll-out relative z-10 mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-14 pb-12 lg:min-h-[calc(100svh-64px)] lg:gap-[clamp(12px,2svh,32px)] lg:px-[85px] lg:pt-[clamp(20px,3svh,104px)] lg:pb-[clamp(16px,2.5svh,64px)] xl:min-h-[calc(100svh-88px)]">
         <div className={HERO_REVEAL_CLASS} style={revealDelay(150)}>

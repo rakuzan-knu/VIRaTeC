@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/shared/lib';
 import { Eyebrow } from '@/shared/ui/eyebrow';
+import { HeaderSpacer } from '@/shared/ui/header-spacer';
 import { SplitWords, countWords } from '@/shared/ui/split-words';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import contactGlow from '@/shared/assets/icons/contact-glow.svg';
@@ -54,6 +55,8 @@ export function PageIntro({
           </div>
         </div>
       )}
+
+      <HeaderSpacer />
 
       <div
         className={cn(
