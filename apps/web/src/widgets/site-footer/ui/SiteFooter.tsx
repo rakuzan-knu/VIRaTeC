@@ -196,7 +196,7 @@ export function SiteFooter() {
                   className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
                   unavailableClassName="hover:bg-white/6"
                 >
-                  iD
+                  <span aria-hidden="true" className="before:content-['iD']" />
                 </OptionalLink>
                 <OptionalLink
                   href={SOCIAL_LINKS.scopus}
@@ -205,7 +205,7 @@ export function SiteFooter() {
                   className={cn(ICON_LINK_CLASS, 'text-[13px] leading-4 font-medium text-white')}
                   unavailableClassName="hover:bg-white/6"
                 >
-                  Sc
+                  <span aria-hidden="true" className="before:content-['Sc']" />
                 </OptionalLink>
                 <OptionalLink
                   href={SOCIAL_LINKS.googleScholar}
