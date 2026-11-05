@@ -4,6 +4,7 @@ import posterSrc from '../assets/hero-background.webp';
 import av1Src from '../assets/hero-background.av1.mp4';
 import webmSrc from '../assets/hero-background.webm';
 import mp4Src from '../assets/hero-background.mp4';
+import { useCanPlayHeroVideo } from '../model/useCanPlayHeroVideo';
 
 function whenPageSettled(callback: () => void): () => void {
   let cancelIdle = () => {};
@@ -30,12 +31,8 @@ function whenPageSettled(callback: () => void): () => void {
   };
 }
 
-interface HeroBackgroundVideoProps {
-  canPlayVideo: boolean;
-  isPaused: boolean;
-}
-
-export function HeroBackgroundVideo({ canPlayVideo, isPaused }: HeroBackgroundVideoProps) {
+export function HeroBackgroundVideo() {
+  const canPlayVideo = useCanPlayHeroVideo();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPageSettled, setIsPageSettled] = useState(false);
@@ -53,7 +50,7 @@ export function HeroBackgroundVideo({ canPlayVideo, isPaused }: HeroBackgroundVi
     let isInView = false;
 
     const sync = () => {
-      if (isInView && !document.hidden && !isPaused) {
+      if (isInView && !document.hidden) {
         video.play().catch(() => setIsPlaying(false));
       } else {
         video.pause();
@@ -71,7 +68,7 @@ export function HeroBackgroundVideo({ canPlayVideo, isPaused }: HeroBackgroundVi
       observer.disconnect();
       document.removeEventListener('visibilitychange', sync);
     };
-  }, [shouldRenderVideo, isPaused]);
+  }, [shouldRenderVideo]);
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden lg:block">
