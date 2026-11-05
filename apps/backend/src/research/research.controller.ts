@@ -6,9 +6,11 @@ import {
   Param,
   Query,
   UseGuards,
+  UseInterceptors,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { PublicCacheInterceptor } from '../common/interceptors/public-cache.interceptor';
 import { ResearchService } from './research.service';
 import { CreatePaperDto } from './dto/create-paper.dto';
 import { ListPapersQueryDto } from './dto/list-papers-query.dto';
@@ -24,12 +26,14 @@ export class ResearchController {
   constructor(private researchService: ResearchService) {}
 
   @Get()
+  @UseInterceptors(PublicCacheInterceptor)
   @ApiOperation({ summary: 'Get all research papers and publications' })
   async findAll(@Query() query: ListPapersQueryDto) {
     return this.researchService.findAll(query);
   }
 
   @Get(':id')
+  @UseInterceptors(PublicCacheInterceptor)
   @ApiOperation({ summary: 'Get research paper by ID' })
   @ApiResponse({ status: 200, description: 'Research paper retrieved' })
   @ApiResponse({ status: 404, description: 'Paper not found' })
