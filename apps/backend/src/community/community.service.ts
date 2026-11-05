@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
-import type { PostLikeResultDto } from '@viratec/contracts';
+import type { CursorPage, PostLikeResultDto } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { ListPostsQueryDto } from './dto/list-posts-query.dto';
-import { cursorArgs, toCursorPage } from '../common/pagination/cursor-page';
+import { TtlCache } from '../common/cache/ttl-cache';
+import { cursorArgs, cursorCacheKey, toCursorPage } from '../common/pagination/cursor-page';
+
+const CACHE_TTL_MS = 30_000;
 
 const AUTHOR_SELECT = {
   id: true,
@@ -15,22 +18,36 @@ const AUTHOR_SELECT = {
   avatarUrl: true,
 } satisfies Prisma.UserSelect;
 
+type PostDto = Prisma.CommunityPostGetPayload<{
+  include: { author: { select: typeof AUTHOR_SELECT } };
+}>;
+
 @Injectable()
 export class CommunityService {
+  private listCache = new TtlCache<CursorPage<PostDto>>(CACHE_TTL_MS);
+  private itemCache = new TtlCache<PostDto>(CACHE_TTL_MS);
+
   constructor(
     private prisma: PrismaService,
     private rateLimit: RateLimitService,
   ) {}
 
+  clearCache() {
+    this.listCache.clear();
+    this.itemCache.clear();
+  }
+
   async findAll(query: ListPostsQueryDto, viewerId: string | null) {
     const { tag } = query;
-    const posts = await this.prisma.communityPost.findMany({
-      where: tag ? { tags: { has: tag } } : undefined,
-      include: { author: { select: AUTHOR_SELECT } },
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      ...cursorArgs(query),
+    const page = await this.listCache.get(cursorCacheKey(query, tag), async () => {
+      const posts = await this.prisma.communityPost.findMany({
+        where: tag ? { tags: { has: tag } } : undefined,
+        include: { author: { select: AUTHOR_SELECT } },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        ...cursorArgs(query),
+      });
+      return toCursorPage(posts, query.limit);
     });
-    const page = toCursorPage(posts, query.limit);
     const liked = await this.likedPostIds(
       viewerId,
       page.data.map((post) => post.id),
@@ -42,14 +59,18 @@ export class CommunityService {
   }
 
   async findById(id: string, viewerId: string | null) {
-    const post = await this.prisma.communityPost.findUnique({
-      where: { id },
-      include: { author: { select: AUTHOR_SELECT } },
-    });
+    const post = await this.itemCache.get(id, async () => {
+      const found = await this.prisma.communityPost.findUnique({
+        where: { id },
+        include: { author: { select: AUTHOR_SELECT } },
+      });
 
-    if (!post) {
-      throw new NotFoundException(`Community post with ID ${id} not found`);
-    }
+      if (!found) {
+        throw new NotFoundException(`Community post with ID ${id} not found`);
+      }
+
+      return found;
+    });
 
     return { ...post, likedByMe: await this.hasLiked(viewerId, id) };
   }
@@ -60,6 +81,7 @@ export class CommunityService {
       data: { ...dto, authorId },
       include: { author: { select: AUTHOR_SELECT } },
     });
+    this.clearCache();
     return { ...post, likedByMe: false };
   }
 
@@ -73,7 +95,7 @@ export class CommunityService {
       throw new NotFoundException(`Community post with ID ${postId} not found`);
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const removed = await tx.postLike.deleteMany({ where: { postId, userId } });
       if (removed.count > 0) {
         const updated = await tx.communityPost.update({
@@ -103,6 +125,9 @@ export class CommunityService {
       });
       return { liked: true, likesCount: updated.likesCount };
     });
+
+    this.clearCache();
+    return result;
   }
 
   private async hasLiked(viewerId: string | null, postId: string) {
