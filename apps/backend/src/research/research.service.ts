@@ -70,7 +70,7 @@ export class ResearchService {
       },
       include: { author: { select: AUTHOR_SELECT } },
     });
-    this.listCache.clear();
+    this.clearCache();
     return paper;
   }
 }

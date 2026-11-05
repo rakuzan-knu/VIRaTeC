@@ -29,7 +29,7 @@ import type { AuthenticatedUser } from '../security/authenticated-user';
 const memberId = (viewer: AuthenticatedUser | undefined) =>
   viewer?.emailVerified ? viewer.id : null;
 
-const AVATAR_PUBLIC_CACHE = 'public, max-age=31536000, immutable';
+const AVATAR_PUBLIC_CACHE = 'public, max-age=3600';
 const AVATAR_PRIVATE_CACHE = 'private, max-age=3600';
 
 @ApiTags('Users')

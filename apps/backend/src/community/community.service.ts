@@ -95,7 +95,7 @@ export class CommunityService {
       throw new NotFoundException(`Community post with ID ${postId} not found`);
     }
 
-    const result = await this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const removed = await tx.postLike.deleteMany({ where: { postId, userId } });
       if (removed.count > 0) {
         const updated = await tx.communityPost.update({
@@ -125,9 +125,6 @@ export class CommunityService {
       });
       return { liked: true, likesCount: updated.likesCount };
     });
-
-    this.clearCache();
-    return result;
   }
 
   private async hasLiked(viewerId: string | null, postId: string) {
