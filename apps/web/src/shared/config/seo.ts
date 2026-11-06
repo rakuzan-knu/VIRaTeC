@@ -9,9 +9,9 @@ export const DEFAULT_TITLE: Localized<string> = {
 };
 
 export const OG_IMAGE = {
-  path: '/og-image.jpg',
-  width: 1200,
-  height: 630,
+  path: '/social-cover-20261106.jpg',
+  width: 1672,
+  height: 941,
   type: 'image/jpeg',
   alt: 'VIRaTeC — Virtual Innovative Research & Technology Community, КНУ імені Тараса Шевченка',
 } as const;
