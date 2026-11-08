@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
-import { cn } from '@/shared/lib';
+import { cn, useBodyScrollLock } from '@/shared/lib';
 
 interface DialogProps {
   open: boolean;
@@ -24,6 +24,8 @@ export function Dialog({
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+
+  useBodyScrollLock(open);
 
   useEffect(() => {
     const dialog = ref.current;
