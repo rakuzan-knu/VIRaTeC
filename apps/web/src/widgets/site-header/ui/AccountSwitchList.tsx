@@ -8,7 +8,7 @@ import type { useAccountMenu } from '../model/accountMenu';
 type AccountMenu = ReturnType<typeof useAccountMenu>;
 
 const ROW_CLASS =
-  'flex w-full items-center gap-3 rounded-[12px] px-2.5 py-2 text-left text-sm text-white transition-colors hover:bg-white/7 focus-visible:bg-white/7 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime';
+  'flex w-full items-center gap-3 rounded-[12px] px-2.5 py-2 text-start text-sm text-white transition-colors hover:bg-white/7 focus-visible:bg-white/7 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime';
 
 interface AccountSwitchListProps {
   id: string;

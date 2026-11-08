@@ -22,6 +22,33 @@ const VERIFY_EMAIL_PAGE_MESSAGES = defineMessages({
     badgeTitle: 'Перевірена академічна спільнота',
     badgeSubtitle: 'VIRATEC · ІДЕНТИФІКАЦІЯ КНУ',
   },
+  de: {
+    documentTitle: 'E-Mail bestätigen',
+    title: 'Bestätigen Sie Ihre E-Mail.',
+    accent: 'Machen Sie mit.',
+    description:
+      'Die Bestätigung Ihrer Adresse schützt Ihre Identität in der internationalen Forschungs- und Bildungsgemeinschaft der Taras-Schewtschenko-Nationaluniversität Kyjiw.',
+    badgeTitle: 'Verifizierte akademische Gemeinschaft',
+    badgeSubtitle: 'VIRATEC · KNU IDENTITY',
+  },
+  fr: {
+    documentTitle: 'Confirmer l’e-mail',
+    title: 'Confirmez votre e-mail.',
+    accent: 'Rejoignez la conversation.',
+    description:
+      'Confirmer votre adresse protège votre identité au sein de la communauté internationale de recherche et d’enseignement de l’Université nationale Taras Chevtchenko de Kyiv.',
+    badgeTitle: 'Communauté académique vérifiée',
+    badgeSubtitle: 'VIRATEC · KNU IDENTITY',
+  },
+  ar: {
+    documentTitle: 'تأكيد البريد الإلكتروني',
+    title: 'أكّد بريدك الإلكتروني.',
+    accent: 'انضم إلى الحوار.',
+    description:
+      'يحمي تأكيد عنوانك هويتك في مجتمع البحث والتعليم الدولي في جامعة كييف الوطنية تاراس شيفتشينكو.',
+    badgeTitle: 'مجتمع أكاديمي موثّق',
+    badgeSubtitle: 'VIRATEC · KNU IDENTITY',
+  },
 });
 
 export function VerifyEmailPage() {

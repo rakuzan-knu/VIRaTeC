@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { LOCALES, useLocale } from '@/shared/i18n';
+import { LOCALES, pickLocalized, useLocale } from '@/shared/i18n';
 import {
   DEFAULT_SEO,
   NOINDEX_PATHS,
@@ -81,9 +81,14 @@ export function useSeo(
   useEffect(() => {
     const path = normalizePath(window.location.pathname);
     const base = stripEnglishPrefix(path);
-    const fullTitle = formatTitle(PAGE_SEO[base]?.[locale].title ?? title, locale);
+    const fullTitle = formatTitle(
+      (PAGE_SEO[base] && pickLocalized(PAGE_SEO[base], locale).title) ?? title,
+      locale,
+    );
     const pageDescription = toMetaDescription(
-      description ?? PAGE_SEO[base]?.[locale].description ?? DEFAULT_SEO[locale].description,
+      description ??
+        (PAGE_SEO[base] && pickLocalized(PAGE_SEO[base], locale).description) ??
+        pickLocalized(DEFAULT_SEO, locale).description,
     );
     const url = absoluteUrl(path, ENV.SITE_URL);
     const imageUrl = absoluteUrl(image ?? OG_IMAGE.path, ENV.SITE_URL);

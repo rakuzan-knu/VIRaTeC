@@ -15,6 +15,9 @@ const readOptional = (name: string, fallback: string) => process.env[name]?.trim
 const readLocales = (): Record<Locale, string> => ({
   en: readOptional('CONTENTFUL_LOCALE_EN', 'en'),
   uk: readOptional('CONTENTFUL_LOCALE_UK', 'uk'),
+  de: readOptional('CONTENTFUL_LOCALE_DE', 'de'),
+  fr: readOptional('CONTENTFUL_LOCALE_FR', 'fr'),
+  ar: readOptional('CONTENTFUL_LOCALE_AR', 'ar'),
 });
 
 const readContentfulConfig = (tokenVariable: TokenVariable): ContentfulConfig => {

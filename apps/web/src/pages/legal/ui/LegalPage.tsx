@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_EMAIL } from '@/shared/config/navigation';
 import { cn, useSeo } from '@/shared/lib';
-import { defineMessages, INTL_LOCALE, useLocale, useLocalized } from '@/shared/i18n';
+import { defineMessages, INTL_LOCALE, pickLocalized, useLocale, useLocalized } from '@/shared/i18n';
 import { CtaSection } from '@/shared/ui/cta-section';
 import { PageSection } from '@/shared/ui/page-section';
 import { PageIntro } from '@/widgets/page-intro';
@@ -46,6 +46,42 @@ const LEGAL_MESSAGES = defineMessages({
       'Юридичні тексти не мають бути головоломкою. Якщо щось викликає питання або ви хочете скористатися своїми правами, просто напишіть нам.',
     ctaAction: 'Написати нам',
   },
+  de: {
+    eyebrow: 'Rechtliches',
+    documents: 'Rechtliche Dokumente',
+    toc: 'Auf dieser Seite',
+    summary: 'Kurz gesagt',
+    meta: (date: string, version: string, minutes: number) =>
+      `Zuletzt aktualisiert ${date} · Version ${version} · ${minutes} Min. Lesezeit`,
+    ctaTitle: 'Etwas unklar?',
+    ctaDescription:
+      'Rechtstexte sollten kein Rätsel sein. Wenn Ihnen etwas unklar ist oder Sie Ihre Rechte ausüben möchten, schreiben Sie uns einfach.',
+    ctaAction: 'Schreiben Sie uns',
+  },
+  fr: {
+    eyebrow: 'Mentions légales',
+    documents: 'Documents juridiques',
+    toc: 'Sur cette page',
+    summary: 'En bref',
+    meta: (date: string, version: string, minutes: number) =>
+      `Dernière mise à jour ${date} · Version ${version} · ${minutes} min de lecture`,
+    ctaTitle: 'Quelque chose n’est pas clair ?',
+    ctaDescription:
+      'Les textes juridiques ne devraient pas être une énigme. Si quelque chose vous semble confus ou si vous souhaitez exercer vos droits, écrivez-nous.',
+    ctaAction: 'Nous écrire',
+  },
+  ar: {
+    eyebrow: 'قانوني',
+    documents: 'الوثائق القانونية',
+    toc: 'في هذه الصفحة',
+    summary: 'باختصار',
+    meta: (date: string, version: string, minutes: number) =>
+      `آخر تحديث ${date} · الإصدار ${version} · قراءة ${minutes} دقيقة`,
+    ctaTitle: 'هل هناك ما هو غير واضح؟',
+    ctaDescription:
+      'لا ينبغي أن تكون النصوص القانونية لغزًا. إذا كان هناك ما يربكك أو أردت ممارسة حقوقك، فراسلنا ببساطة.',
+    ctaAction: 'راسلنا',
+  },
 });
 
 interface LegalPageProps {
@@ -56,7 +92,7 @@ export function LegalPage({ kind }: LegalPageProps) {
   const t = useLocalized(LEGAL_MESSAGES);
   const locale = useLocale();
   const documents = useLegalDocuments();
-  const content = documents[kind].content[locale];
+  const content = pickLocalized(documents[kind].content, locale);
   const minutes = useMemo(() => readingMinutes(content), [content]);
   const meta = legalMeta(documents[kind]);
   const updatedAt = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long' }).format(
@@ -93,7 +129,7 @@ export function LegalPage({ kind }: LegalPageProps) {
                           : 'border border-white/14 bg-white/4 text-white hover:border-white/30 hover:bg-white/10',
                       )}
                     >
-                      {documents[documentKind].content[locale].title}
+                      {pickLocalized(documents[documentKind].content, locale).title}
                     </Link>
                   </li>
                 );

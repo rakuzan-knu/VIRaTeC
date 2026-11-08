@@ -60,6 +60,95 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       unexpected: 'Щось пішло не так. Спробуйте ще раз.',
     },
   },
+  de: {
+    notice: {
+      title: 'Bestätigen Sie Ihre E-Mail-Adresse',
+      description: (email: string) =>
+        `Wir haben einen Bestätigungslink an ${email} gesendet. Bis Sie ihn öffnen, können Sie nicht in der Community posten, nicht im Mitgliederverzeichnis erscheinen und keine Profile nur für Mitglieder ansehen.`,
+      resend: 'Neuen Link senden',
+      sent: 'Ein neuer Link ist unterwegs. Prüfen Sie Ihren Posteingang und Spam-Ordner.',
+    },
+    status: {
+      pendingTitle: 'E-Mail wird bestätigt…',
+      pendingDescription: 'Das dauert einen Moment.',
+      successTitle: 'E-Mail bestätigt',
+      successDescription: 'Vielen Dank. Ihr Konto hat jetzt vollen Zugang zur VIRaTeC-Community.',
+      invalidTitle: 'Dieser Link funktioniert nicht mehr',
+      invalidDescription:
+        'Der Link wurde bereits verwendet oder ist abgelaufen. Melden Sie sich an und senden Sie auf Ihrer Kontoseite einen neuen.',
+      failedTitle: 'Wir konnten Ihre E-Mail nicht bestätigen',
+      retry: 'Erneut versuchen',
+      missingTitle: 'Kein Bestätigungslink',
+      missingDescription: 'Öffnen Sie den Link aus der Bestätigungs-E-Mail, um fortzufahren.',
+      toAccount: 'Zu Ihrem Konto',
+      toLogin: 'Anmelden',
+    },
+    errors: {
+      tooMany: 'Es wurden zu viele E-Mails gesendet. Versuchen Sie es in einer Stunde erneut.',
+      unavailable:
+        'Der E-Mail-Versand ist derzeit nicht verfügbar. Versuchen Sie es später erneut.',
+      unexpected: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
+    },
+  },
+  fr: {
+    notice: {
+      title: 'Confirmez votre adresse e-mail',
+      description: (email: string) =>
+        `Nous avons envoyé un lien de confirmation à ${email}. Tant que vous ne l’avez pas ouvert, vous ne pouvez pas publier dans la communauté, apparaître dans l’annuaire des membres ni consulter les profils réservés aux membres.`,
+      resend: 'Envoyer un nouveau lien',
+      sent: 'Un nouveau lien est en route. Vérifiez votre boîte de réception et vos spams.',
+    },
+    status: {
+      pendingTitle: 'Confirmation de votre e-mail…',
+      pendingDescription: 'Cela prend un instant.',
+      successTitle: 'E-mail confirmé',
+      successDescription:
+        'Merci. Votre compte a désormais un accès complet à la communauté VIRaTeC.',
+      invalidTitle: 'Ce lien ne fonctionne plus',
+      invalidDescription:
+        'Le lien a déjà été utilisé ou a expiré. Connectez-vous et envoyez-en un nouveau depuis la page de votre compte.',
+      failedTitle: 'Nous n’avons pas pu confirmer votre e-mail',
+      retry: 'Réessayer',
+      missingTitle: 'Aucun lien de confirmation',
+      missingDescription: 'Ouvrez le lien de l’e-mail de confirmation pour terminer.',
+      toAccount: 'Aller à votre compte',
+      toLogin: 'Se connecter',
+    },
+    errors: {
+      tooMany: 'Trop d’e-mails ont été envoyés. Réessayez dans une heure.',
+      unavailable: 'L’envoi d’e-mails est indisponible pour le moment. Réessayez plus tard.',
+      unexpected: 'Une erreur s’est produite. Veuillez réessayer.',
+    },
+  },
+  ar: {
+    notice: {
+      title: 'أكّد عنوان بريدك الإلكتروني',
+      description: (email: string) =>
+        `أرسلنا رابط تأكيد إلى ${email}. إلى أن تفتحه، لا يمكنك النشر في المجتمع أو الظهور في دليل الأعضاء أو عرض الملفات الشخصية المخصصة للأعضاء.`,
+      resend: 'إرسال رابط جديد',
+      sent: 'رابط جديد في الطريق إليك. تحقّق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.',
+    },
+    status: {
+      pendingTitle: 'جارٍ تأكيد بريدك الإلكتروني…',
+      pendingDescription: 'يستغرق هذا لحظة.',
+      successTitle: 'تم تأكيد البريد الإلكتروني',
+      successDescription: 'شكرًا لك. أصبح لحسابك الآن وصول كامل إلى مجتمع VIRaTeC.',
+      invalidTitle: 'لم يعد هذا الرابط صالحًا',
+      invalidDescription:
+        'تم استخدام الرابط من قبل أو انتهت صلاحيته. سجّل الدخول وأرسل رابطًا جديدًا من صفحة حسابك.',
+      failedTitle: 'تعذّر علينا تأكيد بريدك الإلكتروني',
+      retry: 'حاول مرة أخرى',
+      missingTitle: 'لا يوجد رابط تأكيد',
+      missingDescription: 'افتح الرابط من رسالة التأكيد لإتمام العملية.',
+      toAccount: 'الانتقال إلى حسابك',
+      toLogin: 'تسجيل الدخول',
+    },
+    errors: {
+      tooMany: 'تم إرسال عدد كبير جدًا من الرسائل. حاول مرة أخرى بعد ساعة.',
+      unavailable: 'إرسال البريد الإلكتروني غير متاح حاليًا. حاول لاحقًا.',
+      unexpected: 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
+    },
+  },
 });
 
 export const useVerifyEmailMessages = () => useLocalized(VERIFY_EMAIL_MESSAGES);

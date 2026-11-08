@@ -1,9 +1,9 @@
-import { LOCALES, type Locale } from '@/shared/i18n';
+import { LOCALES, type Localized } from '@/shared/i18n';
 import { Input } from '@/shared/ui/Input';
 import { Textarea } from '@/shared/ui/Textarea';
 import type { SiteEditorMessages } from '../model/messages';
 
-type Text = Record<Locale, string>;
+type Text = Localized<string>;
 
 interface LocalizedInputProps {
   label: string;
@@ -34,7 +34,7 @@ export function LocalizedInput({
             key={locale}
             label={t.locales[locale]}
             lang={locale}
-            value={value[locale]}
+            value={value[locale] ?? ''}
             readOnly={readOnly}
             rows={4}
             onChange={(event) => onChange({ ...value, [locale]: event.target.value })}
@@ -44,7 +44,7 @@ export function LocalizedInput({
             key={locale}
             label={t.locales[locale]}
             lang={locale}
-            value={value[locale]}
+            value={value[locale] ?? ''}
             readOnly={readOnly}
             maxLength={300}
             onChange={(event) => onChange({ ...value, [locale]: event.target.value })}

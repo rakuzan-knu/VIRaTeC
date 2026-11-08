@@ -31,6 +31,45 @@ const GOOGLE_CONNECTION_MESSAGES = defineMessages({
     loadFailed: 'Не вдалося завантажити Google. Спробуйте пізніше.',
     unexpectedError: 'Щось пішло не так. Спробуйте ще раз.',
   },
+  de: {
+    connectHint:
+      'Verbinden Sie Google, um sich mit einem Klick anzumelden. Die Anmeldung per E-Mail funktioniert weiterhin.',
+    disconnect: 'Trennen',
+    disconnectBlocked: 'Legen Sie unten ein Passwort fest, bevor Sie Google trennen.',
+    connected: 'Google-Konto verbunden.',
+    disconnected: 'Google-Konto getrennt.',
+    alreadyUsed: 'Dieses Google-Konto ist bereits mit einem anderen VIRaTeC-Konto verbunden.',
+    invalidCredential:
+      'Wir konnten Ihr Google-Konto nicht verifizieren. Bitte versuchen Sie es erneut.',
+    unavailable: 'Das Verbinden mit Google ist vorübergehend nicht verfügbar.',
+    loadFailed: 'Google konnte nicht geladen werden. Bitte versuchen Sie es später erneut.',
+    unexpectedError: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
+  },
+  fr: {
+    connectHint:
+      'Associez Google pour vous connecter en un clic. La connexion par e-mail continue de fonctionner.',
+    disconnect: 'Dissocier',
+    disconnectBlocked: 'Définissez un mot de passe ci-dessous avant de dissocier Google.',
+    connected: 'Compte Google associé.',
+    disconnected: 'Compte Google dissocié.',
+    alreadyUsed: 'Ce compte Google est déjà associé à un autre compte VIRaTeC.',
+    invalidCredential: 'Nous n’avons pas pu vérifier votre compte Google. Veuillez réessayer.',
+    unavailable: 'L’association avec Google est temporairement indisponible.',
+    loadFailed: 'Google n’a pas pu se charger. Veuillez réessayer plus tard.',
+    unexpectedError: 'Une erreur s’est produite. Veuillez réessayer.',
+  },
+  ar: {
+    connectHint: 'اربط Google لتسجيل الدخول بنقرة واحدة. يظل تسجيل الدخول بالبريد الإلكتروني يعمل.',
+    disconnect: 'فصل',
+    disconnectBlocked: 'عيّن كلمة مرور أدناه قبل فصل Google.',
+    connected: 'تم ربط حساب Google.',
+    disconnected: 'تم فصل حساب Google.',
+    alreadyUsed: 'حساب Google هذا مرتبط بالفعل بحساب آخر في VIRaTeC.',
+    invalidCredential: 'تعذّر علينا التحقق من حساب Google. يُرجى المحاولة مرة أخرى.',
+    unavailable: 'ربط Google غير متاح مؤقتًا.',
+    loadFailed: 'تعذّر تحميل Google. يُرجى المحاولة لاحقًا.',
+    unexpectedError: 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
+  },
 });
 
 type GoogleConnectionMessages = (typeof GOOGLE_CONNECTION_MESSAGES)['en'];

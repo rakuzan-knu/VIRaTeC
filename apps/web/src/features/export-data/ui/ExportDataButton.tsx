@@ -18,6 +18,27 @@ const EXPORT_MESSAGES = defineMessages({
     done: 'Ваші дані завантажено.',
     error: 'Не вдалося підготувати експорт. Спробуйте ще раз.',
   },
+  de: {
+    description:
+      'Laden Sie eine Kopie aller Daten herunter, die VIRaTeC über Sie speichert: Profil, Foto, Projekte, Arbeiten, Beiträge, gespeicherte Elemente und aktive Sitzungen. Passwörter und Anmelde-Tokens sind nie enthalten.',
+    action: 'Meine Daten herunterladen (JSON)',
+    done: 'Ihre Daten wurden heruntergeladen.',
+    error: 'Der Export konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.',
+  },
+  fr: {
+    description:
+      'Téléchargez une copie de tout ce que VIRaTeC conserve à votre sujet : profil, photo, projets, articles, publications, éléments enregistrés et sessions actives. Les mots de passe et jetons de connexion ne sont jamais inclus.',
+    action: 'Télécharger mes données (JSON)',
+    done: 'Vos données ont été téléchargées.',
+    error: 'Impossible de préparer l’export. Veuillez réessayer.',
+  },
+  ar: {
+    description:
+      'نزّل نسخة من كل ما تخزّنه VIRaTeC عنك: الملف الشخصي والصورة والمشاريع والأوراق والمنشورات والعناصر المحفوظة والجلسات النشطة. لا تُضمَّن كلمات المرور ورموز تسجيل الدخول أبدًا.',
+    action: 'تنزيل بياناتي (JSON)',
+    done: 'تم تنزيل بياناتك.',
+    error: 'تعذّر تجهيز التصدير. يُرجى المحاولة مرة أخرى.',
+  },
 });
 
 export function ExportDataButton() {

@@ -1,4 +1,4 @@
-import type { Locale, Localized } from '../i18n/model/types';
+import { pickLocalized, type Locale, type Localized, type Messages } from '../i18n/model/types';
 import { ROUTES } from './routes';
 import { DEFAULT_SEO, PAGE_SEO_ENTRIES } from './seo.generated';
 
@@ -44,7 +44,13 @@ export const ROBOTS_INDEX =
   'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 export const ROBOTS_NOINDEX = 'noindex, follow';
 
-export const SOCIAL_LOCALE: Localized<string> = { en: 'en_GB', uk: 'uk_UA' };
+export const SOCIAL_LOCALE: Messages<string> = {
+  en: 'en_GB',
+  uk: 'uk_UA',
+  de: 'de_DE',
+  fr: 'fr_FR',
+  ar: 'ar_AR',
+};
 
 const DESCRIPTION_LIMIT = 160;
 
@@ -55,7 +61,7 @@ export const absoluteUrl = (pathname: string, siteUrl: string) =>
   new URL(normalizePath(pathname), siteUrl).href;
 
 export const formatTitle = (title: string | undefined, locale: Locale) =>
-  title ? `${title} — ${SITE_NAME}` : DEFAULT_TITLE[locale];
+  title ? `${title} — ${SITE_NAME}` : pickLocalized(DEFAULT_TITLE, locale);
 
 export const toMetaDescription = (text: string) => {
   const collapsed = text.replace(/\s+/g, ' ').trim();

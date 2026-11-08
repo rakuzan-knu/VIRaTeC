@@ -10,7 +10,7 @@ interface LegalSectionViewProps {
 function LegalTableView({ table }: { table: LegalTable }) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-white/10">
-      <table className="w-full min-w-[560px] border-collapse text-left text-sm leading-[22px]">
+      <table className="w-full min-w-[560px] border-collapse text-start text-sm leading-[22px]">
         <thead className="bg-white/[0.04]">
           <tr>
             {table.columns.map((column) => (
@@ -90,7 +90,7 @@ export function LegalSectionView({ section, index, summaryLabel }: LegalSectionV
           )}
           {section.table && <LegalTableView table={section.table} />}
           {section.note && (
-            <p className="rounded-xl border-l-2 border-viratec-cyan bg-white/[0.03] px-4 py-3 text-[15px] leading-6 text-viratec-soft">
+            <p className="rounded-xl border-s-2 border-viratec-cyan bg-white/[0.03] px-4 py-3 text-[15px] leading-6 text-viratec-soft">
               {section.note}
             </p>
           )}

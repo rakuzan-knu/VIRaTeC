@@ -54,7 +54,7 @@ export function SecuritySection({ account }: { account: AccountDto }) {
                   </span>
                 </div>
               </div>
-              {action && <div className="pl-[52px]">{action}</div>}
+              {action && <div className="ps-[52px]">{action}</div>}
             </li>
           ))}
         </ul>

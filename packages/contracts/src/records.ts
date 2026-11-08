@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { EventType, FacultyDivision, ProjectStatus, PublicationType } from './enums.js';
-import { EventTextSchema } from './events.js';
-import { CoverFocusSchema, ProjectTextSchema } from './projects.js';
+import { CONTENT_LOCALE_KEYS, SOURCE_CONTENT_LOCALE } from './content.js';
+import { EventTranslationsSchema } from './events.js';
+import { CoverFocusSchema, ProjectTranslationsSchema } from './projects.js';
 import { PublicationContentSchema } from './publications.js';
 
 export const RECORD_RESOURCES = ['project', 'event', 'publication'] as const;
@@ -188,7 +189,7 @@ export const ProjectRecordSchema = z.object({
   demoUrl: optionalUrl,
   coverUrl: optionalUrl.default(null),
   coverFocus: CoverFocusSchema.nullable().default(null),
-  translations: z.object({ en: ProjectTextSchema, uk: ProjectTextSchema }),
+  translations: ProjectTranslationsSchema,
 });
 
 export const EventRecordSchema = z.object({
@@ -200,7 +201,7 @@ export const EventRecordSchema = z.object({
   endDate: z.string().datetime(),
   capacity: z.number().int().positive().max(1_000_000).nullable(),
   registrationLink: optionalUrl,
-  translations: z.object({ en: EventTextSchema, uk: EventTextSchema }),
+  translations: EventTranslationsSchema,
 });
 
 export const PublicationRecordSchema = z.object({
@@ -276,7 +277,7 @@ const readPath = (value: unknown, path: string): unknown =>
 
 export const fieldPaths = (field: RecordFieldDefinition): string[] =>
   field.localized
-    ? ['en', 'uk'].map((locale) => field.path.replace(LOCALE_PLACEHOLDER, locale))
+    ? CONTENT_LOCALE_KEYS.map((locale) => field.path.replace(LOCALE_PLACEHOLDER, locale))
     : [field.path];
 
 export const readRecordValue = readPath;
@@ -284,7 +285,7 @@ export const readRecordValue = readPath;
 export const missingRequiredFields = (resource: RecordResource, data: RecordData) =>
   RECORD_DEFINITIONS[resource].fields
     .filter((field) => field.required)
-    .flatMap(fieldPaths)
+    .map((field) => field.path.replace(LOCALE_PLACEHOLDER, SOURCE_CONTENT_LOCALE))
     .filter((path) => {
       const value = readPath(data, path);
       return value === null || value === undefined || (typeof value === 'string' && !value.trim());

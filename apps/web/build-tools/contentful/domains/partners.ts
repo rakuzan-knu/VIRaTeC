@@ -3,7 +3,7 @@ import type { Locale, Localized } from '../../../src/shared/i18n/model/types.ts'
 import type { HomePartner, NetworkPartner } from '../../../src/entities/partner/model/types.ts';
 import { field, imageField, localizedField, type ContentTypeDefinition } from '../content-types.ts';
 import { assetLinkSchema, createReader, nonEmpty, type RawEntry } from '../entry-reader.ts';
-import type { ContentDomain, PullContext } from '../domain.ts';
+import { buildLocalized, type ContentDomain, type PullContext } from '../domain.ts';
 
 const TYPE_ID = 'partner';
 const LOGO_HEIGHT_RANGE = { min: 16, max: 80 };
@@ -86,10 +86,8 @@ export const partnersDomain: ContentDomain = {
       readPartner(entry, context),
     );
 
-    const localized = <T>(build: (locale: Locale) => T[]): Localized<T[]> => ({
-      en: build('en'),
-      uk: build('uk'),
-    });
+    const localized = <T>(build: (locale: Locale) => T[]): Localized<T[]> =>
+      buildLocalized(build) ?? { en: build('en') };
 
     const homePartners = localized((locale) =>
       partners

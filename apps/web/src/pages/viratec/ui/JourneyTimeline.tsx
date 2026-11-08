@@ -12,6 +12,9 @@ interface JourneyTimelineProps {
 const TIMELINE_MESSAGES = defineMessages({
   en: { upcoming: 'Upcoming' },
   uk: { upcoming: 'Незабаром' },
+  de: { upcoming: 'Demnächst' },
+  fr: { upcoming: 'À venir' },
+  ar: { upcoming: 'قادم' },
 });
 
 function useScrollProgress(
@@ -72,7 +75,7 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
       <div
         ref={trackRef}
         aria-hidden="true"
-        className="absolute top-6 bottom-6 left-[9px] w-0.5 lg:top-[91px] lg:bottom-[91px] lg:left-1/2 lg:-translate-x-1/2"
+        className="absolute top-6 bottom-6 start-[9px] w-0.5 lg:top-[91px] lg:bottom-[91px] lg:left-1/2 lg:-translate-x-1/2"
       >
         <span className="absolute inset-0 bg-white/15" />
         <span
@@ -90,7 +93,7 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
             <li
               key={`${milestone.date}-${milestone.title}`}
               className={cn(
-                'relative pl-10 lg:grid lg:grid-cols-[1fr_80px_1fr] lg:items-center lg:pl-0',
+                'relative ps-10 lg:grid lg:grid-cols-[1fr_80px_1fr] lg:items-center lg:ps-0',
                 !isLast && 'lg:-mb-[60px]',
               )}
             >

@@ -3,7 +3,7 @@ import type { Locale } from '../../../src/shared/i18n/model/types.ts';
 import type { MomentItem } from '../../../src/pages/viratec/model/types.ts';
 import { field, imageField, localizedField, type ContentTypeDefinition } from '../content-types.ts';
 import { assetLinkSchema, createReader, nonEmpty } from '../entry-reader.ts';
-import { type ContentDomain } from '../domain.ts';
+import { buildLocalized, type ContentDomain } from '../domain.ts';
 
 const TYPE_ID = 'galleryItem';
 
@@ -67,7 +67,7 @@ export const galleryDomain: ContentDomain = {
           {
             name: 'MOMENTS',
             type: 'Localized<MomentItem[]>',
-            value: { en: build('en'), uk: build('uk') },
+            value: buildLocalized(build),
           },
         ],
       },

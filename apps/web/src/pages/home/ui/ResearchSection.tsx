@@ -24,7 +24,7 @@ export function ResearchSection() {
         <div className="flex items-end justify-between gap-10">
           <div className="flex flex-col gap-4 lg:gap-5">
             <Eyebrow>{research.eyebrow}</Eyebrow>
-            <h2 id="research-title" className={SECTION_TITLE_CLASS}>
+            <h2 id="research-title" dir="auto" className={SECTION_TITLE_CLASS}>
               <SplitWords text={research.title} />
             </h2>
           </div>
@@ -70,7 +70,7 @@ export function ResearchSection() {
               {research.highlightDescription}
             </ExpandableText>
           </div>
-          <dl className="flex gap-10 border-t border-white/10 pt-6 whitespace-nowrap lg:shrink-0 lg:gap-14 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
+          <dl className="flex gap-10 border-t border-white/10 pt-6 whitespace-nowrap lg:shrink-0 lg:gap-14 lg:border-t-0 lg:border-s lg:pt-0 lg:ps-12">
             {research.highlightNumbers.map((item) => (
               <div key={item.value} className="flex flex-col gap-1">
                 <dt className="order-2 text-[13px] text-viratec-muted lg:text-[15px]">

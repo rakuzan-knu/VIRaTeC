@@ -21,6 +21,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../security/audit.service';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
 import type { AuthenticatedUser } from '../security/authenticated-user';
+import { AutoTranslateService } from './auto-translate.service';
 import { ContentService } from './content.service';
 import { ContentfulClient, ContentfulRequestError } from './contentful.client';
 import { RevisionsService } from './revisions.service';
@@ -89,6 +90,7 @@ export class ContentEditorService {
     private readonly audit: AuditService,
     private readonly records: RecordEditorService,
     private readonly revisions: RevisionsService,
+    private readonly autoTranslate: AutoTranslateService,
   ) {}
 
   private get locales() {
@@ -523,14 +525,28 @@ export class ContentEditorService {
       take: CONTENT_EDITOR_LIMITS.maxPublishBatch,
     });
     const ordered = [...changes].sort((a, b) => publishOrder(a) - publishOrder(b));
-    const result: PublishContentResultDto = { published: [], failed: [] };
+    const result: PublishContentResultDto = { published: [], failed: [], untranslated: [] };
+    let spaceLocales: unknown;
 
     for (const change of ordered) {
       const path = `/${change.resourceType === ContentResourceType.ASSET ? 'assets' : 'entries'}/${change.resourceId}`;
       try {
         const recordResource = recordResourceOfChange(change);
         if (recordResource) {
-          await this.records.applyChange(change);
+          const translated = change.isDeleted
+            ? null
+            : await this.autoTranslate.translateRecord(
+                recordResource,
+                change.resourceId,
+                isRecord(change.draft) ? change.draft : {},
+                actor.id,
+              );
+          if (translated?.failed) result.untranslated.push(change.id);
+          await this.records.applyChange(
+            translated?.changed
+              ? { ...change, draft: translated.value as Prisma.JsonObject }
+              : change,
+          );
           if (!change.isDeleted) {
             const record = await this.records
               .getRecord(recordResource, change.resourceId)
@@ -540,12 +556,36 @@ export class ContentEditorService {
           result.published.push(change.id);
           continue;
         }
-        const current = await this.contentful.request<CmaResource>('management', path);
+        let current = await this.contentful.request<CmaResource>('management', path);
         if (change.isDeleted) {
           await this.unpublishAndArchive(path, current);
           await this.prisma.contentChange.delete({ where: { id: change.id } });
           result.published.push(change.id);
           continue;
+        }
+        const contentTypeId = current.sys.contentType?.sys.id;
+        if (change.resourceType === ContentResourceType.ENTRY && contentTypeId) {
+          spaceLocales ??= await this.contentful.request<unknown>('management', '/locales');
+          const contentType = await this.contentful.request<unknown>(
+            'management',
+            `/content_types/${contentTypeId}`,
+          );
+          const translated = await this.autoTranslate.translateEntry(
+            change.resourceId,
+            contentType,
+            spaceLocales,
+            this.locales,
+            current.fields ?? {},
+            actor.id,
+          );
+          if (translated.failed) result.untranslated.push(change.id);
+          if (translated.changed) {
+            current = await this.contentful.request<CmaResource>('management', path, {
+              method: 'PUT',
+              version: current.sys.version,
+              body: { fields: translated.value },
+            });
+          }
         }
         await this.contentful.request('management', `${path}/published`, {
           method: 'PUT',

@@ -33,6 +33,45 @@ const DELETE_ACCOUNT_MESSAGES = defineMessages({
     mismatch: 'Адреса не збігається з вашим обліковим записом.',
     unexpectedError: 'Не вдалося видалити обліковий запис. Спробуйте ще раз.',
   },
+  de: {
+    description:
+      'Dadurch werden Ihr Profil sowie die von Ihnen erstellten Projekte, Arbeiten und Community-Beiträge dauerhaft entfernt. Dies kann nicht rückgängig gemacht werden.',
+    start: 'Konto löschen…',
+    confirmLabel: (email: string) => `Geben Sie ${email} zur Bestätigung ein`,
+    password: 'Ihr Passwort',
+    submit: 'Endgültig löschen',
+    cancel: 'Abbrechen',
+    wrongPassword: 'Das Passwort ist falsch.',
+    tooMany: 'Zu viele Versuche. Warten Sie 15 Minuten und versuchen Sie es erneut.',
+    mismatch: 'Die E-Mail stimmt nicht mit Ihrem Konto überein.',
+    unexpectedError: 'Das Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
+  },
+  fr: {
+    description:
+      'Cette action supprime définitivement votre profil ainsi que les projets, articles et publications de la communauté que vous avez créés. Elle est irréversible.',
+    start: 'Supprimer le compte…',
+    confirmLabel: (email: string) => `Saisissez ${email} pour confirmer`,
+    password: 'Votre mot de passe',
+    submit: 'Supprimer définitivement',
+    cancel: 'Annuler',
+    wrongPassword: 'Le mot de passe est incorrect.',
+    tooMany: 'Trop de tentatives. Attendez 15 minutes et réessayez.',
+    mismatch: 'L’e-mail ne correspond pas à votre compte.',
+    unexpectedError: 'Impossible de supprimer le compte. Veuillez réessayer.',
+  },
+  ar: {
+    description:
+      'يؤدي هذا إلى إزالة ملفك الشخصي نهائيًا مع المشاريع والأوراق ومنشورات المجتمع التي أنشأتها. لا يمكن التراجع عن ذلك.',
+    start: 'حذف الحساب…',
+    confirmLabel: (email: string) => `اكتب ${email} للتأكيد`,
+    password: 'كلمة المرور',
+    submit: 'حذف نهائي',
+    cancel: 'إلغاء',
+    wrongPassword: 'كلمة المرور غير صحيحة.',
+    tooMany: 'محاولات كثيرة جدًا. انتظر 15 دقيقة ثم حاول مرة أخرى.',
+    mismatch: 'البريد الإلكتروني لا يطابق حسابك.',
+    unexpectedError: 'تعذّر حذف الحساب. يُرجى المحاولة مرة أخرى.',
+  },
 });
 
 const DANGER_BUTTON_CLASS =

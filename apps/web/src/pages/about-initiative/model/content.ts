@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useLocale } from '@/shared/i18n';
+import { pickLocalized, useLocale } from '@/shared/i18n';
 import { useLiveContent } from '@/shared/lib';
 import type { StepItem } from '@/shared/ui/steps-list';
 import { FOUNDER, TEAM } from './team.generated';
@@ -53,15 +53,15 @@ export type AboutInitiativeText = Omit<
 
 export const useAboutInitiativeContent = (): AboutInitiativeContent & { founderPhoto: string } => {
   const locale = useLocale();
-  const text = useLiveContent('aboutInitiativePage', 'PAGE_TEXT', PAGE_TEXT)[locale];
+  const text = pickLocalized(useLiveContent('aboutInitiativePage', 'PAGE_TEXT', PAGE_TEXT), locale);
   const founder = useLiveContent('person', 'FOUNDER', FOUNDER);
-  const team = useLiveContent('person', 'TEAM', TEAM)[locale];
+  const team = pickLocalized(useLiveContent('person', 'TEAM', TEAM), locale);
   return useMemo(
     () => ({
       ...text,
-      founderName: founder[locale].name,
-      founderRole: founder[locale].role,
-      founderBio: founder[locale].bio,
+      founderName: pickLocalized(founder, locale).name,
+      founderRole: pickLocalized(founder, locale).role,
+      founderBio: pickLocalized(founder, locale).bio,
       founderPhoto: founder.en.photo,
       team,
     }),

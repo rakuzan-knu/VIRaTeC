@@ -7,6 +7,9 @@ import { defineMessages, useLocalized } from '@/shared/i18n';
 const REGISTER_PAGE_MESSAGES = defineMessages({
   en: { documentTitle: 'Create account' },
   uk: { documentTitle: 'Реєстрація' },
+  de: { documentTitle: 'Konto erstellen' },
+  fr: { documentTitle: 'Créer un compte' },
+  ar: { documentTitle: 'إنشاء حساب' },
 });
 
 export function RegisterPage() {

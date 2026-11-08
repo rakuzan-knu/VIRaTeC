@@ -66,6 +66,83 @@ const REGISTER_MESSAGES = defineMessages({
       termsRequired: 'Потрібно погодитися з Умовами використання та Політикою конфіденційності',
     },
   },
+  de: {
+    title: 'Los geht’s',
+    subtitle: 'Werden Sie Teil der VIRaTeC-Forschungsgemeinschaft.',
+    fullName: 'Vollständiger Name',
+    fullNamePlaceholder: 'Vollständigen Namen eingeben',
+    passwordPlaceholder: 'Mindestens 8 Zeichen',
+    agreePrefix: 'Ich akzeptiere die',
+    agreeAnd: 'und die',
+    termsLink: 'Nutzungsbedingungen',
+    privacyLink: 'Datenschutzerklärung',
+    submit: 'Neues Konto erstellen',
+    haveAccount: 'Sie haben bereits ein Konto?',
+    accountExists: 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.',
+    accountExistsSignIn: 'Anmelden',
+    accountExistsReset: 'Passwort zurücksetzen',
+    tooMany: 'Zu viele Registrierungsversuche. Versuchen Sie es in einer Stunde erneut.',
+    invalidData: 'Ungültige Registrierungsdaten. Bitte prüfen Sie Ihre Eingaben.',
+    unexpectedError:
+      'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+    validation: {
+      nameMin: 'Der Name muss mindestens 2 Zeichen lang sein',
+      invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+      passwordMin: 'Das Passwort muss mindestens 8 Zeichen lang sein',
+      termsRequired: 'Sie müssen den Nutzungsbedingungen und der Datenschutzerklärung zustimmen',
+    },
+  },
+  fr: {
+    title: 'Commencer',
+    subtitle: 'Rejoignez la communauté de recherche VIRaTeC.',
+    fullName: 'Nom complet',
+    fullNamePlaceholder: 'Saisissez votre nom complet',
+    passwordPlaceholder: 'Au moins 8 caractères',
+    agreePrefix: 'J’accepte les',
+    agreeAnd: 'et la',
+    termsLink: 'Conditions d’utilisation',
+    privacyLink: 'Politique de confidentialité',
+    submit: 'Créer un nouveau compte',
+    haveAccount: 'Vous avez déjà un compte ?',
+    accountExists: 'Un compte avec cette adresse e-mail existe déjà.',
+    accountExistsSignIn: 'Se connecter',
+    accountExistsReset: 'Réinitialiser le mot de passe',
+    tooMany: 'Trop de tentatives d’inscription. Réessayez dans une heure.',
+    invalidData: 'Données d’inscription invalides. Veuillez vérifier vos saisies.',
+    unexpectedError: 'Une erreur inattendue s’est produite. Veuillez réessayer plus tard.',
+    validation: {
+      nameMin: 'Le nom doit comporter au moins 2 caractères',
+      invalidEmail: 'Veuillez saisir une adresse e-mail valide',
+      passwordMin: 'Le mot de passe doit comporter au moins 8 caractères',
+      termsRequired:
+        'Vous devez accepter les Conditions d’utilisation et la Politique de confidentialité',
+    },
+  },
+  ar: {
+    title: 'ابدأ الآن',
+    subtitle: 'انضم إلى مجتمع VIRaTeC البحثي.',
+    fullName: 'الاسم الكامل',
+    fullNamePlaceholder: 'أدخل اسمك الكامل',
+    passwordPlaceholder: '8 أحرف على الأقل',
+    agreePrefix: 'أوافق على',
+    agreeAnd: 'و',
+    termsLink: 'شروط الخدمة',
+    privacyLink: 'سياسة الخصوصية',
+    submit: 'إنشاء حساب جديد',
+    haveAccount: 'لديك حساب بالفعل؟',
+    accountExists: 'يوجد حساب بهذا البريد الإلكتروني بالفعل.',
+    accountExistsSignIn: 'تسجيل الدخول',
+    accountExistsReset: 'إعادة تعيين كلمة المرور',
+    tooMany: 'محاولات تسجيل كثيرة جدًا. حاول مرة أخرى بعد ساعة.',
+    invalidData: 'بيانات التسجيل غير صالحة. يُرجى التحقق من المدخلات.',
+    unexpectedError: 'حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.',
+    validation: {
+      nameMin: 'يجب ألا يقل الاسم عن حرفين',
+      invalidEmail: 'يُرجى إدخال بريد إلكتروني صالح',
+      passwordMin: 'يجب ألا تقل كلمة المرور عن 8 أحرف',
+      termsRequired: 'يجب أن توافق على شروط الخدمة وسياسة الخصوصية',
+    },
+  },
 });
 
 type RegisterMessages = (typeof REGISTER_MESSAGES)['en'];
@@ -217,11 +294,11 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
               placeholder={t.passwordPlaceholder}
               error={!!errors.password}
               aria-describedby={errors.password ? 'register-password-error' : undefined}
-              className="h-[54px] lg:h-[clamp(40px,6svh,54px)] pr-14 text-base"
+              className="h-[54px] lg:h-[clamp(40px,6svh,54px)] pe-14 text-base"
             />
             <Tooltip
               text={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 -translate-y-1/2"
+              className="absolute end-2 top-1/2 -translate-y-1/2"
             >
               <button
                 type="button"

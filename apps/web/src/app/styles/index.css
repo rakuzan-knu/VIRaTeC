@@ -10,10 +10,14 @@
 @import '@fontsource/inter/cyrillic-500.css';
 @import '@fontsource/inter/cyrillic-600.css';
 @import '@fontsource/inter/cyrillic-700.css';
+@import '@fontsource/noto-sans-arabic/400.css';
+@import '@fontsource/noto-sans-arabic/500.css';
+@import '@fontsource/noto-sans-arabic/600.css';
+@import '@fontsource/noto-sans-arabic/700.css';
 
 @theme {
   /* Font */
-  --font-sans: 'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'DM Sans', 'Inter', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
   /* Backgrounds */
   --color-bg-page: #03122e;
@@ -81,7 +85,7 @@
 }
 
 @theme {
-  --font-dm-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-dm-sans: 'DM Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
   --color-viratec-bg: #03122e;
   --color-viratec-surface: #061a39;
@@ -112,9 +116,10 @@
   --shadow-menu: 0 24px 60px 0 rgba(0, 5, 26, 0.55);
   --shadow-sticky-bar: 0 20px 50px -20px rgba(0, 5, 26, 0.9);
 
-  --font-display: 'Instrument Sans', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    'Instrument Sans', 'DM Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
-  --font-auth: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-auth: 'Instrument Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
   --color-auth-navy: #082455;
   --color-auth-navy-hover: #0d3170;
   --color-auth-banner: #021329;
@@ -520,6 +525,10 @@
 
   p {
     text-wrap: pretty;
+  }
+
+  [dir='rtl'] :is(p, li, dd, h3, h4, blockquote, figcaption) {
+    unicode-bidi: plaintext;
   }
 
   ::selection {

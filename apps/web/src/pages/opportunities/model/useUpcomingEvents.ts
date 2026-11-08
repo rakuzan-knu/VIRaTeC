@@ -11,12 +11,18 @@ const eventKeys = {
   upcoming: () => [...eventKeys.all, 'upcoming'] as const,
 };
 
-const FALLBACK_ACTION = defineMessages({ en: 'Ask to join', uk: 'Долучитися' });
+const FALLBACK_ACTION = defineMessages({
+  en: 'Ask to join',
+  uk: 'Долучитися',
+  de: 'Teilnahme anfragen',
+  fr: 'Demander à participer',
+  ar: 'اطلب الانضمام',
+});
 
 const NO_EVENTS: Opportunity[] = [];
 
 const toOpportunity = (event: EventResponse, locale: Locale): Opportunity => {
-  const text = event.translations?.[locale];
+  const text = event.translations?.[locale] ?? event.translations?.en;
   const date = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long' }).format(
     new Date(event.startDate),
   );

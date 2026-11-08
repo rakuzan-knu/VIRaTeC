@@ -25,6 +25,30 @@ const SAVE_MESSAGES = defineMessages({
     unsaveHint: 'Прибрати зі збереженого',
     error: 'Не вдалося оновити. Спробуйте ще раз.',
   },
+  de: {
+    save: 'Speichern',
+    saved: 'Gespeichert',
+    signInToSave: 'Zum Speichern anmelden',
+    saveHint: 'In Ihrem Konto speichern',
+    unsaveHint: 'Aus Gespeichertem entfernen',
+    error: 'Aktualisierung fehlgeschlagen. Versuchen Sie es erneut.',
+  },
+  fr: {
+    save: 'Enregistrer',
+    saved: 'Enregistré',
+    signInToSave: 'Connectez-vous pour enregistrer',
+    saveHint: 'Enregistrer dans votre compte',
+    unsaveHint: 'Retirer des éléments enregistrés',
+    error: 'Mise à jour impossible. Réessayez.',
+  },
+  ar: {
+    save: 'حفظ',
+    saved: 'محفوظ',
+    signInToSave: 'سجّل الدخول للحفظ',
+    saveHint: 'احفظ في حسابك',
+    unsaveHint: 'إزالة من المحفوظات',
+    error: 'تعذّر التحديث. حاول مرة أخرى.',
+  },
 });
 
 const BUTTON_CLASS =

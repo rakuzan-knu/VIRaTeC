@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useLocale } from '@/shared/i18n';
+import { pickLocalized, useLocale } from '@/shared/i18n';
 import { useLiveContent } from '@/shared/lib';
 import type { StepItem } from '@/shared/ui/steps-list';
 import { MILESTONES } from './milestones.generated';
@@ -65,8 +65,8 @@ export type ViratecText = Omit<ViratecContent, 'milestones' | 'moments'>;
 
 export const useViratecContent = (): ViratecContent => {
   const locale = useLocale();
-  const text = useLiveContent('viratecPage', 'PAGE_TEXT', PAGE_TEXT)[locale];
-  const milestones = useLiveContent('milestone', 'MILESTONES', MILESTONES)[locale];
-  const moments = useLiveContent('galleryItem', 'MOMENTS', MOMENTS)[locale];
+  const text = pickLocalized(useLiveContent('viratecPage', 'PAGE_TEXT', PAGE_TEXT), locale);
+  const milestones = pickLocalized(useLiveContent('milestone', 'MILESTONES', MILESTONES), locale);
+  const moments = pickLocalized(useLiveContent('galleryItem', 'MOMENTS', MOMENTS), locale);
   return useMemo(() => ({ ...text, milestones, moments }), [text, milestones, moments]);
 };

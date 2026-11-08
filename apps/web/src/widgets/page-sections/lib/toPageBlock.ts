@@ -1,11 +1,11 @@
 import type { PageBlock } from '@/shared/config/pageBlock';
 import type { CustomSectionItem } from '@/shared/config/pageLayout';
 import { ROUTES } from '@/shared/config/routes';
-import type { Locale } from '@/shared/i18n';
+import { pickLocalized, type Locale, type Localized } from '@/shared/i18n';
 
-type Text = Record<Locale, string>;
+type Text = Localized<string>;
 
-const pick = (text: Text, locale: Locale) => text[locale].trim() || text.en.trim();
+const pick = (text: Text, locale: Locale) => pickLocalized(text, locale).trim() || text.en.trim();
 
 export const toPageBlock = (section: CustomSectionItem, locale: Locale): PageBlock => {
   const read = (text: Text) => pick(text, locale);

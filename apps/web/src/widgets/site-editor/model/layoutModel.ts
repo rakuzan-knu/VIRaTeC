@@ -6,7 +6,7 @@ import {
   type LayoutPage,
   type PageSectionItem,
 } from '@/shared/config/pageLayout';
-import type { Locale } from '@/shared/i18n';
+import { pickLocalized, type Locale } from '@/shared/i18n';
 import type { SiteEditorMessages } from './messages';
 
 export const LAYOUT_TYPE_ID = 'pageLayout';
@@ -80,7 +80,7 @@ export const sectionLabel = (
   if (section.type === 'block') {
     return `${t.structure.block}: ${blocks[section.blockId]?.title ?? t.structure.missingBlock}`;
   }
-  const title = section.title[locale].trim() || section.title.en.trim();
+  const title = pickLocalized(section.title, locale).trim() || section.title.en.trim();
   return `${t.structure.types[section.type]}: ${title || t.structure.untitled}`;
 };
 

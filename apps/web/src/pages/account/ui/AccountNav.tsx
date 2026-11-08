@@ -56,7 +56,7 @@ export function AccountNav({ active, isSigningOut, onSelect, onSignOut }: Accoun
                 aria-current={isActive ? 'page' : undefined}
                 onClick={() => onSelect(section)}
                 className={cn(
-                  'flex w-full cursor-pointer items-center gap-3 rounded-full px-4 py-2.5 text-left text-[15px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime lg:rounded-[14px] lg:py-3',
+                  'flex w-full cursor-pointer items-center gap-3 rounded-full px-4 py-2.5 text-start text-[15px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime lg:rounded-[14px] lg:py-3',
                   isActive
                     ? 'bg-white text-viratec-ink'
                     : 'border border-white/14 bg-white/4 text-white hover:bg-white/10 lg:border-transparent lg:bg-transparent',
@@ -74,7 +74,7 @@ export function AccountNav({ active, isSigningOut, onSelect, onSignOut }: Accoun
             type="button"
             onClick={onSignOut}
             disabled={isSigningOut}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-full border border-white/14 bg-white/4 px-4 py-2.5 text-left text-[15px] font-medium whitespace-nowrap text-viratec-muted transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime disabled:opacity-50 lg:rounded-[14px] lg:border-transparent lg:bg-transparent lg:py-3"
+            className="flex w-full cursor-pointer items-center gap-3 rounded-full border border-white/14 bg-white/4 px-4 py-2.5 text-start text-[15px] font-medium whitespace-nowrap text-viratec-muted transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime disabled:opacity-50 lg:rounded-[14px] lg:border-transparent lg:bg-transparent lg:py-3"
           >
             <LogOut aria-hidden="true" className="size-[18px] shrink-0" />
             {t.signOut}

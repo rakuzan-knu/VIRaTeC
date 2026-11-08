@@ -54,7 +54,7 @@ export function SkillsField({
           {value.map((skill) => (
             <li
               key={skill}
-              className="inline-flex items-center gap-1 rounded-full border border-white/14 bg-white/6 py-1.5 pr-1.5 pl-3.5 text-sm text-white"
+              className="inline-flex items-center gap-1 rounded-full border border-white/14 bg-white/6 py-1.5 pe-1.5 ps-3.5 text-sm text-white"
             >
               {skill}
               <Tooltip text={removeLabel(skill)}>

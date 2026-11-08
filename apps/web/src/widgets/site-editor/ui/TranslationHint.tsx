@@ -18,7 +18,7 @@ const isTextValue = (value: unknown) =>
   value === undefined || value === null || typeof value === 'string' || Array.isArray(value);
 
 interface TranslationHintProps {
-  values: Record<Locale, unknown>;
+  values: Partial<Record<Locale, unknown>>;
   readOnly: boolean;
   t: SiteEditorMessages;
   onCopy: (from: Locale, to: Locale) => void;

@@ -72,6 +72,91 @@ const DATA_CONTROLS_MESSAGES = defineMessages({
     error: 'Не вдалося видалити. Спробуйте ще раз.',
     deleteAccount: 'Натомість видалити весь обліковий запис',
   },
+  de: {
+    intro:
+      'Entfernen Sie einzelne Teile Ihrer Daten, ohne das Konto zu löschen. Das Löschen ist endgültig und wirkt sofort.',
+    photo: 'Profilfoto',
+    photoHas:
+      'Ihr hochgeladenes oder Google-Foto ist gespeichert und wird in Ihrem Profil angezeigt.',
+    photoNone: 'Kein Foto gespeichert.',
+    photoAction: 'Foto löschen',
+    details: 'Profildetails',
+    detailsHint:
+      'Biografie, Lehrstuhl, Interessen, akademischer Status, Universität, Land, Sprachen, akademische Links und „Offen für“. Name und Fakultät bleiben erhalten, da das Konto sie benötigt.',
+    detailsAction: 'Details löschen',
+    saved: 'Gespeicherte Elemente',
+    savedCount: (count: number) =>
+      count === 0
+        ? 'Nichts gespeichert.'
+        : `${count} ${count === 1 ? 'gespeichertes Element' : 'gespeicherte Elemente'}.`,
+    savedAction: 'Gespeichertes löschen',
+    sessions: 'Andere Geräte und Anmeldeverlauf',
+    sessionsCount: (count: number) =>
+      count === 0
+        ? 'Nur dieses Gerät ist angemeldet.'
+        : `${count} ${count === 1 ? 'weiteres Gerät ist' : 'weitere Geräte sind'} angemeldet. Ihre IP-Adressen und Browserdaten werden gespeichert.`,
+    sessionsAction: 'Abmelden und löschen',
+    confirm: 'Bestätigen',
+    cancel: 'Abbrechen',
+    done: 'Gelöscht.',
+    error: 'Löschen fehlgeschlagen. Bitte versuchen Sie es erneut.',
+    deleteAccount: 'Stattdessen das gesamte Konto löschen',
+  },
+  fr: {
+    intro:
+      'Supprimez certaines de vos données sans supprimer le compte. La suppression est définitive et immédiate.',
+    photo: 'Photo de profil',
+    photoHas: 'Votre photo téléversée ou Google est stockée et affichée sur votre profil.',
+    photoNone: 'Aucune photo stockée.',
+    photoAction: 'Supprimer la photo',
+    details: 'Détails du profil',
+    detailsHint:
+      'Biographie, département, intérêts, statut académique, université, pays, langues, liens académiques et « Ouvert à ». Votre nom et votre faculté restent, car le compte en a besoin.',
+    detailsAction: 'Effacer les détails',
+    saved: 'Éléments enregistrés',
+    savedCount: (count: number) =>
+      count === 0
+        ? 'Rien d’enregistré.'
+        : `${count} ${count === 1 ? 'élément enregistré' : 'éléments enregistrés'}.`,
+    savedAction: 'Effacer les éléments enregistrés',
+    sessions: 'Autres appareils et historique de connexion',
+    sessionsCount: (count: number) =>
+      count === 0
+        ? 'Seul cet appareil est connecté.'
+        : `${count} ${count === 1 ? 'autre appareil est connecté' : 'autres appareils sont connectés'}. Leurs adresses IP et informations de navigateur sont stockées.`,
+    sessionsAction: 'Déconnecter et effacer',
+    confirm: 'Confirmer',
+    cancel: 'Annuler',
+    done: 'Supprimé.',
+    error: 'Suppression impossible. Veuillez réessayer.',
+    deleteAccount: 'Supprimer plutôt tout le compte',
+  },
+  ar: {
+    intro: 'أزل أجزاء من بياناتك دون حذف الحساب. الحذف نهائي ويسري فورًا.',
+    photo: 'صورة الملف الشخصي',
+    photoHas: 'صورتك المرفوعة أو صورة Google مخزّنة وتظهر في ملفك الشخصي.',
+    photoNone: 'لا توجد صورة مخزّنة.',
+    photoAction: 'حذف الصورة',
+    details: 'تفاصيل الملف الشخصي',
+    detailsHint:
+      'النبذة والقسم والاهتمامات والصفة الأكاديمية والجامعة والبلد واللغات والروابط الأكاديمية و«منفتح على». يبقى اسمك وكليتك لأن الحساب يحتاجهما.',
+    detailsAction: 'مسح التفاصيل',
+    saved: 'العناصر المحفوظة',
+    savedCount: (count: number) =>
+      count === 0 ? 'لا شيء محفوظ.' : `${count} ${count === 1 ? 'عنصر محفوظ' : 'عناصر محفوظة'}.`,
+    savedAction: 'مسح المحفوظات',
+    sessions: 'الأجهزة الأخرى وسجل تسجيل الدخول',
+    sessionsCount: (count: number) =>
+      count === 0
+        ? 'هذا الجهاز فقط مسجّل الدخول.'
+        : `${count} ${count === 1 ? 'جهاز آخر مسجّل' : 'أجهزة أخرى مسجّلة'} الدخول. تُخزَّن عناوين IP وتفاصيل المتصفح الخاصة بها.`,
+    sessionsAction: 'تسجيل الخروج والمسح',
+    confirm: 'تأكيد',
+    cancel: 'إلغاء',
+    done: 'تم الحذف.',
+    error: 'تعذّر الحذف. يُرجى المحاولة مرة أخرى.',
+    deleteAccount: 'احذف الحساب بالكامل بدلًا من ذلك',
+  },
 });
 
 interface DataRowProps {

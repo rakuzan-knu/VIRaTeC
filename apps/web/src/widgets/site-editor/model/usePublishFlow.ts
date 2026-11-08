@@ -43,6 +43,9 @@ export function usePublishFlow() {
             announce(t.announce.published(published.published.length));
           }
           if (published.failed.length > 0) setSummaryOpen(true);
+          if (published.untranslated.length > 0) {
+            announce(t.announce.untranslated(published.untranslated.length));
+          }
         },
         onError: (publishError) => {
           if (STEP_UP_CODES.has(getApiErrorCode(publishError) ?? '')) {

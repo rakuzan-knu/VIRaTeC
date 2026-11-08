@@ -123,7 +123,10 @@ export const createReader = (
     const values = entry.fields[id];
     const own = values?.[locales[locale]];
     const fallback = values?.[locales[DEFAULT_LOCALE]];
-    if (own === undefined && fallback !== undefined && locale !== DEFAULT_LOCALE) {
+    const hasLocale = Object.values(entry.fields).some(
+      (field) => field?.[locales[locale]] !== undefined,
+    );
+    if (own === undefined && fallback !== undefined && locale !== DEFAULT_LOCALE && hasLocale) {
       diagnostics.warn(`${label}: "${id}" has no ${locale} value, using ${DEFAULT_LOCALE}`);
     }
     const raw = own ?? fallback;

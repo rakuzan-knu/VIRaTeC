@@ -264,12 +264,12 @@ test('publishing refuses a draft when the record changed after it was saved', as
 test('publishing refuses drafts with empty required fields', async () => {
   const { service, calls } = setup();
   const data = projectData();
-  data.translations.uk.title = '  ';
+  data.translations.en.title = '  ';
 
   await assert.rejects(
     service.applyChange(draftChange({ draft: data })),
     (error: unknown) =>
-      error instanceof RecordPublishError && error.message.includes('translations.uk.title'),
+      error instanceof RecordPublishError && error.message.includes('translations.en.title'),
   );
   assert.equal(calls.updates.length, 0);
 });

@@ -8,7 +8,7 @@ import {
   useNavigation,
   type NavGroup,
 } from '@/shared/config/navigation';
-import { isLocale, useCommonMessages, useLocalized, type Locale } from '@/shared/i18n';
+import { LANGUAGE_NAMES, LOCALES, isLocale, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { Logo } from '@/shared/ui/logo';
 import { OptionalLink } from '@/shared/ui/optional-link';
 import languageGlobe from '@/shared/assets/icons/language-globe.svg';
@@ -18,10 +18,7 @@ import scholarIcon from '@/shared/assets/icons/google-scholar.svg';
 import { FOOTER_MESSAGES } from '../model/messages';
 import { useLanguageSwitch } from '../model/useLanguageSwitch';
 
-const LANGUAGES: { value: Locale; label: string }[] = [
-  { value: 'en', label: 'English' },
-  { value: 'uk', label: 'Українська' },
-];
+const LANGUAGES = LOCALES.map((value) => ({ value, label: LANGUAGE_NAMES[value] }));
 
 const CONTACT_SECTION_ID = 'contact';
 
@@ -117,7 +114,7 @@ function LanguageSelect({ label }: { label: string }) {
         <img
           src={languageGlobe}
           alt=""
-          className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2"
+          className="pointer-events-none absolute top-1/2 start-3.5 -translate-y-1/2"
         />
         <select
           id="footer-language"
@@ -125,7 +122,7 @@ function LanguageSelect({ label }: { label: string }) {
           onChange={(event) => {
             if (isLocale(event.target.value)) switchLanguage(event.target.value);
           }}
-          className="w-full cursor-pointer appearance-none rounded-full border border-white/10 bg-white/4 py-[11px] pr-10 pl-10 text-sm leading-5 text-white transition-colors outline-none hover:border-white/22 focus-visible:border-viratec-lime"
+          className="w-full cursor-pointer appearance-none rounded-full border border-white/10 bg-white/4 py-[11px] pe-10 ps-10 text-sm leading-5 text-white transition-colors outline-none hover:border-white/22 focus-visible:border-viratec-lime"
         >
           {LANGUAGES.map((option) => (
             <option
@@ -141,7 +138,7 @@ function LanguageSelect({ label }: { label: string }) {
         <img
           src={chevronDown}
           alt=""
-          className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2"
+          className="pointer-events-none absolute top-1/2 end-3.5 -translate-y-1/2"
         />
       </div>
     </div>

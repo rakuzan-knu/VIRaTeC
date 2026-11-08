@@ -20,10 +20,13 @@ interface MobileMenuProps {
 const MOBILE_MENU_MESSAGES = defineMessages({
   en: { mainMenu: 'Main menu', mainNav: 'Main', closeMenu: 'Close menu' },
   uk: { mainMenu: 'Головне меню', mainNav: 'Головна навігація', closeMenu: 'Закрити меню' },
+  de: { mainMenu: 'Hauptmenü', mainNav: 'Hauptnavigation', closeMenu: 'Menü schließen' },
+  fr: { mainMenu: 'Menu principal', mainNav: 'Navigation principale', closeMenu: 'Fermer le menu' },
+  ar: { mainMenu: 'القائمة الرئيسية', mainNav: 'التنقل الرئيسي', closeMenu: 'إغلاق القائمة' },
 });
 
 const ROW_CLASS =
-  'flex w-full items-center justify-between border-b border-white/8 py-5 text-left font-display text-[26px] leading-8 font-medium tracking-[-0.02em] text-white';
+  'flex w-full items-center justify-between border-b border-white/8 py-5 text-start font-display text-[26px] leading-8 font-medium tracking-[-0.02em] text-white';
 
 export function MobileMenu({ onClose }: MobileMenuProps) {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
@@ -61,7 +64,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
           type="button"
           onClick={onClose}
           aria-label={t.closeMenu}
-          className="-mr-2 flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-white/8"
+          className="-me-2 flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-white/8"
         >
           <img src={closeIcon} alt="" />
         </button>
@@ -107,7 +110,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
                   />
                 </button>
                 {isOpen && (
-                  <ul id={panelId} className="flex flex-col gap-4 py-4 pl-4">
+                  <ul id={panelId} className="flex flex-col gap-4 py-4 ps-4">
                     {group.items.map((item) => (
                       <li key={item.to}>
                         <Link
@@ -186,7 +189,7 @@ function MobileAccountPanel({ onClose }: MobileMenuProps) {
         className="flex cursor-pointer items-center gap-2.5 rounded-[16px] px-3 py-3 text-[15px] font-medium text-white transition-colors hover:bg-white/7"
       >
         <ArrowLeftRight aria-hidden="true" className="size-[18px] shrink-0 text-viratec-muted" />
-        <span className="flex-1 text-left">{t.switchAccount}</span>
+        <span className="flex-1 text-start">{t.switchAccount}</span>
         <ChevronDown
           aria-hidden="true"
           className={cn(

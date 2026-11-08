@@ -45,6 +45,9 @@ function VideoTranscript({ label, paragraphs }: VideoTranscriptProps) {
 const INTRO_VIDEO_MESSAGES = defineMessages({
   en: { play: (caption: string) => `Play video: ${caption}` },
   uk: { play: (caption: string) => `Відтворити відео: ${caption}` },
+  de: { play: (caption: string) => `Video abspielen: ${caption}` },
+  fr: { play: (caption: string) => `Lire la vidéo : ${caption}` },
+  ar: { play: (caption: string) => `تشغيل الفيديو: ${caption}` },
 });
 
 const FRAME_CLASS =
@@ -95,7 +98,7 @@ export function IntroVideo({
         </>
       )}
       <span className="relative flex size-16 items-center justify-center rounded-full bg-white transition-transform group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100 lg:size-24">
-        <img src={playIcon} alt="" className="ml-1 h-6 w-auto lg:ml-1.5 lg:h-8" />
+        <img src={playIcon} alt="" className="ms-1 h-6 w-auto lg:ms-1.5 lg:h-8" />
       </span>
       <span className="relative text-sm leading-5 font-medium text-white lg:text-[15px]">
         {caption}

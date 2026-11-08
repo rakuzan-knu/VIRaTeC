@@ -1,5 +1,5 @@
 import { PublicationType as PublicationDtoType, type PublicationDto } from '@viratec/contracts';
-import { defineMessages, useLocalized, type Locale } from '@/shared/i18n';
+import { defineMessages, useLocalized, pickLocalized, type Locale } from '@/shared/i18n';
 import { contentAssetIdFromUrl, contentCoverSrc } from '@/shared/lib';
 import type { Publication, PublicationType } from './types';
 
@@ -19,6 +19,21 @@ const PUBLICATION_LABELS = defineMessages<PublicationLabels>({
     type: { paper: 'Стаття', news: 'Новина', event: 'Подія', media: 'Медіа' },
     readPaper: 'Читати статтю →',
     readMore: 'Читати далі →',
+  },
+  de: {
+    type: { paper: 'Artikel', news: 'Neuigkeiten', event: 'Veranstaltung', media: 'Medien' },
+    readPaper: 'Artikel lesen →',
+    readMore: 'Weiterlesen →',
+  },
+  fr: {
+    type: { paper: 'Article', news: 'Actualités', event: 'Événement', media: 'Médias' },
+    readPaper: 'Lire l’article →',
+    readMore: 'Lire la suite →',
+  },
+  ar: {
+    type: { paper: 'ورقة بحثية', news: 'أخبار', event: 'فعالية', media: 'وسائط' },
+    readPaper: 'اقرأ الورقة ←',
+    readMore: 'اقرأ المزيد ←',
   },
 });
 
@@ -51,7 +66,7 @@ export const getPublicationCover = (coverKey: string | null | undefined) => {
 
 export const toPublication = (dto: PublicationDto, locale: Locale): Publication => {
   const labels = PUBLICATION_LABELS[locale];
-  const { detail, ...text } = dto.content[locale];
+  const { detail, ...text } = pickLocalized(dto.content, locale);
   const type = PUBLICATION_TYPES[dto.type];
   const showPaperLink = type === 'paper' && !dto.readMoreLink;
 

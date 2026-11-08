@@ -40,6 +40,48 @@ const ACCOUNT_SWITCHER_MESSAGES = defineMessages({
     addAccount: 'Додати інший обліковий запис',
     signOutAll: 'Вийти з усіх облікових записів на цьому пристрої',
   },
+  de: {
+    description:
+      'Auf diesem Gerät verwendete Konten. Nur das aktuelle ist angemeldet — von den anderen speichern wir nur Name und E-Mail, nie Passwörter oder Tokens. Wenn Sie sich von einem anderen Konto abmelden, wird es von diesem Gerät entfernt.',
+    current: 'Angemeldet',
+    switchTo: 'Wechseln',
+    switchToLabel: (name: string) => `Zu ${name} wechseln`,
+    signOut: 'Abmelden',
+    signOutCurrentLabel: (name: string) => `Von ${name} abmelden`,
+    signOutOtherLabel: (name: string) => `Von ${name} abmelden und von diesem Gerät entfernen`,
+    removed: (name: string) => `${name} wurde von diesem Gerät entfernt.`,
+    undo: 'Rückgängig',
+    addAccount: 'Weiteres Konto hinzufügen',
+    signOutAll: 'Von allen Konten auf diesem Gerät abmelden',
+  },
+  fr: {
+    description:
+      'Comptes utilisés sur cet appareil. Seul le compte actuel est connecté — pour les autres, nous ne gardons que le nom et l’e-mail, jamais les mots de passe ni les jetons. Se déconnecter d’un autre compte le retire de cet appareil.',
+    current: 'Connecté',
+    switchTo: 'Basculer',
+    switchToLabel: (name: string) => `Passer à ${name}`,
+    signOut: 'Se déconnecter',
+    signOutCurrentLabel: (name: string) => `Déconnecter ${name}`,
+    signOutOtherLabel: (name: string) => `Déconnecter ${name} et le retirer de cet appareil`,
+    removed: (name: string) => `${name} a été retiré de cet appareil.`,
+    undo: 'Annuler',
+    addAccount: 'Ajouter un autre compte',
+    signOutAll: 'Déconnecter tous les comptes de cet appareil',
+  },
+  ar: {
+    description:
+      'الحسابات المستخدمة على هذا الجهاز. الحساب الحالي فقط مسجّل الدخول — أما البقية فنحتفظ باسمها وبريدها الإلكتروني فقط، ولا نحتفظ أبدًا بكلمات المرور أو الرموز. تسجيل الخروج من حساب آخر يزيله من هذا الجهاز.',
+    current: 'مسجّل الدخول',
+    switchTo: 'تبديل',
+    switchToLabel: (name: string) => `التبديل إلى ${name}`,
+    signOut: 'تسجيل الخروج',
+    signOutCurrentLabel: (name: string) => `تسجيل الخروج من ${name}`,
+    signOutOtherLabel: (name: string) => `تسجيل الخروج من ${name} وإزالته من هذا الجهاز`,
+    removed: (name: string) => `تمت إزالة ${name} من هذا الجهاز.`,
+    undo: 'تراجع',
+    addAccount: 'إضافة حساب آخر',
+    signOutAll: 'تسجيل الخروج من جميع الحسابات على هذا الجهاز',
+  },
 });
 
 const PILL_CLASS =
@@ -47,7 +89,7 @@ const PILL_CLASS =
 const SECONDARY_PILL = `${PILL_CLASS} border-white/22 text-white hover:border-white/40 hover:bg-white/10`;
 const QUIET_PILL = `${PILL_CLASS} border-transparent text-viratec-muted hover:bg-white/8 hover:text-white`;
 const FOOTER_ROW =
-  'flex w-full cursor-pointer items-center gap-3 p-4 text-left text-[15px] font-medium transition-colors hover:bg-white/6 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime disabled:cursor-not-allowed disabled:opacity-50';
+  'flex w-full cursor-pointer items-center gap-3 p-4 text-start text-[15px] font-medium transition-colors hover:bg-white/6 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime disabled:cursor-not-allowed disabled:opacity-50';
 
 interface AccountSwitcherProps {
   currentEmail: string;

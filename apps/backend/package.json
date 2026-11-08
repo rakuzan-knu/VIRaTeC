@@ -17,7 +17,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "owner:assign": "node dist/cli/assign-owner.js"
+    "owner:assign": "node dist/cli/assign-owner.js",
+    "content:translate": "node dist/cli/translate-content.js"
   },
   "dependencies": {
     "@fastify/compress": "^8.0.1",

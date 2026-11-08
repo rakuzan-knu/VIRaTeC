@@ -75,6 +75,14 @@ export const createManagementClient = (config: ContentfulConfig) => {
         .items;
     },
 
+    async createLocale(code: string, name: string, fallbackCode: string) {
+      await contentfulRequest(url('/locales'), {
+        method: 'POST',
+        token: config.token,
+        body: { code, name, fallbackCode, optional: true },
+      });
+    },
+
     async upsertContentType(definition: ContentTypeDefinition) {
       const existing = await get(`/content_types/${definition.id}`, versionedSchema);
       const { id, fields, ...rest } = definition;

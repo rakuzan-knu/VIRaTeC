@@ -37,7 +37,7 @@ export function FeaturedPublicationCard({ publication }: PublicationCardProps) {
   return (
     <Link
       to={buildPublicationPath(publication.slug)}
-      className={`flex flex-col gap-6 rounded-[28px] border border-white/10 bg-white/[0.035] p-5 lg:flex-row lg:items-center lg:gap-12 lg:rounded-[36px] lg:py-6 lg:pr-12 lg:pl-6 ${CARD_LINK_CLASS}`}
+      className={`flex flex-col gap-6 rounded-[28px] border border-white/10 bg-white/[0.035] p-5 lg:flex-row lg:items-center lg:gap-12 lg:rounded-[36px] lg:py-6 lg:pe-12 lg:ps-6 ${CARD_LINK_CLASS}`}
     >
       <MediaPlaceholder
         src={publication.image}

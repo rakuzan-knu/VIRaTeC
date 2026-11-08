@@ -106,6 +106,7 @@ export function Logo({ className, tone = 'light' }: LogoProps) {
     <svg
       viewBox={`0 0 ${BRAND_WORDMARK.width} ${BRAND_WORDMARK.height}`}
       className={cn('block aspect-[190/48]', className)}
+      direction="ltr"
       aria-hidden="true"
     >
       <MarkShapes tone={tone} />

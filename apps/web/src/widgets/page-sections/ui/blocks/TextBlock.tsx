@@ -7,7 +7,7 @@ export function TextBlock({ block, headingId }: BlockProps<'text'>) {
   return (
     <PageSection aria-labelledby={headingId}>
       <SectionHeader id={headingId} eyebrow={block.eyebrow} title={block.title} />
-      <div className="flex max-w-[72ch] flex-col gap-5 text-base leading-[27px] text-viratec-soft lg:ml-[276px] lg:text-lg lg:leading-[30px]">
+      <div className="flex max-w-[72ch] flex-col gap-5 text-base leading-[27px] text-viratec-soft lg:ms-[276px] lg:text-lg lg:leading-[30px]">
         <Paragraphs text={block.body} />
       </div>
     </PageSection>

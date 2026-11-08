@@ -19,7 +19,7 @@ export function AboutSection() {
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-24">
           <div className="flex flex-col items-start gap-5 lg:sticky lg:top-32 lg:flex-1 lg:gap-7">
             <Eyebrow>{about.eyebrow}</Eyebrow>
-            <h2 id="about-title" className={SECTION_TITLE_CLASS}>
+            <h2 id="about-title" dir="auto" className={SECTION_TITLE_CLASS}>
               <SplitWords text={about.title} />{' '}
               <span className="text-white/50">
                 <SplitWords text={about.titleAccent} offset={countWords(about.title)} />

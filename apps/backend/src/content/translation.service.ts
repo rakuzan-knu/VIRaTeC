@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
-import type { TranslateContentResultDto } from '@viratec/contracts';
+import type { ContentLocaleKey, TranslateContentResultDto } from '@viratec/contracts';
 import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
 import type { AuthenticatedUser } from '../security/authenticated-user';
 import type { TranslateContentDto } from './dto/content-editor.dto';
@@ -21,7 +21,13 @@ const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
 const MAX_TOKENS = 16000;
 const REQUEST_TIMEOUT_MS = 60_000;
 
-const LANGUAGE_NAMES = { en: 'English', uk: 'Ukrainian' } as const;
+const LANGUAGE_NAMES: Record<ContentLocaleKey, string> = {
+  en: 'English',
+  uk: 'Ukrainian',
+  de: 'German',
+  fr: 'French',
+  ar: 'Arabic',
+};
 
 const SYSTEM_PROMPT = [
   'You translate short texts for the website of VIRaTeC, a research and education network at Taras Shevchenko National University of Kyiv.',
@@ -78,7 +84,26 @@ export class TranslationService {
     }
     if (dto.from === dto.to) return { translations: dto.texts };
     await this.rateLimit.consume(`translate:${actor.id}`, RATE_LIMITS.translatePerAccount);
+    return this.translateTexts(apiKey, dto);
+  }
 
+  isConfigured() {
+    return Boolean(this.config.get<string>('anthropic.apiKey'));
+  }
+
+  async translateForPublish(actorId: string, dto: TranslateContentDto) {
+    const apiKey = this.config.get<string>('anthropic.apiKey');
+    if (!apiKey) {
+      throw fail('TRANSLATION_NOT_CONFIGURED', 'Automatic translation is not configured');
+    }
+    await this.rateLimit.consume(`auto-translate:${actorId}`, RATE_LIMITS.autoTranslatePerAccount);
+    return this.translateTexts(apiKey, dto);
+  }
+
+  private async translateTexts(
+    apiKey: string,
+    dto: TranslateContentDto,
+  ): Promise<TranslateContentResultDto> {
     const response = await this.request(apiKey, dto).catch((error: unknown) => {
       this.logger.warn(`Translation request failed: ${String(error)}`);
       throw fail('TRANSLATION_UNAVAILABLE', 'Translation is unavailable right now');

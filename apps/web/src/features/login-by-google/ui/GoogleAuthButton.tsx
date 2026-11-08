@@ -42,6 +42,54 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     notConfigured: 'Вхід через Google тимчасово недоступний.',
     unexpectedError: 'Сталася неочікувана помилка. Спробуйте пізніше.',
   },
+  de: {
+    loadFailed:
+      'Die Google-Anmeldung konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+    loading: 'Google-Anmeldung wird geladen…',
+    signingIn: 'Anmeldung läuft…',
+    accountExists:
+      'Ein Konto mit dieser E-Mail existiert bereits. Melden Sie sich mit Ihrem Passwort an und verbinden Sie Google dann in Ihren Kontoeinstellungen.',
+    blocked: 'Dieses Konto ist gesperrt. Wenden Sie sich an das VIRaTeC-Team.',
+    sessionExpired:
+      'Ihre Anmeldesitzung konnte nicht überprüft werden. Erlauben Sie Website-Cookies, laden Sie die Seite neu und versuchen Sie es erneut.',
+    rateLimited: 'Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.',
+    resetPassword: 'Passwort zurücksetzen',
+    invalidCredential:
+      'Wir konnten Ihr Google-Konto nicht verifizieren. Bitte versuchen Sie es erneut.',
+    notConfigured: 'Die Google-Anmeldung ist vorübergehend nicht verfügbar.',
+    unexpectedError:
+      'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+  },
+  fr: {
+    loadFailed: 'La connexion Google n’a pas pu se charger. Vérifiez votre connexion et réessayez.',
+    loading: 'Chargement de la connexion Google…',
+    signingIn: 'Connexion…',
+    accountExists:
+      'Un compte avec cet e-mail existe déjà. Connectez-vous avec votre mot de passe, puis associez Google dans les paramètres de votre compte.',
+    blocked: 'Ce compte est bloqué. Contactez l’équipe VIRaTeC pour obtenir de l’aide.',
+    sessionExpired:
+      'Votre session de connexion n’a pas pu être vérifiée. Autorisez les cookies du site, rechargez la page et réessayez.',
+    rateLimited: 'Trop de tentatives. Patientez un instant et réessayez.',
+    resetPassword: 'Réinitialiser le mot de passe',
+    invalidCredential: 'Nous n’avons pas pu vérifier votre compte Google. Veuillez réessayer.',
+    notConfigured: 'La connexion Google est temporairement indisponible.',
+    unexpectedError: 'Une erreur inattendue s’est produite. Veuillez réessayer plus tard.',
+  },
+  ar: {
+    loadFailed: 'تعذّر تحميل تسجيل الدخول عبر Google. تحقّق من اتصالك وحاول مرة أخرى.',
+    loading: 'جارٍ تحميل تسجيل الدخول عبر Google…',
+    signingIn: 'جارٍ تسجيل الدخول…',
+    accountExists:
+      'يوجد حساب بهذا البريد الإلكتروني بالفعل. سجّل الدخول بكلمة المرور، ثم اربط Google من إعدادات حسابك.',
+    blocked: 'هذا الحساب محظور. تواصل مع فريق VIRaTeC للمساعدة.',
+    sessionExpired:
+      'تعذّر التحقق من جلسة تسجيل الدخول. اسمح بملفات تعريف الارتباط للموقع، وأعد تحميل الصفحة، ثم حاول مرة أخرى.',
+    rateLimited: 'محاولات كثيرة جدًا. يُرجى الانتظار لحظة ثم المحاولة مرة أخرى.',
+    resetPassword: 'إعادة تعيين كلمة المرور',
+    invalidCredential: 'تعذّر علينا التحقق من حساب Google. يُرجى المحاولة مرة أخرى.',
+    notConfigured: 'تسجيل الدخول عبر Google غير متاح مؤقتًا.',
+    unexpectedError: 'حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.',
+  },
 });
 
 type GoogleAuthMessages = (typeof GOOGLE_AUTH_MESSAGES)['en'];
@@ -84,7 +132,7 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
         title={common.unavailable(common.googleSignIn)}
         className={cn('font-medium text-auth-navy', className)}
       >
-        <GoogleIcon className="mr-1" />
+        <GoogleIcon className="me-1" />
         {common.continueWithGoogle}
         <span className="text-xs font-normal text-auth-muted">· {common.notAvailableYet}</span>
       </Button>

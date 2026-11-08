@@ -20,6 +20,9 @@ interface SiteHeaderProps {
 const HEADER_MESSAGES = defineMessages({
   en: { mainNav: 'Main', openMenu: 'Open menu' },
   uk: { mainNav: 'Головна навігація', openMenu: 'Відкрити меню' },
+  de: { mainNav: 'Hauptnavigation', openMenu: 'Menü öffnen' },
+  fr: { mainNav: 'Navigation principale', openMenu: 'Ouvrir le menu' },
+  ar: { mainNav: 'التنقل الرئيسي', openMenu: 'فتح القائمة' },
 });
 
 const SCROLL_THRESHOLD = 12;
@@ -156,7 +159,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
             </Link>
           </div>
 
-          <Tooltip text={t.openMenu} placement="bottom" className="-mr-2 xl:hidden">
+          <Tooltip text={t.openMenu} placement="bottom" className="-me-2 xl:hidden">
             <button
               type="button"
               aria-label={t.openMenu}

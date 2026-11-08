@@ -27,7 +27,7 @@ import {
   type RawEntry,
   entryTarget,
 } from '../entry-reader.ts';
-import type { ContentDomain, PullContext } from '../domain.ts';
+import { buildLocalized, type ContentDomain, type PullContext } from '../domain.ts';
 import {
   CARD_TYPE_ID,
   LINK_TYPE_ID,
@@ -230,7 +230,7 @@ export const pageBlocksDomain: ContentDomain = {
         }),
       );
 
-    const blocks: PageBlocks = { en: build('en'), uk: build('uk') };
+    const blocks: PageBlocks = buildLocalized(build) ?? { en: build('en') };
 
     return [
       {

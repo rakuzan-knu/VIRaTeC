@@ -23,7 +23,7 @@ export function HighlightBanner({ title, description, stats }: HighlightBannerPr
           {description}
         </ExpandableText>
       </div>
-      <ul className="flex gap-10 border-t border-white/10 pt-6 lg:shrink-0 lg:gap-14 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
+      <ul className="flex gap-10 border-t border-white/10 pt-6 lg:shrink-0 lg:gap-14 lg:border-t-0 lg:border-s lg:pt-0 lg:ps-12">
         {stats.map((stat) => (
           <li key={stat.label} className="flex flex-col gap-0.5">
             <span className="font-display text-[40px] leading-[44px] font-medium tracking-[-0.03em] text-viratec-accent tabular-nums lg:text-[56px] lg:leading-[60px]">

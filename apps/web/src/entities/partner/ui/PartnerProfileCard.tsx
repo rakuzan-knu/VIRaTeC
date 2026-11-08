@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
-import { useLocale } from '@/shared/i18n';
+import { pickLocalized, useLocale } from '@/shared/i18n';
 import { usePartnerMessages } from '../model/messages';
 import type { NetworkPartner, PartnerProfile } from '../model/types';
 import { PartnerLogoPlate } from './PartnerLogoPlate';
@@ -17,20 +17,22 @@ export function PartnerProfileCard({ partner, profile }: PartnerProfileCardProps
     <article className="atlas-card flex h-full flex-col gap-3.5 rounded-[28px] border border-transparent p-6 lg:gap-4">
       <PartnerLogoPlate logo={profile.logo} alt="" className="h-[104px] rounded-2xl p-4" />
       <p className="text-sm leading-5 font-medium text-viratec-cyan">
-        {partner.code} · {profile.place[locale]}
+        {partner.code} · {pickLocalized(profile.place, locale)}
       </p>
       <h3 className="font-display text-xl leading-[26px] font-medium tracking-[-0.02em] text-white">
         {partner.name}
       </h3>
-      <p className="text-[15px] leading-[22px] text-viratec-muted">{profile.summary[locale]}</p>
+      <p className="text-[15px] leading-[22px] text-viratec-muted">
+        {pickLocalized(profile.summary, locale)}
+      </p>
       <dl className="grid gap-1 text-sm leading-5">
         <div className="flex gap-1.5">
           <dt className="text-viratec-subtle">{t.founded}:</dt>
-          <dd className="text-white">{profile.founded[locale]}</dd>
+          <dd className="text-white">{pickLocalized(profile.founded, locale)}</dd>
         </div>
         <div className="flex gap-1.5">
           <dt className="shrink-0 text-viratec-subtle">{t.type}:</dt>
-          <dd className="text-white">{profile.kind[locale]}</dd>
+          <dd className="text-white">{pickLocalized(profile.kind, locale)}</dd>
         </div>
       </dl>
       <a

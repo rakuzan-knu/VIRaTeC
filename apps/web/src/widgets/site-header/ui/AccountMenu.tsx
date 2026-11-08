@@ -43,7 +43,7 @@ export function AccountMenu() {
         aria-controls={menuId}
         aria-label={t.openAccountMenu(name)}
         onClick={() => (isOpen ? close() : setIsOpen(true))}
-        className="flex cursor-pointer items-center gap-2 rounded-full py-1 pr-2.5 pl-1 text-[15px] text-white transition-colors hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
+        className="flex cursor-pointer items-center gap-2 rounded-full py-1 pe-2.5 ps-1 text-[15px] text-white transition-colors hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
       >
         <UserAvatar name={name} avatarUrl={user?.avatarUrl} className="size-8 text-xs" />
         <span className="max-w-[140px] truncate">{user?.name.split(' ')[0] ?? t.myAccount}</span>
@@ -57,7 +57,7 @@ export function AccountMenu() {
       <div
         id={menuId}
         className={cn(
-          'absolute top-full right-0 z-30 w-[320px] pt-3 transition-[opacity,translate] duration-200 ease-apple',
+          'absolute top-full end-0 z-30 w-[320px] pt-3 transition-[opacity,translate] duration-200 ease-apple',
           isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
         )}
       >
@@ -89,7 +89,7 @@ export function AccountMenu() {
                 className={cn(ITEM_CLASS, 'cursor-pointer')}
               >
                 <ArrowLeftRight aria-hidden="true" className="size-[18px] text-viratec-muted" />
-                <span className="flex-1 text-left">{t.switchAccount}</span>
+                <span className="flex-1 text-start">{t.switchAccount}</span>
                 <ChevronDown
                   aria-hidden="true"
                   className={cn(

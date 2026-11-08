@@ -32,6 +32,51 @@ const COMPLETENESS_MESSAGES = defineMessages({
       openTo: 'до чого ви відкриті',
     },
   },
+  de: {
+    title: (percent: number) => `Ihr Profil ist zu ${percent} % vollständig`,
+    hint: 'Vollständige Profile werden von anderen Mitgliedern leichter gefunden — ergänzen Sie:',
+    items: {
+      avatar: 'ein Foto',
+      bio: 'eine kurze Biografie',
+      skills: 'Forschungsinteressen',
+      studies: 'Ihren akademischen Status',
+      institution: 'Universität',
+      country: 'Land',
+      languages: 'Sprachen',
+      links: 'einen Link zu einem akademischen Profil',
+      openTo: 'wofür Sie offen sind',
+    },
+  },
+  fr: {
+    title: (percent: number) => `Votre profil est complet à ${percent} %`,
+    hint: 'Les profils complets sont plus faciles à trouver pour les autres membres — ajoutez :',
+    items: {
+      avatar: 'une photo',
+      bio: 'une courte biographie',
+      skills: 'vos intérêts de recherche',
+      studies: 'votre statut académique',
+      institution: 'votre université',
+      country: 'votre pays',
+      languages: 'vos langues',
+      links: 'un lien vers un profil académique',
+      openTo: 'ce à quoi vous êtes ouvert',
+    },
+  },
+  ar: {
+    title: (percent: number) => `اكتمل ملفك الشخصي بنسبة ${percent}%`,
+    hint: 'يسهل على الأعضاء الآخرين العثور على الملفات المكتملة — أضف:',
+    items: {
+      avatar: 'صورة',
+      bio: 'نبذة قصيرة',
+      skills: 'الاهتمامات البحثية',
+      studies: 'صفتك الأكاديمية',
+      institution: 'الجامعة',
+      country: 'البلد',
+      languages: 'اللغات',
+      links: 'رابط ملف أكاديمي',
+      openTo: 'ما تنفتح عليه',
+    },
+  },
 });
 
 type CompletenessItem = keyof (typeof COMPLETENESS_MESSAGES)['en']['items'];

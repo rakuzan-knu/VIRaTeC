@@ -84,6 +84,20 @@ const setup = () => {
     { record: async () => undefined },
     records,
     revisionService,
+    {
+      translateRecord: async (_resource: string, _key: string, value: unknown) => ({
+        value,
+        changed: false,
+        failed: false,
+      }),
+      translateEntry: async (
+        _id: string,
+        _type: unknown,
+        _locales: unknown,
+        _codes: unknown,
+        value: unknown,
+      ) => ({ value, changed: false, failed: false }),
+    },
   );
   return { editor, revisions, saved };
 };

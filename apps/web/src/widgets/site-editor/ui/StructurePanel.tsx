@@ -12,7 +12,7 @@ import {
   type CustomSectionType,
   type PageSectionItem,
 } from '@/shared/config/pageLayout';
-import { useLocale, type Locale } from '@/shared/i18n';
+import { pickLocalized, useLocale, type Locale } from '@/shared/i18n';
 import { cn, useContentPreviewStore, useLiveContent } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
 import { Select } from '@/shared/ui/Select';
@@ -60,7 +60,10 @@ const editBlock = (sectionId: string, blockId: string, locale: Locale) => {
 
 export function StructurePanel({ t }: { t: SiteEditorMessages }) {
   const locale = useLocale();
-  const blocks = useLiveContent(PAGE_BLOCK_TYPE_ID, 'PAGE_BLOCKS', PAGE_BLOCKS)[locale];
+  const blocks = pickLocalized(
+    useLiveContent(PAGE_BLOCK_TYPE_ID, 'PAGE_BLOCKS', PAGE_BLOCKS),
+    locale,
+  );
   const activeLayout = useContentPreviewStore((state) => state.activeLayout);
   const focus = useSiteEditorStore((state) => state.structure);
   const page = activeLayout?.page ?? null;

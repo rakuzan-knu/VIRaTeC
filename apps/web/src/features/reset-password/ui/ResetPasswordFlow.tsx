@@ -275,11 +275,11 @@ function ResetStep({
               placeholder={t.reset.newPasswordPlaceholder}
               error={!!errors.password}
               aria-describedby={cn('new-password-rules', errors.password && 'new-password-error')}
-              className={cn(FIELD_INPUT_CLASS, 'pr-14')}
+              className={cn(FIELD_INPUT_CLASS, 'pe-14')}
             />
             <Tooltip
               text={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 -translate-y-1/2"
+              className="absolute end-2 top-1/2 -translate-y-1/2"
             >
               <button
                 type="button"

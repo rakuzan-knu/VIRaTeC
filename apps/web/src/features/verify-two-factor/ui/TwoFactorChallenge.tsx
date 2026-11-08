@@ -41,6 +41,55 @@ const MESSAGES = defineMessages({
     expired: 'Ця спроба входу застаріла. Увійдіть знову.',
     unexpected: 'Щось пішло не так. Спробуйте ще раз.',
   },
+  de: {
+    title: 'Zwei-Faktor-Verifizierung',
+    subtitle:
+      'Geben Sie den 6-stelligen Code aus Google Authenticator oder Ihrer Authenticator-App ein.',
+    backupSubtitle:
+      'Geben Sie einen der Backup-Codes ein, die Sie beim Aktivieren der Zwei-Faktor-Verifizierung gespeichert haben.',
+    codeLabel: 'Bestätigungscode',
+    backupLabel: 'Backup-Code',
+    submit: 'Bestätigen und anmelden',
+    useBackup: 'Stattdessen einen Backup-Code verwenden',
+    useApp: 'Stattdessen die Authenticator-App verwenden',
+    back: 'Zurück zur Anmeldung',
+    invalid: 'Der Code ist falsch oder abgelaufen. Verwenden Sie den neuesten Code.',
+    tooMany: 'Zu viele Versuche. Warten Sie einige Minuten und melden Sie sich erneut an.',
+    expired: 'Dieser Anmeldeversuch ist abgelaufen. Melden Sie sich erneut an.',
+    unexpected: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
+  },
+  fr: {
+    title: 'Validation en deux étapes',
+    subtitle:
+      'Saisissez le code à 6 chiffres de Google Authenticator ou de votre application d’authentification.',
+    backupSubtitle:
+      'Saisissez l’un des codes de secours enregistrés lors de l’activation de la validation en deux étapes.',
+    codeLabel: 'Code de vérification',
+    backupLabel: 'Code de secours',
+    submit: 'Vérifier et se connecter',
+    useBackup: 'Utiliser plutôt un code de secours',
+    useApp: 'Utiliser plutôt l’application d’authentification',
+    back: 'Retour à la connexion',
+    invalid: 'Le code est incorrect ou a expiré. Essayez le code le plus récent.',
+    tooMany: 'Trop de tentatives. Attendez quelques minutes et reconnectez-vous.',
+    expired: 'Cette tentative de connexion a expiré. Reconnectez-vous.',
+    unexpected: 'Une erreur s’est produite. Veuillez réessayer.',
+  },
+  ar: {
+    title: 'التحقق بخطوتين',
+    subtitle: 'أدخل الرمز المكوّن من 6 أرقام من Google Authenticator أو تطبيق المصادقة.',
+    backupSubtitle: 'أدخل أحد الرموز الاحتياطية التي حفظتها عند تفعيل التحقق بخطوتين.',
+    codeLabel: 'رمز التحقق',
+    backupLabel: 'رمز احتياطي',
+    submit: 'تحقّق وسجّل الدخول',
+    useBackup: 'استخدم رمزًا احتياطيًا بدلًا من ذلك',
+    useApp: 'استخدم تطبيق المصادقة بدلًا من ذلك',
+    back: 'العودة إلى تسجيل الدخول',
+    invalid: 'الرمز غير صحيح أو انتهت صلاحيته. جرّب أحدث رمز.',
+    tooMany: 'محاولات كثيرة جدًا. انتظر بضع دقائق ثم سجّل الدخول مجددًا.',
+    expired: 'انتهت صلاحية محاولة تسجيل الدخول هذه. سجّل الدخول مجددًا.',
+    unexpected: 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
+  },
 });
 
 type Messages = (typeof MESSAGES)['en'];

@@ -71,7 +71,7 @@ export function MediaPlaceholder({
       {label && (
         <span
           aria-hidden="true"
-          className="absolute bottom-4 left-4 rounded-full border border-white/20 bg-white/8 px-3 py-1 text-[11px] font-medium tracking-[1.4px] text-white/80 uppercase lg:bottom-5 lg:left-5"
+          className="absolute bottom-4 start-4 rounded-full border border-white/20 bg-white/8 px-3 py-1 text-[11px] font-medium tracking-[1.4px] text-white/80 uppercase lg:bottom-5 lg:start-5"
         >
           {label}
         </span>

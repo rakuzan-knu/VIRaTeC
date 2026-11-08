@@ -278,6 +278,19 @@ model ContentChange {
   @@map("content_changes")
 }
 
+model ContentTranslation {
+  id          String   @id @default(uuid())
+  resourceKey String
+  locale      String
+  path        String
+  sourceHash  String
+  valueHash   String
+  updatedAt   DateTime @updatedAt
+
+  @@unique([resourceKey, locale, path])
+  @@map("content_translations")
+}
+
 model ContentRevision {
   id            String              @id @default(uuid())
   resourceType  ContentResourceType

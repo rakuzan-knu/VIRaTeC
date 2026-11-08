@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useLocale } from '@/shared/i18n';
+import { pickLocalized, useLocale } from '@/shared/i18n';
 import { useLiveContent } from '@/shared/lib';
 import type { StepItem } from '@/shared/ui/steps-list';
 import type { AudienceSectionId } from './sections';
@@ -31,9 +31,10 @@ export type OpportunitiesText = Omit<OpportunitiesContent, 'audienceGroups'>;
 
 export const useOpportunitiesContent = (): OpportunitiesContent => {
   const locale = useLocale();
-  const text = useLiveContent('opportunitiesPage', 'PAGE_TEXT', PAGE_TEXT)[locale];
-  const audienceGroups = useLiveContent('audienceGroup', 'AUDIENCE_GROUPS', AUDIENCE_GROUPS)[
-    locale
-  ];
+  const text = pickLocalized(useLiveContent('opportunitiesPage', 'PAGE_TEXT', PAGE_TEXT), locale);
+  const audienceGroups = pickLocalized(
+    useLiveContent('audienceGroup', 'AUDIENCE_GROUPS', AUDIENCE_GROUPS),
+    locale,
+  );
   return useMemo(() => ({ ...text, audienceGroups }), [text, audienceGroups]);
 };

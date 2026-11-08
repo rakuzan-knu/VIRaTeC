@@ -43,6 +43,54 @@ const PROJECT_LABELS = defineMessages<ProjectLabels>({
     year: 'Рік',
     viewProject: 'Переглянути проєкт',
   },
+  de: {
+    status: {
+      [ProjectStatus.IDEA]: 'Geplant',
+      [ProjectStatus.IN_PROGRESS]: 'Laufend',
+      [ProjectStatus.COMPLETED]: 'Abgeschlossen',
+      [ProjectStatus.ARCHIVED]: 'Archiviert',
+    },
+    faculty: {
+      [FacultyDivision.FIT]: 'KNU Fakultät für Informationstechnologien',
+      [FacultyDivision.NNIF]: 'KNU Institut für Philologie',
+      [FacultyDivision.OTHER]: 'Partneruniversitäten',
+    },
+    faculties: 'Fakultäten',
+    year: 'Jahr',
+    viewProject: 'Projekt ansehen',
+  },
+  fr: {
+    status: {
+      [ProjectStatus.IDEA]: 'Prévu',
+      [ProjectStatus.IN_PROGRESS]: 'En cours',
+      [ProjectStatus.COMPLETED]: 'Terminé',
+      [ProjectStatus.ARCHIVED]: 'Archivé',
+    },
+    faculty: {
+      [FacultyDivision.FIT]: 'Faculté des technologies de l’information de la KNU',
+      [FacultyDivision.NNIF]: 'Institut de philologie de la KNU',
+      [FacultyDivision.OTHER]: 'Universités partenaires',
+    },
+    faculties: 'Facultés',
+    year: 'Année',
+    viewProject: 'Voir le projet',
+  },
+  ar: {
+    status: {
+      [ProjectStatus.IDEA]: 'مخطط له',
+      [ProjectStatus.IN_PROGRESS]: 'جارٍ',
+      [ProjectStatus.COMPLETED]: 'مكتمل',
+      [ProjectStatus.ARCHIVED]: 'مؤرشف',
+    },
+    faculty: {
+      [FacultyDivision.FIT]: 'كلية تكنولوجيا المعلومات في KNU',
+      [FacultyDivision.NNIF]: 'معهد فقه اللغة في KNU',
+      [FacultyDivision.OTHER]: 'الجامعات الشريكة',
+    },
+    faculties: 'الكليات',
+    year: 'السنة',
+    viewProject: 'عرض المشروع',
+  },
 });
 
 export const useProjectLabels = () => useLocalized(PROJECT_LABELS);

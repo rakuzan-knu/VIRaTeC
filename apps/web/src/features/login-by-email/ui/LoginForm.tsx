@@ -47,6 +47,55 @@ const LOGIN_MESSAGES = defineMessages({
       passwordMin: 'Пароль має містити щонайменше 6 символів',
     },
   },
+  de: {
+    title: 'Willkommen zurück',
+    subtitle: 'Melden Sie sich an, um zur VIRaTeC-Forschungsgemeinschaft zu gelangen.',
+    passwordPlaceholder: 'Passwort eingeben',
+    forgotPassword: 'Passwort vergessen?',
+    resetIt: 'Zurücksetzen',
+    submit: 'Bei Ihrem Konto anmelden',
+    noAccount: 'Noch kein Konto?',
+    createAccount: 'Konto erstellen',
+    invalidCredentials: 'Ungültige E-Mail oder ungültiges Passwort.',
+    unexpectedError:
+      'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+    validation: {
+      invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+      passwordMin: 'Das Passwort muss mindestens 6 Zeichen lang sein',
+    },
+  },
+  fr: {
+    title: 'Bon retour',
+    subtitle: 'Connectez-vous pour accéder à la communauté de recherche VIRaTeC.',
+    passwordPlaceholder: 'Saisissez votre mot de passe',
+    forgotPassword: 'Mot de passe oublié ?',
+    resetIt: 'Le réinitialiser',
+    submit: 'Se connecter à votre compte',
+    noAccount: 'Pas encore de compte ?',
+    createAccount: 'Créer un compte',
+    invalidCredentials: 'E-mail ou mot de passe invalide.',
+    unexpectedError: 'Une erreur inattendue s’est produite. Veuillez réessayer plus tard.',
+    validation: {
+      invalidEmail: 'Veuillez saisir une adresse e-mail valide',
+      passwordMin: 'Le mot de passe doit comporter au moins 6 caractères',
+    },
+  },
+  ar: {
+    title: 'مرحبًا بعودتك',
+    subtitle: 'سجّل الدخول للمتابعة إلى مجتمع VIRaTeC البحثي.',
+    passwordPlaceholder: 'أدخل كلمة المرور',
+    forgotPassword: 'هل نسيت كلمة المرور؟',
+    resetIt: 'أعد تعيينها',
+    submit: 'تسجيل الدخول إلى حسابك',
+    noAccount: 'ليس لديك حساب؟',
+    createAccount: 'إنشاء حساب',
+    invalidCredentials: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    unexpectedError: 'حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.',
+    validation: {
+      invalidEmail: 'يُرجى إدخال بريد إلكتروني صالح',
+      passwordMin: 'يجب ألا تقل كلمة المرور عن 6 أحرف',
+    },
+  },
 });
 
 type LoginMessages = (typeof LOGIN_MESSAGES)['en'];
@@ -147,11 +196,11 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
               placeholder={t.passwordPlaceholder}
               error={!!errors.password}
               aria-describedby={errors.password ? 'login-password-error' : undefined}
-              className="h-[54px] lg:h-[clamp(44px,6.5svh,54px)] pr-14 text-base"
+              className="h-[54px] lg:h-[clamp(44px,6.5svh,54px)] pe-14 text-base"
             />
             <Tooltip
               text={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 -translate-y-1/2"
+              className="absolute end-2 top-1/2 -translate-y-1/2"
             >
               <button
                 type="button"
@@ -170,7 +219,7 @@ export function LoginForm({ socialAuth }: LoginFormProps) {
           )}
         </div>
 
-        <p className="text-right text-xs text-auth-muted">
+        <p className="text-end text-xs text-auth-muted">
           {t.forgotPassword}{' '}
           <Link
             to={ROUTES.FORGOT_PASSWORD}

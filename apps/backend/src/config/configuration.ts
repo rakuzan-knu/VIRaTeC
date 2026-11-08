@@ -102,6 +102,9 @@ export default () => {
       locales: {
         en: process.env.CONTENTFUL_LOCALE_EN?.trim() || 'en',
         uk: process.env.CONTENTFUL_LOCALE_UK?.trim() || 'uk',
+        de: process.env.CONTENTFUL_LOCALE_DE?.trim() || 'de',
+        fr: process.env.CONTENTFUL_LOCALE_FR?.trim() || 'fr',
+        ar: process.env.CONTENTFUL_LOCALE_AR?.trim() || 'ar',
       },
     },
     s3: {

@@ -14,6 +14,7 @@ import { ContentEditorService } from './content-editor.service';
 import { ContentService } from './content.service';
 import { ContentfulClient } from './contentful.client';
 import { RecordEditorService } from './record-editor.service';
+import { AutoTranslateService } from './auto-translate.service';
 
 @Module({
   imports: [AuthModule, ProjectsModule, EventsModule, PublicationsModule],
@@ -26,6 +27,7 @@ import { RecordEditorService } from './record-editor.service';
     ContentService,
     ContentEditorService,
     RecordEditorService,
+    AutoTranslateService,
     StaffGuard,
   ],
 })

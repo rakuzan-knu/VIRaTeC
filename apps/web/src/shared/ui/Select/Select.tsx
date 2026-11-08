@@ -37,7 +37,7 @@ export function Select({
           aria-invalid={error ? true : undefined}
           aria-describedby={descriptionIds}
           className={cn(
-            'w-full min-w-0 cursor-pointer appearance-none rounded-control bg-bg-input py-3.5 pr-11 pl-4 text-control-md leading-input text-text-primary outline-none transition-colors motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus',
+            'w-full min-w-0 cursor-pointer appearance-none rounded-control bg-bg-input py-3.5 pe-11 ps-4 text-control-md leading-input text-text-primary outline-none transition-colors motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus',
             error
               ? 'border-control border-state-error'
               : 'border border-border-default focus:border-border-focus',
@@ -57,7 +57,7 @@ export function Select({
         </select>
         <ChevronDown
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-4 size-[18px] -translate-y-1/2 text-text-muted"
+          className="pointer-events-none absolute top-1/2 end-4 size-[18px] -translate-y-1/2 text-text-muted"
         />
       </div>
       {helperText && (

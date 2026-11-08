@@ -10,7 +10,13 @@ export const EventTextSchema = z.object({
 
 export type EventText = z.infer<typeof EventTextSchema>;
 
-export const EventTranslationsSchema = z.object({ en: EventTextSchema, uk: EventTextSchema });
+export const EventTranslationsSchema = z.object({
+  en: EventTextSchema,
+  uk: EventTextSchema.optional(),
+  de: EventTextSchema.optional(),
+  fr: EventTextSchema.optional(),
+  ar: EventTextSchema.optional(),
+});
 
 export type EventTranslations = z.infer<typeof EventTranslationsSchema>;
 

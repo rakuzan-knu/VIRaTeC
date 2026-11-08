@@ -60,6 +60,58 @@ const PUBLICATION_DETAIL_MESSAGES = defineMessages({
     relatedEyebrow: 'Схожі матеріали',
     relatedTitle: 'Більше публікацій',
   },
+  de: {
+    publicationsAndMedia: 'Publikationen & Medien',
+    publications: 'Publikationen',
+    published: 'Veröffentlicht',
+    authors: 'Autorinnen und Autoren',
+    aboutPublication: 'Über diese Publikation',
+    downloadPdf: 'PDF herunterladen',
+    openSource: 'Quelle öffnen',
+    loadingTitle: 'Publikation wird geladen…',
+    loadingDescription: 'Die Publikation wird abgerufen.',
+    loadError: 'Diese Publikation konnte nicht geladen werden.',
+    notFoundTitle: 'Publikation nicht gefunden',
+    notFoundDescription:
+      'Die Publikation wurde möglicherweise verschoben oder ist nicht mehr verfügbar.',
+    allPublications: 'Alle Publikationen',
+    relatedEyebrow: 'Verwandt',
+    relatedTitle: 'Weitere Publikationen',
+  },
+  fr: {
+    publicationsAndMedia: 'Publications & médias',
+    publications: 'Publications',
+    published: 'Publié',
+    authors: 'Auteurs',
+    aboutPublication: 'À propos de cette publication',
+    downloadPdf: 'Télécharger le PDF',
+    openSource: 'Ouvrir la source',
+    loadingTitle: 'Chargement de la publication…',
+    loadingDescription: 'Récupération de la publication.',
+    loadError: 'Impossible de charger cette publication.',
+    notFoundTitle: 'Publication introuvable',
+    notFoundDescription: 'La publication a peut-être été déplacée ou n’est plus disponible.',
+    allPublications: 'Toutes les publications',
+    relatedEyebrow: 'Associées',
+    relatedTitle: 'Plus de publications',
+  },
+  ar: {
+    publicationsAndMedia: 'المنشورات والإعلام',
+    publications: 'المنشورات',
+    published: 'تاريخ النشر',
+    authors: 'المؤلفون',
+    aboutPublication: 'عن هذا المنشور',
+    downloadPdf: 'تنزيل PDF',
+    openSource: 'فتح المصدر',
+    loadingTitle: 'جارٍ تحميل المنشور…',
+    loadingDescription: 'جارٍ جلب المنشور.',
+    loadError: 'تعذّر تحميل هذا المنشور.',
+    notFoundTitle: 'المنشور غير موجود',
+    notFoundDescription: 'ربما تم نقل المنشور أو لم يعد متاحًا.',
+    allPublications: 'جميع المنشورات',
+    relatedEyebrow: 'ذات صلة',
+    relatedTitle: 'مزيد من المنشورات',
+  },
 });
 
 function ArticleBlock({ block }: { block: PublicationBlock }) {
@@ -72,7 +124,7 @@ function ArticleBlock({ block }: { block: PublicationBlock }) {
   }
   if (block.kind === 'quote') {
     return (
-      <blockquote className="flex flex-col gap-2 border-l-[3px] border-viratec-accent pl-6">
+      <blockquote className="flex flex-col gap-2 border-s-[3px] border-viratec-accent ps-6">
         <p className="font-display text-xl leading-8 tracking-[-0.015em] text-white lg:text-[26px] lg:leading-9">
           <InlineText text={block.text} />
         </p>
@@ -87,7 +139,7 @@ function ArticleBlock({ block }: { block: PublicationBlock }) {
     return (
       <ListTag
         className={cn(
-          'flex flex-col gap-2 pl-6 text-base leading-[26px] text-viratec-muted marker:text-viratec-accent lg:text-[17px] lg:leading-7',
+          'flex flex-col gap-2 ps-6 text-base leading-[26px] text-viratec-muted marker:text-viratec-accent lg:text-[17px] lg:leading-7',
           block.ordered ? 'list-decimal' : 'list-disc',
         )}
       >

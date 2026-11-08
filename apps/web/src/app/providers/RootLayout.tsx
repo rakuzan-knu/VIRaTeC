@@ -18,6 +18,23 @@ const ROUTE_ERROR_MESSAGES = defineMessages({
     description: 'Не вдалося завантажити сторінку. Можливо, вийшла нова версія сайту.',
     action: 'Оновити сторінку',
   },
+  de: {
+    title: 'Etwas ist schiefgelaufen',
+    description:
+      'Die Seite konnte nicht geladen werden. Möglicherweise wurde eine neue Version der Website veröffentlicht.',
+    action: 'Seite neu laden',
+  },
+  fr: {
+    title: 'Une erreur s’est produite',
+    description:
+      'La page n’a pas pu se charger. Une nouvelle version du site a peut-être été publiée.',
+    action: 'Recharger la page',
+  },
+  ar: {
+    title: 'حدث خطأ ما',
+    description: 'تعذّر تحميل الصفحة. ربما تم إصدار نسخة جديدة من الموقع.',
+    action: 'إعادة تحميل الصفحة',
+  },
 });
 
 export function RootLayout() {

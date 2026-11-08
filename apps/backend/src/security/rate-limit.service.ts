@@ -18,6 +18,7 @@ export const RATE_LIMITS = {
   stepUpPerAccount: { limit: 8, windowMs: 15 * 60_000 },
   registerPerIp: { limit: 10, windowMs: 60 * 60_000 },
   translatePerAccount: { limit: 60, windowMs: 60 * 60_000 },
+  autoTranslatePerAccount: { limit: 600, windowMs: 60 * 60_000 },
   communityPostPerAccount: { limit: 10, windowMs: 60 * 60_000 },
   communityLikePerAccount: { limit: 120, windowMs: 10 * 60_000 },
   contentMissPerIp: { limit: 60, windowMs: 15 * 60_000 },
