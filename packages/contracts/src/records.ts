@@ -1,7 +1,14 @@
 import { z } from 'zod';
-import { EventType, FacultyDivision, ProjectStatus, PublicationType } from './enums.js';
+import {
+  EventJoinAccess,
+  EventStatus,
+  EventType,
+  FacultyDivision,
+  ProjectStatus,
+  PublicationType,
+} from './enums.js';
 import { CONTENT_LOCALE_KEYS, SOURCE_CONTENT_LOCALE } from './content.js';
-import { EventTranslationsSchema } from './events.js';
+import { EVENT_JOIN_LIMITS, EventTranslationsSchema, isMeetingUrl } from './events.js';
 import { CoverFocusSchema, ProjectTranslationsSchema } from './projects.js';
 import { PublicationContentSchema } from './publications.js';
 
@@ -120,7 +127,49 @@ export const RECORD_DEFINITIONS: Record<RecordResource, RecordDefinition> = {
         help: 'The event leaves the upcoming list after this date.',
       },
       { path: 'capacity', name: 'Capacity', kind: 'integer' },
-      { path: 'registrationLink', name: 'Registration link', kind: 'url' },
+      {
+        path: 'registrationLink',
+        name: 'Registration link',
+        kind: 'url',
+        help: 'An external sign-up form. Leave empty to let members subscribe on the site.',
+      },
+      {
+        path: 'meetingUrl',
+        name: 'Meeting link',
+        kind: 'url',
+        help: 'Zoom, Microsoft Teams or Google Meet. Stays hidden until the link opens.',
+      },
+      {
+        path: 'joinOpensMinutesBefore',
+        name: 'Open the link, minutes before the start',
+        kind: 'integer',
+        help: `From 0 to ${EVENT_JOIN_LIMITS.maxOpensMinutesBefore}. Subscribers get an email with the link at this moment.`,
+      },
+      {
+        path: 'joinAccess',
+        name: 'Who can open the link',
+        kind: 'enum',
+        options: Object.values(EventJoinAccess),
+      },
+      {
+        path: 'status',
+        name: 'Status',
+        kind: 'enum',
+        options: Object.values(EventStatus),
+        help: 'Publishing a cancellation or a new start time emails every subscriber.',
+      },
+      {
+        path: 'cancelReason',
+        name: 'Cancellation reason',
+        kind: 'longText',
+        help: 'Shown on the page and in the email when the event is cancelled.',
+      },
+      {
+        path: 'recordingUrl',
+        name: 'Recording link',
+        kind: 'url',
+        help: 'Shown on the page after the event ends.',
+      },
     ],
   },
   publication: {
@@ -201,6 +250,22 @@ export const EventRecordSchema = z.object({
   endDate: z.string().datetime(),
   capacity: z.number().int().positive().max(1_000_000).nullable(),
   registrationLink: optionalUrl,
+  meetingUrl: z
+    .string()
+    .max(2048)
+    .refine(isMeetingUrl, 'Use a Zoom, Microsoft Teams or Google Meet link')
+    .nullable()
+    .default(null),
+  joinOpensMinutesBefore: z
+    .number()
+    .int()
+    .min(0)
+    .max(EVENT_JOIN_LIMITS.maxOpensMinutesBefore)
+    .default(EVENT_JOIN_LIMITS.defaultOpensMinutesBefore),
+  joinAccess: z.nativeEnum(EventJoinAccess).default(EventJoinAccess.EVERYONE),
+  status: z.nativeEnum(EventStatus).default(EventStatus.SCHEDULED),
+  cancelReason: z.string().max(500).nullable().default(null),
+  recordingUrl: optionalUrl.default(null),
   translations: EventTranslationsSchema,
 });
 

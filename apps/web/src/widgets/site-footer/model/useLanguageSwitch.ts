@@ -24,7 +24,9 @@ export function useLanguageSwitch() {
       setLocale(next);
       return;
     }
-    void Promise.resolve(navigate({ pathname: target, search, hash })).then(() => setLocale(next));
+    void Promise.resolve(
+      navigate({ pathname: target, search, hash }, { preventScrollReset: true }),
+    ).then(() => setLocale(next));
   };
 
   return { locale, switchLanguage };

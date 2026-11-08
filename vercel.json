@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["fra1"],
+  "crons": [{ "path": "/api/v1/internal/event-notifications/daily", "schedule": "0 4 * * *" }],
   "services": {
     "web": {
       "root": "apps/web",
@@ -19,7 +20,7 @@
         { "src": "/assets/(.*)", "status": 404 },
         { "src": "/(.*)", "dest": "/$1.html", "check": true },
         {
-          "src": "/(login|register|forgot-password|verify-email|account|admin(?:/.*)?|people(?:/[^/]+)?|(?:en/)?publications/[^/]+|(?:en/)?research/projects/[^/]+)(?:\\.html)?",
+          "src": "/(login|register|forgot-password|verify-email|account|admin(?:/.*)?|people(?:/[^/]+)?|events(?:/[^/]+)?|(?:en/)?publications/[^/]+|(?:en/)?research/projects/[^/]+)(?:\\.html)?",
           "dest": "/spa.html"
         },
         { "src": "/(.*)", "dest": "/spa.html", "status": 404 }

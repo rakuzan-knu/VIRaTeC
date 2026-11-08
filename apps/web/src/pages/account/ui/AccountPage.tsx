@@ -9,8 +9,9 @@ import { useLogout } from '@/features/logout';
 import { PrivacyForm } from '@/features/update-privacy';
 import { ExportDataButton } from '@/features/export-data';
 import { SavedList } from '@/features/save-item';
+import { MyEventsList } from '@/features/register-for-event';
 import { EmailVerificationNotice } from '@/features/verify-email';
-import { ROUTES, buildPersonPath } from '@/shared/config/routes';
+import { ACCOUNT_SECTION_ANCHOR, ROUTES, buildPersonPath } from '@/shared/config/routes';
 import { INTL_LOCALE, useLocale } from '@/shared/i18n';
 import { cn, useSeo } from '@/shared/lib';
 import { PageIntro } from '@/widgets/page-intro';
@@ -70,7 +71,10 @@ export function AccountPage() {
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           {!account.emailVerified && <EmailVerificationNotice email={account.email} />}
-          <header className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-end sm:justify-between">
+          <header
+            id={ACCOUNT_SECTION_ANCHOR}
+            className="flex scroll-mt-20 flex-col gap-4 pb-2 sm:flex-row sm:items-end sm:justify-between lg:scroll-mt-4"
+          >
             <div className="flex flex-col gap-1.5">
               <h2 className="font-display text-[30px] leading-9 font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]">
                 {t.sections[active]}
@@ -102,6 +106,11 @@ export function AccountPage() {
           {active === 'saved' && (
             <section className={CARD_CLASS}>
               <SavedList />
+            </section>
+          )}
+          {active === 'events' && (
+            <section className={CARD_CLASS}>
+              <MyEventsList />
             </section>
           )}
           {active === 'security' && <SecuritySection account={account} />}

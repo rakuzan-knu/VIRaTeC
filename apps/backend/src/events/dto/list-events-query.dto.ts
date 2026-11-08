@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
-import { EventType } from '@viratec/contracts';
+import { IsEnum, IsIn, IsOptional } from 'class-validator';
+import { EVENT_LIST_SCOPES, EventType, type EventListScope } from '@viratec/contracts';
 import { CursorQueryDto } from '../../common/dto/cursor-query.dto';
 
 export class ListEventsQueryDto extends CursorQueryDto {
@@ -8,4 +8,9 @@ export class ListEventsQueryDto extends CursorQueryDto {
   @IsOptional()
   @IsEnum(EventType)
   type?: EventType;
+
+  @ApiPropertyOptional({ enum: EVENT_LIST_SCOPES })
+  @IsOptional()
+  @IsIn(EVENT_LIST_SCOPES)
+  scope?: EventListScope;
 }

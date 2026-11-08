@@ -166,6 +166,22 @@ export class UsersService {
         papers: true,
         posts: true,
         savedItems: { select: { kind: true, refId: true, createdAt: true } },
+        eventRegistrations: {
+          select: {
+            eventId: true,
+            locale: true,
+            timeZone: true,
+            createdAt: true,
+            event: { select: { title: true, startDate: true } },
+          },
+        },
+        eventAttendances: {
+          select: {
+            eventId: true,
+            joinedAt: true,
+            event: { select: { title: true, startDate: true } },
+          },
+        },
         refreshTokens: {
           where: { revoked: false, expiresAt: { gt: new Date() } },
           select: {
@@ -182,7 +198,17 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    const { avatar, projects, papers, posts, savedItems, refreshTokens, ...account } = user;
+    const {
+      avatar,
+      projects,
+      papers,
+      posts,
+      savedItems,
+      eventRegistrations,
+      eventAttendances,
+      refreshTokens,
+      ...account
+    } = user;
     return {
       exportedAt: new Date().toISOString(),
       format: 'viratec-account-export@1',
@@ -198,6 +224,8 @@ export class UsersService {
       papers,
       communityPosts: posts,
       savedItems,
+      eventRegistrations,
+      eventAttendances,
       activeSessions: refreshTokens,
     };
   }

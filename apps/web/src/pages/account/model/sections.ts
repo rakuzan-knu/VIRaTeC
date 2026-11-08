@@ -1,6 +1,7 @@
 export const ACCOUNT_SECTIONS = [
   'profile',
   'saved',
+  'events',
   'security',
   'privacy',
   'preferences',

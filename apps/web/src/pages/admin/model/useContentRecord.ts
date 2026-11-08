@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   AdminPermission,
+  EventStatus,
   type ContentResourceKind,
   type RecordData,
   type RecordResource,
@@ -25,7 +26,7 @@ import {
   writeRecordValue,
 } from '@/widgets/site-editor';
 import { useAdminMessages } from './messages';
-import { adminKeys } from './queries';
+import { adminKeys, useEventAttendees } from './queries';
 import { useRunWithStepUp } from './stepUp';
 
 const RESOURCE_KINDS: Record<RecordResource, ContentResourceKind> = {
@@ -55,7 +56,7 @@ export function useContentRecord(
   const publish = usePublishContent();
   const [draft, setDraft] = useState<RecordData | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
-  const [confirming, setConfirming] = useState<'discard' | 'delete' | null>(null);
+  const [confirming, setConfirming] = useState<'discard' | 'delete' | 'cancelEvent' | null>(null);
   const saveError = useEditorErrorMessage(save.error);
   const loadError = useEditorErrorMessage(record.error);
   const actionError = useEditorErrorMessage(remove.error ?? discard.error);
@@ -77,6 +78,15 @@ export function useContentRecord(
   const canEdit = canEditRecords(permissions, resource);
   const canPublish = permissions.includes(AdminPermission.CONTENT_PUBLISH);
   const isBusy = save.isPending || remove.isPending || discard.isPending || publish.isPending;
+  const isEvent = resource === 'event';
+  const canSeeAttendees = permissions.includes(AdminPermission.EVENTS_MANAGE);
+  const attendees = useEventAttendees(key, isEvent && canSeeAttendees && loaded?.isNew === false);
+  const subscribers = attendees.data?.subscribed ?? 0;
+  const isUpcomingEvent =
+    isEvent &&
+    data.status !== EventStatus.CANCELLED &&
+    typeof data.endDate === 'string' &&
+    Date.parse(data.endDate) > Date.now();
 
   const refreshList = () => queryClient.invalidateQueries({ queryKey: adminKeys.content() });
 
@@ -116,12 +126,10 @@ export function useContentRecord(
     void record.refetch();
   };
 
-  const publishNow = async () => {
-    if (!change || draft) return;
-    setFeedback(null);
+  const publishChange = async (changeId: string) => {
     try {
       const result = await runWithStepUp(() =>
-        publish.mutateAsync({ changeIds: [...assetChangeIds, change.id] }),
+        publish.mutateAsync({ changeIds: [...assetChangeIds, changeId] }),
       );
       const [failed] = result.failed;
       setFeedback(
@@ -138,6 +146,46 @@ export function useContentRecord(
     } finally {
       void refreshList();
     }
+  };
+
+  const publishNow = async () => {
+    if (!change || draft) return;
+    setFeedback(null);
+    await publishChange(change.id);
+  };
+
+  const cancelEvent = async (reason: string) => {
+    setConfirming(null);
+    if (!loaded) return;
+    setFeedback(null);
+    try {
+      await save.mutateAsync({
+        resource,
+        key,
+        dto: {
+          data: normalizeRecordData(resource, {
+            ...data,
+            status: EventStatus.CANCELLED,
+            cancelReason: reason.trim() || null,
+          }),
+          baseUpdatedAt: loaded.updatedAt,
+          label: changeLabel,
+        },
+      });
+    } catch {
+      return;
+    }
+    setDraft(null);
+    void refreshList();
+    if (!canPublish) {
+      setFeedback({ ok: true, text: t.eventCancel.saved });
+      return;
+    }
+    const { data: freshChanges } = await changes.refetch();
+    const saved = freshChanges?.find(
+      (item) => item.resourceType === RESOURCE_KINDS[resource] && item.resourceId === key,
+    );
+    if (saved) await publishChange(saved.id);
   };
 
   const discardChanges = () => {
@@ -178,6 +226,10 @@ export function useContentRecord(
     change,
     canEdit: canEdit && !loaded?.isDeleted,
     canDelete: canEdit && Boolean(loaded) && !loaded?.isDeleted,
+    isEvent,
+    subscribers,
+    canSeeAttendees,
+    canCancelEvent: isUpcomingEvent && subscribers > 0 && canEdit && !loaded?.isDeleted,
     canPublish,
     isBusy,
     isSaving: save.isPending,
@@ -196,6 +248,8 @@ export function useContentRecord(
     confirming,
     askDiscard: () => setConfirming('discard'),
     askDelete: () => setConfirming('delete'),
+    askCancelEvent: () => setConfirming('cancelEvent'),
+    cancelEvent,
     cancelConfirm: () => setConfirming(null),
     discardChanges,
     deleteRecord,

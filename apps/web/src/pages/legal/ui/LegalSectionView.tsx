@@ -49,7 +49,7 @@ export function LegalSectionView({ section, index, summaryLabel }: LegalSectionV
     <section
       id={section.id}
       aria-labelledby={titleId}
-      className="scroll-mt-24 border-t border-white/8 py-10 first:border-t-0 first:pt-0 lg:py-14"
+      className="border-t border-white/8 py-10 first:border-t-0 first:pt-0 lg:py-14"
     >
       <div className="mb-6 flex flex-col gap-2 lg:mb-8">
         <span aria-hidden="true" className="text-sm font-medium text-viratec-accent tabular-nums">

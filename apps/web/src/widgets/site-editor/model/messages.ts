@@ -531,6 +531,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       deleteConfirm: 'Delete section',
     },
     records: {
+      deleteEventText:
+        'The event disappears from the site after publishing. If it still has subscribers, it will be cancelled instead and they will get an email.',
       title: 'Edit record',
       addTitle: 'Add to the site',
       add: { project: 'Project', event: 'Event', publication: 'Publication' },
@@ -1150,6 +1152,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       deleteConfirm: 'Видалити секцію',
     },
     records: {
+      deleteEventText:
+        'Подія зникне із сайту після публікації. Якщо на неї ще є підписники, її буде скасовано, а вони отримають лист.',
       title: 'Редагування запису',
       addTitle: 'Додати на сайт',
       add: { project: 'Проєкт', event: 'Подію', publication: 'Публікацію' },
@@ -1797,6 +1801,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       deleteConfirm: 'Abschnitt löschen',
     },
     records: {
+      deleteEventText:
+        'Die Veranstaltung verschwindet nach der Veröffentlichung von der Website. Hat sie noch Abonnenten, wird sie stattdessen abgesagt und diese erhalten eine E-Mail.',
       title: 'Eintrag bearbeiten',
       addTitle: 'Zur Website hinzufügen',
       add: { project: 'Projekt', event: 'Veranstaltung', publication: 'Publikation' },
@@ -2444,6 +2450,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       deleteConfirm: 'Supprimer la section',
     },
     records: {
+      deleteEventText:
+        'L’événement disparaît du site après publication. S’il a encore des abonnés, il sera annulé à la place et ils recevront un e-mail.',
       title: 'Modifier l’entrée',
       addTitle: 'Ajouter au site',
       add: { project: 'Projet', event: 'Événement', publication: 'Publication' },
@@ -3057,6 +3065,8 @@ const SITE_EDITOR_MESSAGES = defineMessages({
       deleteConfirm: 'حذف القسم',
     },
     records: {
+      deleteEventText:
+        'تختفي الفعالية من الموقع بعد النشر. إن كان لها مشتركون فستُلغى بدلًا من ذلك وستصلهم رسالة.',
       title: 'تعديل السجل',
       addTitle: 'إضافة إلى الموقع',
       add: { project: 'مشروع', event: 'فعالية', publication: 'منشور' },

@@ -81,6 +81,23 @@ enum EventType {
   MEETUP
 }
 
+enum EventStatus {
+  SCHEDULED
+  CANCELLED
+}
+
+enum EventJoinAccess {
+  EVERYONE
+  REGISTERED
+  SUBSCRIBED
+}
+
+enum EventNotificationKind {
+  JOIN_OPEN
+  CANCELLED
+  RESCHEDULED
+}
+
 enum PublicationType {
   PAPER
   NEWS
@@ -128,20 +145,22 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  papers           ResearchPaper[]
-  projects         Project[]
-  posts            CommunityPost[]
-  postLikes        PostLike[]
-  refreshTokens    RefreshToken[]
-  avatar           UserAvatar?
-  savedItems       SavedItem[]
-  backupCodes      BackupCode[]
-  mfaChallenges    MfaChallenge[]
-  emailTokens      EmailToken[]
-  auditActions     AuditLog[]        @relation("AuditActor")
-  contentEdits     ContentChange[]
-  contentRevisions ContentRevision[]
-  editorPresence   EditorPresence[]
+  papers             ResearchPaper[]
+  projects           Project[]
+  posts              CommunityPost[]
+  postLikes          PostLike[]
+  refreshTokens      RefreshToken[]
+  avatar             UserAvatar?
+  savedItems         SavedItem[]
+  eventRegistrations EventRegistration[]
+  eventAttendances   EventAttendance[]
+  backupCodes        BackupCode[]
+  mfaChallenges      MfaChallenge[]
+  emailTokens        EmailToken[]
+  auditActions       AuditLog[]          @relation("AuditActor")
+  contentEdits       ContentChange[]
+  contentRevisions   ContentRevision[]
+  editorPresence     EditorPresence[]
 
   @@index([createdAt])
   @@index([name(ops: raw("gin_trgm_ops"))], map: "users_name_trgm_idx", type: Gin)
@@ -388,24 +407,78 @@ model Project {
 }
 
 model Event {
-  id               String          @id @default(uuid())
-  title            String
-  description      String
-  type             EventType       @default(WORKSHOP)
-  faculty          FacultyDivision @default(FIT)
-  location         String
-  isOnline         Boolean         @default(false)
-  startDate        DateTime
-  endDate          DateTime
-  capacity         Int?
-  registrationLink String?
-  translations     Json?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id                     String              @id @default(uuid())
+  title                  String
+  description            String
+  type                   EventType           @default(WORKSHOP)
+  faculty                FacultyDivision     @default(FIT)
+  location               String
+  isOnline               Boolean             @default(false)
+  startDate              DateTime
+  endDate                DateTime
+  capacity               Int?
+  registrationLink       String?
+  translations           Json?
+  status                 EventStatus         @default(SCHEDULED)
+  meetingUrl             String?
+  joinOpensMinutesBefore Int                 @default(10)
+  joinAccess             EventJoinAccess     @default(EVERYONE)
+  recordingUrl           String?
+  cancelReason           String?
+  scheduleVersion        Int                 @default(1)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  registrations          EventRegistration[]
+  attendances            EventAttendance[]
 
   @@index([startDate])
+  @@index([endDate])
   @@index([type])
   @@map("events")
+}
+
+model EventRegistration {
+  id            String              @id @default(uuid())
+  eventId       String
+  event         Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale        String
+  timeZone      String
+  createdAt     DateTime            @default(now())
+  notifications EventNotification[]
+
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@map("event_registrations")
+}
+
+model EventAttendance {
+  eventId  String
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now())
+
+  @@id([eventId, userId])
+  @@index([userId])
+  @@map("event_attendances")
+}
+
+model EventNotification {
+  id              String                @id @default(uuid())
+  registrationId  String
+  registration    EventRegistration     @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  kind            EventNotificationKind
+  scheduleVersion Int
+  attempts        Int                   @default(0)
+  nextAttemptAt   DateTime              @default(now())
+  sentAt          DateTime?
+  createdAt       DateTime              @default(now())
+
+  @@unique([registrationId, kind, scheduleVersion])
+  @@index([sentAt, nextAttemptAt])
+  @@map("event_notifications")
 }
 
 model Publication {

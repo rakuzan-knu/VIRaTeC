@@ -1,4 +1,4 @@
-import { EventType, PublicationType } from '@viratec/contracts';
+import { EventJoinAccess, EventStatus, EventType, PublicationType } from '@viratec/contracts';
 import { defineMessages } from '@/shared/i18n';
 
 export interface FieldText {
@@ -212,6 +212,29 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       },
       'event.capacity': { label: 'Number of seats', help: 'Leave empty if unlimited.' },
       'event.registrationLink': { label: 'Registration link' },
+      'event.meetingUrl': {
+        label: 'Meeting link',
+        help: 'Zoom, Microsoft Teams or Google Meet. Visitors see it only when it opens.',
+      },
+      'event.joinOpensMinutesBefore': {
+        label: 'Open the link, minutes before the start',
+        help: 'Subscribers get an email with the link at this moment. 0 means exactly at the start.',
+      },
+      'event.joinAccess': {
+        label: 'Who can open the link',
+      },
+      'event.status': {
+        label: 'Status',
+        help: 'Publishing a cancellation or a new start time emails every subscriber.',
+      },
+      'event.cancelReason': {
+        label: 'Cancellation reason',
+        help: 'Shown on the page and in the email.',
+      },
+      'event.recordingUrl': {
+        label: 'Recording link',
+        help: 'Shown on the page after the event ends.',
+      },
       'publication.slug': {
         label: 'Page address',
         help: 'Part of the link, e.g. ai-in-education. Cannot change after publishing.',
@@ -357,6 +380,11 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       [EventType.HACKATHON]: 'Hackathon',
       [EventType.CONFERENCE]: 'Conference',
       [EventType.WORKSHOP]: 'Workshop',
+      [EventJoinAccess.EVERYONE]: 'Everyone',
+      [EventJoinAccess.REGISTERED]: 'Registered users',
+      [EventJoinAccess.SUBSCRIBED]: 'Subscribers only',
+      [EventStatus.SCHEDULED]: 'Scheduled',
+      [EventStatus.CANCELLED]: 'Cancelled',
       [EventType.SEMINAR]: 'Seminar',
       [EventType.MEETUP]: 'Meetup',
       [PublicationType.PAPER]: 'Research paper',
@@ -578,6 +606,29 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
         help: 'Залиште порожнім, якщо без обмежень.',
       },
       'event.registrationLink': { label: 'Посилання на реєстрацію' },
+      'event.meetingUrl': {
+        label: 'Посилання на зустріч',
+        help: 'Zoom, Microsoft Teams або Google Meet. Відвідувачі побачать його лише коли воно відкриється.',
+      },
+      'event.joinOpensMinutesBefore': {
+        label: 'Відкрити посилання, за скільки хвилин до початку',
+        help: 'У цей момент підписники отримають лист із посиланням. 0 — рівно на початку.',
+      },
+      'event.joinAccess': {
+        label: 'Хто може відкрити посилання',
+      },
+      'event.status': {
+        label: 'Статус',
+        help: 'Після публікації скасування або нового часу всі підписники отримають лист.',
+      },
+      'event.cancelReason': {
+        label: 'Причина скасування',
+        help: 'Показується на сторінці та в листі.',
+      },
+      'event.recordingUrl': {
+        label: 'Посилання на запис',
+        help: 'Показується на сторінці після завершення події.',
+      },
       'publication.slug': {
         label: 'Адреса сторінки',
         help: 'Частина посилання, наприклад ai-in-education. Після публікації не змінюється.',
@@ -728,6 +779,11 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       [EventType.HACKATHON]: 'Хакатон',
       [EventType.CONFERENCE]: 'Конференція',
       [EventType.WORKSHOP]: 'Воркшоп',
+      [EventJoinAccess.EVERYONE]: 'Усі',
+      [EventJoinAccess.REGISTERED]: 'Зареєстровані користувачі',
+      [EventJoinAccess.SUBSCRIBED]: 'Лише підписники',
+      [EventStatus.SCHEDULED]: 'Заплановано',
+      [EventStatus.CANCELLED]: 'Скасовано',
       [EventType.SEMINAR]: 'Семінар',
       [EventType.MEETUP]: 'Зустріч',
       [PublicationType.PAPER]: 'Наукова стаття',
@@ -946,6 +1002,29 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       },
       'event.capacity': { label: 'Anzahl der Plätze', help: 'Leer lassen, wenn unbegrenzt.' },
       'event.registrationLink': { label: 'Anmeldelink' },
+      'event.meetingUrl': {
+        label: 'Besprechungslink',
+        help: 'Zoom, Microsoft Teams oder Google Meet. Besucher sehen ihn erst, wenn er geöffnet wird.',
+      },
+      'event.joinOpensMinutesBefore': {
+        label: 'Link öffnen, Minuten vor Beginn',
+        help: 'Abonnenten erhalten zu diesem Zeitpunkt eine E-Mail mit dem Link. 0 bedeutet genau zum Beginn.',
+      },
+      'event.joinAccess': {
+        label: 'Wer den Link öffnen kann',
+      },
+      'event.status': {
+        label: 'Status',
+        help: 'Wird eine Absage oder ein neuer Termin veröffentlicht, erhalten alle Abonnenten eine E-Mail.',
+      },
+      'event.cancelReason': {
+        label: 'Grund der Absage',
+        help: 'Wird auf der Seite und in der E-Mail angezeigt.',
+      },
+      'event.recordingUrl': {
+        label: 'Link zur Aufzeichnung',
+        help: 'Wird nach dem Ende der Veranstaltung auf der Seite angezeigt.',
+      },
       'publication.slug': {
         label: 'Seitenadresse',
         help: 'Teil des Links, z. B. ai-in-education. Kann nach der Veröffentlichung nicht geändert werden.',
@@ -1094,6 +1173,11 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       [EventType.HACKATHON]: 'Hackathon',
       [EventType.CONFERENCE]: 'Konferenz',
       [EventType.WORKSHOP]: 'Workshop',
+      [EventJoinAccess.EVERYONE]: 'Alle',
+      [EventJoinAccess.REGISTERED]: 'Registrierte Nutzer',
+      [EventJoinAccess.SUBSCRIBED]: 'Nur Abonnenten',
+      [EventStatus.SCHEDULED]: 'Geplant',
+      [EventStatus.CANCELLED]: 'Abgesagt',
       [EventType.SEMINAR]: 'Seminar',
       [EventType.MEETUP]: 'Meetup',
       [PublicationType.PAPER]: 'Fachartikel',
@@ -1315,6 +1399,29 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       },
       'event.capacity': { label: 'Nombre de places', help: 'Laissez vide si illimité.' },
       'event.registrationLink': { label: 'Lien d’inscription' },
+      'event.meetingUrl': {
+        label: 'Lien de la réunion',
+        help: 'Zoom, Microsoft Teams ou Google Meet. Les visiteurs ne le voient qu’à son ouverture.',
+      },
+      'event.joinOpensMinutesBefore': {
+        label: 'Ouvrir le lien, minutes avant le début',
+        help: 'Les abonnés reçoivent un e-mail avec le lien à ce moment. 0 signifie exactement au début.',
+      },
+      'event.joinAccess': {
+        label: 'Qui peut ouvrir le lien',
+      },
+      'event.status': {
+        label: 'Statut',
+        help: 'La publication d’une annulation ou d’un nouvel horaire envoie un e-mail à tous les abonnés.',
+      },
+      'event.cancelReason': {
+        label: 'Motif de l’annulation',
+        help: 'Affiché sur la page et dans l’e-mail.',
+      },
+      'event.recordingUrl': {
+        label: 'Lien de l’enregistrement',
+        help: 'Affiché sur la page après la fin de l’événement.',
+      },
       'publication.slug': {
         label: 'Adresse de la page',
         help: 'Partie du lien, p. ex. ai-in-education. Non modifiable après publication.',
@@ -1468,6 +1575,11 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       [EventType.HACKATHON]: 'Hackathon',
       [EventType.CONFERENCE]: 'Conférence',
       [EventType.WORKSHOP]: 'Atelier',
+      [EventJoinAccess.EVERYONE]: 'Tout le monde',
+      [EventJoinAccess.REGISTERED]: 'Utilisateurs inscrits',
+      [EventJoinAccess.SUBSCRIBED]: 'Abonnés uniquement',
+      [EventStatus.SCHEDULED]: 'Planifié',
+      [EventStatus.CANCELLED]: 'Annulé',
       [EventType.SEMINAR]: 'Séminaire',
       [EventType.MEETUP]: 'Rencontre',
       [PublicationType.PAPER]: 'Article de recherche',
@@ -1674,6 +1786,29 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       },
       'event.capacity': { label: 'عدد المقاعد', help: 'اتركه فارغًا إذا كان غير محدود.' },
       'event.registrationLink': { label: 'رابط التسجيل' },
+      'event.meetingUrl': {
+        label: 'رابط الاجتماع',
+        help: 'Zoom أو Microsoft Teams أو Google Meet. لا يراه الزوار إلا عند فتحه.',
+      },
+      'event.joinOpensMinutesBefore': {
+        label: 'فتح الرابط قبل البداية بعدد دقائق',
+        help: 'يتلقى المشتركون رسالة بالرابط في هذه اللحظة. 0 يعني عند البداية تمامًا.',
+      },
+      'event.joinAccess': {
+        label: 'من يمكنه فتح الرابط',
+      },
+      'event.status': {
+        label: 'الحالة',
+        help: 'عند نشر إلغاء أو موعد جديد يتلقى جميع المشتركين رسالة.',
+      },
+      'event.cancelReason': {
+        label: 'سبب الإلغاء',
+        help: 'يظهر في الصفحة وفي الرسالة.',
+      },
+      'event.recordingUrl': {
+        label: 'رابط التسجيل',
+        help: 'يظهر في الصفحة بعد انتهاء الفعالية.',
+      },
       'publication.slug': {
         label: 'عنوان الصفحة',
         help: 'جزء من الرابط، مثل ai-in-education. لا يمكن تغييره بعد النشر.',
@@ -1819,6 +1954,11 @@ export const FIELD_LABELS = defineMessages<FieldLabels>({
       [EventType.HACKATHON]: 'هاكاثون',
       [EventType.CONFERENCE]: 'مؤتمر',
       [EventType.WORKSHOP]: 'ورشة عمل',
+      [EventJoinAccess.EVERYONE]: 'الجميع',
+      [EventJoinAccess.REGISTERED]: 'المستخدمون المسجلون',
+      [EventJoinAccess.SUBSCRIBED]: 'المشتركون فقط',
+      [EventStatus.SCHEDULED]: 'مجدولة',
+      [EventStatus.CANCELLED]: 'ملغاة',
       [EventType.SEMINAR]: 'ندوة',
       [EventType.MEETUP]: 'لقاء',
       [PublicationType.PAPER]: 'ورقة بحثية',

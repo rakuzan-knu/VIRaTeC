@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
-import { Outlet, ScrollRestoration, useLocation, useRouteError } from 'react-router-dom';
+import {
+  Outlet,
+  ScrollRestoration,
+  useLocation,
+  useRouteError,
+  type Location,
+} from 'react-router-dom';
 import { useSessionStore } from '@/entities/session';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import { isStaleChunkError, reloadForStaleChunk } from '@/shared/lib';
@@ -37,6 +43,9 @@ const ROUTE_ERROR_MESSAGES = defineMessages({
   },
 });
 
+const getScrollKey = ({ key, pathname, search }: Location) =>
+  key === 'default' ? `${pathname}${search}` : key;
+
 export function RootLayout() {
   const { pathname } = useLocation();
   const acknowledgeSignOut = useSessionStore((state) => state.acknowledgeSignOut);
@@ -48,7 +57,7 @@ export function RootLayout() {
   return (
     <>
       <Outlet />
-      <ScrollRestoration />
+      <ScrollRestoration getKey={getScrollKey} />
       <KeyboardShortcuts />
       <SiteEditorMount />
     </>

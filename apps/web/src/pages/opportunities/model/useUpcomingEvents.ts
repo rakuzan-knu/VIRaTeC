@@ -1,60 +1,40 @@
-import { useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { ROUTES } from '@/shared/config/routes';
+import { EventStatus } from '@viratec/contracts';
+import { useEvents, type LocalizedEvent } from '@/entities/event';
+import { buildEventPath } from '@/shared/config/routes';
 import { INTL_LOCALE, defineMessages, useLocale, type Locale } from '@/shared/i18n';
-import { useRecordOverlay } from '@/shared/lib';
-import { EVENT_PREVIEW, fetchEvents, type EventResponse } from '../api/eventsApi';
 import type { Opportunity } from './content';
 
-const eventKeys = {
-  all: ['events'] as const,
-  upcoming: () => [...eventKeys.all, 'upcoming'] as const,
-};
-
 const FALLBACK_ACTION = defineMessages({
-  en: 'Ask to join',
-  uk: 'Долучитися',
-  de: 'Teilnahme anfragen',
-  fr: 'Demander à participer',
-  ar: 'اطلب الانضمام',
+  en: 'View event',
+  uk: 'Переглянути подію',
+  de: 'Veranstaltung ansehen',
+  fr: 'Voir l’événement',
+  ar: 'عرض الفعالية',
 });
 
-const NO_EVENTS: Opportunity[] = [];
+const NO_EVENTS: LocalizedEvent[] = [];
 
-const toOpportunity = (event: EventResponse, locale: Locale): Opportunity => {
-  const text = event.translations?.[locale] ?? event.translations?.en;
+const toOpportunity = (event: LocalizedEvent, locale: Locale): Opportunity => {
   const date = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long' }).format(
     new Date(event.startDate),
   );
 
   return {
-    meta: text?.meta ?? `${date} · ${event.location}`,
-    title: text?.title ?? event.title,
-    description: text?.description ?? event.description,
-    actionLabel: text?.actionLabel ?? FALLBACK_ACTION[locale],
-    ...(event.registrationLink ? { href: event.registrationLink } : { to: ROUTES.CONTACT }),
+    meta: event.meta || `${date} · ${event.location}`,
+    title: event.title,
+    description: event.description,
+    actionLabel: event.actionLabel || FALLBACK_ACTION[locale],
+    ...(event.registrationLink
+      ? { href: event.registrationLink }
+      : { to: buildEventPath(event.id) }),
   };
 };
 
 export function useUpcomingEvents() {
   const locale = useLocale();
-  const overlay = useRecordOverlay(EVENT_PREVIEW);
-  const select = useCallback(
-    (events: EventResponse[]) => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return overlay(events)
-        .filter((event) => new Date(event.endDate) >= today)
-        .map((event) => toOpportunity(event, locale));
-    },
-    [locale, overlay],
-  );
-  const query = useQuery({
-    queryKey: eventKeys.upcoming(),
-    queryFn: fetchEvents,
-    select,
-    staleTime: 5 * 60_000,
-  });
+  const { data = NO_EVENTS } = useEvents('upcoming');
 
-  return query.data ?? NO_EVENTS;
+  return data
+    .filter((event) => event.status !== EventStatus.CANCELLED)
+    .map((event) => toOpportunity(event, locale));
 }

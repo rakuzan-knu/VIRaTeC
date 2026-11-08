@@ -348,6 +348,36 @@ const ADMIN_MESSAGES = defineMessages({
       cancel: 'Cancel',
       selectOne: 'Select at least one permission.',
     },
+    eventCancel: {
+      title: (label: string) => `Cancel “${label}”?`,
+      description: (count: number) =>
+        `The event stays on the site marked as cancelled. Subscribers who will get an email: ${count}.`,
+      action: 'Cancel the event',
+      reasonLabel: 'Reason (optional)',
+      reasonHelp: 'Shown on the event page and in the email.',
+      confirm: 'Cancel the event and notify',
+      saved: 'The cancellation is saved. Ask a colleague with publishing rights to publish it.',
+      deleteForever: 'Delete forever',
+      deleteText: 'The event disappears from the site after publishing. Nobody will get an email.',
+      deleteUnknown:
+        'The event disappears from the site after publishing. If it still has subscribers, it will be cancelled instead and they will get an email.',
+    },
+    eventAttendees: {
+      title: 'Event subscribers',
+      loading: 'Loading subscribers…',
+      error: 'Could not load subscribers.',
+      empty: 'Nobody has subscribed yet.',
+      exportCsv: 'Export CSV',
+      joined: 'Opened the meeting',
+      csvHeader: ['Name', 'Email', 'Role', 'Subscribed at', 'Opened the meeting at'],
+      summary: (subscribed: number, joined: number) =>
+        `Subscribed: ${subscribed} · opened the meeting: ${joined}`,
+      mailWarning: (limit: number, total: number) =>
+        `Email limit: ${limit} of ${total} subscribers will get the email with the link. Everyone can still open the link on the event page.`,
+      subscriber: 'Subscriber',
+      admin: 'Admin',
+      owner: 'Owner',
+    },
     content: {
       title: 'Content',
       subtitle:
@@ -565,6 +595,36 @@ const ADMIN_MESSAGES = defineMessages({
       cancel: 'Скасувати',
       selectOne: 'Оберіть щонайменше одне право.',
     },
+    eventCancel: {
+      title: (label: string) => `Скасувати «${label}»?`,
+      description: (count: number) =>
+        `Подія залишиться на сайті з позначкою «Скасовано». Підписників, які отримають лист: ${count}.`,
+      action: 'Скасувати подію',
+      reasonLabel: 'Причина (необов’язково)',
+      reasonHelp: 'Покажемо на сторінці події та в листі.',
+      confirm: 'Скасувати подію та повідомити',
+      saved: 'Скасування збережено. Попросіть колегу з правом публікації опублікувати його.',
+      deleteForever: 'Видалити назавжди',
+      deleteText: 'Подія зникне із сайту після публікації. Листів ніхто не отримає.',
+      deleteUnknown:
+        'Подія зникне із сайту після публікації. Якщо на неї ще є підписники, її буде скасовано, а вони отримають лист.',
+    },
+    eventAttendees: {
+      title: 'Підписники події',
+      loading: 'Завантажуємо підписників…',
+      error: 'Не вдалося завантажити підписників.',
+      empty: 'Поки ніхто не підписався.',
+      exportCsv: 'Експорт CSV',
+      joined: 'Відкрив(ла) зустріч',
+      csvHeader: ['Ім’я', 'Пошта', 'Роль', 'Час підписки', 'Час відкриття зустрічі'],
+      summary: (subscribed: number, joined: number) =>
+        `Підписалося: ${subscribed} · відкрили зустріч: ${joined}`,
+      mailWarning: (limit: number, total: number) =>
+        `Ліміт пошти: лист із посиланням отримають ${limit} із ${total} підписників. Відкрити посилання на сторінці події зможуть усі.`,
+      subscriber: 'Підписник',
+      admin: 'Адмін',
+      owner: 'Власник',
+    },
     content: {
       title: 'Контент',
       subtitle: 'Створюйте й редагуйте публікації, події та проєкти без редактора сайту.',
@@ -779,6 +839,38 @@ const ADMIN_MESSAGES = defineMessages({
       save: 'Zugriff speichern',
       cancel: 'Abbrechen',
       selectOne: 'Wählen Sie mindestens eine Berechtigung aus.',
+    },
+    eventCancel: {
+      title: (label: string) => `„${label}“ absagen?`,
+      description: (count: number) =>
+        `Die Veranstaltung bleibt als abgesagt auf der Website. Abonnenten, die eine E-Mail erhalten: ${count}.`,
+      action: 'Veranstaltung absagen',
+      reasonLabel: 'Grund (optional)',
+      reasonHelp: 'Wird auf der Veranstaltungsseite und in der E-Mail angezeigt.',
+      confirm: 'Absagen und benachrichtigen',
+      saved:
+        'Die Absage ist gespeichert. Bitten Sie eine Person mit Veröffentlichungsrecht, sie zu veröffentlichen.',
+      deleteForever: 'Endgültig löschen',
+      deleteText:
+        'Die Veranstaltung verschwindet nach der Veröffentlichung von der Website. Niemand erhält eine E-Mail.',
+      deleteUnknown:
+        'Die Veranstaltung verschwindet nach der Veröffentlichung von der Website. Hat sie noch Abonnenten, wird sie stattdessen abgesagt und diese erhalten eine E-Mail.',
+    },
+    eventAttendees: {
+      title: 'Abonnenten der Veranstaltung',
+      loading: 'Abonnenten werden geladen…',
+      error: 'Abonnenten konnten nicht geladen werden.',
+      empty: 'Noch keine Abonnenten.',
+      exportCsv: 'CSV exportieren',
+      joined: 'Hat die Besprechung geöffnet',
+      csvHeader: ['Name', 'E-Mail', 'Rolle', 'Abonniert am', 'Besprechung geöffnet am'],
+      summary: (subscribed: number, joined: number) =>
+        `Abonniert: ${subscribed} · Besprechung geöffnet: ${joined}`,
+      mailWarning: (limit: number, total: number) =>
+        `E-Mail-Limit: ${limit} von ${total} Abonnenten erhalten die E-Mail mit dem Link. Auf der Veranstaltungsseite können alle den Link öffnen.`,
+      subscriber: 'Abonnent',
+      admin: 'Admin',
+      owner: 'Inhaber',
     },
     content: {
       title: 'Inhalte',
@@ -1001,6 +1093,37 @@ const ADMIN_MESSAGES = defineMessages({
       save: 'Enregistrer l’accès',
       cancel: 'Annuler',
       selectOne: 'Sélectionnez au moins une autorisation.',
+    },
+    eventCancel: {
+      title: (label: string) => `Annuler « ${label} » ?`,
+      description: (count: number) =>
+        `L’événement reste sur le site avec la mention « Annulé ». Abonnés qui recevront un e-mail : ${count}.`,
+      action: 'Annuler l’événement',
+      reasonLabel: 'Motif (facultatif)',
+      reasonHelp: 'Affiché sur la page de l’événement et dans l’e-mail.',
+      confirm: 'Annuler et prévenir',
+      saved:
+        'L’annulation est enregistrée. Demandez à un collègue ayant le droit de publier de la publier.',
+      deleteForever: 'Supprimer définitivement',
+      deleteText: 'L’événement disparaît du site après publication. Personne ne recevra d’e-mail.',
+      deleteUnknown:
+        'L’événement disparaît du site après publication. S’il a encore des abonnés, il sera annulé à la place et ils recevront un e-mail.',
+    },
+    eventAttendees: {
+      title: 'Abonnés de l’événement',
+      loading: 'Chargement des abonnés…',
+      error: 'Impossible de charger les abonnés.',
+      empty: 'Aucun abonné pour l’instant.',
+      exportCsv: 'Exporter en CSV',
+      joined: 'A ouvert la réunion',
+      csvHeader: ['Nom', 'E-mail', 'Rôle', 'Abonné le', 'Réunion ouverte le'],
+      summary: (subscribed: number, joined: number) =>
+        `Abonnés : ${subscribed} · réunion ouverte : ${joined}`,
+      mailWarning: (limit: number, total: number) =>
+        `Limite d’e-mails : ${limit} abonnés sur ${total} recevront l’e-mail avec le lien. Tout le monde peut ouvrir le lien sur la page de l’événement.`,
+      subscriber: 'Abonné',
+      admin: 'Admin',
+      owner: 'Propriétaire',
     },
     content: {
       title: 'Contenu',
@@ -1225,6 +1348,36 @@ const ADMIN_MESSAGES = defineMessages({
       save: 'حفظ الصلاحيات',
       cancel: 'إلغاء',
       selectOne: 'اختر صلاحية واحدة على الأقل.',
+    },
+    eventCancel: {
+      title: (label: string) => `إلغاء «${label}»؟`,
+      description: (count: number) =>
+        `تبقى الفعالية على الموقع بعلامة «ملغاة». المشتركون الذين ستصلهم رسالة: ${count}.`,
+      action: 'إلغاء الفعالية',
+      reasonLabel: 'السبب (اختياري)',
+      reasonHelp: 'يظهر في صفحة الفعالية وفي الرسالة.',
+      confirm: 'إلغاء الفعالية وإبلاغهم',
+      saved: 'تم حفظ الإلغاء. اطلب من زميل لديه صلاحية النشر أن ينشره.',
+      deleteForever: 'حذف نهائي',
+      deleteText: 'تختفي الفعالية من الموقع بعد النشر. لن يتلقى أحد رسالة.',
+      deleteUnknown:
+        'تختفي الفعالية من الموقع بعد النشر. إن كان لها مشتركون فستُلغى بدلًا من ذلك وستصلهم رسالة.',
+    },
+    eventAttendees: {
+      title: 'مشتركو الفعالية',
+      loading: 'جارٍ تحميل المشتركين…',
+      error: 'تعذّر تحميل المشتركين.',
+      empty: 'لا يوجد مشتركون بعد.',
+      exportCsv: 'تصدير CSV',
+      joined: 'فتح الاجتماع',
+      csvHeader: ['الاسم', 'البريد الإلكتروني', 'الدور', 'وقت الاشتراك', 'وقت فتح الاجتماع'],
+      summary: (subscribed: number, joined: number) =>
+        `المشتركون: ${subscribed} · فتحوا الاجتماع: ${joined}`,
+      mailWarning: (limit: number, total: number) =>
+        `حد البريد: سيتلقى ${limit} من أصل ${total} مشتركًا الرسالة بالرابط. يمكن للجميع فتح الرابط من صفحة الفعالية.`,
+      subscriber: 'مشترك',
+      admin: 'مسؤول',
+      owner: 'المالك',
     },
     content: {
       title: 'المحتوى',

@@ -17,6 +17,7 @@ import { CONTENT_EDITOR_LIMITS } from '@viratec/contracts';
 
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const CONTENT_ASSET_ROUTE = '/api/v1/admin/content/assets';
+const ONE_CLICK_UNSUBSCRIBE_ROUTE = '/api/v1/events/unsubscribe/one-click';
 const CONTENT_ASSET_BODY_LIMIT = Math.ceil(CONTENT_EDITOR_LIMITS.maxAssetBytes / 3) * 4 + 4096;
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -75,6 +76,7 @@ function readCsrfCookie(request: CsrfRequest) {
 
 async function verifyCsrf(request: CsrfRequest, reply: CsrfReply) {
   if (!UNSAFE_METHODS.has(request.method) || !request.url.startsWith('/api/')) return;
+  if (request.url.split('?')[0] === ONE_CLICK_UNSUBSCRIBE_ROUTE) return;
 
   const usesBearerOnly =
     typeof request.headers.authorization === 'string' && !hasSessionCookie(request);

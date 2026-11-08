@@ -36,6 +36,6 @@ import { PasswordResetService } from './password-reset.service';
     EmailVerificationService,
     PasswordResetService,
   ],
-  exports: [AuthService, TwoFactorService, JwtModule, PassportModule],
+  exports: [AuthService, TwoFactorService, JwtModule, PassportModule, MailClient],
 })
 export class AuthModule {}

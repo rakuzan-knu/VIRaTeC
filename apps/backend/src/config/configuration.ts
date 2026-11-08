@@ -89,6 +89,15 @@ export default () => {
         refreshToken: process.env.GMAIL_REFRESH_TOKEN?.trim() || '',
       },
     },
+    cron: {
+      secret: process.env.CRON_SECRET?.trim() || '',
+      qstashToken: process.env.QSTASH_TOKEN?.trim() || '',
+      qstashUrl: (process.env.QSTASH_URL?.trim() || 'https://qstash.upstash.io').replace(
+        /\/+$/,
+        '',
+      ),
+      eventMailDailyLimit: Number(process.env.EVENT_MAIL_DAILY_LIMIT) || 400,
+    },
     redis: {
       url: process.env.REDIS_URL || 'redis://localhost:6379',
     },

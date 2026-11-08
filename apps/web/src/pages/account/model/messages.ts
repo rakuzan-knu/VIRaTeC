@@ -11,6 +11,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     sections: {
       profile: 'Profile',
       saved: 'Saved',
+      events: 'Events',
       security: 'Security',
       privacy: 'Privacy',
       preferences: 'Preferences',
@@ -20,6 +21,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     descriptions: {
       profile: 'How you appear to researchers, mentors and partners across VIRaTeC.',
       saved: 'Publications and projects you bookmarked, synced across devices.',
+      events: 'Workshops and meetings you subscribed to.',
       security: 'Manage your password, two-step verification and active sessions.',
       privacy: 'Control who sees your profile and get a copy of your data.',
       preferences: 'Personalise how VIRaTeC works for you on this device.',
@@ -56,6 +58,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     sections: {
       profile: 'Профіль',
       saved: 'Збережене',
+      events: 'Події',
       security: 'Безпека',
       privacy: 'Приватність',
       preferences: 'Налаштування',
@@ -65,6 +68,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     descriptions: {
       profile: 'Як вас бачать дослідники, ментори та партнери VIRaTeC.',
       saved: 'Публікації та проєкти, які ви зберегли, — синхронізуються між пристроями.',
+      events: 'Воркшопи та зустрічі, на які ви підписалися.',
       security: 'Керуйте паролем, двоетапною перевіркою та активними сеансами.',
       privacy: 'Керуйте тим, хто бачить ваш профіль, і отримайте копію своїх даних.',
       preferences: 'Налаштуйте VIRaTeC під себе на цьому пристрої.',
@@ -101,6 +105,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     sections: {
       profile: 'Profil',
       saved: 'Gespeichert',
+      events: 'Veranstaltungen',
       security: 'Sicherheit',
       privacy: 'Datenschutz',
       preferences: 'Einstellungen',
@@ -110,6 +115,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     descriptions: {
       profile: 'Wie Sie für Forschende, Mentorinnen, Mentoren und Partner bei VIRaTeC erscheinen.',
       saved: 'Von Ihnen gemerkte Publikationen und Projekte, geräteübergreifend synchronisiert.',
+      events: 'Workshops und Treffen, die Sie abonniert haben.',
       security: 'Verwalten Sie Passwort, Zwei-Faktor-Verifizierung und aktive Sitzungen.',
       privacy: 'Legen Sie fest, wer Ihr Profil sieht, und erhalten Sie eine Kopie Ihrer Daten.',
       preferences: 'Passen Sie an, wie VIRaTeC auf diesem Gerät für Sie funktioniert.',
@@ -146,6 +152,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     sections: {
       profile: 'Profil',
       saved: 'Enregistrés',
+      events: 'Événements',
       security: 'Sécurité',
       privacy: 'Confidentialité',
       preferences: 'Préférences',
@@ -155,6 +162,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     descriptions: {
       profile: 'Comment vous apparaissez aux chercheurs, mentors et partenaires de VIRaTeC.',
       saved: 'Publications et projets que vous avez enregistrés, synchronisés sur vos appareils.',
+      events: 'Ateliers et réunions auxquels vous êtes inscrit.',
       security: 'Gérez votre mot de passe, la validation en deux étapes et les sessions actives.',
       privacy: 'Choisissez qui voit votre profil et obtenez une copie de vos données.',
       preferences: 'Personnalisez le fonctionnement de VIRaTeC sur cet appareil.',
@@ -191,6 +199,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     sections: {
       profile: 'الملف الشخصي',
       saved: 'المحفوظات',
+      events: 'الفعاليات',
       security: 'الأمان',
       privacy: 'الخصوصية',
       preferences: 'التفضيلات',
@@ -200,6 +209,7 @@ const ACCOUNT_MESSAGES = defineMessages({
     descriptions: {
       profile: 'كيف تظهر للباحثين والمرشدين والشركاء في VIRaTeC.',
       saved: 'المنشورات والمشاريع التي حفظتها، متزامنة عبر أجهزتك.',
+      events: 'ورش العمل واللقاءات التي اشتركت فيها.',
       security: 'أدِر كلمة المرور والتحقق بخطوتين والجلسات النشطة.',
       privacy: 'تحكّم في من يرى ملفك الشخصي واحصل على نسخة من بياناتك.',
       preferences: 'خصّص طريقة عمل VIRaTeC لك على هذا الجهاز.',

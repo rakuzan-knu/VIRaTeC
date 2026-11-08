@@ -190,6 +190,22 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: ROUTES.EVENTS,
+        lazy: async () => ({ Component: (await import('@/pages/events')).EventsPage }),
+      },
+      {
+        path: ROUTES.EVENT_UNSUBSCRIBE,
+        lazy: async () => ({
+          Component: (await import('@/pages/event-unsubscribe')).EventUnsubscribePage,
+        }),
+      },
+      {
+        path: ROUTES.EVENT_DETAIL,
+        lazy: async () => ({
+          Component: (await import('@/pages/event-detail')).EventDetailPage,
+        }),
+      },
+      {
         path: ROUTES.CONTACT,
         lazy: async () => ({ Component: (await import('@/pages/contact')).ContactPage }),
       },

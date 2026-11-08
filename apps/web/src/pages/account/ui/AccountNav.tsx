@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
   Bookmark,
+  CalendarDays,
   Lock,
   LogOut,
   ShieldCheck,
@@ -16,6 +17,7 @@ import { ACCOUNT_SECTIONS, type AccountSection } from '../model/sections';
 const SECTION_ICONS: Record<AccountSection, typeof UserRound> = {
   profile: UserRound,
   saved: Bookmark,
+  events: CalendarDays,
   security: ShieldCheck,
   privacy: Lock,
   preferences: SlidersHorizontal,

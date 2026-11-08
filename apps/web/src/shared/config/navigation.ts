@@ -48,6 +48,7 @@ const NAV_TEXT = defineMessages({
     home: 'Home',
     publications: 'Publications & Media',
     opportunities: 'Opportunities',
+    events: 'Events',
     contact: 'Contact / Collaborate',
   },
   uk: {
@@ -72,6 +73,7 @@ const NAV_TEXT = defineMessages({
     home: 'Головна',
     publications: 'Публікації та медіа',
     opportunities: 'Можливості',
+    events: 'Події',
     contact: 'Контакти / Співпраця',
   },
   de: {
@@ -97,6 +99,7 @@ const NAV_TEXT = defineMessages({
     home: 'Startseite',
     publications: 'Publikationen & Medien',
     opportunities: 'Möglichkeiten',
+    events: 'Veranstaltungen',
     contact: 'Kontakt / Zusammenarbeit',
   },
   fr: {
@@ -121,6 +124,7 @@ const NAV_TEXT = defineMessages({
     home: 'Accueil',
     publications: 'Publications & médias',
     opportunities: 'Opportunités',
+    events: 'Événements',
     contact: 'Contact / Collaboration',
   },
   ar: {
@@ -145,6 +149,7 @@ const NAV_TEXT = defineMessages({
     home: 'الرئيسية',
     publications: 'المنشورات والإعلام',
     opportunities: 'الفرص',
+    events: 'الفعاليات',
     contact: 'تواصل / تعاون',
   },
 });
@@ -153,6 +158,7 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
   const home: NavLinkItem = { label: text.home, to: ROUTES.HOME };
   const publications: NavLinkItem = { label: text.publications, to: ROUTES.PUBLICATIONS };
   const opportunities: NavLinkItem = { label: text.opportunities, to: ROUTES.OPPORTUNITIES };
+  const events: NavLinkItem = { label: text.events, to: ROUTES.EVENTS };
   const people: NavLinkItem = {
     label: text.people,
     to: ROUTES.PEOPLE,
@@ -207,6 +213,7 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
     items: [
       home,
       publications,
+      events,
       opportunities,
       { label: people.label, to: people.to },
       { label: text.contact, to: ROUTES.CONTACT },
@@ -222,6 +229,7 @@ export const NAVIGATION = mapLocalized(NAV_TEXT, (text): Navigation => {
       { type: 'group', group: about },
       { type: 'group', group: research },
       { type: 'link', link: publications },
+      { type: 'link', link: events },
       { type: 'link', link: opportunities },
     ],
   };

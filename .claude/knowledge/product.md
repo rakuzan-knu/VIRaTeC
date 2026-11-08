@@ -25,6 +25,7 @@ Routes — `apps/web/src/shared/config/routes.ts` (`ROUTES`), router config — 
 | `/research/experiential-learning`, `/research/student-research`          | `experiential-learning`, `student-research`                                         |
 | `/publications`, `/publications/:slug`                                   | `publications`, `publication-detail`                                                |
 | `/people`, `/people/:userId`                                             | `people`, `person`                                                                  |
+| `/events`, `/events/:eventId`, `/events/unsubscribe`                     | `events`, `event-detail`, `event-unsubscribe`                                       |
 | `/opportunities`, `/contact`                                             | `opportunities`, `contact`                                                          |
 | `/terms`, `/privacy`, `/cookies`, `/community-guidelines`                | `legal`                                                                             |
 | `/login`, `/register`, `/forgot-password`                                | `login`, `register`, `forgot-password` (guest routes, `GuestRoute`)                 |
@@ -46,6 +47,7 @@ Schema — `apps/backend/prisma/schema.prisma`, migrations — `apps/backend/pri
 | `ResearchPaper`                              | research papers                                                                                                                                                            |
 | `Project`                                    | projects (`ProjectStatus`, faculties, tags, links, `translations` as JSON)                                                                                                 |
 | `Event`                                      | events (`EventType`, dates, venue, online)                                                                                                                                 |
+| `EventRegistration`, `EventNotification`     | event subscriptions and the queue of event emails                                                                                                                          |
 | `Publication`                                | publications and news by `slug`, content as JSON                                                                                                                           |
 | `CommunityPost`, `PostLike`                  | community posts and likes (one like per user)                                                                                                                              |
 
