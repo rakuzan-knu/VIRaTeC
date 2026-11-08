@@ -74,8 +74,8 @@ export default () => {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
     },
-    anthropic: {
-      apiKey: process.env.ANTHROPIC_API_KEY?.trim() || '',
+    gemini: {
+      apiKey: process.env.GEMINI_API_KEY?.trim() || '',
     },
     mail: {
       from: process.env.MAIL_FROM?.trim() || '',

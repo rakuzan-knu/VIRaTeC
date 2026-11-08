@@ -14,11 +14,16 @@ import type { TranslateContentDto } from './dto/content-editor.dto';
 export type TranslationErrorCode =
   'TRANSLATION_NOT_CONFIGURED' | 'TRANSLATION_UNAVAILABLE' | 'TRANSLATION_REFUSED';
 
-const MESSAGES_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = 'claude-sonnet-5-5';
-const API_VERSION = '2026-10-21';
-const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
-const MAX_TOKENS = 16000;
+const GENERATE_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent';
+const MAX_OUTPUT_TOKENS = 16000;
+const REFUSAL_REASONS = new Set([
+  'SAFETY',
+  'RECITATION',
+  'BLOCKLIST',
+  'PROHIBITED_CONTENT',
+  'SPII',
+]);
 const REQUEST_TIMEOUT_MS = 60_000;
 
 const LANGUAGE_NAMES: Record<ContentLocaleKey, string> = {
@@ -39,15 +44,21 @@ const SYSTEM_PROMPT = [
 ].join(' ');
 
 const OUTPUT_SCHEMA = {
-  type: 'object',
-  properties: { translations: { type: 'array', items: { type: 'string' } } },
+  type: 'OBJECT',
+  properties: { translations: { type: 'ARRAY', items: { type: 'STRING' } } },
   required: ['translations'],
-  additionalProperties: false,
 } as const;
 
 const responseSchema = z.object({
-  stop_reason: z.string().nullable(),
-  content: z.array(z.object({ type: z.string(), text: z.string().optional() })),
+  promptFeedback: z.object({ blockReason: z.string().optional() }).optional(),
+  candidates: z
+    .array(
+      z.object({
+        finishReason: z.string().optional(),
+        content: z.object({ parts: z.array(z.object({ text: z.string().optional() })) }).optional(),
+      }),
+    )
+    .optional(),
 });
 
 const resultSchema = z.object({ translations: z.array(z.string()) });
@@ -78,7 +89,7 @@ export class TranslationService {
     actor: AuthenticatedUser,
     dto: TranslateContentDto,
   ): Promise<TranslateContentResultDto> {
-    const apiKey = this.config.get<string>('anthropic.apiKey');
+    const apiKey = this.config.get<string>('gemini.apiKey');
     if (!apiKey) {
       throw fail('TRANSLATION_NOT_CONFIGURED', 'Automatic translation is not configured');
     }
@@ -88,11 +99,11 @@ export class TranslationService {
   }
 
   isConfigured() {
-    return Boolean(this.config.get<string>('anthropic.apiKey'));
+    return Boolean(this.config.get<string>('gemini.apiKey'));
   }
 
   async translateForPublish(actorId: string, dto: TranslateContentDto) {
-    const apiKey = this.config.get<string>('anthropic.apiKey');
+    const apiKey = this.config.get<string>('gemini.apiKey');
     if (!apiKey) {
       throw fail('TRANSLATION_NOT_CONFIGURED', 'Automatic translation is not configured');
     }
@@ -117,13 +128,17 @@ export class TranslationService {
     if (!message.success) {
       throw fail('TRANSLATION_UNAVAILABLE', 'The translation could not be read');
     }
-    if (message.data.stop_reason === 'refusal') {
+    const candidate = message.data.candidates?.[0];
+    if (
+      message.data.promptFeedback?.blockReason ||
+      REFUSAL_REASONS.has(candidate?.finishReason ?? '')
+    ) {
       throw fail('TRANSLATION_REFUSED', 'This text cannot be translated automatically');
     }
-    const text = message.data.content.find((block) => block.type === 'text')?.text ?? '';
+    const text = candidate?.content?.parts.map((part) => part.text ?? '').join('') ?? '';
     const result = resultSchema.safeParse(parseJson(text));
     if (
-      message.data.stop_reason !== 'end_turn' ||
+      candidate?.finishReason !== 'STOP' ||
       !result.success ||
       result.data.translations.length !== dto.texts.length
     ) {
@@ -133,31 +148,34 @@ export class TranslationService {
   }
 
   private request(apiKey: string, dto: TranslateContentDto) {
-    return fetch(MESSAGES_URL, {
+    return fetch(GENERATE_URL, {
       method: 'POST',
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       headers: {
         'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': API_VERSION,
-        'anthropic-beta': FALLBACK_BETA,
+        'x-goog-api-key': apiKey,
       },
       body: JSON.stringify({
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        fallbacks: 'default',
-        output_config: { effort: 'low', format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
-        system: SYSTEM_PROMPT,
-        messages: [
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [
           {
             role: 'user',
-            content: JSON.stringify({
-              from: LANGUAGE_NAMES[dto.from],
-              to: LANGUAGE_NAMES[dto.to],
-              texts: dto.texts,
-            }),
+            parts: [
+              {
+                text: JSON.stringify({
+                  from: LANGUAGE_NAMES[dto.from],
+                  to: LANGUAGE_NAMES[dto.to],
+                  texts: dto.texts,
+                }),
+              },
+            ],
           },
         ],
+        generationConfig: {
+          maxOutputTokens: MAX_OUTPUT_TOKENS,
+          responseMimeType: 'application/json',
+          responseSchema: OUTPUT_SCHEMA,
+        },
       }),
     });
   }

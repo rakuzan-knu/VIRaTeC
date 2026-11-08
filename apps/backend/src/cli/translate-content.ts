@@ -196,7 +196,7 @@ async function main() {
   try {
     const translation = app.get(TranslationService, { strict: false });
     if (!options.dryRun && !translation.isConfigured()) {
-      throw new Error('ANTHROPIC_API_KEY is not set, nothing can be translated.');
+      throw new Error('GEMINI_API_KEY is not set, nothing can be translated.');
     }
     const prisma = app.get(PrismaService, { strict: false });
     const autoTranslate = app.get(AutoTranslateService, { strict: false });
