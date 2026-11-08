@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import {
   CONTENT_LOCALE_KEYS,
   LOCALE_PLACEHOLDER,
@@ -206,7 +207,6 @@ export class AutoTranslateService {
     const space = localesSchema.safeParse(availableLocales);
     if (!type.success || !space.success) return { value: fields, changed: false, failed: false };
     const existing = new Set(space.data.items.map((item) => item.code));
-    const locales = TRANSLATED_CONTENT_LOCALES.filter((locale) => existing.has(codes[locale]));
 
     const slots: Slot[] = type.data.fields
       .filter((field) => field.localized && TEXT_FIELD_TYPES.has(field.type))
@@ -214,7 +214,7 @@ export class AutoTranslateService {
         path: field.id,
         source: fields[field.id]?.[codes.en],
         targets: Object.fromEntries(
-          locales.map((locale) => [locale, fields[field.id]?.[codes[locale]]]),
+          TRANSLATED_CONTENT_LOCALES.map((locale) => [locale, fields[field.id]?.[codes[locale]]]),
         ),
       }));
     const objects = type.data.fields.filter((field) => !field.localized && field.type === 'Object');
@@ -229,7 +229,12 @@ export class AutoTranslateService {
     );
 
     const resourceKey = `entry:${entryId}`;
-    const fieldResult = await this.translateSlots(resourceKey, slots, locales, actorId);
+    const fieldResult = await this.translateSlots(
+      resourceKey,
+      slots,
+      TRANSLATED_CONTENT_LOCALES,
+      actorId,
+    );
     const jsonResult = await this.translateSlots(
       resourceKey,
       jsonSlots,
@@ -243,6 +248,7 @@ export class AutoTranslateService {
 
     const next: ContentFields = { ...fields };
     for (const item of fieldResult.written) {
+      if (!existing.has(codes[item.locale])) continue;
       next[item.path] = { ...next[item.path], [codes[item.locale]]: item.value };
     }
     for (const field of objects) {
@@ -282,9 +288,9 @@ export class AutoTranslateService {
     for (const locale of locales) {
       const pending = slots.filter((slot) => {
         if (isEmpty(slot.source) || textsOf(slot.source).length === 0) return false;
-        const target = slot.targets[locale];
-        if (isEmpty(target)) return true;
         const row = memory.get(`${locale}:${slot.path}`);
+        const target = slot.targets[locale] ?? row?.value;
+        if (isEmpty(target)) return true;
         return Boolean(
           row && row.sourceHash !== hash(slot.source) && row.valueHash === hash(target),
         );
@@ -334,6 +340,7 @@ export class AutoTranslateService {
         const values = {
           sourceHash: hash(sources.get(item.path)),
           valueHash: hash(item.value),
+          value: item.value as Prisma.InputJsonValue,
         };
         return this.prisma.contentTranslation.upsert({
           where: {
