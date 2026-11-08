@@ -1,6 +1,6 @@
 import { useRef, type ComponentProps, type KeyboardEvent } from 'react';
+import { Search } from 'lucide-react';
 import { HOTKEYS, cn, useHotkey } from '@/shared/lib';
-import searchIcon from '@/shared/assets/icons/search.svg';
 
 interface SearchFieldProps extends Omit<ComponentProps<'input'>, 'type' | 'ref'> {
   containerClassName?: string;
@@ -36,7 +36,7 @@ export function SearchField({
         containerClassName,
       )}
     >
-      <img src={searchIcon} alt="" />
+      <Search aria-hidden="true" className="size-4 shrink-0 text-viratec-subtle" />
       <input
         ref={inputRef}
         type="search"

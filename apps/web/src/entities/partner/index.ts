@@ -1,2 +1,4 @@
 export type { HomePartner, NetworkPartner } from './model/types';
-export { useHomePartners, useNetworkPartners } from './model/data';
+export { findPartnerProfile, useHomePartners, useNetworkPartners } from './model/data';
+export { PartnerCard } from './ui/PartnerCard';
+export { PartnerLogoPlate } from './ui/PartnerLogoPlate';

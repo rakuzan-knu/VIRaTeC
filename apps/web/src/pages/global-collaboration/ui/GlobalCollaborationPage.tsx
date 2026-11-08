@@ -1,4 +1,4 @@
-import { useNetworkPartners } from '@/entities/partner';
+import { PartnerCard, useNetworkPartners } from '@/entities/partner';
 import { ROUTES } from '@/shared/config/routes';
 import { useCommonMessages } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
@@ -47,13 +47,7 @@ export function GlobalCollaborationPage() {
               <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
                 {partners.map((partner) => (
                   <li key={partner.name}>
-                    <InfoCard
-                      index={partner.code}
-                      title={partner.name}
-                      description={partner.location}
-                      logo={partner.logo}
-                      className="lg:min-h-[184px]"
-                    />
+                    <PartnerCard partner={partner} />
                   </li>
                 ))}
                 <li>
