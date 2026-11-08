@@ -34,7 +34,8 @@
     "knip": "knip",
     "validate:eol": "node scripts/ci/validate-eol.ts",
     "validate:env": "node scripts/utils/check-env.ts",
-    "validate": "pnpm validate:eol && pnpm validate:env && pnpm typecheck && pnpm lint && pnpm knip"
+    "validate:fsd": "node scripts/ci/validate-fsd.ts",
+    "validate": "pnpm validate:eol && pnpm validate:env && pnpm typecheck && pnpm lint && pnpm validate:fsd && pnpm knip"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
