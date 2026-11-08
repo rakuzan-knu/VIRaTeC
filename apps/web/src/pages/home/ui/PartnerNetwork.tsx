@@ -1,10 +1,5 @@
 import type { CSSProperties } from 'react';
-import {
-  PartnerLogoPlate,
-  findPartnerProfile,
-  useHomePartners,
-  type HomePartner,
-} from '@/entities/partner';
+import { findPartnerProfile, useHomePartners, type HomePartner } from '@/entities/partner';
 import { useHomeContent } from '../model/content';
 
 const REVEAL_DELAY_MS = 1080;
@@ -35,14 +30,31 @@ export function PartnerNetwork() {
         {hero.partnersCaption}
       </p>
 
-      <ul className="grid w-full grid-cols-2 items-center gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+      <ul className="grid w-full grid-cols-2 items-center gap-x-6 gap-y-9 sm:grid-cols-3 lg:flex lg:justify-between lg:gap-8">
         {partners.map((partner, index) => {
           const profile = findPartnerProfile(partner.name);
+          const logo = (
+            <>
+              <img
+                src={partner.logo}
+                alt={partner.caption ? '' : partner.name}
+                loading="lazy"
+                style={logoSize(partner)}
+                className="h-(--logo-h) w-auto object-contain brightness-0 invert lg:h-(--logo-h-lg)"
+              />
+              {partner.caption && (
+                <span className="text-xs leading-[15px] font-semibold whitespace-nowrap text-white lg:text-[15px] lg:leading-[18px]">
+                  {partner.caption[0]} <br />
+                  {partner.caption[1]}
+                </span>
+              )}
+            </>
+          );
 
           return (
             <li
               key={partner.name}
-              className={`flex h-[64px] items-center justify-center gap-2 lg:gap-3 ${REVEAL_CLASS}`}
+              className={`flex h-[60px] items-center justify-center gap-2 opacity-80 transition-opacity duration-300 hover:opacity-100 lg:gap-3 ${REVEAL_CLASS}`}
               style={delay(REVEAL_DELAY_MS + index * REVEAL_STAGGER_MS)}
             >
               {profile ? (
@@ -50,30 +62,12 @@ export function PartnerNetwork() {
                   href={profile.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block size-full rounded-[14px] transition-opacity duration-300 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime motion-reduce:transition-none"
+                  className="flex items-center gap-2 rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime lg:gap-3"
                 >
-                  <PartnerLogoPlate
-                    logo={profile.logo}
-                    alt={partner.name}
-                    className="size-full rounded-[14px] px-3 py-1.5"
-                  />
+                  {logo}
                 </a>
               ) : (
-                <>
-                  <img
-                    src={partner.logo}
-                    alt={partner.caption ? '' : partner.name}
-                    loading="lazy"
-                    style={logoSize(partner)}
-                    className="h-(--logo-h) w-auto object-contain brightness-0 invert lg:h-(--logo-h-lg)"
-                  />
-                  {partner.caption && (
-                    <span className="text-xs leading-[15px] font-semibold whitespace-nowrap text-white lg:text-[15px] lg:leading-[18px]">
-                      {partner.caption[0]} <br />
-                      {partner.caption[1]}
-                    </span>
-                  )}
-                </>
+                logo
               )}
             </li>
           );

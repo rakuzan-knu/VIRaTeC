@@ -18,7 +18,7 @@ export function PartnerCard({ partner }: PartnerCardProps) {
       title={partner.name}
       description={partner.location}
       logo={partner.logo}
-      className="lg:min-h-[184px]"
+      className="row-span-6 lg:min-h-[184px]"
     />
   );
 }

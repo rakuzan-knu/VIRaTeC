@@ -46,18 +46,18 @@ export function GlobalCollaborationPage() {
               />
               <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
                 {partners.map((partner) => (
-                  <li key={partner.name}>
+                  <li key={partner.name} className="row-span-6 grid grid-rows-subgrid">
                     <PartnerCard partner={partner} />
                   </li>
                 ))}
-                <li>
+                <li className="row-span-6 grid grid-rows-subgrid">
                   <InfoCard
                     index="+"
                     title={content.inviteTitle}
                     description={content.inviteDescription}
                     to={ROUTES.CONTACT}
                     variant="invite"
-                    className="lg:min-h-[184px]"
+                    className="row-span-6 lg:min-h-[184px]"
                   />
                 </li>
               </ul>
