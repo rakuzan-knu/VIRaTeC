@@ -46,7 +46,9 @@ export function AccountMenu() {
         className="flex cursor-pointer items-center gap-2 rounded-full py-1 pe-2.5 ps-1 text-[15px] text-white transition-colors hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
       >
         <UserAvatar name={name} avatarUrl={user?.avatarUrl} className="size-8 text-xs" />
-        <span className="max-w-[140px] truncate">{user?.name.split(' ')[0] ?? t.myAccount}</span>
+        <span className="hidden max-w-[140px] truncate 2xl:inline">
+          {user?.name.split(' ')[0] ?? t.myAccount}
+        </span>
         <img
           src={navChevron}
           alt=""

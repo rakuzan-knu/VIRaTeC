@@ -1,78 +1,101 @@
 import type { CSSProperties } from 'react';
-import { findPartnerProfile, useHomePartners, type HomePartner } from '@/entities/partner';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { usePartnerLogos } from '@/entities/partner';
+import { useLocalized } from '@/shared/i18n';
 import { useHomeContent } from '../model/content';
+import { PARTNER_MARQUEE_MESSAGES } from '../model/messages';
+import { usePartnerMarquee } from '../model/usePartnerMarquee';
+import { PartnerLogoTrack } from './PartnerLogoTrack';
+import { PartnerMarqueeButton } from './PartnerMarqueeButton';
 
 const REVEAL_DELAY_MS = 1080;
-const REVEAL_STAGGER_MS = 70;
 const REVEAL_CLASS = 'motion-safe:animate-hero-reveal motion-reduce:animate-hero-fade';
+const SECONDS_PER_LOGO = 5;
+const CAPTION_ID = 'partner-network-caption';
+const ARROW_CLASS = 'hidden sm:flex';
+const ICON_CLASS = 'size-5';
+const TRACK_CLASS =
+  'flex w-max animate-partner-marquee group-hover/marquee:[animation-play-state:paused] group-has-[:focus-visible]/marquee:[animation-play-state:paused] group-data-[paused]/marquee:[animation-play-state:paused] motion-reduce:[animation-play-state:paused]';
 
 function delay(ms: number): CSSProperties {
   return { animationDelay: `${ms}ms` };
 }
 
-function logoSize(partner: HomePartner): CSSProperties {
-  return {
-    '--logo-h': `${partner.logoHeight}px`,
-    '--logo-h-lg': `${partner.logoHeightLg}px`,
-  } as CSSProperties;
+function marqueeDuration(logoCount: number): CSSProperties {
+  return { animationDuration: `${logoCount * SECONDS_PER_LOGO}s` };
 }
 
 export function PartnerNetwork() {
   const { hero } = useHomeContent();
-  const partners = useHomePartners();
+  const messages = useLocalized(PARTNER_MARQUEE_MESSAGES);
+  const partners = usePartnerLogos();
+  const marquee = usePartnerMarquee();
 
   return (
-    <div className="flex flex-col items-center gap-8 lg:gap-10">
-      <p
-        className={`text-center text-sm leading-5 text-viratec-muted lg:text-base ${REVEAL_CLASS}`}
+    <div className="flex flex-col items-center gap-5 lg:gap-6">
+      <div
+        className={`flex items-center gap-2.5 ${REVEAL_CLASS}`}
         style={delay(REVEAL_DELAY_MS - 80)}
       >
-        {hero.partnersCaption}
-      </p>
+        <p
+          id={CAPTION_ID}
+          className="text-center text-sm leading-5 text-viratec-muted lg:text-base lg:text-viratec-light"
+        >
+          {hero.partnersCaption}
+        </p>
+        <PartnerMarqueeButton
+          label={marquee.isPausedByUser ? messages.resume : messages.pause}
+          onClick={marquee.togglePaused}
+          className="size-7 motion-reduce:hidden"
+        >
+          {marquee.isPausedByUser ? (
+            <Play aria-hidden="true" className="size-3.5" />
+          ) : (
+            <Pause aria-hidden="true" className="size-3.5" />
+          )}
+        </PartnerMarqueeButton>
+      </div>
 
-      <ul className="grid w-full grid-cols-2 items-center gap-x-6 gap-y-9 sm:grid-cols-3 lg:flex lg:justify-between lg:gap-8">
-        {partners.map((partner, index) => {
-          const profile = findPartnerProfile(partner.name);
-          const logo = (
-            <>
-              <img
-                src={partner.logo}
-                alt={partner.caption ? '' : partner.name}
-                loading="lazy"
-                style={logoSize(partner)}
-                className="h-(--logo-h) w-auto object-contain brightness-0 invert lg:h-(--logo-h-lg)"
-              />
-              {partner.caption && (
-                <span className="text-xs leading-[15px] font-semibold whitespace-nowrap text-white lg:text-[15px] lg:leading-[18px]">
-                  {partner.caption[0]} <br />
-                  {partner.caption[1]}
-                </span>
-              )}
-            </>
-          );
+      <div
+        ref={marquee.rootRef}
+        role="group"
+        aria-labelledby={CAPTION_ID}
+        dir="ltr"
+        data-paused={marquee.isPaused || undefined}
+        className={`group/marquee flex w-full items-center gap-3 lg:gap-5 ${REVEAL_CLASS}`}
+        style={delay(REVEAL_DELAY_MS)}
+      >
+        <PartnerMarqueeButton
+          label={messages.previous}
+          onClick={marquee.showPrevious}
+          className={ARROW_CLASS}
+        >
+          <ChevronLeft aria-hidden="true" className={ICON_CLASS} />
+        </PartnerMarqueeButton>
 
-          return (
-            <li
-              key={partner.name}
-              className={`flex h-[60px] items-center justify-center gap-2 opacity-80 transition-opacity duration-300 hover:opacity-100 lg:gap-3 ${REVEAL_CLASS}`}
-              style={delay(REVEAL_DELAY_MS + index * REVEAL_STAGGER_MS)}
-            >
-              {profile ? (
-                <a
-                  href={profile.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime lg:gap-3"
-                >
-                  {logo}
-                </a>
-              ) : (
-                logo
-              )}
-            </li>
-          );
-        })}
-      </ul>
+        <div
+          ref={marquee.viewportRef}
+          className="partner-marquee-fade min-w-0 flex-1 touch-pan-y overflow-clip py-1"
+          {...marquee.viewportProps}
+        >
+          <div
+            ref={marquee.trackRef}
+            className={TRACK_CLASS}
+            style={marqueeDuration(partners.length)}
+          >
+            <PartnerLogoTrack partners={partners} />
+            <PartnerLogoTrack partners={partners} isClone />
+          </div>
+        </div>
+
+        <PartnerMarqueeButton
+          label={messages.next}
+          onClick={marquee.showNext}
+          className={ARROW_CLASS}
+        >
+          <ChevronRight aria-hidden="true" className={ICON_CLASS} />
+        </PartnerMarqueeButton>
+      </div>
     </div>
   );
 }

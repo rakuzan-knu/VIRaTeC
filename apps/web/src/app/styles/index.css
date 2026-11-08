@@ -144,6 +144,16 @@
   --animate-hero-drift-reverse: hero-drift 14s ease-in-out -7s infinite alternate-reverse;
   --animate-hero-fade: hero-fade 1.4s var(--ease-apple) both;
   --animate-editor-badge-in: editor-badge-in 180ms var(--ease-apple) both;
+  --animate-partner-marquee: partner-marquee 95s linear infinite;
+
+  @keyframes partner-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
 
   @keyframes editor-badge-in {
     from {
@@ -612,6 +622,32 @@
     var(--color-viratec-bg) 0%,
     #051b40 63%,
     #094285 100%
+  );
+}
+
+@custom-variant desktop-nav {
+  @media (min-width: 1140px) {
+    html:not(:lang(de), :lang(fr)) & {
+      @slot;
+    }
+  }
+  @media (min-width: 1360px) {
+    html:is(:lang(de), :lang(fr)) & {
+      @slot;
+    }
+  }
+}
+
+@utility partner-marquee-fade {
+  mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+
+@utility hero-scrim {
+  background-image: linear-gradient(
+    to top,
+    rgba(3, 18, 46, 0.72) 0,
+    rgba(3, 18, 46, 0.62) 190px,
+    rgba(3, 18, 46, 0) 300px
   );
 }
 

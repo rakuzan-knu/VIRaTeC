@@ -15,9 +15,19 @@ export interface NetworkPartner {
   logo?: string;
 }
 
+export interface PartnerLogo {
+  name: string;
+  logo: string;
+  isMark: boolean;
+  showName: boolean;
+  website?: string;
+}
+
 export interface PartnerProfile {
   aliases: string[];
   logo: string;
+  mark: string;
+  showNameBesideMark?: boolean;
   website: string;
   founded: Localized<string>;
   place: Localized<string>;
