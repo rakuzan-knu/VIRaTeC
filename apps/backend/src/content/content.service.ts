@@ -11,6 +11,9 @@ const INCLUDE_DEPTH = 4;
 const CACHE_TTL_MS = 60 * 60_000;
 const REVISION_TTL_MS = 5_000;
 const CACHE_STATE_ID = 1;
+const ENTRY_KEY_PREFIX = 'entry:';
+const JSON_PATH_MARKER = '#';
+const isEmptyValue = (value: unknown) => value === undefined || value === null || value === '';
 
 interface ContentfulPage {
   total: number;
@@ -125,11 +128,43 @@ export class ContentService {
       }
     }
 
-    return {
+    const response: ContentEntriesResponse = {
       locales: this.contentful.config.locales,
       items,
       includes: { entries: [...entries.values()], assets: [...assets.values()] },
     };
+    await this.mergeDbTranslations([...response.items, ...response.includes.entries]);
+    return response;
+  }
+
+  private async mergeDbTranslations(entries: ContentfulItem[]) {
+    if (entries.length === 0) return;
+    const codes = this.contentful.config.locales as Record<string, string>;
+    const byId = new Map(entries.map((entry) => [entry.sys.id, entry]));
+
+    let rows: { resourceKey: string; locale: string; path: string; value: unknown }[];
+    try {
+      rows = await this.prisma.contentTranslation.findMany({
+        where: {
+          resourceKey: { in: entries.map((entry) => `${ENTRY_KEY_PREFIX}${entry.sys.id}`) },
+        },
+        select: { resourceKey: true, locale: true, path: true, value: true },
+      });
+    } catch (error) {
+      this.logger.warn(`Content translations unavailable: ${String(error)}`);
+      return;
+    }
+
+    for (const row of rows) {
+      if (isEmptyValue(row.value) || row.path.includes(JSON_PATH_MARKER)) continue;
+      const code = codes[row.locale];
+      if (!code) continue;
+      const entry = byId.get(row.resourceKey.slice(ENTRY_KEY_PREFIX.length));
+      const fields = entry?.fields as Record<string, Record<string, unknown>> | undefined;
+      if (!fields) continue;
+      const field = (fields[row.path] ??= {});
+      if (isEmptyValue(field[code])) field[code] = row.value;
+    }
   }
 
   private async fetchPage(

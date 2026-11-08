@@ -285,6 +285,7 @@ model ContentTranslation {
   path        String
   sourceHash  String
   valueHash   String
+  value       Json?
   updatedAt   DateTime @updatedAt
 
   @@unique([resourceKey, locale, path])

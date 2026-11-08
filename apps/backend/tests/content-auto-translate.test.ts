@@ -8,12 +8,13 @@ interface MemoryRow {
   path: string;
   sourceHash: string;
   valueHash: string;
+  value?: unknown;
 }
 
 interface UpsertArgs {
   where: { resourceKey_locale_path: { resourceKey: string; locale: string; path: string } };
   create: MemoryRow;
-  update: { sourceHash: string; valueHash: string };
+  update: { sourceHash: string; valueHash: string; value: unknown };
 }
 
 interface TranslateArgs {
@@ -136,8 +137,8 @@ test('without an API key nothing is translated and publishing is not blocked', a
   assert.equal(requests.length, 0);
 });
 
-test('entries are translated only into locales that exist in the space', async () => {
-  const { service, requests } = setup();
+test('entries translate every language; locales absent from the space are kept for the DB', async () => {
+  const { service, rows, requests } = setup();
   const codes = { en: 'en-US', uk: 'uk', de: 'de', fr: 'fr', ar: 'ar' };
   const result = await service.translateEntry(
     'entry-1',
@@ -148,10 +149,22 @@ test('entries are translated only into locales that exist in the space', async (
     'editor-1',
   );
   assert.deepEqual(result.value, { title: { 'en-US': 'Hello', uk: 'Привіт', de: 'de:Hello' } });
-  assert.deepEqual(
-    requests.map((request) => request.to),
-    ['de'],
-  );
+  assert.deepEqual(requests.map((request) => request.to).sort(), ['ar', 'de', 'fr']);
+  assert.equal(rows.find((row) => row.locale === 'fr' && row.path === 'title')?.value, 'fr:Hello');
+  assert.equal(rows.find((row) => row.locale === 'ar' && row.path === 'title')?.value, 'ar:Hello');
+});
+
+test('a stored DB translation is reused and not translated again when the source is unchanged', async () => {
+  const { service, requests } = setup();
+  const codes = { en: 'en-US', uk: 'uk', de: 'de', fr: 'fr', ar: 'ar' };
+  const type = { fields: [{ id: 'title', type: 'Symbol', localized: true }] };
+  const space = { items: [{ code: 'en-US' }, { code: 'uk' }] };
+  const fields = { title: { 'en-US': 'Hello', uk: 'Привіт' } };
+  await service.translateEntry('entry-1', type, space, codes, fields, 'editor-1');
+  requests.length = 0;
+  const again = await service.translateEntry('entry-1', type, space, codes, fields, 'editor-1');
+  assert.equal(again.changed, false);
+  assert.equal(requests.length, 0);
 });
 
 test('texts inside JSON fields such as page sections are translated in place', async () => {
