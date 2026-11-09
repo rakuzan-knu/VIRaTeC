@@ -3,8 +3,10 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { SavedItemsController } from './saved-items.controller';
 import { SavedItemsService } from './saved-items.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
+  imports: [AuthModule],
   controllers: [SavedItemsController, UsersController],
   providers: [UsersService, SavedItemsService],
   exports: [UsersService],

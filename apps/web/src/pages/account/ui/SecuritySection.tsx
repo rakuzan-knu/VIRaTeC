@@ -1,5 +1,6 @@
 import { KeyRound, LogOut } from 'lucide-react';
 import type { AccountDto } from '@viratec/contracts';
+import { ChangeEmailForm } from '@/features/change-email';
 import { ChangePasswordForm } from '@/features/change-password';
 import { GoogleConnection } from '@/features/link-google';
 import { useLogoutAll } from '@/features/logout';
@@ -59,6 +60,9 @@ export function SecuritySection({ account }: { account: AccountDto }) {
           ))}
         </ul>
       </section>
+      <SectionCard title={t.emailAddress}>
+        <ChangeEmailForm account={account} />
+      </SectionCard>
       <SectionCard title={t.password}>
         <ChangePasswordForm hasPassword={account.hasPassword} />
       </SectionCard>

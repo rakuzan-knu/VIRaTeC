@@ -16,6 +16,10 @@ const PERSON_MESSAGES = defineMessages({
     contact: 'Contact',
     memberSince: (date: string) => `Member since ${date}`,
     editProfile: 'Edit profile',
+    unreachableHint:
+      'You are marked as open to collaboration, but visitors have no way to reach you. Show your email or add an academic profile link.',
+    showAll: (count: number) => `Show all (${count})`,
+    showLess: 'Show less',
     ownerHint: (audience: string) =>
       `You are viewing your profile as others see it · Visible to: ${audience}`,
     membersOnlyTitle: 'Members-only profile',
@@ -46,6 +50,10 @@ const PERSON_MESSAGES = defineMessages({
     contact: 'Контакт',
     memberSince: (date: string) => `У спільноті з ${date}`,
     editProfile: 'Редагувати профіль',
+    unreachableHint:
+      'Ви позначили, що відкриті до співпраці, але відвідувачі не мають як із вами зв’язатися. Покажіть пошту або додайте посилання на академічний профіль.',
+    showAll: (count: number) => `Показати всі (${count})`,
+    showLess: 'Згорнути',
     ownerHint: (audience: string) =>
       `Ви бачите свій профіль так, як його бачать інші · Видимість: ${audience}`,
     membersOnlyTitle: 'Профіль лише для учасників',
@@ -76,6 +84,10 @@ const PERSON_MESSAGES = defineMessages({
     contact: 'Kontakt',
     memberSince: (date: string) => `Mitglied seit ${date}`,
     editProfile: 'Profil bearbeiten',
+    unreachableHint:
+      'Sie sind als offen für Zusammenarbeit markiert, aber Besucher können Sie nicht erreichen. Zeigen Sie Ihre E-Mail an oder fügen Sie einen Link zu einem akademischen Profil hinzu.',
+    showAll: (count: number) => `Alle anzeigen (${count})`,
+    showLess: 'Weniger anzeigen',
     ownerHint: (audience: string) =>
       `Sie sehen Ihr Profil so, wie andere es sehen · Sichtbar für: ${audience}`,
     membersOnlyTitle: 'Profil nur für Mitglieder',
@@ -108,6 +120,10 @@ const PERSON_MESSAGES = defineMessages({
     contact: 'Contact',
     memberSince: (date: string) => `Membre depuis ${date}`,
     editProfile: 'Modifier le profil',
+    unreachableHint:
+      'Vous êtes indiqué comme ouvert à la collaboration, mais les visiteurs n’ont aucun moyen de vous contacter. Affichez votre e-mail ou ajoutez un lien vers un profil académique.',
+    showAll: (count: number) => `Tout afficher (${count})`,
+    showLess: 'Afficher moins',
     ownerHint: (audience: string) =>
       `Vous voyez votre profil tel que les autres le voient · Visible par : ${audience}`,
     membersOnlyTitle: 'Profil réservé aux membres',
@@ -138,6 +154,10 @@ const PERSON_MESSAGES = defineMessages({
     contact: 'التواصل',
     memberSince: (date: string) => `عضو منذ ${date}`,
     editProfile: 'تعديل الملف الشخصي',
+    unreachableHint:
+      'لقد أشرت إلى أنك منفتح على التعاون، لكن لا يمكن للزوار التواصل معك. أظهر بريدك الإلكتروني أو أضف رابطًا إلى ملف أكاديمي.',
+    showAll: (count: number) => `عرض الكل (${count})`,
+    showLess: 'عرض أقل',
     ownerHint: (audience: string) => `أنت ترى ملفك الشخصي كما يراه الآخرون · مرئي لـ: ${audience}`,
     membersOnlyTitle: 'ملف شخصي للأعضاء فقط',
     membersOnlyDescription: 'سجّل الدخول إلى مجتمع VIRaTeC لعرض هذا الملف الشخصي.',

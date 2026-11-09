@@ -18,6 +18,25 @@ import universidadSantoTomas from '@/shared/assets/partners/universidad-santo-to
 import universityOfCentralArkansas from '@/shared/assets/partners/university-of-central-arkansas.webp';
 import universityOfFlorida from '@/shared/assets/partners/university-of-florida.webp';
 import universityOfOxford from '@/shared/assets/partners/university-of-oxford.webp';
+import americanUniversityInTheEmiratesMark from '@/shared/assets/partners/mono/american-university-in-the-emirates.webp';
+import campbellsvilleUniversityMark from '@/shared/assets/partners/mono/campbellsville-university.webp';
+import coventryUniversityMark from '@/shared/assets/partners/mono/coventry-university.webp';
+import ecoleNationalePolytechniqueMark from '@/shared/assets/partners/mono/ecole-nationale-polytechnique.webp';
+import floridaInternationalUniversityMark from '@/shared/assets/partners/mono/florida-international-university.webp';
+import floridaStateUniversityMark from '@/shared/assets/partners/mono/florida-state-university.webp';
+import georgiaStateUniversityMark from '@/shared/assets/partners/mono/georgia-state-university.webp';
+import indianaUniversityMark from '@/shared/assets/partners/mono/indiana-university.webp';
+import johnsHopkinsUniversityMark from '@/shared/assets/partners/mono/johns-hopkins-university.webp';
+import karunyaInstituteMark from '@/shared/assets/partners/mono/karunya-institute-of-technology-and-sciences.webp';
+import lancasterUniversityMark from '@/shared/assets/partners/mono/lancaster-university.webp';
+import lutskNationalTechnicalUniversityMark from '@/shared/assets/partners/mono/lutsk-national-technical-university.webp';
+import manchesterMetropolitanUniversityMark from '@/shared/assets/partners/mono/manchester-metropolitan-university.webp';
+import pryazovskyiStateTechnicalUniversityMark from '@/shared/assets/partners/mono/pryazovskyi-state-technical-university.webp';
+import universidadCatolicaDeColombiaMark from '@/shared/assets/partners/mono/universidad-catolica-de-colombia.webp';
+import universidadSantoTomasMark from '@/shared/assets/partners/mono/universidad-santo-tomas.webp';
+import universityOfCentralArkansasMark from '@/shared/assets/partners/mono/university-of-central-arkansas.webp';
+import universityOfFloridaMark from '@/shared/assets/partners/mono/university-of-florida.webp';
+import universityOfOxfordMark from '@/shared/assets/partners/mono/university-of-oxford.webp';
 import type { PartnerProfile } from './types';
 
 const text = (
@@ -38,6 +57,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['University of Oxford', 'Оксфордський університет'],
     logo: universityOfOxford,
+    mark: universityOfOxfordMark,
     website: 'https://www.ox.ac.uk/',
     founded: text('c. 1096', 'бл. 1096', 'ca. 1096', 'v. 1096', 'حوالي 1096'),
     place: text(
@@ -65,6 +85,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Lancaster University', 'Ланкастерський університет'],
     logo: lancasterUniversity,
+    mark: lancasterUniversityMark,
     website: 'https://www.lancaster.ac.uk/',
     founded: text('1964', '1964'),
     place: text(
@@ -92,6 +113,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Coventry University', 'Університет Ковентрі'],
     logo: coventryUniversity,
+    mark: coventryUniversityMark,
     website: 'https://www.coventry.ac.uk/',
     founded: text('1992', '1992'),
     place: text(
@@ -119,6 +141,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Manchester Metropolitan University', 'Манчестерський столичний університет'],
     logo: manchesterMetropolitanUniversity,
+    mark: manchesterMetropolitanUniversityMark,
     website: 'https://www.mmu.ac.uk/',
     founded: text('1992', '1992'),
     place: text(
@@ -146,6 +169,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Johns Hopkins University', 'Університет Джонса Гопкінса'],
     logo: johnsHopkinsUniversity,
+    mark: johnsHopkinsUniversityMark,
     website: 'https://www.jhu.edu/',
     founded: text('1876', '1876'),
     place: text(
@@ -173,6 +197,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Indiana University', 'Університет Індіани'],
     logo: indianaUniversity,
+    mark: indianaUniversityMark,
     website: 'https://www.iu.edu/',
     founded: text('1820', '1820'),
     place: text(
@@ -200,6 +225,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Florida International University', 'Міжнародний університет Флориди'],
     logo: floridaInternationalUniversity,
+    mark: floridaInternationalUniversityMark,
     website: 'https://www.fiu.edu/',
     founded: text('1965', '1965'),
     place: text(
@@ -227,6 +253,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Florida State University', 'Університет штату Флорида'],
     logo: floridaStateUniversity,
+    mark: floridaStateUniversityMark,
     website: 'https://www.fsu.edu/',
     founded: text('1851', '1851'),
     place: text(
@@ -254,6 +281,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['University of Central Arkansas', 'Університет Центрального Арканзасу'],
     logo: universityOfCentralArkansas,
+    mark: universityOfCentralArkansasMark,
     website: 'https://uca.edu/',
     founded: text('1907', '1907'),
     place: text(
@@ -281,6 +309,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Georgia State University', 'Університет штату Джорджія'],
     logo: georgiaStateUniversity,
+    mark: georgiaStateUniversityMark,
     website: 'https://www.gsu.edu/',
     founded: text('1913', '1913'),
     place: text(
@@ -308,6 +337,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Campbellsville University', 'Університет Кемпбеллсвілла'],
     logo: campbellsvilleUniversity,
+    mark: campbellsvilleUniversityMark,
     website: 'https://www.campbellsville.edu/',
     founded: text('1906', '1906'),
     place: text(
@@ -335,6 +365,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Universidad Católica de Colombia'],
     logo: universidadCatolicaDeColombia,
+    mark: universidadCatolicaDeColombiaMark,
     website: 'https://www.ucatolica.edu.co/',
     founded: text('1970', '1970'),
     place: text(
@@ -362,6 +393,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Universidad Santo Tomás'],
     logo: universidadSantoTomas,
+    mark: universidadSantoTomasMark,
     website: 'https://www.ust.cl/',
     founded: text('1988', '1988'),
     place: text(
@@ -389,6 +421,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['École Nationale Polytechnique'],
     logo: ecoleNationalePolytechnique,
+    mark: ecoleNationalePolytechniqueMark,
     website: 'https://www.enp.edu.dz/',
     founded: text('1925', '1925'),
     place: text(
@@ -416,6 +449,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['American University in the Emirates', 'Американський університет в Еміратах'],
     logo: americanUniversityInTheEmirates,
+    mark: americanUniversityInTheEmiratesMark,
     website: 'https://www.aue.ae/',
     founded: text('2006', '2006'),
     place: text(
@@ -443,6 +477,8 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Karunya Institute of Technology and Sciences'],
     logo: karunyaInstitute,
+    mark: karunyaInstituteMark,
+    showNameBesideMark: true,
     website: 'https://www.karunya.edu/',
     founded: text('1986', '1986'),
     place: text(
@@ -470,6 +506,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['Lutsk National Technical University', 'Луцький національний технічний університет'],
     logo: lutskNationalTechnicalUniversity,
+    mark: lutskNationalTechnicalUniversityMark,
     website: 'https://lntu.edu.ua/',
     founded: text('1966', '1966'),
     place: text(
@@ -500,6 +537,8 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
       'Приазовський державний технічний університет',
     ],
     logo: pryazovskyiStateTechnicalUniversity,
+    mark: pryazovskyiStateTechnicalUniversityMark,
+    showNameBesideMark: true,
     website: 'https://pstu.edu/',
     founded: text('1930', '1930'),
     place: text(
@@ -527,6 +566,7 @@ export const PARTNER_PROFILES: PartnerProfile[] = [
   {
     aliases: ['University of Florida'],
     logo: universityOfFlorida,
+    mark: universityOfFloridaMark,
     website: 'https://www.ufl.edu/',
     founded: text('1853', '1853'),
     place: text(

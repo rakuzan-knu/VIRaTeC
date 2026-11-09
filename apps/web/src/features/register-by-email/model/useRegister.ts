@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { registerRequest } from '../api/register';
 import { readAuthNavigationState, useSessionStore } from '@/entities/session';
 import { ROUTES } from '@/shared/config/routes';
-import { UserRole, FacultyDivision } from '@viratec/contracts';
+import { FacultyDivision } from '@viratec/contracts';
 import type { RegisterFormValues } from './schema';
 
 export function useRegister() {
@@ -17,7 +17,7 @@ export function useRegister() {
         name: values.name,
         email: values.email,
         password: values.password,
-        role: UserRole.STUDENT,
+        role: values.role,
         faculty: FacultyDivision.FIT,
         acceptTerms: true,
       });

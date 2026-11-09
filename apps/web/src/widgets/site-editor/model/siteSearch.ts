@@ -71,8 +71,19 @@ const TEXT_TYPES = new Set(['Symbol', 'Text']);
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
+const SEARCH_ROOT_TYPES = new Set([
+  ...Object.keys(PAGE_ROUTES),
+  'pageBlock',
+  'pageLayout',
+  'legalDocument',
+]);
+
+export const isSearchRootType = (contentTypeId: string) => SEARCH_ROOT_TYPES.has(contentTypeId);
+
+const foldText = (text: string) => text.toLocaleLowerCase().replace(/[’ʼ`]/g, "'");
+
 export const normalizeSearch = (text: string) =>
-  stripFieldMarks(text).toLocaleLowerCase().replace(/\s+/g, ' ').trim();
+  foldText(stripFieldMarks(text)).replace(/\s+/g, ' ').trim();
 
 const toEntry = (item: unknown): RawEntry | null => {
   if (!isObject(item) || !isObject(item.sys) || !isObject(item.fields)) return null;
@@ -212,18 +223,68 @@ export const buildRecordIndex = (
   });
 };
 
-const SNIPPET_RADIUS = 48;
+const rankOf = (item: SearchItem, query: string, terms: readonly string[]) => {
+  if (!terms.every((term) => item.normalized.includes(term))) return null;
+  if (item.normalized === query) return 0;
+  if (item.normalized.startsWith(query)) return 1;
+  const index = item.normalized.indexOf(query);
+  if (index < 0) return 4;
+  return item.normalized[index - 1] === ' ' ? 2 : 3;
+};
 
-export const snippetOf = (item: SearchItem, query: string) => {
-  const index = item.text.toLocaleLowerCase().indexOf(query);
-  if (index < 0) {
-    return { before: '', match: '', after: item.text.slice(0, SNIPPET_RADIUS * 2) };
+export const searchItems = (
+  items: readonly SearchItem[],
+  query: string,
+  terms: readonly string[],
+) =>
+  items
+    .flatMap((item) => {
+      const rank = rankOf(item, query, terms);
+      return rank === null ? [] : [{ item, rank }];
+    })
+    .sort((left, right) => left.rank - right.rank || left.item.text.length - right.item.text.length)
+    .map(({ item }) => item);
+
+const SNIPPET_LEAD = 24;
+const SNIPPET_LENGTH = 120;
+
+export interface SnippetPart {
+  text: string;
+  isMatch: boolean;
+}
+
+const matchRanges = (text: string, terms: readonly string[]) => {
+  const folded = foldText(text);
+  return terms
+    .flatMap((term) => {
+      const ranges: [number, number][] = [];
+      for (
+        let from = folded.indexOf(term);
+        from >= 0;
+        from = folded.indexOf(term, from + term.length)
+      ) {
+        ranges.push([from, from + term.length]);
+      }
+      return ranges;
+    })
+    .sort((left, right) => left[0] - right[0]);
+};
+
+export const snippetOf = (item: SearchItem, terms: readonly string[]) => {
+  const ranges = matchRanges(item.text, terms);
+  const start = Math.max((ranges[0]?.[0] ?? 0) - SNIPPET_LEAD, 0);
+  const end = Math.min(start + SNIPPET_LENGTH, item.text.length);
+  const parts: SnippetPart[] = start > 0 ? [{ text: '…', isMatch: false }] : [];
+  let cursor = start;
+  for (const [from, to] of ranges) {
+    const begin = Math.max(from, cursor);
+    const stop = Math.min(to, end);
+    if (begin >= stop) continue;
+    if (begin > cursor) parts.push({ text: item.text.slice(cursor, begin), isMatch: false });
+    parts.push({ text: item.text.slice(begin, stop), isMatch: true });
+    cursor = stop;
   }
-  const start = Math.max(index - SNIPPET_RADIUS, 0);
-  const end = Math.min(index + query.length + SNIPPET_RADIUS, item.text.length);
-  return {
-    before: `${start > 0 ? '…' : ''}${item.text.slice(start, index)}`,
-    match: item.text.slice(index, index + query.length),
-    after: `${item.text.slice(index + query.length, end)}${end < item.text.length ? '…' : ''}`,
-  };
+  if (cursor < end) parts.push({ text: item.text.slice(cursor, end), isMatch: false });
+  if (end < item.text.length) parts.push({ text: '…', isMatch: false });
+  return parts;
 };

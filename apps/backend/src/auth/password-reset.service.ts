@@ -9,6 +9,7 @@ import { safeEqual, sha256Hex } from '../security/crypto';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
 import { claimUnverifiedAccountWrites, generateResetCode, hashEmailToken } from './email-ownership';
 import { MailClient } from './mail.client';
+import { SecurityMailService } from './security-mail.service';
 
 const RESET_CODE_TTL_MS = EMAIL_TOKEN_LIMITS.resetCodeTtlMinutes * 60_000;
 const RESET_CODE_MAX_ATTEMPTS = 5;
@@ -48,6 +49,7 @@ export class PasswordResetService {
     private mail: MailClient,
     private audit: AuditService,
     private rateLimit: RateLimitService,
+    private securityMail?: SecurityMailService,
   ) {}
 
   private hash(userId: string, code: string) {
@@ -170,6 +172,7 @@ export class PasswordResetService {
       metadata: { method: 'password_reset' },
       client,
     });
+    await this.securityMail?.passwordChanged(email);
     return { success: true };
   }
 }

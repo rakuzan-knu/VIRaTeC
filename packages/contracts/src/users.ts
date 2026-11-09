@@ -49,9 +49,21 @@ export const AccountSchema = UserSchema.extend({
   staffRole: z.nativeEnum(StaffRole),
   permissions: z.array(z.nativeEnum(AdminPermission)),
   staffExpiresAt: z.date().nullable(),
+  termsVersion: z.string().nullable(),
+  pendingEmail: z.string().nullable(),
 });
 
 export type AccountDto = z.infer<typeof AccountSchema>;
+
+export const SELF_ASSIGNABLE_ROLES = [
+  UserRole.STUDENT,
+  UserRole.RESEARCHER,
+  UserRole.PROFESSOR,
+  UserRole.PARTNER,
+] as const;
+
+export const isSelfAssignableRole = (role: UserRole): boolean =>
+  (SELF_ASSIGNABLE_ROLES as readonly UserRole[]).includes(role);
 
 export const PROFILE_LIMITS = {
   nameMin: 2,
@@ -66,6 +78,7 @@ export const PROFILE_LIMITS = {
 
 export const UpdateProfileRequestSchema = z.object({
   name: z.string().trim().min(PROFILE_LIMITS.nameMin).max(PROFILE_LIMITS.nameMax).optional(),
+  role: z.nativeEnum(UserRole).optional(),
   faculty: z.nativeEnum(FacultyDivision).optional(),
   department: z.string().trim().max(PROFILE_LIMITS.departmentMax).optional(),
   bio: z.string().trim().max(PROFILE_LIMITS.bioMax).optional(),
@@ -112,12 +125,31 @@ export const ChangePasswordRequestSchema = z.object({
 
 export type ChangePasswordRequestDto = z.infer<typeof ChangePasswordRequestSchema>;
 
+const ReauthenticationFields = {
+  password: z.string().optional(),
+  code: z.string().trim().min(6).max(20).optional(),
+  googleCredential: z.string().min(1).optional(),
+};
+
 export const DeleteAccountRequestSchema = z.object({
   confirmation: z.string().min(1),
-  password: z.string().optional(),
+  ...ReauthenticationFields,
 });
 
 export type DeleteAccountRequestDto = z.infer<typeof DeleteAccountRequestSchema>;
+
+export const RequestEmailChangeSchema = z.object({
+  newEmail: z.string().email(),
+  ...ReauthenticationFields,
+});
+
+export type RequestEmailChangeDto = z.infer<typeof RequestEmailChangeSchema>;
+
+export const AcceptTermsRequestSchema = z.object({
+  version: z.string().min(1).max(20),
+});
+
+export type AcceptTermsRequestDto = z.infer<typeof AcceptTermsRequestSchema>;
 
 export const LoginRequestSchema = z.object({
   email: z.string().email(),

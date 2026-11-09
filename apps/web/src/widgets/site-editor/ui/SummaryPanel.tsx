@@ -1,5 +1,14 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, ImageIcon, ListRestart, Redo2, Trash2, Undo2 } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  ImageIcon,
+  ListRestart,
+  Redo2,
+  Trash2,
+  Undo2,
+  X,
+} from 'lucide-react';
 import {
   AdminPermission,
   recordTypeId,
@@ -138,7 +147,7 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
   const future = useSiteEditorStore((state) => state.future);
   const isHistoryBusy = useSiteEditorStore((state) => state.isHistoryBusy);
   const hasHistoryError = useSiteEditorStore((state) => state.hasHistoryError);
-  const { setSummaryCollapsed } = useSiteEditorStore.getState();
+  const { setSummaryCollapsed, setSummaryOpen } = useSiteEditorStore.getState();
   const history = useEditorHistory();
   const lastAction = past[past.length - 1];
   const nextAction = future[future.length - 1];
@@ -177,6 +186,12 @@ export function SummaryPanel({ t, onExit }: { t: SiteEditorMessages; onExit: () 
             aria-expanded={!isCollapsed}
             aria-controls={bodyId}
             onClick={() => setSummaryCollapsed(!isCollapsed)}
+          />
+          <IconButton
+            icon={X}
+            label={t.close}
+            shortcut={SHORTCUTS.close}
+            onClick={() => setSummaryOpen(false)}
           />
         </div>
         <div

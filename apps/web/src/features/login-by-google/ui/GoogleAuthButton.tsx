@@ -6,6 +6,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/lib';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
 import { Button } from '@/shared/ui/auth-button';
+import { Checkbox } from '@/shared/ui/checkbox';
 import { GoogleIcon } from '@/shared/ui/google-icon';
 import { useGoogleButton, type GoogleButtonText } from '@/shared/lib/googleIdentity';
 import { useGoogleAuth } from '../model/useGoogleAuth';
@@ -25,6 +26,14 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     invalidCredential: 'We could not verify your Google account. Please try again.',
     notConfigured: 'Google sign-in is temporarily unavailable.',
     unexpectedError: 'An unexpected error occurred. Please try again later.',
+    termsIntro:
+      'This Google account is not linked to VIRaTeC yet. To create an account, accept the terms below.',
+    agreePrefix: 'I am at least 16 or have a guardian’s consent, and I agree to the',
+    agreeAnd: 'and',
+    termsLink: 'Terms of Service',
+    privacyLink: 'Privacy Policy',
+    createAccount: 'Create account',
+    back: 'Back',
   },
   uk: {
     loadFailed:
@@ -41,6 +50,14 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     invalidCredential: 'Не вдалося підтвердити ваш обліковий запис Google. Спробуйте ще раз.',
     notConfigured: 'Вхід через Google тимчасово недоступний.',
     unexpectedError: 'Сталася неочікувана помилка. Спробуйте пізніше.',
+    termsIntro:
+      'Цей обліковий запис Google ще не пов’язаний із VIRaTeC. Щоб створити обліковий запис, прийміть умови нижче.',
+    agreePrefix: 'Мені виповнилося 16 років або я маю згоду батьків чи опікуна, і я погоджуюся з',
+    agreeAnd: 'та',
+    termsLink: 'Умовами використання',
+    privacyLink: 'Політикою конфіденційності',
+    createAccount: 'Створити обліковий запис',
+    back: 'Назад',
   },
   de: {
     loadFailed:
@@ -59,6 +76,15 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     notConfigured: 'Die Google-Anmeldung ist vorübergehend nicht verfügbar.',
     unexpectedError:
       'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+    termsIntro:
+      'Dieses Google-Konto ist noch nicht mit VIRaTeC verbunden. Um ein Konto zu erstellen, akzeptieren Sie bitte die folgenden Bedingungen.',
+    agreePrefix:
+      'Ich bin mindestens 16 Jahre alt oder habe die Zustimmung eines Erziehungsberechtigten und akzeptiere die',
+    agreeAnd: 'und die',
+    termsLink: 'Nutzungsbedingungen',
+    privacyLink: 'Datenschutzerklärung',
+    createAccount: 'Konto erstellen',
+    back: 'Zurück',
   },
   fr: {
     loadFailed: 'La connexion Google n’a pas pu se charger. Vérifiez votre connexion et réessayez.',
@@ -74,6 +100,14 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     invalidCredential: 'Nous n’avons pas pu vérifier votre compte Google. Veuillez réessayer.',
     notConfigured: 'La connexion Google est temporairement indisponible.',
     unexpectedError: 'Une erreur inattendue s’est produite. Veuillez réessayer plus tard.',
+    termsIntro:
+      'Ce compte Google n’est pas encore associé à VIRaTeC. Pour créer un compte, acceptez les conditions ci-dessous.',
+    agreePrefix: 'J’ai au moins 16 ans ou l’accord d’un parent ou tuteur, et j’accepte les',
+    agreeAnd: 'et la',
+    termsLink: 'Conditions d’utilisation',
+    privacyLink: 'Politique de confidentialité',
+    createAccount: 'Créer un compte',
+    back: 'Retour',
   },
   ar: {
     loadFailed: 'تعذّر تحميل تسجيل الدخول عبر Google. تحقّق من اتصالك وحاول مرة أخرى.',
@@ -89,6 +123,13 @@ const GOOGLE_AUTH_MESSAGES = defineMessages({
     invalidCredential: 'تعذّر علينا التحقق من حساب Google. يُرجى المحاولة مرة أخرى.',
     notConfigured: 'تسجيل الدخول عبر Google غير متاح مؤقتًا.',
     unexpectedError: 'حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.',
+    termsIntro: 'حساب Google هذا غير مرتبط بـ VIRaTeC بعد. لإنشاء حساب، يُرجى قبول الشروط أدناه.',
+    agreePrefix: 'عمري 16 عامًا على الأقل أو لدي موافقة ولي الأمر، وأوافق على',
+    agreeAnd: 'و',
+    termsLink: 'شروط الخدمة',
+    privacyLink: 'سياسة الخصوصية',
+    createAccount: 'إنشاء حساب',
+    back: 'رجوع',
   },
 });
 
@@ -114,7 +155,16 @@ interface GoogleAuthButtonProps {
 export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
   const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { mutate: authenticate, isPending, error } = useGoogleAuth();
+  const {
+    authenticate,
+    acceptTerms,
+    cancelTerms,
+    isAwaitingTerms,
+    hasAgreed,
+    setHasAgreed,
+    isPending,
+    error,
+  } = useGoogleAuth();
   const t = useLocalized(GOOGLE_AUTH_MESSAGES);
   const common = useCommonMessages();
   const { isConfigured, loadFailed, isLoading, retry } = useGoogleButton(containerRef, {
@@ -139,7 +189,11 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
     );
   }
 
-  const errorMessage = loadFailed ? t.loadFailed : getErrorMessage(error, t, common.networkError);
+  const errorMessage = loadFailed
+    ? t.loadFailed
+    : isAwaitingTerms
+      ? null
+      : getErrorMessage(error, t, common.networkError);
 
   return (
     <div className="space-y-2">
@@ -150,10 +204,65 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
           'flex w-full items-center justify-center transition-opacity',
           isPending && 'pointer-events-none opacity-60',
           className,
+          isAwaitingTerms && 'hidden',
         )}
       >
         <div ref={containerRef} className="flex min-h-10 w-full justify-center" />
       </div>
+      {isAwaitingTerms && (
+        <div className="space-y-3 rounded-lg border border-auth-border p-4">
+          <p className="text-sm text-auth-muted">{t.termsIntro}</p>
+          <label className="flex cursor-pointer items-start gap-2.5">
+            <Checkbox
+              checked={hasAgreed}
+              onChange={(event) => setHasAgreed(event.target.checked)}
+              autoFocus
+              className="mt-px"
+            />
+            <span className="text-xs leading-5 text-auth-muted">
+              {t.agreePrefix}{' '}
+              <Link
+                to={ROUTES.TERMS}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-auth-navy underline"
+              >
+                {t.termsLink}
+              </Link>{' '}
+              {t.agreeAnd}{' '}
+              <Link
+                to={ROUTES.PRIVACY}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-auth-navy underline"
+              >
+                {t.privacyLink}
+              </Link>
+              .
+            </span>
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row-reverse">
+            <Button
+              type="button"
+              onClick={acceptTerms}
+              disabled={!hasAgreed}
+              isLoading={isPending}
+              className="sm:w-auto sm:flex-1"
+            >
+              {t.createAccount}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={cancelTerms}
+              disabled={isPending}
+              className="sm:w-auto"
+            >
+              {t.back}
+            </Button>
+          </div>
+        </div>
+      )}
       {(isLoading || isPending) && (
         <p role="status" className="text-center text-xs text-auth-muted">
           {isPending ? t.signingIn : t.loading}

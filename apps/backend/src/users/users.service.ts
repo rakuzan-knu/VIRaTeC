@@ -2,16 +2,20 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  ConflictException,
   ForbiddenException,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma, ProfileVisibility } from '@prisma/client';
+import { Prisma, ProfileVisibility, StaffRole } from '@prisma/client';
 import { ProfileLanguagesSchema, ProfileLinksSchema } from '@viratec/contracts';
 import type { ZodType } from 'zod';
-import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
-import { RATE_LIMITS, RateLimitService } from '../security/rate-limit.service';
+import { RateLimitService } from '../security/rate-limit.service';
 import { toAccount } from '../security/account';
+import { ReauthenticationService } from '../auth/reauthentication.service';
+import { SecurityMailService } from '../auth/security-mail.service';
+import type { ClientContext } from '../common/decorators/client-context.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
@@ -20,7 +24,7 @@ import { UpdatePrivacyDto } from './dto/update-privacy.dto';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { PUBLIC_PROFILE_SELECT, toPublicProfile, visibleTo } from './public-profile';
 
-const RELATED_ITEMS_LIMIT = 6;
+const RELATED_ITEMS_LIMIT = 50;
 
 function parseWith<T>(schema: ZodType<T>, value: unknown, field: string): T {
   const result = schema.safeParse(value);
@@ -35,6 +39,8 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private rateLimit?: RateLimitService,
+    private reauthentication?: ReauthenticationService,
+    private securityMail?: SecurityMailService,
   ) {}
 
   async findAll(viewerId: string | null, query: ListUsersQueryDto) {
@@ -42,6 +48,7 @@ export class UsersService {
     const filters: Prisma.UserWhereInput[] = [
       visibleTo(viewerId),
       { emailVerifiedAt: { not: null } },
+      { isBlocked: false },
     ];
 
     if (q) {
@@ -89,13 +96,14 @@ export class UsersService {
       select: {
         ...PUBLIC_PROFILE_SELECT,
         emailVerifiedAt: true,
+        isBlocked: true,
         projects: {
           select: { id: true, title: true, status: true },
           take: RELATED_ITEMS_LIMIT,
           orderBy: { createdAt: 'desc' },
         },
         papers: {
-          select: { id: true, title: true, createdAt: true },
+          select: { id: true, title: true, createdAt: true, doi: true, fileUrl: true },
           take: RELATED_ITEMS_LIMIT,
           orderBy: { createdAt: 'desc' },
         },
@@ -103,7 +111,8 @@ export class UsersService {
     });
 
     const isOwner = viewerId !== null && viewerId === id;
-    const isHidden = user?.visibility === ProfileVisibility.PRIVATE || !user?.emailVerifiedAt;
+    const isHidden =
+      user?.visibility === ProfileVisibility.PRIVATE || !user?.emailVerifiedAt || user.isBlocked;
     if (!user || (isHidden && !isOwner)) {
       throw new NotFoundException('Profile not found');
     }
@@ -117,7 +126,13 @@ export class UsersService {
       }
     }
 
-    const { projects, papers, emailVerifiedAt: _emailVerifiedAt, ...profile } = user;
+    const {
+      projects,
+      papers,
+      emailVerifiedAt: _emailVerifiedAt,
+      isBlocked: _isBlocked,
+      ...profile
+    } = user;
     return { ...toPublicProfile(profile), isOwner, projects, papers };
   }
 
@@ -133,6 +148,7 @@ export class UsersService {
       where: { id: userId },
       data: {
         name: dto.name,
+        role: dto.role,
         faculty: dto.faculty,
         department: dto.department === undefined ? undefined : dto.department || null,
         bio: dto.bio === undefined ? undefined : dto.bio || null,
@@ -166,6 +182,11 @@ export class UsersService {
         papers: true,
         posts: true,
         savedItems: { select: { kind: true, refId: true, createdAt: true } },
+        postLikes: { select: { postId: true, createdAt: true } },
+        auditActions: {
+          select: { action: true, ipAddress: true, userAgent: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+        },
         eventRegistrations: {
           select: {
             eventId: true,
@@ -204,6 +225,8 @@ export class UsersService {
       papers,
       posts,
       savedItems,
+      postLikes,
+      auditActions,
       eventRegistrations,
       eventAttendances,
       refreshTokens,
@@ -213,6 +236,10 @@ export class UsersService {
       exportedAt: new Date().toISOString(),
       format: 'viratec-account-export@1',
       account: toAccount(account),
+      accountStatus: {
+        isBlocked: account.isBlocked,
+        emailVerifiedAt: account.emailVerifiedAt,
+      },
       avatar: avatar
         ? {
             mimeType: avatar.mimeType,
@@ -223,6 +250,8 @@ export class UsersService {
       projects,
       papers,
       communityPosts: posts,
+      postLikes,
+      securityLog: auditActions,
       savedItems,
       eventRegistrations,
       eventAttendances,
@@ -256,9 +285,22 @@ export class UsersService {
     return toAccount(user);
   }
 
-  async findAvatar(userId: string, viewerId: string | null) {
+  async findAvatar(userId: string, memberId: string | null, viewerId: string | null = memberId) {
     const avatar = await this.prisma.userAvatar.findFirst({
-      where: { userId, user: visibleTo(viewerId) },
+      where: {
+        userId,
+        ...(viewerId === userId
+          ? {}
+          : {
+              user: {
+                AND: [
+                  visibleTo(memberId),
+                  { isBlocked: false },
+                  { emailVerifiedAt: { not: null } },
+                ],
+              },
+            }),
+      },
       select: { data: true, mimeType: true, user: { select: { visibility: true } } },
     });
     if (!avatar) {
@@ -271,7 +313,20 @@ export class UsersService {
     };
   }
 
-  async deleteAccount(userId: string, dto: DeleteAccountDto) {
+  private async assertNotLastOwner(userId: string, staffRole: StaffRole) {
+    if (staffRole !== StaffRole.OWNER) return;
+    const otherOwners = await this.prisma.user.count({
+      where: { staffRole: StaffRole.OWNER, id: { not: userId } },
+    });
+    if (otherOwners === 0) {
+      throw new ConflictException({
+        message: 'Transfer ownership before deleting the last owner account',
+        code: 'LAST_OWNER',
+      });
+    }
+  }
+
+  async deleteAccount(userId: string, dto: DeleteAccountDto, client: ClientContext = {}) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -281,18 +336,25 @@ export class UsersService {
       throw new BadRequestException('Confirmation does not match the account email');
     }
 
-    if (user.passwordHash) {
-      await this.rateLimit?.consume(
-        `password:check:${userId}`,
-        RATE_LIMITS.passwordCheckPerAccount,
-      );
-      const isValid = !!dto.password && (await argon2.verify(user.passwordHash, dto.password));
-      if (!isValid) {
-        throw new ForbiddenException('Password is incorrect');
-      }
+    await this.assertNotLastOwner(userId, user.staffRole);
+    if (!this.reauthentication) {
+      throw new ServiceUnavailableException('Identity confirmation is unavailable');
     }
+    await this.reauthentication.confirm(user, dto, client);
 
-    await this.prisma.user.delete({ where: { id: userId } });
+    await this.prisma.$transaction(async (tx) => {
+      await tx.communityPost.updateMany({
+        where: { authorId: { not: userId }, likes: { some: { userId } } },
+        data: { likesCount: { decrement: 1 } },
+      });
+      await tx.auditLog.updateMany({
+        where: { actorId: userId },
+        data: { ipAddress: null, userAgent: null },
+      });
+      await tx.auditLog.updateMany({ where: { targetId: userId }, data: { targetId: null } });
+      await tx.user.delete({ where: { id: userId } });
+    });
+    await this.securityMail?.accountDeleted(user.email);
     return { success: true };
   }
 }

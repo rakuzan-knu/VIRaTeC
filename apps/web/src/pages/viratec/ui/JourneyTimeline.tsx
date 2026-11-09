@@ -109,7 +109,7 @@ export function JourneyTimeline({ milestones }: JourneyTimelineProps) {
                   isLeft ? 'lg:col-start-1 lg:justify-self-end' : 'lg:col-start-3',
                 )}
               >
-                <p className="flex items-center gap-2.5">
+                <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
                   <span
                     className={cn(
                       'font-display text-[24px] leading-7 font-medium tracking-[-0.02em] tabular-nums lg:text-[30px] lg:leading-9',

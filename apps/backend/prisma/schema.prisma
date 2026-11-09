@@ -59,6 +59,7 @@ enum ProfileVisibility {
 enum EmailTokenPurpose {
   VERIFY_EMAIL
   RESET_PASSWORD
+  CHANGE_EMAIL
 }
 
 enum SavedItemKind {
@@ -108,6 +109,7 @@ enum PublicationType {
 model User {
   id                      String            @id @default(uuid())
   email                   String            @unique
+  pendingEmail            String?
   emailVerifiedAt         DateTime?
   emailOwnershipClaimable Boolean           @default(true)
   passwordHash            String?

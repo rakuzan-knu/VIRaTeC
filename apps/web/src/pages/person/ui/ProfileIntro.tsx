@@ -33,6 +33,11 @@ export function ProfileIntro({ profile }: { profile: PublicProfileDto }) {
   const memberSince = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long' }).format(
     new Date(profile.createdAt),
   );
+  const isUnreachable =
+    profile.isOwner &&
+    profile.openTo.length > 0 &&
+    !profile.email &&
+    !Object.values(profile.links).some(Boolean);
 
   return (
     <PageIntro
@@ -68,6 +73,11 @@ export function ProfileIntro({ profile }: { profile: PublicProfileDto }) {
           <p className="text-sm text-viratec-subtle">{t.memberSince(memberSince)}</p>
         </div>
       </div>
+      {isUnreachable && (
+        <p className="rounded-[20px] border border-white/10 bg-white/4 p-4 text-sm leading-5 text-viratec-muted">
+          {t.unreachableHint}
+        </p>
+      )}
       {profile.isOwner && (
         <div className="flex flex-col gap-3 rounded-[20px] border border-white/10 bg-white/4 p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-viratec-muted">

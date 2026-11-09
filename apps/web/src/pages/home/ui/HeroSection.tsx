@@ -49,14 +49,14 @@ export function HeroSection() {
 
       <HeaderSpacer />
 
-      <div className="hero-scroll-out relative z-10 mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-14 pb-12 lg:min-h-[calc(100svh-64px)] lg:gap-[clamp(12px,2svh,32px)] lg:px-[85px] lg:pt-[clamp(20px,3svh,104px)] lg:pb-[clamp(16px,2.5svh,64px)] xl:min-h-[calc(100svh-88px)]">
-        <div className={HERO_REVEAL_CLASS} style={revealDelay(150)}>
+      <div className="hero-scroll-out relative z-10 mx-auto flex max-w-[1440px] flex-col gap-6 px-5 pt-14 pb-12 lg:min-h-[min(calc(100svh-64px),1120px)] lg:gap-[clamp(12px,2svh,32px)] lg:px-[85px] lg:pt-[clamp(12px,2svh,32px)] lg:pb-[clamp(16px,2.5svh,64px)] xl:min-h-[min(calc(100svh-88px),1120px)]">
+        <div className={`lg:mt-auto ${HERO_REVEAL_CLASS}`} style={revealDelay(150)}>
           <Eyebrow>{hero.eyebrow}</Eyebrow>
         </div>
 
         <h1
           dir="auto"
-          className="font-display text-[42px] leading-[44px] font-medium tracking-[-0.035em] text-viratec-light lg:text-[clamp(56px,9svh,96px)] lg:leading-[0.98] lg:tracking-[-0.045em]"
+          className="font-display text-[42px] leading-[44px] font-medium tracking-[-0.035em] text-viratec-light lg:text-[clamp(56px,min(9svh,7vw),96px)] lg:leading-[0.98] lg:tracking-[-0.045em]"
         >
           <span className={`inline-block ${HERO_TEXT_CLASS}`} style={revealDelay(300)}>
             {hero.titleLine}

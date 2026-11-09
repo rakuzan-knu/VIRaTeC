@@ -14,6 +14,7 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       pendingDescription: 'This takes a moment.',
       successTitle: 'Email confirmed',
       successDescription: 'Thank you. Your account now has full access to the VIRaTeC community.',
+      emailChangedDescription: 'Your account now uses this email address.',
       invalidTitle: 'This link no longer works',
       invalidDescription:
         'The link was already used or has expired. Sign in and send a new one from your account page.',
@@ -44,6 +45,7 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       successTitle: 'Пошту підтверджено',
       successDescription:
         'Дякуємо. Ваш обліковий запис тепер має повний доступ до спільноти VIRaTeC.',
+      emailChangedDescription: 'Ваш обліковий запис тепер використовує цю адресу пошти.',
       invalidTitle: 'Посилання більше не діє',
       invalidDescription:
         'Посилання вже використано або строк його дії минув. Увійдіть і надішліть нове зі сторінки облікового запису.',
@@ -73,6 +75,7 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       pendingDescription: 'Das dauert einen Moment.',
       successTitle: 'E-Mail bestätigt',
       successDescription: 'Vielen Dank. Ihr Konto hat jetzt vollen Zugang zur VIRaTeC-Community.',
+      emailChangedDescription: 'Ihr Konto verwendet jetzt diese E-Mail-Adresse.',
       invalidTitle: 'Dieser Link funktioniert nicht mehr',
       invalidDescription:
         'Der Link wurde bereits verwendet oder ist abgelaufen. Melden Sie sich an und senden Sie auf Ihrer Kontoseite einen neuen.',
@@ -104,6 +107,7 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       successTitle: 'E-mail confirmé',
       successDescription:
         'Merci. Votre compte a désormais un accès complet à la communauté VIRaTeC.',
+      emailChangedDescription: 'Votre compte utilise désormais cette adresse e-mail.',
       invalidTitle: 'Ce lien ne fonctionne plus',
       invalidDescription:
         'Le lien a déjà été utilisé ou a expiré. Connectez-vous et envoyez-en un nouveau depuis la page de votre compte.',
@@ -133,6 +137,7 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       pendingDescription: 'يستغرق هذا لحظة.',
       successTitle: 'تم تأكيد البريد الإلكتروني',
       successDescription: 'شكرًا لك. أصبح لحسابك الآن وصول كامل إلى مجتمع VIRaTeC.',
+      emailChangedDescription: 'يستخدم حسابك الآن عنوان البريد الإلكتروني هذا.',
       invalidTitle: 'لم يعد هذا الرابط صالحًا',
       invalidDescription:
         'تم استخدام الرابط من قبل أو انتهت صلاحيته. سجّل الدخول وأرسل رابطًا جديدًا من صفحة حسابك.',

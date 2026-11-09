@@ -18,6 +18,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "owner:assign": "node dist/cli/assign-owner.js",
+    "terms:notify": "node dist/cli/notify-terms-change.js",
     "content:translate": "node dist/cli/translate-content.js"
   },
   "dependencies": {

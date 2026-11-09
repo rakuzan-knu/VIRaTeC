@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import type { CursorPage, PostLikeResultDto } from '@viratec/contracts';
 import { PrismaService } from '../prisma/prisma.service';
@@ -83,6 +83,23 @@ export class CommunityService {
     });
     this.clearCache();
     return { ...post, likedByMe: false };
+  }
+
+  async remove(postId: string, userId: string) {
+    const post = await this.prisma.communityPost.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+    if (!post) {
+      throw new NotFoundException(`Community post with ID ${postId} not found`);
+    }
+    if (post.authorId !== userId) {
+      throw new ForbiddenException('Only the author can delete a post');
+    }
+
+    await this.prisma.communityPost.delete({ where: { id: postId } });
+    this.clearCache();
+    return { success: true };
   }
 
   async toggleLike(postId: string, userId: string): Promise<PostLikeResultDto> {

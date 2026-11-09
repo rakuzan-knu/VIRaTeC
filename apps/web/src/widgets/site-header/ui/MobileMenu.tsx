@@ -54,7 +54,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
       role="dialog"
       aria-modal="true"
       aria-label={t.mainMenu}
-      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-viratec-bg font-viratec xl:hidden"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-viratec-bg font-viratec desktop-nav:hidden"
     >
       <div className="flex h-16 shrink-0 items-center justify-between px-5">
         <Link to={ROUTES.HOME} onClick={onClose} aria-label={common.homeAriaLabel}>

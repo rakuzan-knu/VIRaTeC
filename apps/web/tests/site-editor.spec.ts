@@ -31,6 +31,8 @@ const STAFF_USER = {
   hasPassword: true,
   hasGoogle: false,
   twoFactorEnabled: true,
+  termsVersion: '1.1',
+  pendingEmail: null,
   staffRole: 'EDITOR',
   permissions: ['CONTENT_VIEW', 'CONTENT_EDIT', 'CONTENT_PUBLISH', 'MEDIA_MANAGE'],
   staffExpiresAt: null,

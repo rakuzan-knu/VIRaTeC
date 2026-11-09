@@ -2,7 +2,8 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation } from 'react-router-dom';
-import { readAuthNavigationState } from '@/entities/session';
+import { SELF_ASSIGNABLE_ROLES, UserRole } from '@viratec/contracts';
+import { readAuthNavigationState, useAccountLabels } from '@/entities/session';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
@@ -22,7 +23,8 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'Full name',
     fullNamePlaceholder: 'Enter your full name',
     passwordPlaceholder: 'At least 8 characters',
-    agreePrefix: 'I agree to the',
+    role: 'Your role',
+    agreePrefix: 'I am at least 16 or have a guardian’s consent, and I agree to the',
     agreeAnd: 'and',
     termsLink: 'Terms of Service',
     privacyLink: 'Privacy Policy',
@@ -47,7 +49,8 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'Повне ім’я',
     fullNamePlaceholder: 'Введіть своє повне ім’я',
     passwordPlaceholder: 'Щонайменше 8 символів',
-    agreePrefix: 'Я погоджуюся з',
+    role: 'Ваша роль',
+    agreePrefix: 'Мені виповнилося 16 років або я маю згоду батьків чи опікуна, і я погоджуюся з',
     agreeAnd: 'та',
     termsLink: 'Умовами використання',
     privacyLink: 'Політикою конфіденційності',
@@ -72,7 +75,9 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'Vollständiger Name',
     fullNamePlaceholder: 'Vollständigen Namen eingeben',
     passwordPlaceholder: 'Mindestens 8 Zeichen',
-    agreePrefix: 'Ich akzeptiere die',
+    role: 'Ihre Rolle',
+    agreePrefix:
+      'Ich bin mindestens 16 Jahre alt oder habe die Zustimmung eines Erziehungsberechtigten und akzeptiere die',
     agreeAnd: 'und die',
     termsLink: 'Nutzungsbedingungen',
     privacyLink: 'Datenschutzerklärung',
@@ -98,7 +103,8 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'Nom complet',
     fullNamePlaceholder: 'Saisissez votre nom complet',
     passwordPlaceholder: 'Au moins 8 caractères',
-    agreePrefix: 'J’accepte les',
+    role: 'Votre rôle',
+    agreePrefix: 'J’ai au moins 16 ans ou l’accord d’un parent ou tuteur, et j’accepte les',
     agreeAnd: 'et la',
     termsLink: 'Conditions d’utilisation',
     privacyLink: 'Politique de confidentialité',
@@ -124,7 +130,8 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'الاسم الكامل',
     fullNamePlaceholder: 'أدخل اسمك الكامل',
     passwordPlaceholder: '8 أحرف على الأقل',
-    agreePrefix: 'أوافق على',
+    role: 'دورك',
+    agreePrefix: 'عمري 16 عامًا على الأقل أو لدي موافقة ولي الأمر، وأوافق على',
     agreeAnd: 'و',
     termsLink: 'شروط الخدمة',
     privacyLink: 'سياسة الخصوصية',
@@ -169,6 +176,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
   const { mutate: register, isPending, error, variables } = useRegister();
   const t = useLocalized(REGISTER_MESSAGES);
   const common = useCommonMessages();
+  const labels = useAccountLabels();
   const schema = useMemo(() => createRegisterFormSchema(t.validation), [t]);
 
   const {
@@ -180,6 +188,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
     defaultValues: {
       name: '',
       email: '',
+      role: UserRole.STUDENT,
       password: '',
       terms: false,
     },
@@ -279,6 +288,23 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
               {errors.email.message}
             </p>
           )}
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="register-role" className={LABEL_CLASS}>
+            {t.role}
+          </label>
+          <select
+            id="register-role"
+            {...registerField('role')}
+            className="h-[54px] w-full cursor-pointer rounded-lg border border-auth-border bg-white px-3.5 text-base text-auth-heading outline-hidden transition-[border-color,box-shadow] focus:border-auth-progress focus:ring-1 focus:ring-auth-progress lg:h-[clamp(40px,6svh,54px)]"
+          >
+            {SELF_ASSIGNABLE_ROLES.map((role) => (
+              <option key={role} value={role}>
+                {labels.role[role]}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="space-y-1.5">

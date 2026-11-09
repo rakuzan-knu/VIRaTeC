@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ContentResourceType, type ContentChange, type Prisma } from '@prisma/client';
@@ -101,7 +102,17 @@ export class ContentEditorService {
     try {
       return await run();
     } catch (error) {
-      throw this.contentful.toHttpError(error, subject);
+      const httpError = this.contentful.toHttpError(error, subject);
+      if (
+        error instanceof ContentfulRequestError &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        throw new ServiceUnavailableException({
+          message: 'Contentful rejected the server access token. Update it in the server settings.',
+          code: 'CONTENT_ACCESS_REJECTED',
+        });
+      }
+      throw httpError;
     }
   }
 

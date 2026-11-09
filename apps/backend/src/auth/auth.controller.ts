@@ -21,6 +21,9 @@ import { TwoFactorService } from './two-factor.service';
 import { SessionsService } from './sessions.service';
 import { EmailVerificationService } from './email-verification.service';
 import { PasswordResetService } from './password-reset.service';
+import { EmailChangeService } from './email-change.service';
+import { AcceptTermsDto } from './dto/accept-terms.dto';
+import { RequestEmailChangeDto } from './dto/request-email-change.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
@@ -58,6 +61,7 @@ export class AuthController {
     private configService: ConfigService,
     private emailVerification: EmailVerificationService,
     private passwordReset: PasswordResetService,
+    private emailChange: EmailChangeService,
   ) {}
 
   private get secure() {
@@ -165,6 +169,55 @@ export class AuthController {
   @ApiResponse({ status: 503, description: 'Email delivery is unavailable' })
   async resendVerification(@CurrentUser('id') userId: string) {
     return this.emailVerification.resend(userId);
+  }
+
+  @Post('email/change')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Send a confirmation link to a new account email' })
+  @ApiResponse({ status: 400, description: 'The address is already the account email' })
+  @ApiResponse({ status: 403, description: 'Identity confirmation failed' })
+  @ApiResponse({ status: 409, description: 'The address is already in use' })
+  @ApiResponse({ status: 429, description: 'Too many requests' })
+  @ApiResponse({ status: 503, description: 'Email delivery is unavailable' })
+  async requestEmailChange(
+    @CurrentUser('id') userId: string,
+    @Body() dto: RequestEmailChangeDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.emailChange.request(userId, dto, client);
+  }
+
+  @Post('email/change/confirm')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Apply a new account email with the token from the link' })
+  @ApiResponse({ status: 400, description: 'The link is invalid, used or expired' })
+  @ApiResponse({ status: 409, description: 'The address is already in use' })
+  async confirmEmailChange(@Body() dto: VerifyEmailDto, @Client() client: ClientContext) {
+    return this.emailChange.confirm(dto.token, client);
+  }
+
+  @Delete('email/change')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Cancel a pending email change' })
+  async cancelEmailChange(@CurrentUser('id') userId: string) {
+    return this.emailChange.cancel(userId);
+  }
+
+  @Post('terms/accept')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Accept the current version of the terms' })
+  @ApiResponse({ status: 409, description: 'A newer version of the terms is available' })
+  async acceptTerms(
+    @CurrentUser('id') userId: string,
+    @Body() dto: AcceptTermsDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.authService.acceptTerms(userId, dto.version, client);
   }
 
   @Post('password/forgot')
