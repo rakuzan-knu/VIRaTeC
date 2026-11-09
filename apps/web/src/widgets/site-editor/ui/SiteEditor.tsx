@@ -1,22 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  CalendarPlus,
-  CircleHelp,
-  Eye,
-  FilePlus2,
-  FolderPlus,
-  Highlighter,
-  LayoutList,
-  ListChecks,
-  LogOut,
-  Menu,
-  Monitor,
-  PencilLine,
-  Plus,
-  Search,
-  Smartphone,
-  Tablet,
-} from 'lucide-react';
+import { CalendarPlus, FilePlus2, FolderPlus, Plus, Search } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -29,7 +12,7 @@ import {
 import { useSessionStore } from '@/entities/session';
 import { getApiErrorCode } from '@/shared/api/apiClient';
 import { SITE_EDITOR_INTRO_STORAGE_KEY } from '@/shared/config/storageKeys';
-import { PREVIEW_CONTENT_QUERY_KEY, useContentPreviewStore } from '@/shared/lib';
+import { PREVIEW_CONTENT_QUERY_KEY, cn, useContentPreviewStore } from '@/shared/lib';
 import type { EditorGateCode } from './EditorGate';
 import { useAutosave } from '../model/autosave';
 import { flushDrafts } from '../model/autosaveRegistry';
@@ -50,12 +33,7 @@ import {
   useContentChanges,
   useRefreshRecordQueries,
 } from '../model/queries';
-import {
-  useCurrentSelection,
-  useHasUnsavedDrafts,
-  useSiteEditorStore,
-  type EditorMode,
-} from '../model/store';
+import { useCurrentSelection, useHasUnsavedDrafts, useSiteEditorStore } from '../model/store';
 import { SHORTCUTS, isTextInput } from '../model/shortcuts';
 import {
   EDITOR_ROOT_ATTRIBUTE,
@@ -85,6 +63,7 @@ import { PresenceBanner } from './PresenceBanner';
 import { useEditorPresence } from '../model/useEditorPresence';
 import { RecordWizard } from './RecordWizard';
 import { SaveIndicator } from './SaveIndicator';
+import { MoreMenu } from './MoreMenu';
 import { ToolbarMenu, type ToolbarMenuItem } from './ToolbarMenu';
 import { SiteSearchDialog } from './SiteSearchDialog';
 import { SelectionActions } from './SelectionActions';
@@ -121,7 +100,7 @@ export function SiteEditor() {
   const layoutDraft = useSiteEditorStore((state) =>
     activeLayout ? state.layoutDrafts[activeLayout.page] : undefined,
   );
-  const { setMode, select, setSummaryOpen, reset, openStructure } = useSiteEditorStore.getState();
+  const { setMode, select, reset, openStructure } = useSiteEditorStore.getState();
   const selection = useCurrentSelection();
   const editingNames = useEditorPresence(
     selection && mode === 'edit'
@@ -202,7 +181,8 @@ export function SiteEditor() {
     else setFocusRequest((count) => count + 1);
   };
 
-  const isCanvasActive = mode === 'edit' && !gate && device === 'desktop';
+  const isEditing = mode === 'edit' && device === 'desktop';
+  const isCanvasActive = isEditing && !gate;
   const { hovered, section } = useCanvasTargets(isCanvasActive, setSelected, open);
   const grids = useCollectionGrids(isCanvasActive && !inline);
   const drop = useImageDrop(isCanvasActive);
@@ -387,9 +367,10 @@ export function SiteEditor() {
     void refreshRecords();
   };
 
-  const switchMode = (next: EditorMode) => {
-    setMode(next);
-    if (next === 'preview') setSummaryOpen(false);
+  const toggleHighlight = () => {
+    const next = !isChangesShown;
+    setChangesShown(next);
+    if (!next) useSiteEditorStore.getState().announce(t.highlight.hidden);
   };
 
   const pending = changes.data?.length ?? 0;
@@ -409,96 +390,6 @@ export function SiteEditor() {
       onSelect: () => setWizard(resource),
     }));
 
-  const moreItems: ToolbarMenuItem[] = [
-    {
-      key: 'edit',
-      label: t.menu.edit,
-      icon: PencilLine,
-      kind: 'radio',
-      checked: mode === 'edit',
-      group: 'view',
-      onSelect: () => switchMode('edit'),
-    },
-    {
-      key: 'preview',
-      label: t.menu.preview,
-      icon: Eye,
-      kind: 'radio',
-      checked: mode === 'preview',
-      group: 'view',
-      onSelect: () => switchMode('preview'),
-    },
-    {
-      key: 'changes',
-      label: t.menu.showChanges,
-      icon: Highlighter,
-      kind: 'check',
-      checked: isChangesShown,
-      group: 'view',
-      onSelect: () => {
-        const next = !isChangesShown;
-        setChangesShown(next);
-        useSiteEditorStore
-          .getState()
-          .announce(
-            next
-              ? t.highlight.shown(changeTargets(changes.data ?? NO_CHANGES).length)
-              : t.highlight.hidden,
-          );
-      },
-    },
-    ...(activeLayout
-      ? [
-          {
-            key: 'sections',
-            label: t.menu.sections,
-            icon: LayoutList,
-            group: 'tools',
-            onSelect: () => {
-              setMode('edit');
-              openStructure({});
-            },
-          },
-        ]
-      : []),
-    {
-      key: 'summary',
-      label: t.menu.changesList(pending),
-      icon: ListChecks,
-      group: 'tools',
-      onSelect: () => setSummaryOpen(true),
-    },
-    ...(
-      [
-        ['desktop', Monitor],
-        ['tablet', Tablet],
-        ['phone', Smartphone],
-      ] as const
-    ).map(([value, icon]) => ({
-      key: `device-${value}`,
-      label: `${t.menu.device}: ${t.device[value]}`,
-      icon,
-      kind: 'radio' as const,
-      checked: device === value,
-      group: 'device',
-      onSelect: () => useSiteEditorStore.getState().setDevice(value),
-    })),
-    {
-      key: 'help',
-      label: t.menu.help,
-      icon: CircleHelp,
-      group: 'app',
-      onSelect: () => setHelpOpen(true),
-    },
-    {
-      key: 'exit',
-      label: t.menu.exit,
-      icon: LogOut,
-      group: 'app',
-      onSelect: () => setConfirmingExit(true),
-    },
-  ];
-
   const exitDescription = hasUnsavedDrafts
     ? t.exitUnsaved
     : pending > 0
@@ -507,10 +398,12 @@ export function SiteEditor() {
 
   return (
     <div {...{ [EDITOR_ROOT_ATTRIBUTE]: '' }}>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[2147483000] shadow-[inset_0_0_0_2px_var(--color-viratec-cyan),inset_0_0_32px_rgba(3,197,234,0.35)]"
-      />
+      {isEditing && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-[2147483000] shadow-[inset_0_0_0_2px_var(--color-viratec-cyan),inset_0_0_32px_rgba(3,197,234,0.35)]"
+        />
+      )}
 
       {isCanvasActive && (
         <>
@@ -582,12 +475,20 @@ export function SiteEditor() {
         aria-label={t.toolbar}
         className="pointer-events-auto fixed top-[72px] right-3 z-[2147483004] flex items-center gap-1 rounded-2xl border border-white/12 bg-viratec-deep/95 p-1 shadow-[0_12px_32px_rgba(0,0,0,0.45)] xl:top-[96px]"
       >
-        <span className="hidden items-center gap-2 px-3 text-[13px] font-medium text-viratec-cyan lg:flex">
-          <span aria-hidden="true" className="size-2 rounded-full bg-viratec-cyan" />
-          {mode === 'edit' ? t.editing : t.modePreview}
+        <span
+          className={cn(
+            'hidden items-center gap-2 px-3 text-[13px] font-medium lg:flex',
+            isEditing ? 'text-viratec-cyan' : 'text-text-primary',
+          )}
+        >
+          <span
+            aria-hidden="true"
+            className={cn('size-2 rounded-full', isEditing ? 'bg-viratec-cyan' : 'bg-brand-lime')}
+          />
+          {isEditing ? t.editing : t.modePreview}
         </span>
         <SaveIndicator t={t} />
-        {mode === 'edit' && addItems.length > 0 && (
+        {isEditing && addItems.length > 0 && (
           <ToolbarMenu
             label={t.menu.addLabel}
             buttonLabel={t.menu.add}
@@ -610,11 +511,15 @@ export function SiteEditor() {
             t={t}
           />
         )}
-        <ToolbarMenu
-          label={t.menu.moreLabel}
-          buttonLabel={t.menu.more}
-          icon={Menu}
-          items={moreItems}
+        <MoreMenu
+          t={t}
+          hasSections={Boolean(activeLayout)}
+          pendingCount={pending}
+          isHighlightOn={isChangesShown && isCanvasActive}
+          highlightedCount={changeAnchors.length}
+          onToggleHighlight={toggleHighlight}
+          onHelp={() => setHelpOpen(true)}
+          onExit={() => setConfirmingExit(true)}
         />
       </div>
 

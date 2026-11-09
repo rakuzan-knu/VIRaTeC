@@ -144,7 +144,11 @@ export function AccountPage() {
           )}
           {active === 'danger' && (
             <section className={cn(CARD_CLASS, 'border-state-error/30')}>
-              <DeleteAccountForm email={account.email} hasPassword={account.hasPassword} />
+              <DeleteAccountForm
+                email={account.email}
+                hasPassword={account.hasPassword}
+                twoFactorEnabled={account.twoFactorEnabled}
+              />
             </section>
           )}
         </div>

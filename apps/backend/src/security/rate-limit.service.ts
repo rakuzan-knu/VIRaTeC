@@ -25,6 +25,7 @@ export const RATE_LIMITS = {
   contentMissPerIp: { limit: 60, windowMs: 15 * 60_000 },
   passwordCheckPerAccount: { limit: 5, windowMs: 15 * 60_000 },
   emailVerifyPerAccount: { limit: 3, windowMs: 60 * 60_000 },
+  emailChangePerAccount: { limit: 3, windowMs: 60 * 60_000 },
   passwordForgotPerEmail: { limit: 3, windowMs: 60 * 60_000 },
   passwordForgotPerIp: { limit: 10, windowMs: 60 * 60_000 },
   passwordResetPerEmail: { limit: 10, windowMs: 15 * 60_000 },

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Post,
   Body,
@@ -54,6 +55,17 @@ export class CommunityController {
   @ApiResponse({ status: 403, description: 'The account email is not confirmed' })
   async create(@Body() dto: CreatePostDto, @CurrentUser('id') userId: string) {
     return this.communityService.create(dto, userId);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete your own community post' })
+  @ApiResponse({ status: 200, description: 'Post deleted' })
+  @ApiResponse({ status: 403, description: 'Only the author can delete a post' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
+  async remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser('id') userId: string) {
+    return this.communityService.remove(id, userId);
   }
 
   @Post(':id/like')

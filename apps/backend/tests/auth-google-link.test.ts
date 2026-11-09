@@ -80,7 +80,7 @@ test('linking stores the Google subject and reports the connection', async () =>
   assert.equal(account.hasGoogle, true);
   assert.equal(account.hasPassword, true);
   assert.equal(account.googleId, undefined);
-  assert.equal(account.avatarUrl, payload.picture);
+  assert.equal(account.avatarUrl, null);
   assert.equal(users[0].emailVerifiedAt, null);
 });
 

@@ -10,6 +10,9 @@ import { SessionsService } from './sessions.service';
 import { MailClient } from './mail.client';
 import { EmailVerificationService } from './email-verification.service';
 import { PasswordResetService } from './password-reset.service';
+import { SecurityMailService } from './security-mail.service';
+import { ReauthenticationService } from './reauthentication.service';
+import { EmailChangeService } from './email-change.service';
 
 @Module({
   imports: [
@@ -35,7 +38,18 @@ import { PasswordResetService } from './password-reset.service';
     MailClient,
     EmailVerificationService,
     PasswordResetService,
+    SecurityMailService,
+    ReauthenticationService,
+    EmailChangeService,
   ],
-  exports: [AuthService, TwoFactorService, JwtModule, PassportModule, MailClient],
+  exports: [
+    AuthService,
+    TwoFactorService,
+    JwtModule,
+    PassportModule,
+    MailClient,
+    SecurityMailService,
+    ReauthenticationService,
+  ],
 })
 export class AuthModule {}

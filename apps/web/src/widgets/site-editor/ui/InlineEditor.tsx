@@ -1,5 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import { useDismiss } from '@/shared/lib';
 import { useEditorErrorMessage } from '../model/errors';
 import {
   contentBox,
@@ -34,13 +35,21 @@ export function InlineEditor({ field, t, onClose }: InlineEditorProps) {
   const [range] = useState(() => targetRange(target));
   const rects = useElementRects(target.element, range);
   const containerRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isClosing = useRef(false);
   const hintId = useId();
   const [typography] = useState(() => typographyOf(target.element));
   const label = targetLabel(target, t);
 
-  useEffect(() => hideRange(range, target.element), [range, target.element]);
+  const hasFailed = !edit.isReady && Boolean(edit.loadError);
+
+  useEffect(() => {
+    if (hasFailed) return;
+    return hideRange(range, target.element);
+  }, [hasFailed, range, target.element]);
+
+  useDismiss(statusRef, hasFailed, () => onClose('cancelled'));
 
   const isPlaced = rects.length > 0;
 
@@ -89,6 +98,7 @@ export function InlineEditor({ field, t, onClose }: InlineEditorProps) {
   if (!edit.isReady) {
     return (
       <div
+        ref={statusRef}
         {...{ [EDITOR_ROOT_ATTRIBUTE]: '' }}
         role="status"
         className="pointer-events-auto fixed z-[2147483003] flex items-center gap-2 rounded-xl border border-white/12 bg-viratec-deep px-3 py-2 text-[13px] text-text-muted"

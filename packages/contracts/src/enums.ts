@@ -92,6 +92,7 @@ export enum LanguageLevel {
 export enum EmailTokenPurpose {
   VERIFY_EMAIL = 'VERIFY_EMAIL',
   RESET_PASSWORD = 'RESET_PASSWORD',
+  CHANGE_EMAIL = 'CHANGE_EMAIL',
 }
 
 export enum StaffRole {

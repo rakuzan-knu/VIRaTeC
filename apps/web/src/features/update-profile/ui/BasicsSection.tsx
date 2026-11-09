@@ -5,7 +5,7 @@ import {
   type Control,
   type UseFormRegister,
 } from 'react-hook-form';
-import { FacultyDivision } from '@viratec/contracts';
+import { FacultyDivision, SELF_ASSIGNABLE_ROLES } from '@viratec/contracts';
 import { useAccountLabels } from '@/entities/session';
 import { Input } from '@/shared/ui/Input';
 import { Textarea } from '@/shared/ui/Textarea';
@@ -28,6 +28,7 @@ export function BasicsSection({ control, register }: SectionProps) {
   const { errors } = useFormState({ control });
   const bioLength = useWatch({ control, name: 'bio' }).length;
   const facultyOptions = FACULTY_ORDER.map((value) => ({ value, label: labels.faculty[value] }));
+  const roleOptions = SELF_ASSIGNABLE_ROLES.map((value) => ({ value, label: labels.role[value] }));
 
   return (
     <FormSection title={t.sections.basics} hint={t.sections.basicsHint}>
@@ -37,6 +38,23 @@ export function BasicsSection({ control, register }: SectionProps) {
         error={errors.name?.message}
         {...register('name')}
       />
+      <div className="flex flex-col gap-2">
+        <span aria-hidden="true" className="text-label font-medium text-text-muted">
+          {t.role}
+        </span>
+        <Controller
+          control={control}
+          name="role"
+          render={({ field }) => (
+            <ChipGroup
+              label={t.role}
+              options={roleOptions}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+      </div>
       <div className="flex flex-col gap-2">
         <span aria-hidden="true" className="text-label font-medium text-text-muted">
           {t.faculty}

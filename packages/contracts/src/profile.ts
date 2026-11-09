@@ -164,7 +164,15 @@ export const PublicProfileSchema = z.object({
   createdAt: z.string(),
   isOwner: z.boolean(),
   projects: z.array(z.object({ id: z.string(), title: z.string(), status: z.string() })),
-  papers: z.array(z.object({ id: z.string(), title: z.string(), createdAt: z.string() })),
+  papers: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      createdAt: z.string(),
+      doi: z.string().nullable(),
+      fileUrl: z.string().nullable(),
+    }),
+  ),
 });
 
 export type PublicProfileDto = z.infer<typeof PublicProfileSchema>;

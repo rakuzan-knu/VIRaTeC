@@ -90,6 +90,7 @@ export function useFrameGuest() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    document.documentElement.style.scrollbarWidth = 'none';
     const origin = window.location.origin;
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== origin || event.source !== window.parent) return;

@@ -9,7 +9,12 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { UserRole, FacultyDivision, PROFILE_LIMITS } from '@viratec/contracts';
+import {
+  UserRole,
+  FacultyDivision,
+  PROFILE_LIMITS,
+  SELF_ASSIGNABLE_ROLES,
+} from '@viratec/contracts';
 
 export class RegisterDto {
   @ApiProperty({ example: 'student@knu.ua', description: 'Academic email' })
@@ -30,7 +35,7 @@ export class RegisterDto {
   @MaxLength(PROFILE_LIMITS.nameMax)
   name!: string;
 
-  @ApiProperty({ enum: [UserRole.STUDENT, UserRole.PARTNER], default: UserRole.STUDENT })
+  @ApiProperty({ enum: SELF_ASSIGNABLE_ROLES, default: UserRole.STUDENT })
   @IsEnum(UserRole)
   @IsOptional()
   role?: UserRole = UserRole.STUDENT;

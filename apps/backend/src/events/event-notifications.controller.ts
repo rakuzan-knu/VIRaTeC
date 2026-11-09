@@ -1,6 +1,7 @@
 import { Controller, Get, Header, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CronSecretGuard } from '../common/guards/cron-secret.guard';
+import { CleanupService } from '../security/cleanup.service';
 import { EventNotificationsService } from './event-notifications.service';
 
 @ApiTags('Events')
@@ -10,7 +11,10 @@ import { EventNotificationsService } from './event-notifications.service';
 @UseGuards(CronSecretGuard)
 @Controller('internal/event-notifications')
 export class EventNotificationsController {
-  constructor(private notifications: EventNotificationsService) {}
+  constructor(
+    private notifications: EventNotificationsService,
+    private cleanup: CleanupService,
+  ) {}
 
   @Get('dispatch')
   @Header('Cache-Control', 'no-store')
@@ -21,8 +25,11 @@ export class EventNotificationsController {
 
   @Get('daily')
   @Header('Cache-Control', 'no-store')
-  @ApiOperation({ summary: 'Plan the next day of event emails and send what is due' })
+  @ApiOperation({
+    summary: 'Plan the next day of event emails, send what is due and remove expired records',
+  })
   async daily() {
+    await this.cleanup.run();
     return this.notifications.runDaily();
   }
 }
