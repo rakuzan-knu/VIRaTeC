@@ -9,8 +9,7 @@ import { linkButtonClassName } from '@/shared/ui/link-button';
 import type { SiteEditorMessages } from '../model/messages';
 import { EDITOR_QUERY_KEY, useRefreshRecordQueries } from '../model/queries';
 import { EDITOR_ROOT_ATTRIBUTE } from '../model/useCanvasTargets';
-
-export type EditorGateCode = 'MFA_REVERIFY_REQUIRED' | 'MFA_SETUP_REQUIRED' | 'NO_ACCESS';
+import type { EditorGateCode } from '../model/gate';
 
 function GateCard({
   icon: Icon,

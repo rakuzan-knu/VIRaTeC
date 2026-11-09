@@ -27,6 +27,7 @@ import {
   uploadEditorAsset,
 } from '../api/editorApi';
 import { discardChange } from './discard';
+import { gateFor } from './gate';
 
 export const EDITOR_QUERY_KEY = ['site-editor'] as const;
 
@@ -90,7 +91,7 @@ export const useContentChanges = () =>
     queryKey: [...EDITOR_QUERY_KEY, 'changes'],
     queryFn: fetchContentChanges,
     retry: noRetryOnClientErrors,
-    refetchInterval: 30_000,
+    refetchInterval: (query) => (gateFor(query.state.error) ? false : 30_000),
   });
 
 export const refreshRecordQueries = (queryClient: QueryClient) => {

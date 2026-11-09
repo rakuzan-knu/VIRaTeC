@@ -10,10 +10,9 @@ import {
   type RecordResource,
 } from '@viratec/contracts';
 import { useSessionStore } from '@/entities/session';
-import { getApiErrorCode } from '@/shared/api/apiClient';
 import { SITE_EDITOR_INTRO_STORAGE_KEY } from '@/shared/config/storageKeys';
 import { PREVIEW_CONTENT_QUERY_KEY, cn, useContentPreviewStore } from '@/shared/lib';
-import type { EditorGateCode } from './EditorGate';
+import { gateFor } from '../model/gate';
 import { useAutosave } from '../model/autosave';
 import { flushDrafts } from '../model/autosaveRegistry';
 import { useEditorHistory } from '../model/history';
@@ -81,13 +80,6 @@ const readIntroPending = () => {
   } catch {
     return false;
   }
-};
-
-const gateFor = (error: unknown): EditorGateCode | null => {
-  const code = getApiErrorCode(error);
-  if (code === 'MFA_REVERIFY_REQUIRED' || code === 'MFA_SETUP_REQUIRED') return code;
-  if (code === 'ADMIN_ACCESS_REQUIRED' || code === 'PERMISSION_DENIED') return 'NO_ACCESS';
-  return null;
 };
 
 export function SiteEditor() {
