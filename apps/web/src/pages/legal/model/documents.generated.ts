@@ -300,6 +300,450 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
           },
         ],
       },
+      de: {
+        title: 'Terms of Service',
+        accent: 'The rules of the room.',
+        description:
+          'VIRaTeC is a shared space for students, researchers and partner universities. These terms explain what you can expect from us and what we expect from you.',
+        sections: [
+          {
+            id: 'agreement',
+            title: 'About these terms',
+            summary:
+              'Using VIRaTeC means you accept these terms. If you disagree, please do not use it.',
+            paragraphs: [
+              'These Terms of Service (the “Terms”) govern your access to and use of the VIRaTeC website, platform and related services (together, the “Platform”).',
+              'By opening the Platform, creating an account or signing in with Google, you confirm that you have read and accept these Terms, our Privacy Policy, our Cookie Policy and our Community Guidelines. If you do not agree, please do not use the Platform.',
+            ],
+          },
+          {
+            id: 'who-we-are',
+            title: 'Who we are',
+            summary:
+              'A non-commercial academic initiative of Taras Shevchenko National University of Kyiv.',
+            paragraphs: [
+              'VIRaTeC (Virtual Innovative Research & Technology Community) is an international educational and research initiative based at the Faculty of Information Technology and the Educational and Scientific Institute of Philology of Taras Shevchenko National University of Kyiv, 60 Volodymyrska St, Kyiv, 01033, Ukraine (“we”, “us”, “VIRaTeC”).',
+              'The Platform is provided free of charge for educational, research and collaboration purposes.',
+            ],
+          },
+          {
+            id: 'eligibility',
+            title: 'Who can use the Platform',
+            summary:
+              'Anyone can browse. To create an account you must be 16+ or have a guardian’s consent.',
+            paragraphs: [
+              'Public pages are open to everyone. To register an account you must be at least 16 years old, or have the consent of a parent or legal guardian, and be able to enter into a binding agreement under the law that applies to you.',
+              'Some features, such as joining projects or publishing research, may be limited to students, staff and invited partners of participating universities.',
+            ],
+          },
+          {
+            id: 'account',
+            title: 'Your account',
+            summary:
+              'Keep your details accurate and your password secret. You are responsible for what happens in your account.',
+            paragraphs: [
+              'You can register with an email address and password or with your Google account. You agree to provide accurate information and keep it up to date.',
+              'You are responsible for keeping your credentials confidential and for all activity under your account. If you suspect unauthorised access, change your password and contact us immediately.',
+              'You may stop using the Platform at any time and ask us to delete your account by writing to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'acceptable-use',
+            title: 'Acceptable use',
+            summary:
+              'Be respectful, be honest, and do not break things — the Community Guidelines spell it out.',
+            paragraphs: [
+              'You agree to use the Platform lawfully and in line with our Community Guidelines. In particular, you must not:',
+            ],
+            list: [
+              'post content that is unlawful, hateful, harassing, discriminatory or that violates anyone’s privacy;',
+              'submit plagiarised work or misrepresent authorship, data or research results;',
+              'upload malware, or attempt to probe, scan, overload or gain unauthorised access to the Platform or other users’ accounts;',
+              'scrape or bulk-collect data, including personal data of other users;',
+              'use the Platform for advertising, spam or commercial activity without our written permission;',
+              'impersonate any person or institution.',
+            ],
+          },
+          {
+            id: 'your-content',
+            title: 'Your content',
+            summary:
+              'What you create stays yours. You let us display it on the Platform so others can see it.',
+            paragraphs: [
+              'You keep all rights to the papers, projects, posts, profile information and other material you submit (“Your Content”).',
+              'By submitting Your Content you grant VIRaTeC a non-exclusive, royalty-free, worldwide licence to host, store, reproduce, display and distribute it on the Platform and in related academic communications (for example, a project showcase or a newsletter), only for as long as it remains on the Platform and only for non-commercial educational and research purposes.',
+              'You confirm that you have the right to share Your Content, that co-authors agree to its publication, and that it does not infringe anyone else’s rights.',
+            ],
+          },
+          {
+            id: 'our-content',
+            title: 'Our content',
+            summary:
+              'Texts, design and branding belong to VIRaTeC and its authors. Quote freely with attribution, non-commercially.',
+            paragraphs: [
+              'The VIRaTeC name, logo, design, texts, photos and other materials created by us are protected by intellectual property laws and belong to VIRaTeC, the University or the respective authors.',
+              'You may quote and share our materials for non-commercial educational and research purposes, provided you give clear attribution and a link to the source. Any other use requires our prior written permission.',
+            ],
+          },
+          {
+            id: 'third-parties',
+            title: 'Third-party services and links',
+            summary: 'Google sign-in and external links are run by others under their own rules.',
+            paragraphs: [
+              'The Platform may let you sign in with Google and may link to external websites such as LinkedIn, ORCID, Google Scholar or partner university pages. These services are operated by third parties under their own terms and privacy policies, and we are not responsible for them.',
+            ],
+          },
+          {
+            id: 'availability',
+            title: 'Availability and changes',
+            summary:
+              'This is an academic project. We do our best, but cannot promise it will always be online.',
+            paragraphs: [
+              'We work to keep the Platform available and secure, but we provide it on an “as is” and “as available” basis. We may change, suspend or discontinue features at any time, for example for maintenance, security or as the initiative evolves.',
+            ],
+          },
+          {
+            id: 'termination',
+            title: 'Suspension and termination',
+            summary:
+              'Serious or repeated rule-breaking can lead to content removal or account suspension.',
+            paragraphs: [
+              'We may remove content or suspend or close an account that violates these Terms or the Community Guidelines, endangers other users or the Platform, or where we are required to do so by law. Where reasonable, we will tell you why and give you an opportunity to respond.',
+            ],
+          },
+          {
+            id: 'liability',
+            title: 'Disclaimers and liability',
+            summary:
+              'We are not liable for indirect losses or for content posted by others — within what the law allows.',
+            paragraphs: [
+              'Content on the Platform, including research materials posted by users, is provided for information and educational purposes and does not constitute professional advice.',
+              'To the maximum extent permitted by law, VIRaTeC and the University are not liable for any indirect or consequential damage, loss of data or loss of opportunity arising from use of the Platform, or for content created by other users. Nothing in these Terms limits any liability that cannot be limited under applicable law.',
+            ],
+          },
+          {
+            id: 'law',
+            title: 'Governing law',
+            summary: 'Ukrainian law applies. Let’s talk first — most issues are solved by email.',
+            paragraphs: [
+              'These Terms are governed by the laws of Ukraine. Before going to court, we ask you to contact us so we can try to resolve the issue amicably. Disputes that cannot be resolved this way will be heard by the competent courts of Kyiv, Ukraine, without prejudice to any mandatory consumer protection rights you have in your country of residence.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'Changes to these terms',
+            summary:
+              'If we change something important, we will let you know before it takes effect.',
+            paragraphs: [
+              'We may update these Terms from time to time. The date of the latest version is shown at the top of this page. For material changes we will notify registered users by email or on the Platform at least 14 days before they take effect. Continuing to use the Platform after that means you accept the updated Terms.',
+            ],
+          },
+          {
+            id: 'contact',
+            title: 'Contact',
+            summary: 'Questions? Write to us — a real person reads every message.',
+            paragraphs: [
+              'If you have any questions about these Terms, please contact us at coil.knu@gmail.com.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        title: 'Terms of Service',
+        accent: 'The rules of the room.',
+        description:
+          'VIRaTeC is a shared space for students, researchers and partner universities. These terms explain what you can expect from us and what we expect from you.',
+        sections: [
+          {
+            id: 'agreement',
+            title: 'About these terms',
+            summary:
+              'Using VIRaTeC means you accept these terms. If you disagree, please do not use it.',
+            paragraphs: [
+              'These Terms of Service (the “Terms”) govern your access to and use of the VIRaTeC website, platform and related services (together, the “Platform”).',
+              'By opening the Platform, creating an account or signing in with Google, you confirm that you have read and accept these Terms, our Privacy Policy, our Cookie Policy and our Community Guidelines. If you do not agree, please do not use the Platform.',
+            ],
+          },
+          {
+            id: 'who-we-are',
+            title: 'Who we are',
+            summary:
+              'A non-commercial academic initiative of Taras Shevchenko National University of Kyiv.',
+            paragraphs: [
+              'VIRaTeC (Virtual Innovative Research & Technology Community) is an international educational and research initiative based at the Faculty of Information Technology and the Educational and Scientific Institute of Philology of Taras Shevchenko National University of Kyiv, 60 Volodymyrska St, Kyiv, 01033, Ukraine (“we”, “us”, “VIRaTeC”).',
+              'The Platform is provided free of charge for educational, research and collaboration purposes.',
+            ],
+          },
+          {
+            id: 'eligibility',
+            title: 'Who can use the Platform',
+            summary:
+              'Anyone can browse. To create an account you must be 16+ or have a guardian’s consent.',
+            paragraphs: [
+              'Public pages are open to everyone. To register an account you must be at least 16 years old, or have the consent of a parent or legal guardian, and be able to enter into a binding agreement under the law that applies to you.',
+              'Some features, such as joining projects or publishing research, may be limited to students, staff and invited partners of participating universities.',
+            ],
+          },
+          {
+            id: 'account',
+            title: 'Your account',
+            summary:
+              'Keep your details accurate and your password secret. You are responsible for what happens in your account.',
+            paragraphs: [
+              'You can register with an email address and password or with your Google account. You agree to provide accurate information and keep it up to date.',
+              'You are responsible for keeping your credentials confidential and for all activity under your account. If you suspect unauthorised access, change your password and contact us immediately.',
+              'You may stop using the Platform at any time and ask us to delete your account by writing to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'acceptable-use',
+            title: 'Acceptable use',
+            summary:
+              'Be respectful, be honest, and do not break things — the Community Guidelines spell it out.',
+            paragraphs: [
+              'You agree to use the Platform lawfully and in line with our Community Guidelines. In particular, you must not:',
+            ],
+            list: [
+              'post content that is unlawful, hateful, harassing, discriminatory or that violates anyone’s privacy;',
+              'submit plagiarised work or misrepresent authorship, data or research results;',
+              'upload malware, or attempt to probe, scan, overload or gain unauthorised access to the Platform or other users’ accounts;',
+              'scrape or bulk-collect data, including personal data of other users;',
+              'use the Platform for advertising, spam or commercial activity without our written permission;',
+              'impersonate any person or institution.',
+            ],
+          },
+          {
+            id: 'your-content',
+            title: 'Your content',
+            summary:
+              'What you create stays yours. You let us display it on the Platform so others can see it.',
+            paragraphs: [
+              'You keep all rights to the papers, projects, posts, profile information and other material you submit (“Your Content”).',
+              'By submitting Your Content you grant VIRaTeC a non-exclusive, royalty-free, worldwide licence to host, store, reproduce, display and distribute it on the Platform and in related academic communications (for example, a project showcase or a newsletter), only for as long as it remains on the Platform and only for non-commercial educational and research purposes.',
+              'You confirm that you have the right to share Your Content, that co-authors agree to its publication, and that it does not infringe anyone else’s rights.',
+            ],
+          },
+          {
+            id: 'our-content',
+            title: 'Our content',
+            summary:
+              'Texts, design and branding belong to VIRaTeC and its authors. Quote freely with attribution, non-commercially.',
+            paragraphs: [
+              'The VIRaTeC name, logo, design, texts, photos and other materials created by us are protected by intellectual property laws and belong to VIRaTeC, the University or the respective authors.',
+              'You may quote and share our materials for non-commercial educational and research purposes, provided you give clear attribution and a link to the source. Any other use requires our prior written permission.',
+            ],
+          },
+          {
+            id: 'third-parties',
+            title: 'Third-party services and links',
+            summary: 'Google sign-in and external links are run by others under their own rules.',
+            paragraphs: [
+              'The Platform may let you sign in with Google and may link to external websites such as LinkedIn, ORCID, Google Scholar or partner university pages. These services are operated by third parties under their own terms and privacy policies, and we are not responsible for them.',
+            ],
+          },
+          {
+            id: 'availability',
+            title: 'Availability and changes',
+            summary:
+              'This is an academic project. We do our best, but cannot promise it will always be online.',
+            paragraphs: [
+              'We work to keep the Platform available and secure, but we provide it on an “as is” and “as available” basis. We may change, suspend or discontinue features at any time, for example for maintenance, security or as the initiative evolves.',
+            ],
+          },
+          {
+            id: 'termination',
+            title: 'Suspension and termination',
+            summary:
+              'Serious or repeated rule-breaking can lead to content removal or account suspension.',
+            paragraphs: [
+              'We may remove content or suspend or close an account that violates these Terms or the Community Guidelines, endangers other users or the Platform, or where we are required to do so by law. Where reasonable, we will tell you why and give you an opportunity to respond.',
+            ],
+          },
+          {
+            id: 'liability',
+            title: 'Disclaimers and liability',
+            summary:
+              'We are not liable for indirect losses or for content posted by others — within what the law allows.',
+            paragraphs: [
+              'Content on the Platform, including research materials posted by users, is provided for information and educational purposes and does not constitute professional advice.',
+              'To the maximum extent permitted by law, VIRaTeC and the University are not liable for any indirect or consequential damage, loss of data or loss of opportunity arising from use of the Platform, or for content created by other users. Nothing in these Terms limits any liability that cannot be limited under applicable law.',
+            ],
+          },
+          {
+            id: 'law',
+            title: 'Governing law',
+            summary: 'Ukrainian law applies. Let’s talk first — most issues are solved by email.',
+            paragraphs: [
+              'These Terms are governed by the laws of Ukraine. Before going to court, we ask you to contact us so we can try to resolve the issue amicably. Disputes that cannot be resolved this way will be heard by the competent courts of Kyiv, Ukraine, without prejudice to any mandatory consumer protection rights you have in your country of residence.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'Changes to these terms',
+            summary:
+              'If we change something important, we will let you know before it takes effect.',
+            paragraphs: [
+              'We may update these Terms from time to time. The date of the latest version is shown at the top of this page. For material changes we will notify registered users by email or on the Platform at least 14 days before they take effect. Continuing to use the Platform after that means you accept the updated Terms.',
+            ],
+          },
+          {
+            id: 'contact',
+            title: 'Contact',
+            summary: 'Questions? Write to us — a real person reads every message.',
+            paragraphs: [
+              'If you have any questions about these Terms, please contact us at coil.knu@gmail.com.',
+            ],
+          },
+        ],
+      },
+      ar: {
+        title: 'Terms of Service',
+        accent: 'The rules of the room.',
+        description:
+          'VIRaTeC is a shared space for students, researchers and partner universities. These terms explain what you can expect from us and what we expect from you.',
+        sections: [
+          {
+            id: 'agreement',
+            title: 'About these terms',
+            summary:
+              'Using VIRaTeC means you accept these terms. If you disagree, please do not use it.',
+            paragraphs: [
+              'These Terms of Service (the “Terms”) govern your access to and use of the VIRaTeC website, platform and related services (together, the “Platform”).',
+              'By opening the Platform, creating an account or signing in with Google, you confirm that you have read and accept these Terms, our Privacy Policy, our Cookie Policy and our Community Guidelines. If you do not agree, please do not use the Platform.',
+            ],
+          },
+          {
+            id: 'who-we-are',
+            title: 'Who we are',
+            summary:
+              'A non-commercial academic initiative of Taras Shevchenko National University of Kyiv.',
+            paragraphs: [
+              'VIRaTeC (Virtual Innovative Research & Technology Community) is an international educational and research initiative based at the Faculty of Information Technology and the Educational and Scientific Institute of Philology of Taras Shevchenko National University of Kyiv, 60 Volodymyrska St, Kyiv, 01033, Ukraine (“we”, “us”, “VIRaTeC”).',
+              'The Platform is provided free of charge for educational, research and collaboration purposes.',
+            ],
+          },
+          {
+            id: 'eligibility',
+            title: 'Who can use the Platform',
+            summary:
+              'Anyone can browse. To create an account you must be 16+ or have a guardian’s consent.',
+            paragraphs: [
+              'Public pages are open to everyone. To register an account you must be at least 16 years old, or have the consent of a parent or legal guardian, and be able to enter into a binding agreement under the law that applies to you.',
+              'Some features, such as joining projects or publishing research, may be limited to students, staff and invited partners of participating universities.',
+            ],
+          },
+          {
+            id: 'account',
+            title: 'Your account',
+            summary:
+              'Keep your details accurate and your password secret. You are responsible for what happens in your account.',
+            paragraphs: [
+              'You can register with an email address and password or with your Google account. You agree to provide accurate information and keep it up to date.',
+              'You are responsible for keeping your credentials confidential and for all activity under your account. If you suspect unauthorised access, change your password and contact us immediately.',
+              'You may stop using the Platform at any time and ask us to delete your account by writing to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'acceptable-use',
+            title: 'Acceptable use',
+            summary:
+              'Be respectful, be honest, and do not break things — the Community Guidelines spell it out.',
+            paragraphs: [
+              'You agree to use the Platform lawfully and in line with our Community Guidelines. In particular, you must not:',
+            ],
+            list: [
+              'post content that is unlawful, hateful, harassing, discriminatory or that violates anyone’s privacy;',
+              'submit plagiarised work or misrepresent authorship, data or research results;',
+              'upload malware, or attempt to probe, scan, overload or gain unauthorised access to the Platform or other users’ accounts;',
+              'scrape or bulk-collect data, including personal data of other users;',
+              'use the Platform for advertising, spam or commercial activity without our written permission;',
+              'impersonate any person or institution.',
+            ],
+          },
+          {
+            id: 'your-content',
+            title: 'Your content',
+            summary:
+              'What you create stays yours. You let us display it on the Platform so others can see it.',
+            paragraphs: [
+              'You keep all rights to the papers, projects, posts, profile information and other material you submit (“Your Content”).',
+              'By submitting Your Content you grant VIRaTeC a non-exclusive, royalty-free, worldwide licence to host, store, reproduce, display and distribute it on the Platform and in related academic communications (for example, a project showcase or a newsletter), only for as long as it remains on the Platform and only for non-commercial educational and research purposes.',
+              'You confirm that you have the right to share Your Content, that co-authors agree to its publication, and that it does not infringe anyone else’s rights.',
+            ],
+          },
+          {
+            id: 'our-content',
+            title: 'Our content',
+            summary:
+              'Texts, design and branding belong to VIRaTeC and its authors. Quote freely with attribution, non-commercially.',
+            paragraphs: [
+              'The VIRaTeC name, logo, design, texts, photos and other materials created by us are protected by intellectual property laws and belong to VIRaTeC, the University or the respective authors.',
+              'You may quote and share our materials for non-commercial educational and research purposes, provided you give clear attribution and a link to the source. Any other use requires our prior written permission.',
+            ],
+          },
+          {
+            id: 'third-parties',
+            title: 'Third-party services and links',
+            summary: 'Google sign-in and external links are run by others under their own rules.',
+            paragraphs: [
+              'The Platform may let you sign in with Google and may link to external websites such as LinkedIn, ORCID, Google Scholar or partner university pages. These services are operated by third parties under their own terms and privacy policies, and we are not responsible for them.',
+            ],
+          },
+          {
+            id: 'availability',
+            title: 'Availability and changes',
+            summary:
+              'This is an academic project. We do our best, but cannot promise it will always be online.',
+            paragraphs: [
+              'We work to keep the Platform available and secure, but we provide it on an “as is” and “as available” basis. We may change, suspend or discontinue features at any time, for example for maintenance, security or as the initiative evolves.',
+            ],
+          },
+          {
+            id: 'termination',
+            title: 'Suspension and termination',
+            summary:
+              'Serious or repeated rule-breaking can lead to content removal or account suspension.',
+            paragraphs: [
+              'We may remove content or suspend or close an account that violates these Terms or the Community Guidelines, endangers other users or the Platform, or where we are required to do so by law. Where reasonable, we will tell you why and give you an opportunity to respond.',
+            ],
+          },
+          {
+            id: 'liability',
+            title: 'Disclaimers and liability',
+            summary:
+              'We are not liable for indirect losses or for content posted by others — within what the law allows.',
+            paragraphs: [
+              'Content on the Platform, including research materials posted by users, is provided for information and educational purposes and does not constitute professional advice.',
+              'To the maximum extent permitted by law, VIRaTeC and the University are not liable for any indirect or consequential damage, loss of data or loss of opportunity arising from use of the Platform, or for content created by other users. Nothing in these Terms limits any liability that cannot be limited under applicable law.',
+            ],
+          },
+          {
+            id: 'law',
+            title: 'Governing law',
+            summary: 'Ukrainian law applies. Let’s talk first — most issues are solved by email.',
+            paragraphs: [
+              'These Terms are governed by the laws of Ukraine. Before going to court, we ask you to contact us so we can try to resolve the issue amicably. Disputes that cannot be resolved this way will be heard by the competent courts of Kyiv, Ukraine, without prejudice to any mandatory consumer protection rights you have in your country of residence.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'Changes to these terms',
+            summary:
+              'If we change something important, we will let you know before it takes effect.',
+            paragraphs: [
+              'We may update these Terms from time to time. The date of the latest version is shown at the top of this page. For material changes we will notify registered users by email or on the Platform at least 14 days before they take effect. Continuing to use the Platform after that means you accept the updated Terms.',
+            ],
+          },
+          {
+            id: 'contact',
+            title: 'Contact',
+            summary: 'Questions? Write to us — a real person reads every message.',
+            paragraphs: [
+              'If you have any questions about these Terms, please contact us at coil.knu@gmail.com.',
+            ],
+          },
+        ],
+      },
     },
   },
   privacy: {
@@ -721,6 +1165,630 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
           },
         ],
       },
+      de: {
+        title: 'Privacy Policy',
+        accent: 'Your data, explained plainly.',
+        description:
+          'We collect only what we need to run an academic community — no ads, no tracking, no selling. Here is exactly what we keep, why, and for how long.',
+        sections: [
+          {
+            id: 'controller',
+            title: 'Who is responsible',
+            summary:
+              'Taras Shevchenko National University of Kyiv is the controller of your personal data.',
+            paragraphs: [
+              'The controller of personal data processed through the VIRaTeC Platform is Taras Shevchenko National University of Kyiv, 60 Volodymyrska St, Kyiv, 01033, Ukraine, acting through the VIRaTeC initiative (“we”, “us”).',
+              'We process personal data in accordance with the Law of Ukraine “On Personal Data Protection” and, where it applies to you, the EU General Data Protection Regulation (GDPR) and the UK GDPR. For any privacy question, write to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'data-we-collect',
+            title: 'What we collect',
+            summary:
+              'Account details you give us, content you publish, and minimal technical data needed to keep you signed in.',
+            paragraphs: [
+              'We only collect data that you provide to us or that is technically necessary:',
+            ],
+            table: {
+              columns: ['Category', 'Examples', 'Source'],
+              rows: [
+                [
+                  'Account data',
+                  'Email address, name, password (stored only as an Argon2 hash), the date and version of the Terms you accepted',
+                  'You, at registration',
+                ],
+                [
+                  'Google sign-in data',
+                  'Google account ID, verified email, name, profile picture',
+                  'Google, when you choose “Continue with Google”',
+                ],
+                [
+                  'Profile data',
+                  'Role, faculty, department, bio, skills, photo, study level and year, institution, country, languages, academic profile links (ORCID, Scopus, etc.), collaboration preferences, profile visibility',
+                  'You, optionally',
+                ],
+                ['Saved items', 'Publications and projects you bookmark', 'You'],
+                [
+                  'Your content',
+                  'Research papers, projects, community posts, links you add',
+                  'You',
+                ],
+                [
+                  'Session data',
+                  'Access and refresh tokens; for each signed-in device — browser and operating system (user agent), IP address, sign-in and last-activity time, shown to you under Security → Active sessions',
+                  'Generated by the Platform when you sign in',
+                ],
+                [
+                  'Technical data',
+                  'IP address, browser type, request time in server logs',
+                  'Your browser, automatically',
+                ],
+                ['Correspondence', 'Messages you send us by email', 'You'],
+              ],
+            },
+            note: 'We do not ask for and do not want sensitive data (health, religion, political views, etc.). Please do not include it in your profile or posts.',
+          },
+          {
+            id: 'purposes',
+            title: 'Why we use it',
+            summary:
+              'To run your account, show your work to the community, keep the Platform secure and answer your messages.',
+            paragraphs: ['Each use of your data has a clear purpose and legal basis:'],
+            table: {
+              columns: ['Purpose', 'Legal basis'],
+              rows: [
+                [
+                  'Creating and running your account, signing you in',
+                  'Performance of our agreement with you (Terms of Service); GDPR Art. 6(1)(b)',
+                ],
+                [
+                  'Keeping a record that you accepted the Terms of Service and this Policy',
+                  'Our legal obligation and legitimate interest in proving the agreement; GDPR Art. 6(1)(c) and (f)',
+                ],
+                [
+                  'Publishing your profile, papers and projects to the community',
+                  'Performance of our agreement; your choice to publish',
+                ],
+                [
+                  'Keeping the Platform secure, preventing abuse, fixing errors',
+                  'Our legitimate interest in a safe service; GDPR Art. 6(1)(f)',
+                ],
+                [
+                  'Replying to your questions and partnership requests',
+                  'Our legitimate interest; your request',
+                ],
+                [
+                  'Sending important service notices (e.g. changes to terms)',
+                  'Performance of our agreement; legal obligation',
+                ],
+                [
+                  'Anything optional we may add later, such as newsletters',
+                  'Your consent, which you can withdraw at any time; GDPR Art. 6(1)(a)',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'what-we-dont-do',
+            title: 'What we never do',
+            summary: 'No selling, no advertising, no tracking pixels, no profiling.',
+            paragraphs: [
+              'Because VIRaTeC is a non-commercial academic project, we commit that we:',
+            ],
+            list: [
+              'never sell or rent your personal data;',
+              'do not show advertising or use advertising networks;',
+              'do not use analytics trackers, tracking pixels or fingerprinting;',
+              'do not make decisions about you based solely on automated processing or profiling.',
+            ],
+          },
+          {
+            id: 'sharing',
+            title: 'Who we share it with',
+            summary:
+              'Only with services that help us run the Platform, partner universities you work with, or when the law requires.',
+            paragraphs: ['We share personal data only when necessary and only with:'],
+            list: [
+              'Google — to verify your identity if you choose Google sign-in (Google acts as an independent controller under its own privacy policy);',
+              'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement: Vercel Inc. (website and API hosting, Frankfurt, Germany region) and Neon Inc. (database hosting, Frankfurt, Germany region);',
+              'partner universities and project co-participants — only the profile information and content you make visible within a joint project;',
+              'public authorities — only when we are legally required to do so.',
+            ],
+          },
+          {
+            id: 'transfers',
+            title: 'International transfers',
+            summary:
+              'Some providers may process data outside Ukraine. We make sure it stays protected.',
+            paragraphs: [
+              'Our service providers and international partners may be located outside Ukraine, including in the EU, the UK and the USA. Where data is transferred, we rely on adequacy decisions, standard contractual clauses or other safeguards required by applicable law.',
+            ],
+          },
+          {
+            id: 'retention',
+            title: 'How long we keep it',
+            summary: 'Only for as long as it is useful — then we delete or anonymise it.',
+            paragraphs: ['We keep data for the following periods:'],
+            table: {
+              columns: ['Data', 'Retention period'],
+              rows: [
+                [
+                  'Account and profile data',
+                  'While your account is active; deleted within 30 days of a deletion request',
+                ],
+                [
+                  'Your content',
+                  'While your account is active, or until you delete it; co-authored works may remain with your name removed',
+                ],
+                [
+                  'Refresh tokens and device history (IP address, browser)',
+                  'Expire after 7 days or when you sign out; expired records are erased at your next sign-in, and you can erase other devices at any time under Privacy',
+                ],
+                ['Server logs', 'Up to 90 days'],
+                ['Email correspondence', 'Up to 3 years after the conversation ends'],
+              ],
+            },
+          },
+          {
+            id: 'security',
+            title: 'How we protect it',
+            summary:
+              'Hashed passwords, encrypted connections and access only for people who need it.',
+            paragraphs: [
+              'We use appropriate technical and organisational measures to protect your data, including encrypted HTTPS connections, password hashing with Argon2, short-lived access tokens and access restricted to authorised team members. No system is perfectly secure, so if you notice a vulnerability, please report it responsibly to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'rights',
+            title: 'Your rights',
+            summary:
+              'You can see, fix, export or delete your data — just ask. We answer within 30 days.',
+            paragraphs: ['Depending on the law that applies to you, you have the right to:'],
+            list: [
+              'know what data we hold about you and get a copy of it;',
+              'correct inaccurate or incomplete data;',
+              'have your data deleted (“right to be forgotten”);',
+              'restrict or object to certain processing;',
+              'receive your data in a portable, machine-readable format;',
+              'withdraw consent at any time, without affecting earlier processing;',
+              'lodge a complaint with a supervisory authority — in Ukraine, the Ukrainian Parliament Commissioner for Human Rights, or the data protection authority in your EU/UK country of residence.',
+            ],
+            note: 'Most of this you can do yourself in your account: edit your profile, choose its visibility under Privacy, download a full copy of your data as JSON, delete specific data (photo, profile details, saved items, other devices’ sign-in history) or delete the whole account. For anything else, email coil.knu@gmail.com from the address linked to your account. We will respond within 30 days.',
+          },
+          {
+            id: 'children',
+            title: 'Children',
+            summary: 'The Platform is for people aged 16+, or younger with a guardian’s consent.',
+            paragraphs: [
+              'We do not knowingly collect personal data from children under 16 without the consent of a parent or legal guardian. If you believe a child has given us data without such consent, contact us and we will delete it.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'Changes to this policy',
+            summary: 'If anything important changes, you will hear from us first.',
+            paragraphs: [
+              'We may update this Privacy Policy as the Platform evolves. The date of the latest version is shown at the top of this page. We will notify registered users of material changes by email or on the Platform before they take effect.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        title: 'Privacy Policy',
+        accent: 'Your data, explained plainly.',
+        description:
+          'We collect only what we need to run an academic community — no ads, no tracking, no selling. Here is exactly what we keep, why, and for how long.',
+        sections: [
+          {
+            id: 'controller',
+            title: 'Who is responsible',
+            summary:
+              'Taras Shevchenko National University of Kyiv is the controller of your personal data.',
+            paragraphs: [
+              'The controller of personal data processed through the VIRaTeC Platform is Taras Shevchenko National University of Kyiv, 60 Volodymyrska St, Kyiv, 01033, Ukraine, acting through the VIRaTeC initiative (“we”, “us”).',
+              'We process personal data in accordance with the Law of Ukraine “On Personal Data Protection” and, where it applies to you, the EU General Data Protection Regulation (GDPR) and the UK GDPR. For any privacy question, write to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'data-we-collect',
+            title: 'What we collect',
+            summary:
+              'Account details you give us, content you publish, and minimal technical data needed to keep you signed in.',
+            paragraphs: [
+              'We only collect data that you provide to us or that is technically necessary:',
+            ],
+            table: {
+              columns: ['Category', 'Examples', 'Source'],
+              rows: [
+                [
+                  'Account data',
+                  'Email address, name, password (stored only as an Argon2 hash), the date and version of the Terms you accepted',
+                  'You, at registration',
+                ],
+                [
+                  'Google sign-in data',
+                  'Google account ID, verified email, name, profile picture',
+                  'Google, when you choose “Continue with Google”',
+                ],
+                [
+                  'Profile data',
+                  'Role, faculty, department, bio, skills, photo, study level and year, institution, country, languages, academic profile links (ORCID, Scopus, etc.), collaboration preferences, profile visibility',
+                  'You, optionally',
+                ],
+                ['Saved items', 'Publications and projects you bookmark', 'You'],
+                [
+                  'Your content',
+                  'Research papers, projects, community posts, links you add',
+                  'You',
+                ],
+                [
+                  'Session data',
+                  'Access and refresh tokens; for each signed-in device — browser and operating system (user agent), IP address, sign-in and last-activity time, shown to you under Security → Active sessions',
+                  'Generated by the Platform when you sign in',
+                ],
+                [
+                  'Technical data',
+                  'IP address, browser type, request time in server logs',
+                  'Your browser, automatically',
+                ],
+                ['Correspondence', 'Messages you send us by email', 'You'],
+              ],
+            },
+            note: 'We do not ask for and do not want sensitive data (health, religion, political views, etc.). Please do not include it in your profile or posts.',
+          },
+          {
+            id: 'purposes',
+            title: 'Why we use it',
+            summary:
+              'To run your account, show your work to the community, keep the Platform secure and answer your messages.',
+            paragraphs: ['Each use of your data has a clear purpose and legal basis:'],
+            table: {
+              columns: ['Purpose', 'Legal basis'],
+              rows: [
+                [
+                  'Creating and running your account, signing you in',
+                  'Performance of our agreement with you (Terms of Service); GDPR Art. 6(1)(b)',
+                ],
+                [
+                  'Keeping a record that you accepted the Terms of Service and this Policy',
+                  'Our legal obligation and legitimate interest in proving the agreement; GDPR Art. 6(1)(c) and (f)',
+                ],
+                [
+                  'Publishing your profile, papers and projects to the community',
+                  'Performance of our agreement; your choice to publish',
+                ],
+                [
+                  'Keeping the Platform secure, preventing abuse, fixing errors',
+                  'Our legitimate interest in a safe service; GDPR Art. 6(1)(f)',
+                ],
+                [
+                  'Replying to your questions and partnership requests',
+                  'Our legitimate interest; your request',
+                ],
+                [
+                  'Sending important service notices (e.g. changes to terms)',
+                  'Performance of our agreement; legal obligation',
+                ],
+                [
+                  'Anything optional we may add later, such as newsletters',
+                  'Your consent, which you can withdraw at any time; GDPR Art. 6(1)(a)',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'what-we-dont-do',
+            title: 'What we never do',
+            summary: 'No selling, no advertising, no tracking pixels, no profiling.',
+            paragraphs: [
+              'Because VIRaTeC is a non-commercial academic project, we commit that we:',
+            ],
+            list: [
+              'never sell or rent your personal data;',
+              'do not show advertising or use advertising networks;',
+              'do not use analytics trackers, tracking pixels or fingerprinting;',
+              'do not make decisions about you based solely on automated processing or profiling.',
+            ],
+          },
+          {
+            id: 'sharing',
+            title: 'Who we share it with',
+            summary:
+              'Only with services that help us run the Platform, partner universities you work with, or when the law requires.',
+            paragraphs: ['We share personal data only when necessary and only with:'],
+            list: [
+              'Google — to verify your identity if you choose Google sign-in (Google acts as an independent controller under its own privacy policy);',
+              'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement: Vercel Inc. (website and API hosting, Frankfurt, Germany region) and Neon Inc. (database hosting, Frankfurt, Germany region);',
+              'partner universities and project co-participants — only the profile information and content you make visible within a joint project;',
+              'public authorities — only when we are legally required to do so.',
+            ],
+          },
+          {
+            id: 'transfers',
+            title: 'International transfers',
+            summary:
+              'Some providers may process data outside Ukraine. We make sure it stays protected.',
+            paragraphs: [
+              'Our service providers and international partners may be located outside Ukraine, including in the EU, the UK and the USA. Where data is transferred, we rely on adequacy decisions, standard contractual clauses or other safeguards required by applicable law.',
+            ],
+          },
+          {
+            id: 'retention',
+            title: 'How long we keep it',
+            summary: 'Only for as long as it is useful — then we delete or anonymise it.',
+            paragraphs: ['We keep data for the following periods:'],
+            table: {
+              columns: ['Data', 'Retention period'],
+              rows: [
+                [
+                  'Account and profile data',
+                  'While your account is active; deleted within 30 days of a deletion request',
+                ],
+                [
+                  'Your content',
+                  'While your account is active, or until you delete it; co-authored works may remain with your name removed',
+                ],
+                [
+                  'Refresh tokens and device history (IP address, browser)',
+                  'Expire after 7 days or when you sign out; expired records are erased at your next sign-in, and you can erase other devices at any time under Privacy',
+                ],
+                ['Server logs', 'Up to 90 days'],
+                ['Email correspondence', 'Up to 3 years after the conversation ends'],
+              ],
+            },
+          },
+          {
+            id: 'security',
+            title: 'How we protect it',
+            summary:
+              'Hashed passwords, encrypted connections and access only for people who need it.',
+            paragraphs: [
+              'We use appropriate technical and organisational measures to protect your data, including encrypted HTTPS connections, password hashing with Argon2, short-lived access tokens and access restricted to authorised team members. No system is perfectly secure, so if you notice a vulnerability, please report it responsibly to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'rights',
+            title: 'Your rights',
+            summary:
+              'You can see, fix, export or delete your data — just ask. We answer within 30 days.',
+            paragraphs: ['Depending on the law that applies to you, you have the right to:'],
+            list: [
+              'know what data we hold about you and get a copy of it;',
+              'correct inaccurate or incomplete data;',
+              'have your data deleted (“right to be forgotten”);',
+              'restrict or object to certain processing;',
+              'receive your data in a portable, machine-readable format;',
+              'withdraw consent at any time, without affecting earlier processing;',
+              'lodge a complaint with a supervisory authority — in Ukraine, the Ukrainian Parliament Commissioner for Human Rights, or the data protection authority in your EU/UK country of residence.',
+            ],
+            note: 'Most of this you can do yourself in your account: edit your profile, choose its visibility under Privacy, download a full copy of your data as JSON, delete specific data (photo, profile details, saved items, other devices’ sign-in history) or delete the whole account. For anything else, email coil.knu@gmail.com from the address linked to your account. We will respond within 30 days.',
+          },
+          {
+            id: 'children',
+            title: 'Children',
+            summary: 'The Platform is for people aged 16+, or younger with a guardian’s consent.',
+            paragraphs: [
+              'We do not knowingly collect personal data from children under 16 without the consent of a parent or legal guardian. If you believe a child has given us data without such consent, contact us and we will delete it.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'Changes to this policy',
+            summary: 'If anything important changes, you will hear from us first.',
+            paragraphs: [
+              'We may update this Privacy Policy as the Platform evolves. The date of the latest version is shown at the top of this page. We will notify registered users of material changes by email or on the Platform before they take effect.',
+            ],
+          },
+        ],
+      },
+      ar: {
+        title: 'Privacy Policy',
+        accent: 'Your data, explained plainly.',
+        description:
+          'We collect only what we need to run an academic community — no ads, no tracking, no selling. Here is exactly what we keep, why, and for how long.',
+        sections: [
+          {
+            id: 'controller',
+            title: 'Who is responsible',
+            summary:
+              'Taras Shevchenko National University of Kyiv is the controller of your personal data.',
+            paragraphs: [
+              'The controller of personal data processed through the VIRaTeC Platform is Taras Shevchenko National University of Kyiv, 60 Volodymyrska St, Kyiv, 01033, Ukraine, acting through the VIRaTeC initiative (“we”, “us”).',
+              'We process personal data in accordance with the Law of Ukraine “On Personal Data Protection” and, where it applies to you, the EU General Data Protection Regulation (GDPR) and the UK GDPR. For any privacy question, write to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'data-we-collect',
+            title: 'What we collect',
+            summary:
+              'Account details you give us, content you publish, and minimal technical data needed to keep you signed in.',
+            paragraphs: [
+              'We only collect data that you provide to us or that is technically necessary:',
+            ],
+            table: {
+              columns: ['Category', 'Examples', 'Source'],
+              rows: [
+                [
+                  'Account data',
+                  'Email address, name, password (stored only as an Argon2 hash), the date and version of the Terms you accepted',
+                  'You, at registration',
+                ],
+                [
+                  'Google sign-in data',
+                  'Google account ID, verified email, name, profile picture',
+                  'Google, when you choose “Continue with Google”',
+                ],
+                [
+                  'Profile data',
+                  'Role, faculty, department, bio, skills, photo, study level and year, institution, country, languages, academic profile links (ORCID, Scopus, etc.), collaboration preferences, profile visibility',
+                  'You, optionally',
+                ],
+                ['Saved items', 'Publications and projects you bookmark', 'You'],
+                [
+                  'Your content',
+                  'Research papers, projects, community posts, links you add',
+                  'You',
+                ],
+                [
+                  'Session data',
+                  'Access and refresh tokens; for each signed-in device — browser and operating system (user agent), IP address, sign-in and last-activity time, shown to you under Security → Active sessions',
+                  'Generated by the Platform when you sign in',
+                ],
+                [
+                  'Technical data',
+                  'IP address, browser type, request time in server logs',
+                  'Your browser, automatically',
+                ],
+                ['Correspondence', 'Messages you send us by email', 'You'],
+              ],
+            },
+            note: 'We do not ask for and do not want sensitive data (health, religion, political views, etc.). Please do not include it in your profile or posts.',
+          },
+          {
+            id: 'purposes',
+            title: 'Why we use it',
+            summary:
+              'To run your account, show your work to the community, keep the Platform secure and answer your messages.',
+            paragraphs: ['Each use of your data has a clear purpose and legal basis:'],
+            table: {
+              columns: ['Purpose', 'Legal basis'],
+              rows: [
+                [
+                  'Creating and running your account, signing you in',
+                  'Performance of our agreement with you (Terms of Service); GDPR Art. 6(1)(b)',
+                ],
+                [
+                  'Keeping a record that you accepted the Terms of Service and this Policy',
+                  'Our legal obligation and legitimate interest in proving the agreement; GDPR Art. 6(1)(c) and (f)',
+                ],
+                [
+                  'Publishing your profile, papers and projects to the community',
+                  'Performance of our agreement; your choice to publish',
+                ],
+                [
+                  'Keeping the Platform secure, preventing abuse, fixing errors',
+                  'Our legitimate interest in a safe service; GDPR Art. 6(1)(f)',
+                ],
+                [
+                  'Replying to your questions and partnership requests',
+                  'Our legitimate interest; your request',
+                ],
+                [
+                  'Sending important service notices (e.g. changes to terms)',
+                  'Performance of our agreement; legal obligation',
+                ],
+                [
+                  'Anything optional we may add later, such as newsletters',
+                  'Your consent, which you can withdraw at any time; GDPR Art. 6(1)(a)',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'what-we-dont-do',
+            title: 'What we never do',
+            summary: 'No selling, no advertising, no tracking pixels, no profiling.',
+            paragraphs: [
+              'Because VIRaTeC is a non-commercial academic project, we commit that we:',
+            ],
+            list: [
+              'never sell or rent your personal data;',
+              'do not show advertising or use advertising networks;',
+              'do not use analytics trackers, tracking pixels or fingerprinting;',
+              'do not make decisions about you based solely on automated processing or profiling.',
+            ],
+          },
+          {
+            id: 'sharing',
+            title: 'Who we share it with',
+            summary:
+              'Only with services that help us run the Platform, partner universities you work with, or when the law requires.',
+            paragraphs: ['We share personal data only when necessary and only with:'],
+            list: [
+              'Google — to verify your identity if you choose Google sign-in (Google acts as an independent controller under its own privacy policy);',
+              'hosting and infrastructure providers that store and process data on our behalf under a data processing agreement: Vercel Inc. (website and API hosting, Frankfurt, Germany region) and Neon Inc. (database hosting, Frankfurt, Germany region);',
+              'partner universities and project co-participants — only the profile information and content you make visible within a joint project;',
+              'public authorities — only when we are legally required to do so.',
+            ],
+          },
+          {
+            id: 'transfers',
+            title: 'International transfers',
+            summary:
+              'Some providers may process data outside Ukraine. We make sure it stays protected.',
+            paragraphs: [
+              'Our service providers and international partners may be located outside Ukraine, including in the EU, the UK and the USA. Where data is transferred, we rely on adequacy decisions, standard contractual clauses or other safeguards required by applicable law.',
+            ],
+          },
+          {
+            id: 'retention',
+            title: 'How long we keep it',
+            summary: 'Only for as long as it is useful — then we delete or anonymise it.',
+            paragraphs: ['We keep data for the following periods:'],
+            table: {
+              columns: ['Data', 'Retention period'],
+              rows: [
+                [
+                  'Account and profile data',
+                  'While your account is active; deleted within 30 days of a deletion request',
+                ],
+                [
+                  'Your content',
+                  'While your account is active, or until you delete it; co-authored works may remain with your name removed',
+                ],
+                [
+                  'Refresh tokens and device history (IP address, browser)',
+                  'Expire after 7 days or when you sign out; expired records are erased at your next sign-in, and you can erase other devices at any time under Privacy',
+                ],
+                ['Server logs', 'Up to 90 days'],
+                ['Email correspondence', 'Up to 3 years after the conversation ends'],
+              ],
+            },
+          },
+          {
+            id: 'security',
+            title: 'How we protect it',
+            summary:
+              'Hashed passwords, encrypted connections and access only for people who need it.',
+            paragraphs: [
+              'We use appropriate technical and organisational measures to protect your data, including encrypted HTTPS connections, password hashing with Argon2, short-lived access tokens and access restricted to authorised team members. No system is perfectly secure, so if you notice a vulnerability, please report it responsibly to coil.knu@gmail.com.',
+            ],
+          },
+          {
+            id: 'rights',
+            title: 'Your rights',
+            summary:
+              'You can see, fix, export or delete your data — just ask. We answer within 30 days.',
+            paragraphs: ['Depending on the law that applies to you, you have the right to:'],
+            list: [
+              'know what data we hold about you and get a copy of it;',
+              'correct inaccurate or incomplete data;',
+              'have your data deleted (“right to be forgotten”);',
+              'restrict or object to certain processing;',
+              'receive your data in a portable, machine-readable format;',
+              'withdraw consent at any time, without affecting earlier processing;',
+              'lodge a complaint with a supervisory authority — in Ukraine, the Ukrainian Parliament Commissioner for Human Rights, or the data protection authority in your EU/UK country of residence.',
+            ],
+            note: 'Most of this you can do yourself in your account: edit your profile, choose its visibility under Privacy, download a full copy of your data as JSON, delete specific data (photo, profile details, saved items, other devices’ sign-in history) or delete the whole account. For anything else, email coil.knu@gmail.com from the address linked to your account. We will respond within 30 days.',
+          },
+          {
+            id: 'children',
+            title: 'Children',
+            summary: 'The Platform is for people aged 16+, or younger with a guardian’s consent.',
+            paragraphs: [
+              'We do not knowingly collect personal data from children under 16 without the consent of a parent or legal guardian. If you believe a child has given us data without such consent, contact us and we will delete it.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'Changes to this policy',
+            summary: 'If anything important changes, you will hear from us first.',
+            paragraphs: [
+              'We may update this Privacy Policy as the Platform evolves. The date of the latest version is shown at the top of this page. We will notify registered users of material changes by email or on the Platform before they take effect.',
+            ],
+          },
+        ],
+      },
     },
   },
   cookies: {
@@ -966,6 +2034,363 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
           },
         ],
       },
+      de: {
+        title: 'Cookie Policy',
+        accent: 'Only the cookies that keep you signed in.',
+        description:
+          'VIRaTeC does not track you. We use a few strictly necessary cookies to keep your sign-in secure, and a few small notes in your browser for your language and accounts.',
+        sections: [
+          {
+            id: 'short-answer',
+            title: 'The short answer',
+            summary:
+              'Only strictly necessary sign-in and security cookies. No analytics, no ads, no tracking — that is why you never see a cookie banner here.',
+            paragraphs: [
+              'Cookies are small text files that websites store in your browser. Many sites use them to track visitors across the web. We do not.',
+              'The VIRaTeC Platform sets only first-party cookies that are strictly necessary to sign you in and protect your account. They cannot be read by JavaScript, are sent only to VIRaTeC over HTTPS and are never used for analytics, advertising or tracking. Strictly necessary cookies do not require consent, so no banner is shown.',
+            ],
+            table: {
+              columns: ['Cookie', 'Purpose', 'Type', 'Kept until'],
+              rows: [
+                [
+                  'vt_at (__Host-vt_at)',
+                  'Short-lived proof that you are signed in',
+                  'Authentication, strictly necessary',
+                  '15 minutes or until you sign out',
+                ],
+                [
+                  'vt_rt (__Secure-vt_rt)',
+                  'Renews your sign-in without asking for the password again',
+                  'Authentication, strictly necessary',
+                  '7 days or until you sign out',
+                ],
+                [
+                  'vt_csrf (__Host-vt_csrf)',
+                  'Protects your account from forged requests sent by other websites',
+                  'Security, strictly necessary',
+                  'You close the browser',
+                ],
+                [
+                  'vt_mfa (__Secure-vt_mfa)',
+                  'Links the two steps of sign-in when two-step verification is on',
+                  'Security, strictly necessary',
+                  '5 minutes',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'local-storage',
+            title: 'What we store in your browser',
+            summary:
+              'Three entries in your browser’s local storage and one in session storage. They never leave your device.',
+            paragraphs: [
+              'We use your browser’s local and session storage — similar technologies that stay on your device and are not sent with every request. Here is the full list:',
+            ],
+            table: {
+              columns: ['Key', 'Purpose', 'Type', 'Kept until'],
+              rows: [
+                [
+                  'viratec_locale',
+                  'Remembers whether you chose English or Ukrainian',
+                  'Preference, strictly necessary',
+                  'You change the language or clear site data',
+                ],
+                [
+                  'viratec_session',
+                  'A yes/no note that you are signed in, so the site knows to restore your session (not a password or token)',
+                  'Authentication, strictly necessary',
+                  'You sign out or clear site data',
+                ],
+                [
+                  'viratec_known_accounts',
+                  'Names and emails of accounts used on this device, for quick account switching (no passwords)',
+                  'Preference, functional',
+                  'You remove the account from the list or clear site data',
+                ],
+                [
+                  'viratec_stale_chunk_reload (session storage)',
+                  'The time of the last automatic reload after a site update, so the page never reloads in a loop',
+                  'Technical, strictly necessary',
+                  'You close the tab',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'third-party',
+            title: 'Third-party cookies',
+            summary: 'Only Google, and only if you click “Continue with Google”.',
+            paragraphs: [
+              'If you choose to sign in with Google, the Google Identity Services script is loaded from accounts.google.com. Google may then set its own cookies to authenticate you and protect against fraud. These cookies are controlled by Google and described in Google’s privacy and cookie policies.',
+              'If you register or sign in with email and password, no third-party cookies are involved.',
+            ],
+          },
+          {
+            id: 'external-links',
+            title: 'External links',
+            summary: 'Sites we link to, like LinkedIn or ORCID, have their own cookie rules.',
+            paragraphs: [
+              'Our pages link to external websites such as LinkedIn, Facebook, ORCID, Google Scholar and partner universities. Once you follow a link, that website’s own cookie policy applies.',
+            ],
+          },
+          {
+            id: 'control',
+            title: 'Your control',
+            summary: 'Clear everything with one click below, or through your browser settings.',
+            paragraphs: [
+              'You can remove the data we store at any time using the button on this page, or by clearing site data for this website in your browser settings. Clearing it will sign you out and reset your language preference — nothing else will break.',
+              'You can also block third-party cookies in your browser; in that case Google sign-in may not work, but email sign-in will.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'If this ever changes',
+            summary: 'Before we add any non-essential cookie, we will ask you first.',
+            paragraphs: [
+              'If we ever introduce analytics or other non-essential cookies, we will update this policy and ask for your consent before setting them. Questions? Write to coil.knu@gmail.com.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        title: 'Cookie Policy',
+        accent: 'Only the cookies that keep you signed in.',
+        description:
+          'VIRaTeC does not track you. We use a few strictly necessary cookies to keep your sign-in secure, and a few small notes in your browser for your language and accounts.',
+        sections: [
+          {
+            id: 'short-answer',
+            title: 'The short answer',
+            summary:
+              'Only strictly necessary sign-in and security cookies. No analytics, no ads, no tracking — that is why you never see a cookie banner here.',
+            paragraphs: [
+              'Cookies are small text files that websites store in your browser. Many sites use them to track visitors across the web. We do not.',
+              'The VIRaTeC Platform sets only first-party cookies that are strictly necessary to sign you in and protect your account. They cannot be read by JavaScript, are sent only to VIRaTeC over HTTPS and are never used for analytics, advertising or tracking. Strictly necessary cookies do not require consent, so no banner is shown.',
+            ],
+            table: {
+              columns: ['Cookie', 'Purpose', 'Type', 'Kept until'],
+              rows: [
+                [
+                  'vt_at (__Host-vt_at)',
+                  'Short-lived proof that you are signed in',
+                  'Authentication, strictly necessary',
+                  '15 minutes or until you sign out',
+                ],
+                [
+                  'vt_rt (__Secure-vt_rt)',
+                  'Renews your sign-in without asking for the password again',
+                  'Authentication, strictly necessary',
+                  '7 days or until you sign out',
+                ],
+                [
+                  'vt_csrf (__Host-vt_csrf)',
+                  'Protects your account from forged requests sent by other websites',
+                  'Security, strictly necessary',
+                  'You close the browser',
+                ],
+                [
+                  'vt_mfa (__Secure-vt_mfa)',
+                  'Links the two steps of sign-in when two-step verification is on',
+                  'Security, strictly necessary',
+                  '5 minutes',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'local-storage',
+            title: 'What we store in your browser',
+            summary:
+              'Three entries in your browser’s local storage and one in session storage. They never leave your device.',
+            paragraphs: [
+              'We use your browser’s local and session storage — similar technologies that stay on your device and are not sent with every request. Here is the full list:',
+            ],
+            table: {
+              columns: ['Key', 'Purpose', 'Type', 'Kept until'],
+              rows: [
+                [
+                  'viratec_locale',
+                  'Remembers whether you chose English or Ukrainian',
+                  'Preference, strictly necessary',
+                  'You change the language or clear site data',
+                ],
+                [
+                  'viratec_session',
+                  'A yes/no note that you are signed in, so the site knows to restore your session (not a password or token)',
+                  'Authentication, strictly necessary',
+                  'You sign out or clear site data',
+                ],
+                [
+                  'viratec_known_accounts',
+                  'Names and emails of accounts used on this device, for quick account switching (no passwords)',
+                  'Preference, functional',
+                  'You remove the account from the list or clear site data',
+                ],
+                [
+                  'viratec_stale_chunk_reload (session storage)',
+                  'The time of the last automatic reload after a site update, so the page never reloads in a loop',
+                  'Technical, strictly necessary',
+                  'You close the tab',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'third-party',
+            title: 'Third-party cookies',
+            summary: 'Only Google, and only if you click “Continue with Google”.',
+            paragraphs: [
+              'If you choose to sign in with Google, the Google Identity Services script is loaded from accounts.google.com. Google may then set its own cookies to authenticate you and protect against fraud. These cookies are controlled by Google and described in Google’s privacy and cookie policies.',
+              'If you register or sign in with email and password, no third-party cookies are involved.',
+            ],
+          },
+          {
+            id: 'external-links',
+            title: 'External links',
+            summary: 'Sites we link to, like LinkedIn or ORCID, have their own cookie rules.',
+            paragraphs: [
+              'Our pages link to external websites such as LinkedIn, Facebook, ORCID, Google Scholar and partner universities. Once you follow a link, that website’s own cookie policy applies.',
+            ],
+          },
+          {
+            id: 'control',
+            title: 'Your control',
+            summary: 'Clear everything with one click below, or through your browser settings.',
+            paragraphs: [
+              'You can remove the data we store at any time using the button on this page, or by clearing site data for this website in your browser settings. Clearing it will sign you out and reset your language preference — nothing else will break.',
+              'You can also block third-party cookies in your browser; in that case Google sign-in may not work, but email sign-in will.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'If this ever changes',
+            summary: 'Before we add any non-essential cookie, we will ask you first.',
+            paragraphs: [
+              'If we ever introduce analytics or other non-essential cookies, we will update this policy and ask for your consent before setting them. Questions? Write to coil.knu@gmail.com.',
+            ],
+          },
+        ],
+      },
+      ar: {
+        title: 'Cookie Policy',
+        accent: 'Only the cookies that keep you signed in.',
+        description:
+          'VIRaTeC does not track you. We use a few strictly necessary cookies to keep your sign-in secure, and a few small notes in your browser for your language and accounts.',
+        sections: [
+          {
+            id: 'short-answer',
+            title: 'The short answer',
+            summary:
+              'Only strictly necessary sign-in and security cookies. No analytics, no ads, no tracking — that is why you never see a cookie banner here.',
+            paragraphs: [
+              'Cookies are small text files that websites store in your browser. Many sites use them to track visitors across the web. We do not.',
+              'The VIRaTeC Platform sets only first-party cookies that are strictly necessary to sign you in and protect your account. They cannot be read by JavaScript, are sent only to VIRaTeC over HTTPS and are never used for analytics, advertising or tracking. Strictly necessary cookies do not require consent, so no banner is shown.',
+            ],
+            table: {
+              columns: ['Cookie', 'Purpose', 'Type', 'Kept until'],
+              rows: [
+                [
+                  'vt_at (__Host-vt_at)',
+                  'Short-lived proof that you are signed in',
+                  'Authentication, strictly necessary',
+                  '15 minutes or until you sign out',
+                ],
+                [
+                  'vt_rt (__Secure-vt_rt)',
+                  'Renews your sign-in without asking for the password again',
+                  'Authentication, strictly necessary',
+                  '7 days or until you sign out',
+                ],
+                [
+                  'vt_csrf (__Host-vt_csrf)',
+                  'Protects your account from forged requests sent by other websites',
+                  'Security, strictly necessary',
+                  'You close the browser',
+                ],
+                [
+                  'vt_mfa (__Secure-vt_mfa)',
+                  'Links the two steps of sign-in when two-step verification is on',
+                  'Security, strictly necessary',
+                  '5 minutes',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'local-storage',
+            title: 'What we store in your browser',
+            summary:
+              'Three entries in your browser’s local storage and one in session storage. They never leave your device.',
+            paragraphs: [
+              'We use your browser’s local and session storage — similar technologies that stay on your device and are not sent with every request. Here is the full list:',
+            ],
+            table: {
+              columns: ['Key', 'Purpose', 'Type', 'Kept until'],
+              rows: [
+                [
+                  'viratec_locale',
+                  'Remembers whether you chose English or Ukrainian',
+                  'Preference, strictly necessary',
+                  'You change the language or clear site data',
+                ],
+                [
+                  'viratec_session',
+                  'A yes/no note that you are signed in, so the site knows to restore your session (not a password or token)',
+                  'Authentication, strictly necessary',
+                  'You sign out or clear site data',
+                ],
+                [
+                  'viratec_known_accounts',
+                  'Names and emails of accounts used on this device, for quick account switching (no passwords)',
+                  'Preference, functional',
+                  'You remove the account from the list or clear site data',
+                ],
+                [
+                  'viratec_stale_chunk_reload (session storage)',
+                  'The time of the last automatic reload after a site update, so the page never reloads in a loop',
+                  'Technical, strictly necessary',
+                  'You close the tab',
+                ],
+              ],
+            },
+          },
+          {
+            id: 'third-party',
+            title: 'Third-party cookies',
+            summary: 'Only Google, and only if you click “Continue with Google”.',
+            paragraphs: [
+              'If you choose to sign in with Google, the Google Identity Services script is loaded from accounts.google.com. Google may then set its own cookies to authenticate you and protect against fraud. These cookies are controlled by Google and described in Google’s privacy and cookie policies.',
+              'If you register or sign in with email and password, no third-party cookies are involved.',
+            ],
+          },
+          {
+            id: 'external-links',
+            title: 'External links',
+            summary: 'Sites we link to, like LinkedIn or ORCID, have their own cookie rules.',
+            paragraphs: [
+              'Our pages link to external websites such as LinkedIn, Facebook, ORCID, Google Scholar and partner universities. Once you follow a link, that website’s own cookie policy applies.',
+            ],
+          },
+          {
+            id: 'control',
+            title: 'Your control',
+            summary: 'Clear everything with one click below, or through your browser settings.',
+            paragraphs: [
+              'You can remove the data we store at any time using the button on this page, or by clearing site data for this website in your browser settings. Clearing it will sign you out and reset your language preference — nothing else will break.',
+              'You can also block third-party cookies in your browser; in that case Google sign-in may not work, but email sign-in will.',
+            ],
+          },
+          {
+            id: 'changes',
+            title: 'If this ever changes',
+            summary: 'Before we add any non-essential cookie, we will ask you first.',
+            paragraphs: [
+              'If we ever introduce analytics or other non-essential cookies, we will update this policy and ask for your consent before setting them. Questions? Write to coil.knu@gmail.com.',
+            ],
+          },
+        ],
+      },
     },
   },
   guidelines: {
@@ -1152,6 +2577,279 @@ export const LEGAL_DOCUMENT_DATA: Record<LegalDocument, LegalDocumentData> = {
             paragraphs: [
               'Якщо ви бачите контент чи поведінку, що порушують ці правила, надішліть на coil.knu@gmail.com посилання й короткий опис. Модератори розглядають скарги конфіденційно.',
               'Залежно від серйозності порушення ми можемо попросити відредагувати контент, видалити його, винести попередження, тимчасово обмежити обліковий запис або закрити його в разі серйозних чи повторних порушень. Якщо ви вважаєте рішення помилковим, дайте відповідь на наш лист — і його перегляне інший член команди.',
+            ],
+          },
+        ],
+      },
+      de: {
+        title: 'Community Guidelines',
+        accent: 'How we work together.',
+        description:
+          'VIRaTeC brings together students and researchers from many countries, cultures and disciplines. These guidelines keep the community curious, honest and safe for everyone.',
+        sections: [
+          {
+            id: 'spirit',
+            title: 'The spirit of VIRaTeC',
+            summary: 'Assume good intent, stay curious, and make room for every voice.',
+            paragraphs: [
+              'Our community is built on intercultural competence, academic integrity and student leadership. We expect every member — students, researchers, mentors and partners — to contribute in that spirit, online and in joint projects.',
+            ],
+          },
+          {
+            id: 'respect',
+            title: 'Be respectful',
+            summary: 'Disagree with ideas, not with people.',
+            paragraphs: ['Healthy debate is welcome. To keep it healthy:'],
+            list: [
+              'treat others with courtesy, regardless of nationality, language, gender, age, religion, disability or background;',
+              'remember that many members write in a second or third language — be patient with mistakes;',
+              'give constructive feedback: specific, kind and focused on the work;',
+              'never harass, threaten, bully or demean anyone.',
+            ],
+          },
+          {
+            id: 'integrity',
+            title: 'Keep it honest',
+            summary:
+              'Cite your sources, credit your co-authors, and be open about how you used AI.',
+            paragraphs: ['Academic integrity is non-negotiable:'],
+            list: [
+              'publish only work you created or have the right to share, and cite sources properly;',
+              'list all co-authors and contributors, and get their agreement before publishing;',
+              'never fabricate or manipulate data or results;',
+              'disclose meaningful use of AI tools in research or writing, as you would any other method.',
+            ],
+          },
+          {
+            id: 'research-ethics',
+            title: 'Research with care',
+            summary:
+              'If people took part in your study, protect their privacy and respect their consent.',
+            paragraphs: [
+              'When you share research that involves human participants, make sure it has the necessary ethical approval and informed consent, and remove or anonymise personal data before publishing.',
+            ],
+          },
+          {
+            id: 'privacy',
+            title: 'Protect privacy',
+            summary: 'Do not share anyone’s personal details without their permission.',
+            paragraphs: [
+              'Do not post other people’s contact details, photos, documents or private messages without their consent. Share only what you are comfortable making visible to the whole community.',
+            ],
+          },
+          {
+            id: 'security',
+            title: 'Hack responsibly',
+            summary:
+              'Cybersecurity is one of our research areas — but never test this Platform without permission.',
+            paragraphs: [
+              'Do not attempt to break, scan or bypass the security of the Platform or other users’ accounts. If you discover a vulnerability, report it privately to coil.knu@gmail.com and give us reasonable time to fix it before disclosing it. We appreciate and will credit responsible reports.',
+              'Never share malware, exploits targeting real systems, or instructions intended to cause harm.',
+            ],
+          },
+          {
+            id: 'not-allowed',
+            title: 'What is not allowed',
+            summary: 'Anything illegal, hateful, deceptive or commercial spam.',
+            paragraphs: ['The following content will be removed:'],
+            list: [
+              'hate speech, discrimination, harassment or threats;',
+              'sexually explicit or violent content;',
+              'plagiarism, copyright infringement or fake authorship;',
+              'disinformation and deliberately misleading content;',
+              'spam, advertising or unsolicited commercial offers;',
+              'content that glorifies or justifies aggression, war crimes or terrorism.',
+            ],
+          },
+          {
+            id: 'moderation',
+            title: 'Reporting and moderation',
+            summary: 'See something wrong? Tell us. We review every report and respond fairly.',
+            paragraphs: [
+              'If you see content or behaviour that breaks these guidelines, report it to coil.knu@gmail.com with a link and a short description. Moderators review reports confidentially.',
+              'Depending on severity, we may: ask you to edit the content, remove it, issue a warning, temporarily restrict your account, or close it for serious or repeated violations. If you think a decision was wrong, reply to our message and a different team member will review it.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        title: 'Community Guidelines',
+        accent: 'How we work together.',
+        description:
+          'VIRaTeC brings together students and researchers from many countries, cultures and disciplines. These guidelines keep the community curious, honest and safe for everyone.',
+        sections: [
+          {
+            id: 'spirit',
+            title: 'The spirit of VIRaTeC',
+            summary: 'Assume good intent, stay curious, and make room for every voice.',
+            paragraphs: [
+              'Our community is built on intercultural competence, academic integrity and student leadership. We expect every member — students, researchers, mentors and partners — to contribute in that spirit, online and in joint projects.',
+            ],
+          },
+          {
+            id: 'respect',
+            title: 'Be respectful',
+            summary: 'Disagree with ideas, not with people.',
+            paragraphs: ['Healthy debate is welcome. To keep it healthy:'],
+            list: [
+              'treat others with courtesy, regardless of nationality, language, gender, age, religion, disability or background;',
+              'remember that many members write in a second or third language — be patient with mistakes;',
+              'give constructive feedback: specific, kind and focused on the work;',
+              'never harass, threaten, bully or demean anyone.',
+            ],
+          },
+          {
+            id: 'integrity',
+            title: 'Keep it honest',
+            summary:
+              'Cite your sources, credit your co-authors, and be open about how you used AI.',
+            paragraphs: ['Academic integrity is non-negotiable:'],
+            list: [
+              'publish only work you created or have the right to share, and cite sources properly;',
+              'list all co-authors and contributors, and get their agreement before publishing;',
+              'never fabricate or manipulate data or results;',
+              'disclose meaningful use of AI tools in research or writing, as you would any other method.',
+            ],
+          },
+          {
+            id: 'research-ethics',
+            title: 'Research with care',
+            summary:
+              'If people took part in your study, protect their privacy and respect their consent.',
+            paragraphs: [
+              'When you share research that involves human participants, make sure it has the necessary ethical approval and informed consent, and remove or anonymise personal data before publishing.',
+            ],
+          },
+          {
+            id: 'privacy',
+            title: 'Protect privacy',
+            summary: 'Do not share anyone’s personal details without their permission.',
+            paragraphs: [
+              'Do not post other people’s contact details, photos, documents or private messages without their consent. Share only what you are comfortable making visible to the whole community.',
+            ],
+          },
+          {
+            id: 'security',
+            title: 'Hack responsibly',
+            summary:
+              'Cybersecurity is one of our research areas — but never test this Platform without permission.',
+            paragraphs: [
+              'Do not attempt to break, scan or bypass the security of the Platform or other users’ accounts. If you discover a vulnerability, report it privately to coil.knu@gmail.com and give us reasonable time to fix it before disclosing it. We appreciate and will credit responsible reports.',
+              'Never share malware, exploits targeting real systems, or instructions intended to cause harm.',
+            ],
+          },
+          {
+            id: 'not-allowed',
+            title: 'What is not allowed',
+            summary: 'Anything illegal, hateful, deceptive or commercial spam.',
+            paragraphs: ['The following content will be removed:'],
+            list: [
+              'hate speech, discrimination, harassment or threats;',
+              'sexually explicit or violent content;',
+              'plagiarism, copyright infringement or fake authorship;',
+              'disinformation and deliberately misleading content;',
+              'spam, advertising or unsolicited commercial offers;',
+              'content that glorifies or justifies aggression, war crimes or terrorism.',
+            ],
+          },
+          {
+            id: 'moderation',
+            title: 'Reporting and moderation',
+            summary: 'See something wrong? Tell us. We review every report and respond fairly.',
+            paragraphs: [
+              'If you see content or behaviour that breaks these guidelines, report it to coil.knu@gmail.com with a link and a short description. Moderators review reports confidentially.',
+              'Depending on severity, we may: ask you to edit the content, remove it, issue a warning, temporarily restrict your account, or close it for serious or repeated violations. If you think a decision was wrong, reply to our message and a different team member will review it.',
+            ],
+          },
+        ],
+      },
+      ar: {
+        title: 'Community Guidelines',
+        accent: 'How we work together.',
+        description:
+          'VIRaTeC brings together students and researchers from many countries, cultures and disciplines. These guidelines keep the community curious, honest and safe for everyone.',
+        sections: [
+          {
+            id: 'spirit',
+            title: 'The spirit of VIRaTeC',
+            summary: 'Assume good intent, stay curious, and make room for every voice.',
+            paragraphs: [
+              'Our community is built on intercultural competence, academic integrity and student leadership. We expect every member — students, researchers, mentors and partners — to contribute in that spirit, online and in joint projects.',
+            ],
+          },
+          {
+            id: 'respect',
+            title: 'Be respectful',
+            summary: 'Disagree with ideas, not with people.',
+            paragraphs: ['Healthy debate is welcome. To keep it healthy:'],
+            list: [
+              'treat others with courtesy, regardless of nationality, language, gender, age, religion, disability or background;',
+              'remember that many members write in a second or third language — be patient with mistakes;',
+              'give constructive feedback: specific, kind and focused on the work;',
+              'never harass, threaten, bully or demean anyone.',
+            ],
+          },
+          {
+            id: 'integrity',
+            title: 'Keep it honest',
+            summary:
+              'Cite your sources, credit your co-authors, and be open about how you used AI.',
+            paragraphs: ['Academic integrity is non-negotiable:'],
+            list: [
+              'publish only work you created or have the right to share, and cite sources properly;',
+              'list all co-authors and contributors, and get their agreement before publishing;',
+              'never fabricate or manipulate data or results;',
+              'disclose meaningful use of AI tools in research or writing, as you would any other method.',
+            ],
+          },
+          {
+            id: 'research-ethics',
+            title: 'Research with care',
+            summary:
+              'If people took part in your study, protect their privacy and respect their consent.',
+            paragraphs: [
+              'When you share research that involves human participants, make sure it has the necessary ethical approval and informed consent, and remove or anonymise personal data before publishing.',
+            ],
+          },
+          {
+            id: 'privacy',
+            title: 'Protect privacy',
+            summary: 'Do not share anyone’s personal details without their permission.',
+            paragraphs: [
+              'Do not post other people’s contact details, photos, documents or private messages without their consent. Share only what you are comfortable making visible to the whole community.',
+            ],
+          },
+          {
+            id: 'security',
+            title: 'Hack responsibly',
+            summary:
+              'Cybersecurity is one of our research areas — but never test this Platform without permission.',
+            paragraphs: [
+              'Do not attempt to break, scan or bypass the security of the Platform or other users’ accounts. If you discover a vulnerability, report it privately to coil.knu@gmail.com and give us reasonable time to fix it before disclosing it. We appreciate and will credit responsible reports.',
+              'Never share malware, exploits targeting real systems, or instructions intended to cause harm.',
+            ],
+          },
+          {
+            id: 'not-allowed',
+            title: 'What is not allowed',
+            summary: 'Anything illegal, hateful, deceptive or commercial spam.',
+            paragraphs: ['The following content will be removed:'],
+            list: [
+              'hate speech, discrimination, harassment or threats;',
+              'sexually explicit or violent content;',
+              'plagiarism, copyright infringement or fake authorship;',
+              'disinformation and deliberately misleading content;',
+              'spam, advertising or unsolicited commercial offers;',
+              'content that glorifies or justifies aggression, war crimes or terrorism.',
+            ],
+          },
+          {
+            id: 'moderation',
+            title: 'Reporting and moderation',
+            summary: 'See something wrong? Tell us. We review every report and respond fairly.',
+            paragraphs: [
+              'If you see content or behaviour that breaks these guidelines, report it to coil.knu@gmail.com with a link and a short description. Moderators review reports confidentially.',
+              'Depending on severity, we may: ask you to edit the content, remove it, issue a warning, temporarily restrict your account, or close it for serious or repeated violations. If you think a decision was wrong, reply to our message and a different team member will review it.',
             ],
           },
         ],

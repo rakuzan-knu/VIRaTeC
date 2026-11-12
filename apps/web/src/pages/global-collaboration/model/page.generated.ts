@@ -34,6 +34,7 @@ export const PAGE_TEXT: Localized<GlobalCollaborationContent> = {
           'Mixed teams of students from two or more universities solve a shared challenge online.',
         to: ROUTES.PROJECTS,
         image: asset_globalcollaborationpage_formats_1_image,
+        imageAlt: '',
       },
       {
         title: 'COIL CyberBridge Talks',
@@ -41,6 +42,7 @@ export const PAGE_TEXT: Localized<GlobalCollaborationContent> = {
           'An international conference series where student teams present the results of concurrent COIL modules.',
         to: ROUTES.PUBLICATIONS,
         image: asset_globalcollaborationpage_formats_2_image,
+        imageAlt: '',
       },
       {
         title: 'Role-play & digital simulation',
@@ -48,6 +50,7 @@ export const PAGE_TEXT: Localized<GlobalCollaborationContent> = {
           'Global Collaboration Framework sessions with Johns Hopkins University, such as an offshore wind farm negotiation.',
         to: ROUTES.EXPERIENTIAL_LEARNING,
         image: asset_globalcollaborationpage_formats_3_image,
+        imageAlt: '',
       },
     ],
     partnershipEyebrow: 'Become a partner',
@@ -92,6 +95,7 @@ export const PAGE_TEXT: Localized<GlobalCollaborationContent> = {
           'Змішані команди студентів із двох і більше університетів онлайн розв’язують спільне завдання.',
         to: ROUTES.PROJECTS,
         image: asset_globalcollaborationpage_formats_1_image,
+        imageAlt: '',
       },
       {
         title: 'COIL CyberBridge Talks',
@@ -99,6 +103,7 @@ export const PAGE_TEXT: Localized<GlobalCollaborationContent> = {
           'Серія міжнародних конференцій, на яких студентські команди представляють результати паралельних COIL-модулів.',
         to: ROUTES.PUBLICATIONS,
         image: asset_globalcollaborationpage_formats_2_image,
+        imageAlt: '',
       },
       {
         title: 'Рольові ігри та цифрові симуляції',
@@ -106,6 +111,7 @@ export const PAGE_TEXT: Localized<GlobalCollaborationContent> = {
           'Сесії Global Collaboration Framework з Університетом Джонса Гопкінса, як-от переговори щодо офшорної вітрової електростанції.',
         to: ROUTES.EXPERIENTIAL_LEARNING,
         image: asset_globalcollaborationpage_formats_3_image,
+        imageAlt: '',
       },
     ],
     partnershipEyebrow: 'Станьте партнером',

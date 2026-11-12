@@ -154,4 +154,232 @@ export const MILESTONES: Localized<Milestone[]> = {
       isUpcoming: true,
     },
   ],
+  de: [
+    {
+      date: '2019',
+      title: 'Where it started',
+      description:
+        'Dr. Larysa Liashenko starts international virtual exchanges that connect KNU students with peers in the UK, the USA, Asia and Europe.',
+    },
+    {
+      date: 'April 2025',
+      title: 'Cybersecurity in Action',
+      description:
+        'A Cybersecurity Essentials COIL pilot with partners in Colombia and Chile is presented at the VIII International PCSICS Conference on 11 April 2025.',
+    },
+    {
+      date: 'April 2025',
+      title: 'VIRaTeC Global Community',
+      description:
+        'The VIRaTeC Global Community at KNU opens to students, educators, researchers and innovators worldwide.',
+    },
+    {
+      date: 'June 2025',
+      title: 'COIL + CyberBridge Talks',
+      description:
+        'Three concurrent COIL modules with Coventry University, Universidad Católica de Colombia, Santo Tomás, the American University in the Emirates and Karunya Institute end with certificates on 5 June. KNU names the students’ project the first intercontinental virtual research (COIL) project.',
+    },
+    {
+      date: 'February 2026',
+      title: 'Foundations of NLP',
+      description:
+        'An 8-week certified Research-Based Learning module starts on 16 February: 206 students from 8 universities, 31 international teams.',
+    },
+    {
+      date: 'Spring 2026',
+      title: 'Data-Driven Decision Making Across Borders',
+      description:
+        'An 8-week COIL with Coventry University, the University of Florida and the KNU Faculty of Economics: 67 students.',
+    },
+    {
+      date: 'May 2026',
+      title: 'Student research published',
+      description:
+        'Six KNU FIT students publish two articles in Grail of Science, a Category B journal, on 1 May 2026.',
+    },
+    {
+      date: 'June 2026',
+      title: 'Digital Narratives 2026',
+      description:
+        'A KNU conference on 8 June presents the results of certified COIL modules to nearly 100 participants.',
+    },
+    {
+      date: 'September 2026',
+      title: 'Global Collaboration Framework with Johns Hopkins',
+      description:
+        'An author-led workshop by Dr. Kelly Tzoumis (JHU) for 54 students and faculty, followed by the online event “From Student Ideas to Global Research” on 15 September.',
+    },
+    {
+      date: 'October 2026',
+      title: 'Tyshchenko Legacy Conference at KNU',
+      description:
+        'The II International Scientific Conference on 14–15 October, where Dr. Larysa Liashenko gives a plenary talk on the global student collaboration network.',
+    },
+    {
+      date: 'November 2026',
+      title: 'CIITD-2026 and the Space Analytics symposium',
+      description:
+        'On 19 November: the VIII International Conference of Young Scientists at PSTU and a symposium presenting the research outcomes of the VIRaTeC International COIL Module.',
+      isUpcoming: true,
+    },
+    {
+      date: 'December 2026',
+      title: 'Digital simulation course with Johns Hopkins',
+      description:
+        'An AI-based digital simulation course “Environmental Decision-Making: Foundations and Applied Approaches from the Field”.',
+      isUpcoming: true,
+    },
+  ],
+  fr: [
+    {
+      date: '2019',
+      title: 'Where it started',
+      description:
+        'Dr. Larysa Liashenko starts international virtual exchanges that connect KNU students with peers in the UK, the USA, Asia and Europe.',
+    },
+    {
+      date: 'April 2025',
+      title: 'Cybersecurity in Action',
+      description:
+        'A Cybersecurity Essentials COIL pilot with partners in Colombia and Chile is presented at the VIII International PCSICS Conference on 11 April 2025.',
+    },
+    {
+      date: 'April 2025',
+      title: 'VIRaTeC Global Community',
+      description:
+        'The VIRaTeC Global Community at KNU opens to students, educators, researchers and innovators worldwide.',
+    },
+    {
+      date: 'June 2025',
+      title: 'COIL + CyberBridge Talks',
+      description:
+        'Three concurrent COIL modules with Coventry University, Universidad Católica de Colombia, Santo Tomás, the American University in the Emirates and Karunya Institute end with certificates on 5 June. KNU names the students’ project the first intercontinental virtual research (COIL) project.',
+    },
+    {
+      date: 'February 2026',
+      title: 'Foundations of NLP',
+      description:
+        'An 8-week certified Research-Based Learning module starts on 16 February: 206 students from 8 universities, 31 international teams.',
+    },
+    {
+      date: 'Spring 2026',
+      title: 'Data-Driven Decision Making Across Borders',
+      description:
+        'An 8-week COIL with Coventry University, the University of Florida and the KNU Faculty of Economics: 67 students.',
+    },
+    {
+      date: 'May 2026',
+      title: 'Student research published',
+      description:
+        'Six KNU FIT students publish two articles in Grail of Science, a Category B journal, on 1 May 2026.',
+    },
+    {
+      date: 'June 2026',
+      title: 'Digital Narratives 2026',
+      description:
+        'A KNU conference on 8 June presents the results of certified COIL modules to nearly 100 participants.',
+    },
+    {
+      date: 'September 2026',
+      title: 'Global Collaboration Framework with Johns Hopkins',
+      description:
+        'An author-led workshop by Dr. Kelly Tzoumis (JHU) for 54 students and faculty, followed by the online event “From Student Ideas to Global Research” on 15 September.',
+    },
+    {
+      date: 'October 2026',
+      title: 'Tyshchenko Legacy Conference at KNU',
+      description:
+        'The II International Scientific Conference on 14–15 October, where Dr. Larysa Liashenko gives a plenary talk on the global student collaboration network.',
+    },
+    {
+      date: 'November 2026',
+      title: 'CIITD-2026 and the Space Analytics symposium',
+      description:
+        'On 19 November: the VIII International Conference of Young Scientists at PSTU and a symposium presenting the research outcomes of the VIRaTeC International COIL Module.',
+      isUpcoming: true,
+    },
+    {
+      date: 'December 2026',
+      title: 'Digital simulation course with Johns Hopkins',
+      description:
+        'An AI-based digital simulation course “Environmental Decision-Making: Foundations and Applied Approaches from the Field”.',
+      isUpcoming: true,
+    },
+  ],
+  ar: [
+    {
+      date: '2019',
+      title: 'Where it started',
+      description:
+        'Dr. Larysa Liashenko starts international virtual exchanges that connect KNU students with peers in the UK, the USA, Asia and Europe.',
+    },
+    {
+      date: 'April 2025',
+      title: 'Cybersecurity in Action',
+      description:
+        'A Cybersecurity Essentials COIL pilot with partners in Colombia and Chile is presented at the VIII International PCSICS Conference on 11 April 2025.',
+    },
+    {
+      date: 'April 2025',
+      title: 'VIRaTeC Global Community',
+      description:
+        'The VIRaTeC Global Community at KNU opens to students, educators, researchers and innovators worldwide.',
+    },
+    {
+      date: 'June 2025',
+      title: 'COIL + CyberBridge Talks',
+      description:
+        'Three concurrent COIL modules with Coventry University, Universidad Católica de Colombia, Santo Tomás, the American University in the Emirates and Karunya Institute end with certificates on 5 June. KNU names the students’ project the first intercontinental virtual research (COIL) project.',
+    },
+    {
+      date: 'February 2026',
+      title: 'Foundations of NLP',
+      description:
+        'An 8-week certified Research-Based Learning module starts on 16 February: 206 students from 8 universities, 31 international teams.',
+    },
+    {
+      date: 'Spring 2026',
+      title: 'Data-Driven Decision Making Across Borders',
+      description:
+        'An 8-week COIL with Coventry University, the University of Florida and the KNU Faculty of Economics: 67 students.',
+    },
+    {
+      date: 'May 2026',
+      title: 'Student research published',
+      description:
+        'Six KNU FIT students publish two articles in Grail of Science, a Category B journal, on 1 May 2026.',
+    },
+    {
+      date: 'June 2026',
+      title: 'Digital Narratives 2026',
+      description:
+        'A KNU conference on 8 June presents the results of certified COIL modules to nearly 100 participants.',
+    },
+    {
+      date: 'September 2026',
+      title: 'Global Collaboration Framework with Johns Hopkins',
+      description:
+        'An author-led workshop by Dr. Kelly Tzoumis (JHU) for 54 students and faculty, followed by the online event “From Student Ideas to Global Research” on 15 September.',
+    },
+    {
+      date: 'October 2026',
+      title: 'Tyshchenko Legacy Conference at KNU',
+      description:
+        'The II International Scientific Conference on 14–15 October, where Dr. Larysa Liashenko gives a plenary talk on the global student collaboration network.',
+    },
+    {
+      date: 'November 2026',
+      title: 'CIITD-2026 and the Space Analytics symposium',
+      description:
+        'On 19 November: the VIII International Conference of Young Scientists at PSTU and a symposium presenting the research outcomes of the VIRaTeC International COIL Module.',
+      isUpcoming: true,
+    },
+    {
+      date: 'December 2026',
+      title: 'Digital simulation course with Johns Hopkins',
+      description:
+        'An AI-based digital simulation course “Environmental Decision-Making: Foundations and Applied Approaches from the Field”.',
+      isUpcoming: true,
+    },
+  ],
 };
