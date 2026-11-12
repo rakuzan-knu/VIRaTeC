@@ -130,10 +130,7 @@ export function AboutInitiativePage() {
               />
               <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {content.team.map((member) => (
-                  <li
-                    key={member.name}
-                    className="lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-1"
-                  >
+                  <li key={member.name}>
                     <PersonCard name={member.name} role={member.role} photo={member.photo} />
                   </li>
                 ))}
