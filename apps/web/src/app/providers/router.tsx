@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import type { QueryClient } from '@tanstack/react-query';
 import {
   createBrowserRouter,
   matchRoutes,
@@ -12,6 +13,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { RootLayout, RouteError, RouteFallback } from './RootLayout';
 import { ENGLISH_ROUTES, ROUTES, toEnglishPath } from '@/shared/config/routes';
 import { endHydration } from '@/shared/lib';
+import { queryClient } from '../App';
 
 const withEnglishRoutes = (children: RouteObject[]): RouteObject[] => [
   ...children,
@@ -21,6 +23,25 @@ const withEnglishRoutes = (children: RouteObject[]): RouteObject[] => [
       : [],
   ),
 ];
+
+type DataPrefetch = (client: QueryClient) => Promise<void>;
+
+interface PrefetchHandle {
+  prefetchData: () => void;
+}
+
+const prefetchHandle = (load: () => Promise<DataPrefetch>): PrefetchHandle => ({
+  prefetchData: () => {
+    load()
+      .then((prefetch) => prefetch(queryClient))
+      .catch(() => undefined);
+  },
+});
+
+const isPrefetchHandle = (handle: unknown): handle is PrefetchHandle =>
+  typeof handle === 'object' &&
+  handle !== null &&
+  typeof (handle as Record<string, unknown>).prefetchData === 'function';
 
 export const routes: RouteObject[] = [
   {
@@ -123,6 +144,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: ROUTES.PEOPLE,
+        handle: prefetchHandle(async () => (await import('@/pages/people')).prefetchDirectory),
         lazy: async () => ({ Component: (await import('@/pages/people')).PeoplePage }),
       },
       {
@@ -153,6 +175,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: ROUTES.PROJECTS,
+        handle: prefetchHandle(async () => (await import('@/pages/projects')).prefetchProjects),
         lazy: async () => ({ Component: (await import('@/pages/projects')).ProjectsPage }),
       },
       {
@@ -175,6 +198,9 @@ export const routes: RouteObject[] = [
       },
       {
         path: ROUTES.PUBLICATIONS,
+        handle: prefetchHandle(
+          async () => (await import('@/pages/publications')).prefetchPublications,
+        ),
         lazy: async () => ({ Component: (await import('@/pages/publications')).PublicationsPage }),
       },
       {
@@ -262,12 +288,19 @@ function prefetchRoute(pathname: string) {
   }
 }
 
+function prefetchRouteData(pathname: string) {
+  for (const { route } of matchRoutes(routes, pathname) ?? []) {
+    if (isPrefetchHandle(route.handle)) route.handle.prefetchData();
+  }
+}
+
 function handleNavigationIntent(event: Event) {
   if (!(event.target instanceof Element)) return;
   const anchor = event.target.closest('a[href]');
   if (!(anchor instanceof HTMLAnchorElement) || anchor.origin !== window.location.origin) return;
   if (anchor.pathname === window.location.pathname) return;
   prefetchRoute(anchor.pathname);
+  prefetchRouteData(anchor.pathname);
 }
 
 async function resolveLazyMatches(pathname: string) {

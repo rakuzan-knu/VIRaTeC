@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import { forgetAllAccounts, useAccountLabels, useSessionStore } from '@/entities/session';
 import { ProfileForm } from '@/features/update-profile';
@@ -35,6 +35,8 @@ export function AccountPage() {
   const account = useSessionStore((state) => state.user);
   const { active, select } = useAccountSection();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const navigate = useNavigate();
+  const location = useLocation();
   useSeo(t.seoTitle, { noindex: true });
 
   if (!account) return null;
@@ -44,7 +46,9 @@ export function AccountPage() {
   );
 
   const switchAccount = (email?: string) =>
-    logout({ to: ROUTES.LOGIN, state: email ? { email } : undefined });
+    navigate(ROUTES.LOGIN, {
+      state: { email, addAccount: true, from: `${location.pathname}${location.search}` },
+    });
 
   return (
     <PageLayout

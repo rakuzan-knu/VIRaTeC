@@ -100,43 +100,17 @@ export class PasswordResetService {
     return { success: true };
   }
 
+  async verifyCode(rawEmail: string, code: string) {
+    await this.checkCode(rawEmail.toLowerCase(), code);
+    return { success: true };
+  }
+
   async reset(
     { email: rawEmail, code, newPassword }: ResetPasswordInput,
     client: ClientContext = {},
   ) {
     const email = rawEmail.toLowerCase();
-    await this.rateLimit.consume(
-      `password:reset:email:${sha256Hex(email)}`,
-      RATE_LIMITS.passwordResetPerEmail,
-    );
-
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        emailVerifiedAt: true,
-        emailOwnershipClaimable: true,
-        passwordHash: true,
-      },
-    });
-    const token = user
-      ? await this.prisma.emailToken.findFirst({
-          where: {
-            userId: user.id,
-            purpose: EmailTokenPurpose.RESET_PASSWORD,
-            consumedAt: null,
-            expiresAt: { gt: new Date() },
-          },
-          orderBy: { createdAt: 'desc' },
-        })
-      : null;
-    if (!user || !token || token.attempts >= RESET_CODE_MAX_ATTEMPTS) throw invalidCode();
-
-    await this.prisma.emailToken.update({
-      where: { id: token.id },
-      data: { attempts: { increment: 1 } },
-    });
-    if (!safeEqual(this.hash(user.id, code), token.tokenHash)) throw invalidCode();
+    const { user, token } = await this.checkCode(email, code);
 
     const passwordHash = await argon2.hash(newPassword);
     const claimedUnverified = !user.emailVerifiedAt && user.emailOwnershipClaimable;
@@ -174,5 +148,41 @@ export class PasswordResetService {
     });
     await this.securityMail?.passwordChanged(email);
     return { success: true };
+  }
+
+  private async checkCode(email: string, code: string) {
+    await this.rateLimit.consume(
+      `password:reset:email:${sha256Hex(email)}`,
+      RATE_LIMITS.passwordResetPerEmail,
+    );
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        emailVerifiedAt: true,
+        emailOwnershipClaimable: true,
+        passwordHash: true,
+      },
+    });
+    const token = user
+      ? await this.prisma.emailToken.findFirst({
+          where: {
+            userId: user.id,
+            purpose: EmailTokenPurpose.RESET_PASSWORD,
+            consumedAt: null,
+            expiresAt: { gt: new Date() },
+          },
+          orderBy: { createdAt: 'desc' },
+        })
+      : null;
+    if (!user || !token || token.attempts >= RESET_CODE_MAX_ATTEMPTS) throw invalidCode();
+
+    await this.prisma.emailToken.update({
+      where: { id: token.id },
+      data: { attempts: { increment: 1 } },
+    });
+    if (!safeEqual(this.hash(user.id, code), token.tokenHash)) throw invalidCode();
+    return { user, token };
   }
 }

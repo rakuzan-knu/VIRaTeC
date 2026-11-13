@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Bookmark, Eye, LayoutDashboard, LogOut, PencilRuler, UserRound } from 'lucide-react';
 import { AdminPermission, StaffRole } from '@viratec/contracts';
 import { useKnownAccounts, useSessionStore } from '@/entities/session';
@@ -113,6 +114,8 @@ export function useAccountMenu() {
   const isStaff = Boolean(user && user.staffRole !== StaffRole.NONE);
   const canEditSite = Boolean(user?.permissions.includes(AdminPermission.CONTENT_VIEW));
   const { mutate: logout, isPending: isSigningOut } = useLogout();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const links = useMemo<AccountMenuLink[]>(
     () => [
@@ -138,7 +141,7 @@ export function useAccountMenu() {
     manageAccountsTo: buildAccountPath('accounts'),
     signOut: () => logout({ to: ROUTES.HOME }),
     switchTo: (email?: string) =>
-      logout({ to: ROUTES.LOGIN, state: email ? { email } : undefined }),
+      navigate(ROUTES.LOGIN, { state: { email, addAccount: true, from: location.pathname } }),
     isSigningOut,
     signOutIcon: LogOut,
   };

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions, useQuery, type QueryClient } from '@tanstack/react-query';
 import { useLocale } from '@/shared/i18n';
 import { useRecordOverlay } from '@/shared/lib';
 import { PROJECT_PREVIEW, fetchProject, fetchProjects } from '../api/projectApi';
@@ -12,6 +12,16 @@ export const projectKeys = {
   detail: (projectId: string) => [...projectKeys.all, 'detail', projectId] as const,
 };
 
+const projectListOptions = (tag?: string) =>
+  queryOptions({
+    queryKey: projectKeys.list(tag),
+    queryFn: () => fetchProjects(tag),
+    staleTime: 60_000,
+  });
+
+export const prefetchProjects = (queryClient: QueryClient) =>
+  queryClient.prefetchQuery(projectListOptions());
+
 export function useProjects(tag?: string) {
   const locale = useLocale();
   const overlay = useRecordOverlay(PROJECT_PREVIEW);
@@ -20,11 +30,9 @@ export function useProjects(tag?: string) {
     [locale, overlay],
   );
   return useQuery({
-    queryKey: projectKeys.list(tag),
-    queryFn: () => fetchProjects(tag),
+    ...projectListOptions(tag),
     select: localize,
     placeholderData: keepPreviousData,
-    staleTime: 60_000,
   });
 }
 

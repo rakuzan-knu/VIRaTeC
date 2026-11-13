@@ -44,10 +44,20 @@ export function ChangeEmailForm({ account }: ChangeEmailFormProps) {
         </div>
       )}
       <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+        <input
+          type="email"
+          name="username"
+          autoComplete="username"
+          value={account.email}
+          readOnly
+          hidden
+          tabIndex={-1}
+          aria-hidden="true"
+        />
         <Input
           label={t.newEmail}
           type="email"
-          autoComplete="email"
+          autoComplete="off"
           error={errors.newEmail?.message}
           {...register('newEmail')}
         />

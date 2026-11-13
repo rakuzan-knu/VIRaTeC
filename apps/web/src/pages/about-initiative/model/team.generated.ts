@@ -2,8 +2,11 @@ import type { Localized } from '@/shared/i18n/model/types';
 import type { Founder, TeamMember } from './types';
 import asset_person_anastasiia_loban_photo from '@/shared/assets/contentful/person-anastasiia-loban-photo.webp';
 import asset_person_anton_dmytrenko_photo from '@/shared/assets/contentful/person-anton-dmytrenko-photo.webp';
+import asset_person_eduard_parkhomenko_photo from '@/shared/assets/contentful/person-eduard-parkhomenko-photo.webp';
 import asset_person_larysa_liashenko_photo from '@/shared/assets/contentful/person-larysa-liashenko-photo.webp';
+import asset_person_oleksii_photo from '@/shared/assets/contentful/person-oleksii-photo.webp';
 import asset_person_tetiana_andriichuk_photo from '@/shared/assets/contentful/person-tetiana-andriichuk-photo.webp';
+import asset_person_vadym_photo from '@/shared/assets/contentful/person-vadym-photo.webp';
 import asset_person_yuliia_novichkova_photo from '@/shared/assets/contentful/person-yuliia-novichkova-photo.webp';
 
 export const TEAM: Localized<TeamMember[]> = {
@@ -30,7 +33,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Eduard Parkhomenko',
-      role: 'Team Lead · Foundations of NLP, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Yuliia Novichkova',
@@ -38,6 +42,16 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
   ],
   uk: [
     {
@@ -62,7 +76,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Едуард Пархоменко',
-      role: 'Тимлід · Foundations of NLP, магістрант кафедри інтелектуальних технологій, ФІТ КНУ',
+      role: 'Тимлід · модуль COIL «Foundations of NLP: From Text Preprocessing to Sentiment Analysis», магістрант кафедри інтелектуальних технологій, ФІТ КНУ',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Юлія Новічкова',
@@ -70,6 +85,16 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Ольга Єзерська', role: 'Тренерка воркшопів і модераторка · ФІТ КНУ' },
+    {
+      name: 'Вадим',
+      role: 'Співорганізатор першого модуля COIL · випускник магістратури ФІТ КНУ 2024 року, спеціальність «Технології штучного інтелекту»',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Олексій',
+      role: 'Тренер воркшопів · ML-інженер, Chartbeat · випускник магістратури ФІТ КНУ 2024 року, спеціальність «Технології штучного інтелекту»',
+      photo: asset_person_oleksii_photo,
+    },
   ],
   de: [
     {
@@ -94,7 +119,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Eduard Parkhomenko',
-      role: 'Team Lead · Foundations of NLP, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Yuliia Novichkova',
@@ -102,6 +128,16 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
   ],
   fr: [
     {
@@ -126,7 +162,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Eduard Parkhomenko',
-      role: 'Team Lead · Foundations of NLP, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Yuliia Novichkova',
@@ -134,6 +171,16 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
   ],
   ar: [
     {
@@ -158,7 +205,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Eduard Parkhomenko',
-      role: 'Team Lead · Foundations of NLP, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Yuliia Novichkova',
@@ -166,6 +214,16 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
   ],
 };
 

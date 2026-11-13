@@ -83,7 +83,7 @@ export function ArticleEditor({
   }, [editor, valueKey]);
 
   useEffect(() => {
-    editor?.setEditable(!readOnly);
+    editor?.setEditable(!readOnly, false);
   }, [editor, readOnly]);
 
   return (

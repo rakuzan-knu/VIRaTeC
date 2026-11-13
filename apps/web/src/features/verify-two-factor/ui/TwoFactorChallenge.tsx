@@ -94,6 +94,11 @@ const MESSAGES = defineMessages({
 
 type Messages = (typeof MESSAGES)['en'];
 
+const BACKUP_CODE_PATTERN = /^[A-Z0-9]{5}-[A-Z0-9]{5}$/;
+
+const isCompleteCode = (value: string, useBackup: boolean) =>
+  useBackup ? BACKUP_CODE_PATTERN.test(value) : /^\d{6}$/.test(value);
+
 const getErrorMessage = (error: Error | null, t: Messages, networkError: string) => {
   if (!error) return null;
   if (!(error instanceof ApiError)) return t.unexpected;
@@ -156,13 +161,14 @@ export function TwoFactorChallenge() {
           <Input
             id={inputId}
             value={code}
-            onChange={(event) =>
-              setCode(
-                useBackup
-                  ? event.target.value.toUpperCase().slice(0, 11)
-                  : event.target.value.replace(/\D/g, '').slice(0, 6),
-              )
-            }
+            onChange={(event) => {
+              const next = useBackup
+                ? event.target.value.toUpperCase().slice(0, 11)
+                : event.target.value.replace(/\D/g, '').slice(0, 6);
+              setCode(next);
+              if (next !== code && !isPending && isCompleteCode(next, useBackup)) verify(next);
+            }}
+            readOnly={isPending}
             inputMode={useBackup ? 'text' : 'numeric'}
             autoComplete="one-time-code"
             autoFocus

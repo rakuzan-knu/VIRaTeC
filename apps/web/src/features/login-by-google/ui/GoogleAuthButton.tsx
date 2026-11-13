@@ -201,13 +201,21 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
         aria-busy={isPending || undefined}
         inert={isPending}
         className={cn(
-          'flex w-full items-center justify-center transition-opacity',
+          'relative flex w-full items-center justify-center transition-opacity',
           isPending && 'pointer-events-none opacity-60',
           className,
           isAwaitingTerms && 'hidden',
         )}
       >
         <div ref={containerRef} className="flex min-h-10 w-full justify-center" />
+        {isLoading && !isPending && (
+          <p
+            role="status"
+            className="absolute inset-0 flex items-center justify-center rounded-[9px] border border-auth-border text-xs text-auth-muted"
+          >
+            {t.loading}
+          </p>
+        )}
       </div>
       {isAwaitingTerms && (
         <div className="space-y-3 rounded-lg border border-auth-border p-4">
@@ -263,9 +271,9 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
           </div>
         </div>
       )}
-      {(isLoading || isPending) && (
+      {isPending && (
         <p role="status" className="text-center text-xs text-auth-muted">
-          {isPending ? t.signingIn : t.loading}
+          {t.signingIn}
         </p>
       )}
       {errorMessage && (
