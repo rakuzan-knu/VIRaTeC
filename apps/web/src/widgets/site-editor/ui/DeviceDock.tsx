@@ -1,41 +1,75 @@
-import { ArrowLeft, Eye, Smartphone, Tablet } from 'lucide-react';
+import { useState } from 'react';
+import { Eye, Monitor, PencilLine, SlidersHorizontal } from 'lucide-react';
+import { cn } from '@/shared/lib';
 import type { SiteEditorMessages } from '../model/messages';
-import { useSiteEditorStore, type PreviewDevice } from '../model/store';
+import { useSiteEditorStore, type EditorMode } from '../model/store';
+import { DeviceSettings } from './DeviceSettings';
 import { SegmentedChoice } from './SegmentedChoice';
 
 interface DeviceDockProps {
-  device: Exclude<PreviewDevice, 'desktop'>;
+  width: number;
   t: SiteEditorMessages;
 }
 
-export function DeviceDock({ device, t }: DeviceDockProps) {
-  const { setDevice, setMode } = useSiteEditorStore.getState();
+const WIDE_QUERY = '(min-width: 1280px)';
+
+const isWide = () => typeof window !== 'undefined' && window.matchMedia(WIDE_QUERY).matches;
+
+const BUTTON_CLASS =
+  'inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus motion-reduce:transition-none';
+
+export function DeviceDock({ width, t }: DeviceDockProps) {
+  const mode = useSiteEditorStore((state) => state.mode);
+  const { setDevice, setMode, setSummaryOpen } = useSiteEditorStore.getState();
+  const [isSettingsOpen, setSettingsOpen] = useState(isWide);
+
+  const chooseMode = (next: EditorMode) => {
+    if (next === 'preview') setSummaryOpen(false);
+    setMode(next);
+  };
 
   return (
-    <div className="editor-pop-in flex max-w-full shrink-0 flex-wrap items-center justify-center gap-3 rounded-2xl border border-white/12 bg-viratec-deep/95 p-2 xl:absolute xl:top-[160px] xl:right-3 xl:w-[360px] xl:flex-col xl:items-stretch xl:p-4">
-      <p className="hidden items-start gap-2.5 text-[13px] leading-[18px] text-text-muted md:flex xl:text-[14px] xl:leading-5">
-        <Eye aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-viratec-cyan" />
-        <span className="max-w-[340px] xl:max-w-none">{t.device.previewOnly}</span>
+    <div className="editor-pop-in flex max-h-[45svh] w-full max-w-[560px] shrink-0 flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl border border-white/12 bg-viratec-deep/95 p-2 xl:absolute xl:top-[160px] xl:right-3 xl:max-h-[calc(100svh-176px)] xl:w-[360px] xl:p-4">
+      <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <SegmentedChoice<EditorMode>
+            label={t.modeLabel}
+            value={mode}
+            options={[
+              { value: 'edit', label: t.device.edit, icon: PencilLine },
+              { value: 'preview', label: t.device.view, icon: Eye },
+            ]}
+            onChange={chooseMode}
+          />
+        </div>
+        <button
+          type="button"
+          aria-expanded={isSettingsOpen}
+          aria-label={t.device.settings}
+          title={t.device.settings}
+          onClick={() => setSettingsOpen((open) => !open)}
+          className={cn(
+            BUTTON_CLASS,
+            'w-11 shrink-0 px-0',
+            isSettingsOpen
+              ? 'bg-white/15 text-text-primary'
+              : 'bg-white/6 text-text-muted hover:bg-white/10 hover:text-text-primary',
+          )}
+        >
+          <SlidersHorizontal aria-hidden="true" className="size-4" />
+        </button>
+      </div>
+      <p className="px-1 text-[13px] leading-[18px] text-text-muted">
+        {mode === 'edit' ? t.device.editHint : t.device.viewHint}
       </p>
-      <SegmentedChoice<Exclude<PreviewDevice, 'desktop'>>
-        label={t.device.label}
-        value={device}
-        options={[
-          { value: 'tablet', label: t.device.tablet, icon: Tablet },
-          { value: 'phone', label: t.device.phone, icon: Smartphone },
-        ]}
-        onChange={setDevice}
-      />
+      {isSettingsOpen && <DeviceSettings width={width} t={t} />}
       <button
         type="button"
-        onClick={() => {
-          setDevice('desktop');
-          setMode('edit');
-        }}
-        className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-viratec-cyan px-4 text-[14px] font-medium text-viratec-ink transition-colors hover:bg-viratec-cyan/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus motion-reduce:transition-none"
+        onClick={() => setDevice('desktop')}
+        className={cn(BUTTON_CLASS, 'bg-viratec-cyan text-viratec-ink hover:bg-viratec-cyan/85')}
       >
-        <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
-        {t.device.close}
+        <Monitor aria-hidden="true" className="size-4" />
+        {t.device.desktop}
       </button>
     </div>
   );
