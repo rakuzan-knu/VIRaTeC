@@ -1304,10 +1304,6 @@
   animation-play-state: paused;
 }
 
-::highlight(site-editor-inline) {
-  color: transparent;
-}
-
 @keyframes editor-pop-in {
   from {
     opacity: 0;
