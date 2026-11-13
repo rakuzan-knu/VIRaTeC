@@ -7,6 +7,10 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       description: (email: string) =>
         `We sent a confirmation link to ${email}. Until you open it, you can’t post in the community, appear in the people directory or view members-only profiles.`,
       resend: 'Send a new link',
+      checkTitle: 'Check your email',
+      checkDescription: (email: string) =>
+        `We sent a confirmation link to ${email}. Open it to finish setting up your account. If you don’t see the email, check your spam folder.`,
+      continue: 'Continue to the site',
       sent: 'A new link is on its way. Check your inbox and spam folder.',
     },
     status: {
@@ -37,6 +41,10 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       description: (email: string) =>
         `Ми надіслали посилання для підтвердження на ${email}. Доки ви його не відкриєте, ви не можете писати в спільноті, з’являтися в каталозі людей і переглядати профілі лише для учасників.`,
       resend: 'Надіслати нове посилання',
+      checkTitle: 'Перевірте пошту',
+      checkDescription: (email: string) =>
+        `Ми надіслали посилання для підтвердження на ${email}. Відкрийте його, щоб завершити налаштування облікового запису. Якщо листа немає, перевірте папку «Спам».`,
+      continue: 'Перейти на сайт',
       sent: 'Нове посилання вже в дорозі. Перевірте вхідні та папку «Спам».',
     },
     status: {
@@ -68,6 +76,10 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       description: (email: string) =>
         `Wir haben einen Bestätigungslink an ${email} gesendet. Bis Sie ihn öffnen, können Sie nicht in der Community posten, nicht im Mitgliederverzeichnis erscheinen und keine Profile nur für Mitglieder ansehen.`,
       resend: 'Neuen Link senden',
+      checkTitle: 'Prüfen Sie Ihr Postfach',
+      checkDescription: (email: string) =>
+        `Wir haben einen Bestätigungslink an ${email} gesendet. Öffnen Sie ihn, um die Einrichtung Ihres Kontos abzuschließen. Falls Sie die E-Mail nicht sehen, prüfen Sie den Spam-Ordner.`,
+      continue: 'Weiter zur Website',
       sent: 'Ein neuer Link ist unterwegs. Prüfen Sie Ihren Posteingang und Spam-Ordner.',
     },
     status: {
@@ -99,6 +111,10 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       description: (email: string) =>
         `Nous avons envoyé un lien de confirmation à ${email}. Tant que vous ne l’avez pas ouvert, vous ne pouvez pas publier dans la communauté, apparaître dans l’annuaire des membres ni consulter les profils réservés aux membres.`,
       resend: 'Envoyer un nouveau lien',
+      checkTitle: 'Vérifiez vos e-mails',
+      checkDescription: (email: string) =>
+        `Nous avons envoyé un lien de confirmation à ${email}. Ouvrez-le pour terminer la configuration de votre compte. Si vous ne voyez pas l’e-mail, vérifiez vos spams.`,
+      continue: 'Continuer vers le site',
       sent: 'Un nouveau lien est en route. Vérifiez votre boîte de réception et vos spams.',
     },
     status: {
@@ -130,6 +146,10 @@ const VERIFY_EMAIL_MESSAGES = defineMessages({
       description: (email: string) =>
         `أرسلنا رابط تأكيد إلى ${email}. إلى أن تفتحه، لا يمكنك النشر في المجتمع أو الظهور في دليل الأعضاء أو عرض الملفات الشخصية المخصصة للأعضاء.`,
       resend: 'إرسال رابط جديد',
+      checkTitle: 'تحقق من بريدك الإلكتروني',
+      checkDescription: (email: string) =>
+        `أرسلنا رابط تأكيد إلى ${email}. افتحه لإكمال إعداد حسابك. إذا لم تجد الرسالة، فتحقق من مجلد البريد العشوائي.`,
+      continue: 'المتابعة إلى الموقع',
       sent: 'رابط جديد في الطريق إليك. تحقّق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.',
     },
     status: {

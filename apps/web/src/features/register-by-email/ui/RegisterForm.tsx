@@ -168,12 +168,20 @@ const FIELD_ERROR_CLASS = 'text-xs text-auth-error';
 
 interface RegisterFormProps {
   socialAuth?: ReactNode;
+  renderVerification?: (email: string, onContinue: () => void) => ReactNode;
 }
 
-export function RegisterForm({ socialAuth }: RegisterFormProps) {
+export function RegisterForm({ socialAuth, renderVerification }: RegisterFormProps) {
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate: register, isPending, error, variables } = useRegister();
+  const {
+    mutate: register,
+    isPending,
+    error,
+    variables,
+    unverifiedUser,
+    continueAfterVerification,
+  } = useRegister({ holdUnverified: Boolean(renderVerification) });
   const t = useLocalized(REGISTER_MESSAGES);
   const common = useCommonMessages();
   const labels = useAccountLabels();
@@ -196,6 +204,10 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
 
   const serverErrorMessage = getErrorMessage(error, t, common.networkError);
   const isAccountTaken = error instanceof ApiError && error.status === 409;
+
+  if (unverifiedUser && renderVerification) {
+    return renderVerification(unverifiedUser.email, continueAfterVerification);
+  }
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(8px,1.4svh,20px)]">
