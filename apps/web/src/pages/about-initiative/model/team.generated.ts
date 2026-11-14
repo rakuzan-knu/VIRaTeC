@@ -2,8 +2,11 @@ import type { Localized } from '@/shared/i18n/model/types';
 import type { Founder, TeamMember } from './types';
 import asset_person_anastasiia_loban_photo from '@/shared/assets/contentful/person-anastasiia-loban-photo.webp';
 import asset_person_anton_dmytrenko_photo from '@/shared/assets/contentful/person-anton-dmytrenko-photo.webp';
+import asset_person_eduard_parkhomenko_photo from '@/shared/assets/contentful/person-eduard-parkhomenko-photo.webp';
 import asset_person_larysa_liashenko_photo from '@/shared/assets/contentful/person-larysa-liashenko-photo.webp';
+import asset_person_oleksii_photo from '@/shared/assets/contentful/person-oleksii-photo.webp';
 import asset_person_tetiana_andriichuk_photo from '@/shared/assets/contentful/person-tetiana-andriichuk-photo.webp';
+import asset_person_vadym_photo from '@/shared/assets/contentful/person-vadym-photo.webp';
 import asset_person_yuliia_novichkova_photo from '@/shared/assets/contentful/person-yuliia-novichkova-photo.webp';
 
 export const TEAM: Localized<TeamMember[]> = {
@@ -30,7 +33,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Eduard Parkhomenko',
-      role: 'Team Lead · Foundations of NLP, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Yuliia Novichkova',
@@ -38,6 +42,16 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
   ],
   uk: [
     {
@@ -62,7 +76,8 @@ export const TEAM: Localized<TeamMember[]> = {
     },
     {
       name: 'Едуард Пархоменко',
-      role: 'Тимлід · Foundations of NLP, магістрант кафедри інтелектуальних технологій, ФІТ КНУ',
+      role: 'Тимлід · модуль COIL «Foundations of NLP: From Text Preprocessing to Sentiment Analysis», магістрант кафедри інтелектуальних технологій, ФІТ КНУ',
+      photo: asset_person_eduard_parkhomenko_photo,
     },
     {
       name: 'Юлія Новічкова',
@@ -70,6 +85,145 @@ export const TEAM: Localized<TeamMember[]> = {
       photo: asset_person_yuliia_novichkova_photo,
     },
     { name: 'Ольга Єзерська', role: 'Тренерка воркшопів і модераторка · ФІТ КНУ' },
+    {
+      name: 'Вадим',
+      role: 'Співорганізатор першого модуля COIL · випускник магістратури ФІТ КНУ 2024 року, спеціальність «Технології штучного інтелекту»',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Олексій',
+      role: 'Тренер воркшопів · ML-інженер, Chartbeat · випускник магістратури ФІТ КНУ 2024 року, спеціальність «Технології штучного інтелекту»',
+      photo: asset_person_oleksii_photo,
+    },
+  ],
+  de: [
+    {
+      name: 'Larysa Liashenko',
+      role: 'Founder & Academic Lead of the VIRaTeC Global COIL Program · Associate Professor, Department of Foreign Languages for Mathematical Faculties, KNU',
+      photo: asset_person_larysa_liashenko_photo,
+    },
+    {
+      name: 'Tetiana Andriichuk',
+      role: 'Co-admin of the VIRaTeC community · Assistant Professor, KNU',
+      photo: asset_person_tetiana_andriichuk_photo,
+    },
+    {
+      name: 'Anastasiia Loban',
+      role: 'Head Project Lead & Program Creator · Cybersecurity COIL modules',
+      photo: asset_person_anastasiia_loban_photo,
+    },
+    {
+      name: 'Anton Dmytrenko',
+      role: 'Project Lead & Workshop Trainer · Cybersecurity COIL',
+      photo: asset_person_anton_dmytrenko_photo,
+    },
+    {
+      name: 'Eduard Parkhomenko',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
+    },
+    {
+      name: 'Yuliia Novichkova',
+      role: 'Team Lead · Fundamentals of Cyber Hygiene, KNU FIT',
+      photo: asset_person_yuliia_novichkova_photo,
+    },
+    { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
+  ],
+  fr: [
+    {
+      name: 'Larysa Liashenko',
+      role: 'Founder & Academic Lead of the VIRaTeC Global COIL Program · Associate Professor, Department of Foreign Languages for Mathematical Faculties, KNU',
+      photo: asset_person_larysa_liashenko_photo,
+    },
+    {
+      name: 'Tetiana Andriichuk',
+      role: 'Co-admin of the VIRaTeC community · Assistant Professor, KNU',
+      photo: asset_person_tetiana_andriichuk_photo,
+    },
+    {
+      name: 'Anastasiia Loban',
+      role: 'Head Project Lead & Program Creator · Cybersecurity COIL modules',
+      photo: asset_person_anastasiia_loban_photo,
+    },
+    {
+      name: 'Anton Dmytrenko',
+      role: 'Project Lead & Workshop Trainer · Cybersecurity COIL',
+      photo: asset_person_anton_dmytrenko_photo,
+    },
+    {
+      name: 'Eduard Parkhomenko',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
+    },
+    {
+      name: 'Yuliia Novichkova',
+      role: 'Team Lead · Fundamentals of Cyber Hygiene, KNU FIT',
+      photo: asset_person_yuliia_novichkova_photo,
+    },
+    { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
+  ],
+  ar: [
+    {
+      name: 'Larysa Liashenko',
+      role: 'Founder & Academic Lead of the VIRaTeC Global COIL Program · Associate Professor, Department of Foreign Languages for Mathematical Faculties, KNU',
+      photo: asset_person_larysa_liashenko_photo,
+    },
+    {
+      name: 'Tetiana Andriichuk',
+      role: 'Co-admin of the VIRaTeC community · Assistant Professor, KNU',
+      photo: asset_person_tetiana_andriichuk_photo,
+    },
+    {
+      name: 'Anastasiia Loban',
+      role: 'Head Project Lead & Program Creator · Cybersecurity COIL modules',
+      photo: asset_person_anastasiia_loban_photo,
+    },
+    {
+      name: 'Anton Dmytrenko',
+      role: 'Project Lead & Workshop Trainer · Cybersecurity COIL',
+      photo: asset_person_anton_dmytrenko_photo,
+    },
+    {
+      name: 'Eduard Parkhomenko',
+      role: 'Team Lead · COIL module “Foundations of NLP: From Text Preprocessing to Sentiment Analysis”, Master’s student, Department of Intelligent Technologies, KNU FIT',
+      photo: asset_person_eduard_parkhomenko_photo,
+    },
+    {
+      name: 'Yuliia Novichkova',
+      role: 'Team Lead · Fundamentals of Cyber Hygiene, KNU FIT',
+      photo: asset_person_yuliia_novichkova_photo,
+    },
+    { name: 'Olha Yezerska', role: 'Workshop trainer & moderator · KNU FIT' },
+    {
+      name: 'Vadym',
+      role: 'Co-organizer of the first COIL module · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_vadym_photo,
+    },
+    {
+      name: 'Oleksii',
+      role: 'Workshop Coach · ML Engineer, Chartbeat · KNU FIT Master’s graduate 2024, AI Technologies',
+      photo: asset_person_oleksii_photo,
+    },
   ],
 };
 
@@ -91,6 +245,36 @@ export const FOUNDER: Localized<Founder> = {
       'Д-р Лариса Ляшенко — доцентка Київського національного університету імені Тараса Шевченка (кандидатка психологічних наук, CELTA), експертка з Research-Based Learning та методики EAP/ESP.',
       'Відзначена нагородами науковиця, заслужена працівниця освіти України та відзначена учасниця програми NATO-Ukraine PDP, вона є авторкою близько 50 наукових праць на перетині психології розвитку та прикладної лінгвістики.',
       'Як академічна керівниця глобальної COIL-програми VIRaTeC, вона очолює трансформаційні ініціативи інтернаціоналізації вдома. Вона розвиває студентоцентровані міжнародні дослідницькі платформи, де магістранти — розробники модулів — і ментори з індустрії допомагають бакалаврам-дослідникам через справжню глобальну співпрацю.',
+    ],
+    photo: asset_person_larysa_liashenko_photo,
+  },
+  de: {
+    name: 'Dr. Larysa Liashenko',
+    role: 'Associate Professor · PhD in Psychology, CELTA · Honoured Educator of Ukraine',
+    bio: [
+      'Dr. Larysa Liashenko, Associate Professor at Taras Shevchenko National University of Kyiv (PhD in Psychology, CELTA), is an expert in Research-Based Learning and EAP/ESP pedagogy.',
+      'An award-winning academic recognized as an Honoured Educator of Ukraine and commendee of the NATO-Ukraine PDP, she has authored around 50 scholarly works at the intersection of developmental psychology and applied linguistics.',
+      'As Academic Lead of the VIRaTeC Global COIL Program, she spearheads transformative Internationalisation at Home initiatives. She facilitates student-centered, cross-border research platforms where postgraduate module designers and industry mentors empower undergraduate researchers through authentic global collaboration.',
+    ],
+    photo: asset_person_larysa_liashenko_photo,
+  },
+  fr: {
+    name: 'Dr. Larysa Liashenko',
+    role: 'Associate Professor · PhD in Psychology, CELTA · Honoured Educator of Ukraine',
+    bio: [
+      'Dr. Larysa Liashenko, Associate Professor at Taras Shevchenko National University of Kyiv (PhD in Psychology, CELTA), is an expert in Research-Based Learning and EAP/ESP pedagogy.',
+      'An award-winning academic recognized as an Honoured Educator of Ukraine and commendee of the NATO-Ukraine PDP, she has authored around 50 scholarly works at the intersection of developmental psychology and applied linguistics.',
+      'As Academic Lead of the VIRaTeC Global COIL Program, she spearheads transformative Internationalisation at Home initiatives. She facilitates student-centered, cross-border research platforms where postgraduate module designers and industry mentors empower undergraduate researchers through authentic global collaboration.',
+    ],
+    photo: asset_person_larysa_liashenko_photo,
+  },
+  ar: {
+    name: 'Dr. Larysa Liashenko',
+    role: 'Associate Professor · PhD in Psychology, CELTA · Honoured Educator of Ukraine',
+    bio: [
+      'Dr. Larysa Liashenko, Associate Professor at Taras Shevchenko National University of Kyiv (PhD in Psychology, CELTA), is an expert in Research-Based Learning and EAP/ESP pedagogy.',
+      'An award-winning academic recognized as an Honoured Educator of Ukraine and commendee of the NATO-Ukraine PDP, she has authored around 50 scholarly works at the intersection of developmental psychology and applied linguistics.',
+      'As Academic Lead of the VIRaTeC Global COIL Program, she spearheads transformative Internationalisation at Home initiatives. She facilitates student-centered, cross-border research platforms where postgraduate module designers and industry mentors empower undergraduate researchers through authentic global collaboration.',
     ],
     photo: asset_person_larysa_liashenko_photo,
   },

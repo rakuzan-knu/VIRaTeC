@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { getApiErrorCode } from '@/shared/api/apiClient';
-import { forgotPasswordRequest, resetPasswordRequest } from '../api/passwordReset';
+import {
+  forgotPasswordRequest,
+  resetPasswordRequest,
+  verifyResetCodeRequest,
+} from '../api/passwordReset';
 
 export type ResetPasswordStep = 'request' | 'verify' | 'reset' | 'done';
 
@@ -12,6 +16,9 @@ export function useResetPassword() {
   const [isCodeRejected, setIsCodeRejected] = useState(false);
   const forgot = useMutation({
     mutationFn: (value: string) => forgotPasswordRequest({ email: value }),
+  });
+  const verify = useMutation({
+    mutationFn: (value: string) => verifyResetCodeRequest({ email, code: value }),
   });
   const reset = useMutation({ mutationFn: resetPasswordRequest });
 
@@ -26,14 +33,24 @@ export function useResetPassword() {
 
   const resendCode = () => {
     setIsCodeRejected(false);
+    verify.reset();
     forgot.mutate(email);
   };
 
   const submitCode = (value: string) => {
-    setCode(value);
+    if (verify.isPending) return;
     setIsCodeRejected(false);
-    reset.reset();
-    setStep('reset');
+    forgot.reset();
+    verify.mutate(value, {
+      onSuccess: () => {
+        setCode(value);
+        reset.reset();
+        setStep('reset');
+      },
+      onError: (error) => {
+        if (getApiErrorCode(error) === 'RESET_CODE_INVALID') setIsCodeRejected(true);
+      },
+    });
   };
 
   const submitPassword = (newPassword: string) =>
@@ -51,6 +68,7 @@ export function useResetPassword() {
 
   const goBack = () => {
     forgot.reset();
+    verify.reset();
     setStep((current) => (current === 'reset' ? 'verify' : 'request'));
   };
 
@@ -59,6 +77,7 @@ export function useResetPassword() {
     email,
     isCodeRejected,
     forgot,
+    verify,
     reset,
     requestCode,
     resendCode,

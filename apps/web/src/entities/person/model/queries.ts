@@ -1,4 +1,10 @@
-import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+  type QueryClient,
+} from '@tanstack/react-query';
 import type { PeopleQuery } from '@viratec/contracts';
 import { ApiError } from '@/shared/api/apiClient';
 import { fetchPeople, fetchPublicProfile } from '../api/personApi';
@@ -23,14 +29,25 @@ export function usePublicProfile(userId: string | undefined, viewerKey: string |
   });
 }
 
-export function usePeople(query: PeopleQuery, viewerKey: string | null) {
-  return useInfiniteQuery({
+const peopleListOptions = (query: PeopleQuery, viewerKey: string | null) =>
+  infiniteQueryOptions({
     queryKey: personKeys.list(query, viewerKey),
     queryFn: ({ pageParam }) =>
       fetchPeople({ ...query, page: pageParam, pageSize: PEOPLE_PAGE_SIZE }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
-    placeholderData: keepPreviousData,
     staleTime: 30_000,
   });
+
+export function usePeople(query: PeopleQuery, viewerKey: string | null) {
+  return useInfiniteQuery({
+    ...peopleListOptions(query, viewerKey),
+    placeholderData: keepPreviousData,
+  });
 }
+
+export const prefetchPeople = (
+  queryClient: QueryClient,
+  query: PeopleQuery,
+  viewerKey: string | null,
+) => queryClient.prefetchInfiniteQuery(peopleListOptions(query, viewerKey));

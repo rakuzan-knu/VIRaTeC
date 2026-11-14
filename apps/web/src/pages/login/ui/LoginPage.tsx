@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AuthLayout } from '@/widgets/auth-layout';
 import { LoginForm } from '@/features/login-by-email';
 import { GoogleAuthButton } from '@/features/login-by-google';
@@ -10,6 +11,14 @@ export function LoginPage() {
   const common = useCommonMessages();
   useSeo(common.logIn);
   const awaitingSecondFactor = useSessionStore((state) => state.awaitingSecondFactor);
+
+  useEffect(
+    () => () => {
+      const { hasSession, cancelSecondFactor } = useSessionStore.getState();
+      if (hasSession) cancelSecondFactor();
+    },
+    [],
+  );
 
   return (
     <AuthLayout>

@@ -21,5 +21,20 @@ export const SITE_SETTINGS: SiteSettings = {
         'Глобальна спільнота Virtual Innovative Research & Technology (VIRaTeC) при Київському національному університеті імені Тараса Шевченка.',
       copyright: '© 2026 VIRaTeC КНУ. Усі права захищено.',
     },
+    de: {
+      tagline:
+        'Virtual Innovative Research & Technology (VIRaTeC) Global Community at Taras Shevchenko National University of Kyiv.',
+      copyright: '© 2026 VIRaTeC KNU. All rights reserved.',
+    },
+    fr: {
+      tagline:
+        'Virtual Innovative Research & Technology (VIRaTeC) Global Community at Taras Shevchenko National University of Kyiv.',
+      copyright: '© 2026 VIRaTeC KNU. All rights reserved.',
+    },
+    ar: {
+      tagline:
+        'Virtual Innovative Research & Technology (VIRaTeC) Global Community at Taras Shevchenko National University of Kyiv.',
+      copyright: '© 2026 VIRaTeC KNU. All rights reserved.',
+    },
   },
 };

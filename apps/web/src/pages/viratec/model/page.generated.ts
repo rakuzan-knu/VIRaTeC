@@ -66,6 +66,7 @@ export const PAGE_TEXT: Localized<ViratecText> = {
           'Every project starts with a student idea and ends with a tangible result: a paper, a prototype or a presentation.',
         to: ROUTES.STUDENT_RESEARCH,
         image: asset_viratecpage_principles_1_image,
+        imageAlt: '',
       },
       {
         title: 'From challenge to collaboration',
@@ -73,6 +74,7 @@ export const PAGE_TEXT: Localized<ViratecText> = {
           'Real-world challenges are solved by mixed international teams working online across time zones.',
         to: ROUTES.PROJECTS,
         image: asset_viratecpage_principles_2_image,
+        imageAlt: '',
       },
       {
         title: 'From knowledge to implementation',
@@ -80,6 +82,7 @@ export const PAGE_TEXT: Localized<ViratecText> = {
           'Knowledge from modules and COIL CyberBridge Talks is applied directly in research and practice.',
         to: ROUTES.EXPERIENTIAL_LEARNING,
         image: asset_viratecpage_principles_3_image,
+        imageAlt: '',
       },
     ],
     joinEyebrow: 'How to join',
@@ -167,6 +170,7 @@ export const PAGE_TEXT: Localized<ViratecText> = {
           'Кожен проєкт починається зі студентської ідеї та завершується відчутним результатом: статтею, прототипом чи презентацією.',
         to: ROUTES.STUDENT_RESEARCH,
         image: asset_viratecpage_principles_1_image,
+        imageAlt: '',
       },
       {
         title: 'Від виклику до співпраці',
@@ -174,6 +178,7 @@ export const PAGE_TEXT: Localized<ViratecText> = {
           'Реальні проблеми розв’язують змішані міжнародні команди, що працюють онлайн у різних часових поясах.',
         to: ROUTES.PROJECTS,
         image: asset_viratecpage_principles_2_image,
+        imageAlt: '',
       },
       {
         title: 'Від знань до впровадження',
@@ -181,6 +186,7 @@ export const PAGE_TEXT: Localized<ViratecText> = {
           'Знання з модулів і COIL CyberBridge Talks безпосередньо застосовуються в дослідженнях і на практиці.',
         to: ROUTES.EXPERIENTIAL_LEARNING,
         image: asset_viratecpage_principles_3_image,
+        imageAlt: '',
       },
     ],
     joinEyebrow: 'Як долучитися',

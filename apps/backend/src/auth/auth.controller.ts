@@ -32,6 +32,7 @@ import { TwoFactorCodeDto } from './dto/two-factor-code.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyResetCodeDto } from './dto/verify-reset-code.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
@@ -232,6 +233,15 @@ export class AuthController {
     return withMinimumDuration(FORGOT_PASSWORD_MIN_RESPONSE_MS, () =>
       this.passwordReset.request(dto.email, client),
     );
+  }
+
+  @Post('password/verify-code')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Check a password reset code without using it' })
+  @ApiResponse({ status: 400, description: 'The code is incorrect or expired' })
+  @ApiResponse({ status: 429, description: 'Too many attempts' })
+  async verifyResetCode(@Body() dto: VerifyResetCodeDto) {
+    return this.passwordReset.verifyCode(dto.email, dto.code);
   }
 
   @Post('password/reset')

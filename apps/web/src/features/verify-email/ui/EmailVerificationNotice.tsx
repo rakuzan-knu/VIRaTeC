@@ -1,24 +1,11 @@
 import { MailCheck } from 'lucide-react';
-import { ApiError, NETWORK_ERROR_STATUS } from '@/shared/api/apiClient';
-import { useCommonMessages } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
 import { useVerifyEmailMessages } from '../model/messages';
 import { useResendVerification } from '../model/useResendVerification';
 
 export function EmailVerificationNotice({ email }: { email: string }) {
   const t = useVerifyEmailMessages();
-  const common = useCommonMessages();
-  const { mutate: resend, isPending, isSuccess, error } = useResendVerification();
-
-  const errorMessage = !error
-    ? null
-    : error instanceof ApiError && error.status === 429
-      ? t.errors.tooMany
-      : error instanceof ApiError && error.status === 503
-        ? t.errors.unavailable
-        : error instanceof ApiError && error.status === NETWORK_ERROR_STATUS
-          ? common.networkError
-          : t.errors.unexpected;
+  const { mutate: resend, isPending, isSuccess, errorMessage } = useResendVerification();
 
   return (
     <section

@@ -5,7 +5,7 @@ export {
   getPublicationCover,
   toPublication,
 } from './model/data';
-export { usePublications, publicationKeys } from './model/queries';
+export { usePublications, prefetchPublications, publicationKeys } from './model/queries';
 export {
   PublicationCard,
   FeaturedPublicationCard,

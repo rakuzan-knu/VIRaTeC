@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/shared/lib';
 import type { SiteEditorMessages } from '../model/messages';
+import { useViewportStore } from '../model/viewport';
 import { useSiteEditorStore, type EditorMode, type PreviewDevice } from '../model/store';
 import { MoreMenuRow } from './MoreMenuRow';
 import { SegmentedChoice } from './SegmentedChoice';
@@ -46,13 +47,12 @@ export function MoreMenu({
   const device = useSiteEditorStore((state) => state.device);
   const isSummaryOpen = useSiteEditorStore((state) => state.isSummaryOpen);
   const { setMode, setDevice, setSummaryOpen, openStructure } = useSiteEditorStore.getState();
-  const isEditing = mode === 'edit' && device === 'desktop';
+  const isEditing = mode === 'edit';
   const activeMode: EditorMode = isEditing ? 'edit' : 'preview';
 
   const chooseMode = (next: EditorMode) => {
     if (next === activeMode) return;
-    if (next === 'edit') setDevice('desktop');
-    else setSummaryOpen(false);
+    if (next !== 'edit') setSummaryOpen(false);
     setMode(next);
   };
 
@@ -63,13 +63,20 @@ export function MoreMenu({
   };
 
   const modeHint =
-    device !== 'desktop' ? t.device.previewOnly : isEditing ? t.modeEditHint : t.modePreviewHint;
+    device !== 'desktop'
+      ? isEditing
+        ? t.device.editHint
+        : t.device.viewHint
+      : isEditing
+        ? t.modeEditHint
+        : t.modePreviewHint;
 
-  const highlightHint = !isEditing
-    ? t.menu.highlightUnavailable
-    : isHighlightOn
-      ? t.highlight.shown(highlightedCount)
-      : t.menu.highlightHint;
+  const highlightHint =
+    !isEditing || device !== 'desktop'
+      ? t.menu.highlightUnavailable
+      : isHighlightOn
+        ? t.highlight.shown(highlightedCount)
+        : t.menu.highlightHint;
 
   const footerActions = [
     { key: 'help', label: t.menu.help, icon: CircleHelp, onSelect: onHelp },
@@ -117,6 +124,7 @@ export function MoreMenu({
               onChange={(next) => {
                 close();
                 setDevice(next);
+                if (next !== 'desktop') useViewportStore.getState().chooseKind(next);
               }}
             />
           </div>
@@ -128,7 +136,7 @@ export function MoreMenu({
               label={t.menu.showChanges}
               hint={highlightHint}
               checked={isHighlightOn}
-              disabled={!isEditing}
+              disabled={!isEditing || device !== 'desktop'}
               isHintLive
               trailing={
                 <span

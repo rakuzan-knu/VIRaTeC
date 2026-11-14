@@ -14,6 +14,7 @@ import {
   toMetaDescription,
 } from '@/shared/config/seo';
 import { ENV } from '@/shared/config/env';
+import { stripFieldMarks } from './contentPreview';
 import { hasEnglishPage, stripEnglishPrefix, toEnglishPath } from '@/shared/config/routes';
 
 interface SeoOptions {
@@ -81,14 +82,14 @@ export function useSeo(
   useEffect(() => {
     const path = normalizePath(window.location.pathname);
     const base = stripEnglishPrefix(path);
-    const fullTitle = formatTitle(
-      (PAGE_SEO[base] && pickLocalized(PAGE_SEO[base], locale).title) ?? title,
-      locale,
-    );
+    const pageTitle = (PAGE_SEO[base] && pickLocalized(PAGE_SEO[base], locale).title) ?? title;
+    const fullTitle = formatTitle(pageTitle && stripFieldMarks(pageTitle), locale);
     const pageDescription = toMetaDescription(
-      description ??
-        (PAGE_SEO[base] && pickLocalized(PAGE_SEO[base], locale).description) ??
-        pickLocalized(DEFAULT_SEO, locale).description,
+      stripFieldMarks(
+        description ??
+          (PAGE_SEO[base] && pickLocalized(PAGE_SEO[base], locale).description) ??
+          pickLocalized(DEFAULT_SEO, locale).description,
+      ),
     );
     const url = absoluteUrl(path, ENV.SITE_URL);
     const imageUrl = absoluteUrl(image ?? OG_IMAGE.path, ENV.SITE_URL);

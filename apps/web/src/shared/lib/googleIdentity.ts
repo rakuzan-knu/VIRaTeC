@@ -70,6 +70,57 @@ export function loadGoogleIdentity(locale: string): Promise<GoogleAccountsId> {
 }
 
 const GOOGLE_BUTTON_MAX_WIDTH = 400;
+const GOOGLE_BUTTON_WIDTH_STEP = 4;
+
+type CredentialHandler = (credential: string) => void;
+
+const credentialHandlers = new Map<HTMLElement, CredentialHandler>();
+const initializedClients = new WeakSet<GoogleAccountsId>();
+let activeContainer: HTMLElement | null = null;
+let isTrackingFocus = false;
+
+const findContainer = (element: Element | null) => {
+  if (!element) return null;
+  for (const container of credentialHandlers.keys()) {
+    if (container.contains(element)) return container;
+  }
+  return null;
+};
+
+const trackActiveButton = () => {
+  if (isTrackingFocus) return;
+  isTrackingFocus = true;
+  window.addEventListener('blur', () => {
+    activeContainer = findContainer(document.activeElement) ?? activeContainer;
+  });
+  document.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (event.target instanceof Element) {
+        activeContainer = findContainer(event.target) ?? activeContainer;
+      }
+    },
+    true,
+  );
+};
+
+const dispatchCredential = ({ credential }: GoogleCredentialResponse) => {
+  const handler =
+    (activeContainer && credentialHandlers.get(activeContainer)) ??
+    (credentialHandlers.size === 1 ? credentialHandlers.values().next().value : undefined);
+  handler?.(credential);
+};
+
+const initializeOnce = (googleId: GoogleAccountsId, text: GoogleButtonText) => {
+  if (initializedClients.has(googleId)) return;
+  initializedClients.add(googleId);
+  googleId.initialize({
+    client_id: ENV.GOOGLE_CLIENT_ID,
+    callback: dispatchCredential,
+    ux_mode: 'popup',
+    context: text === 'signup_with' ? 'signup' : text === 'continue_with' ? 'use' : 'signin',
+  });
+};
 
 interface GoogleButtonOptions {
   text: GoogleButtonText;
@@ -100,24 +151,23 @@ export function useGoogleButton(
     if (!ENV.GOOGLE_CLIENT_ID || !container) return;
     let cancelled = false;
     let resizeObserver: ResizeObserver | undefined;
+    let frame = 0;
     setLoadFailed(false);
     setIsLoading(true);
 
     loadGoogleIdentity(locale)
       .then((googleId) => {
         if (cancelled) return;
-        googleId.initialize({
-          client_id: ENV.GOOGLE_CLIENT_ID,
-          callback: ({ credential }) => {
-            if (!cancelled && !disabledRef.current) onCredentialRef.current(credential);
-          },
-          ux_mode: 'popup',
-          context: text === 'signup_with' ? 'signup' : text === 'continue_with' ? 'use' : 'signin',
+        initializeOnce(googleId, text);
+        trackActiveButton();
+        credentialHandlers.set(container, (credential) => {
+          if (!disabledRef.current) onCredentialRef.current(credential);
         });
         let previousWidth = -1;
         const render = () => {
-          const width = Math.min(container.clientWidth, GOOGLE_BUTTON_MAX_WIDTH);
-          if (width <= 0 || width === previousWidth) return;
+          frame = 0;
+          const width = Math.floor(Math.min(container.clientWidth, GOOGLE_BUTTON_MAX_WIDTH));
+          if (width <= 0 || Math.abs(width - previousWidth) < GOOGLE_BUTTON_WIDTH_STEP) return;
           previousWidth = width;
           container.replaceChildren();
           googleId.renderButton(container, {
@@ -132,7 +182,9 @@ export function useGoogleButton(
           });
         };
         render();
-        resizeObserver = new ResizeObserver(render);
+        resizeObserver = new ResizeObserver(() => {
+          if (!frame) frame = window.requestAnimationFrame(render);
+        });
         resizeObserver.observe(container);
         setIsLoading(false);
       })
@@ -146,6 +198,9 @@ export function useGoogleButton(
     return () => {
       cancelled = true;
       resizeObserver?.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+      credentialHandlers.delete(container);
+      if (activeContainer === container) activeContainer = null;
     };
   }, [containerRef, text, locale, attempt]);
 

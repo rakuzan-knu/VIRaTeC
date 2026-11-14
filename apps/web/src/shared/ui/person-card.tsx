@@ -45,7 +45,7 @@ export function PersonCard({ name, role, photo }: PersonCardProps) {
         </span>
       )}
       <div className="flex flex-col gap-1 lg:px-3">
-        <h3 className="font-display text-lg font-medium tracking-[-0.015em] text-white lg:text-[22px] lg:leading-7">
+        <h3 className="font-display text-lg font-medium tracking-[-0.015em] text-white lg:min-h-14 lg:text-[22px] lg:leading-7">
           {name}
         </h3>
         <p className="text-sm leading-5 text-viratec-muted lg:text-[15px] lg:leading-[22px]">

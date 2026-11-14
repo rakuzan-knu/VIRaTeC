@@ -57,7 +57,7 @@ export function ResponsiveImage({
 
   return (
     <picture className="contents">
-      <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} />
+      <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} className="hidden" />
       <img src={src} srcSet={webpSrcSet} sizes={sizes} alt={alt} {...imageProps} />
     </picture>
   );

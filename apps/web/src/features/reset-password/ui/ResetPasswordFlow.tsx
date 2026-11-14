@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -131,6 +131,7 @@ function VerifyStep({
   onBack,
   onSubmit,
   onResend,
+  isPending,
   errorMessage,
   statusMessage,
 }: {
@@ -138,6 +139,7 @@ function VerifyStep({
   onBack: () => void;
   onSubmit: (code: string) => void;
   onResend: () => void;
+  isPending: boolean;
   errorMessage: string | null;
   statusMessage: string | null;
 }) {
@@ -151,6 +153,14 @@ function VerifyStep({
   } = useForm<VerifyCodeValues>({
     resolver: zodResolver(schema),
     defaultValues: { code: '' },
+  });
+  const submit = handleSubmit((values) => onSubmit(values.code));
+  const codeField = register('code', {
+    onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      const digits = event.target.value.replace(/\D/g, '').slice(0, 6);
+      if (digits !== event.target.value) event.target.value = digits;
+      if (digits.length === 6) void submit();
+    },
   });
 
   return (
@@ -166,18 +176,15 @@ function VerifyStep({
           </>
         }
       />
-      <form
-        onSubmit={handleSubmit((values) => onSubmit(values.code))}
-        className="space-y-4 pt-6 lg:pt-[clamp(12px,2.5svh,24px)]"
-        noValidate
-      >
+      <form onSubmit={submit} className="space-y-4 pt-6 lg:pt-[clamp(12px,2.5svh,24px)]" noValidate>
         <div className="space-y-1.5">
           <label htmlFor="recovery-code" className={FIELD_LABEL_CLASS}>
             {t.verify.codeLabel}
           </label>
           <Input
             id="recovery-code"
-            {...register('code')}
+            {...codeField}
+            readOnly={isPending}
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}
@@ -197,7 +204,7 @@ function VerifyStep({
             {errors.code?.message ?? errorMessage ?? t.verify.codeHint}
           </p>
         </div>
-        <Button type="submit" className={SUBMIT_CLASS}>
+        <Button type="submit" isLoading={isPending} className={SUBMIT_CLASS}>
           {t.verify.submit}
           <ArrowRight className="w-4 h-4" />
         </Button>
@@ -422,7 +429,12 @@ export function ResetPasswordFlow() {
           onBack={flow.goBack}
           onSubmit={flow.submitCode}
           onResend={flow.resendCode}
-          errorMessage={flow.isCodeRejected ? t.verify.codeRejected : forgotError}
+          isPending={flow.verify.isPending}
+          errorMessage={
+            flow.isCodeRejected
+              ? t.verify.codeRejected
+              : (describeError(errorStatus(flow.verify.error), t.reset.tooMany) ?? forgotError)
+          }
           statusMessage={flow.forgot.isSuccess && !flow.isCodeRejected ? t.verify.resent : null}
         />
       )}

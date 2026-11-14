@@ -7,7 +7,12 @@ interface Size {
   height: number;
 }
 
-export function useDeviceFit(stage: HTMLElement | null, screen: Size, bezel: number) {
+export function useDeviceFit(
+  stage: HTMLElement | null,
+  screens: readonly Size[],
+  bezel: number,
+  gap: number,
+) {
   const [box, setBox] = useState<Size | null>(null);
 
   useEffect(() => {
@@ -19,10 +24,12 @@ export function useDeviceFit(stage: HTMLElement | null, screen: Size, bezel: num
     return () => observer.disconnect();
   }, [stage]);
 
-  if (!box) return null;
+  if (!box || screens.length === 0) return null;
+  const totalWidth = screens.reduce((sum, screen) => sum + screen.width, 0);
+  const maxHeight = Math.max(...screens.map((screen) => screen.height));
   const fit = Math.min(
-    (box.width - bezel * 2) / screen.width,
-    (box.height - bezel * 2) / screen.height,
+    (box.width - bezel * 2 * screens.length - gap * (screens.length - 1)) / totalWidth,
+    (box.height - bezel * 2) / maxHeight,
   );
   return Math.max(MIN_SCALE, Math.min(1, fit));
 }

@@ -37,6 +37,7 @@ import { SHORTCUTS, isTextInput } from '../model/shortcuts';
 import {
   EDITOR_ROOT_ATTRIBUTE,
   collectCanvasTargets,
+  selectionOfTarget,
   stepCanvasTarget,
   targetKey,
   useCanvasTargets,
@@ -139,12 +140,7 @@ export function SiteEditor() {
         openStructure({ sectionId: target.sectionId });
         return;
       }
-      select({
-        entryId: target.address.entryId,
-        contentTypeId: target.address.contentTypeId,
-        fieldId: target.kind === 'entry' ? undefined : target.address.fieldId,
-        locale: target.kind === 'field' ? target.address.locale : undefined,
-      });
+      select(selectionOfTarget(target));
     },
     [select, openStructure],
   );
@@ -470,14 +466,17 @@ export function SiteEditor() {
         <span
           className={cn(
             'hidden items-center gap-2 px-3 text-[13px] font-medium lg:flex',
-            isEditing ? 'text-viratec-cyan' : 'text-text-primary',
+            mode === 'edit' ? 'text-viratec-cyan' : 'text-text-primary',
           )}
         >
           <span
             aria-hidden="true"
-            className={cn('size-2 rounded-full', isEditing ? 'bg-viratec-cyan' : 'bg-brand-lime')}
+            className={cn(
+              'size-2 rounded-full',
+              mode === 'edit' ? 'bg-viratec-cyan' : 'bg-brand-lime',
+            )}
           />
-          {isEditing ? t.editing : t.modePreview}
+          {mode === 'edit' ? t.editing : t.modePreview}
         </span>
         <SaveIndicator t={t} />
         {isEditing && addItems.length > 0 && (
@@ -516,7 +515,7 @@ export function SiteEditor() {
       </div>
 
       {device !== 'desktop' && !gate && (
-        <DeviceFrame device={device} isPanelOpen={isPanelOpen || isSummaryOpen} t={t} />
+        <DeviceFrame isPanelOpen={isPanelOpen || isSummaryOpen} t={t} />
       )}
 
       {gate ? (

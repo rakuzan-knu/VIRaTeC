@@ -11,3 +11,5 @@ export const STALE_CHUNK_RELOAD_STORAGE_KEY = 'viratec_stale_chunk_reload';
 export const SITE_EDITOR_STORAGE_KEY = 'viratec_site_editor';
 
 export const SITE_EDITOR_INTRO_STORAGE_KEY = 'viratec_site_editor_intro';
+
+export const SITE_EDITOR_VIEWPORT_STORAGE_KEY = 'viratec_site_editor_viewport';
