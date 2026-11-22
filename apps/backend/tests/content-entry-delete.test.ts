@@ -82,7 +82,29 @@ const setup = (publishedVersion: number | null) => {
   const content = { invalidate: async () => undefined };
   const records = { applyChange: async () => undefined };
   const revisions = { record: async () => undefined };
-  const service = new ContentEditorService(contentful, content, prisma, audit, records, revisions);
+  const autoTranslate = {
+    translateRecord: async (_resource: string, _key: string, value: unknown) => ({
+      value,
+      changed: false,
+      failed: false,
+    }),
+    translateEntry: async (
+      _id: string,
+      _type: unknown,
+      _locales: unknown,
+      _codes: unknown,
+      value: unknown,
+    ) => ({ value, changed: false, failed: false }),
+  };
+  const service = new ContentEditorService(
+    contentful,
+    content,
+    prisma,
+    audit,
+    records,
+    revisions,
+    autoTranslate,
+  );
   return { service, calls, rows };
 };
 
@@ -113,7 +135,7 @@ test('publishing a deletion unpublishes and archives the entry', async () => {
   await service.deleteEntry(actor, 'milestone-1', 'Milestone: 2024', client);
   calls.length = 0;
   const result = await service.publish(actor, {}, client);
-  assert.deepEqual(result, { published: ['change-1'], failed: [] });
+  assert.deepEqual(result, { published: ['change-1'], failed: [], untranslated: [] });
   assert.deepEqual(
     calls.map((call) => `${call.method} ${call.path} v${call.version ?? ''}`),
     [

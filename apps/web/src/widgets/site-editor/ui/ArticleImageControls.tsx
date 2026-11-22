@@ -28,7 +28,7 @@ export function ArticleImageControls({ editor, t }: ArticleImageControlsProps) {
         maxLength={300}
         onChange={(event) => update({ alt: event.target.value })}
       />
-      <AltHint values={{ en: attrs.alt, uk: attrs.alt }} t={t} />
+      <AltHint values={{ en: attrs.alt }} t={t} />
       <Input
         label={t.article.imageCaption}
         value={attrs.caption}

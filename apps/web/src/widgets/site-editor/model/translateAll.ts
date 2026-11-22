@@ -7,7 +7,7 @@ import {
   type RecordData,
   type RecordResource,
 } from '@viratec/contracts';
-import { LOCALES, type Locale } from '@/shared/i18n';
+import { LOCALES, fromLocales, type Locale } from '@/shared/i18n';
 import { translateTexts } from '../api/editorApi';
 import { findContentType, withFieldValue } from './contentModel';
 import { localizedPath, writeRecordValue } from './recordModel';
@@ -25,9 +25,14 @@ const TEXT_KINDS = new Set(['text', 'longText']);
 const asText = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
 
 const pairOf = (key: string, values: Record<Locale, string>): MissingTranslation[] => {
-  const source = LOCALES.find((locale) => values[locale]);
-  const target = LOCALES.find((locale) => !values[locale]);
-  return source && target ? [{ key, from: source, to: target, text: values[source] }] : [];
+  const source = values.en ? 'en' : LOCALES.find((locale) => values[locale]);
+  if (!source) return [];
+  return LOCALES.filter((locale) => !values[locale]).map((to) => ({
+    key,
+    from: source,
+    to,
+    text: values[source],
+  }));
 };
 
 export const missingEntryTranslations = (
@@ -37,10 +42,10 @@ export const missingEntryTranslations = (
 ): MissingTranslation[] =>
   (findContentType(contentTypeId)?.fields ?? []).flatMap((field) =>
     field.localized && TEXT_TYPES.has(field.type)
-      ? pairOf(field.id, {
-          en: asText(fields[field.id]?.[locales.en]),
-          uk: asText(fields[field.id]?.[locales.uk]),
-        })
+      ? pairOf(
+          field.id,
+          fromLocales((locale) => asText(fields[field.id]?.[locales[locale]])),
+        )
       : [],
   );
 
@@ -60,10 +65,10 @@ export const missingRecordTranslations = (
 ): MissingTranslation[] =>
   RECORD_DEFINITIONS[resource].fields.flatMap((field) =>
     field.localized && TEXT_KINDS.has(field.kind)
-      ? pairOf(field.path, {
-          en: asText(readRecordValue(data, localizedPath(field, 'en'))),
-          uk: asText(readRecordValue(data, localizedPath(field, 'uk'))),
-        })
+      ? pairOf(
+          field.path,
+          fromLocales((locale) => asText(readRecordValue(data, localizedPath(field, locale)))),
+        )
       : [],
   );
 

@@ -48,7 +48,7 @@ export const siblingFields = (
   placeholder: string,
 ): ContentFields =>
   Object.fromEntries(
-    type.fields.flatMap((field) => {
+    type.fields.flatMap((field): [string, Record<string, unknown>][] => {
       if (field.id === type.displayField) {
         const codes = field.localized ? Object.values(locales) : [locales.en];
         return [[field.id, Object.fromEntries(codes.map((code) => [code, placeholder]))]];

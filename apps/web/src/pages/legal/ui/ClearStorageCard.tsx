@@ -18,6 +18,27 @@ const CLEAR_STORAGE_MESSAGES = defineMessages({
     action: 'Очистити дані сайту',
     done: 'Готово. У цьому браузері більше немає даних VIRaTeC.',
   },
+  de: {
+    title: 'Auf diesem Gerät gespeicherte Daten löschen',
+    description:
+      'Entfernt Ihre Spracheinstellung, Anmeldung und gespeicherte Kontoliste aus diesem Browser. Sie werden abgemeldet; die Sprache wird beim nächsten Besuch zurückgesetzt.',
+    action: 'Websitedaten löschen',
+    done: 'Erledigt. In diesem Browser ist nichts mehr von VIRaTeC gespeichert.',
+  },
+  fr: {
+    title: 'Effacer ce que nous stockons sur cet appareil',
+    description:
+      'Supprime votre préférence de langue, votre connexion et la liste des comptes enregistrés de ce navigateur. Vous serez déconnecté ; la langue sera réinitialisée lors de votre prochaine visite.',
+    action: 'Effacer les données du site',
+    done: 'C’est fait. Plus rien de VIRaTeC n’est stocké dans ce navigateur.',
+  },
+  ar: {
+    title: 'امسح ما نخزّنه على هذا الجهاز',
+    description:
+      'يزيل تفضيل اللغة وتسجيل الدخول وقائمة الحسابات المحفوظة من هذا المتصفح. سيتم تسجيل خروجك، وستُعاد اللغة إلى الافتراضية في زيارتك التالية.',
+    action: 'مسح بيانات الموقع',
+    done: 'تم. لم يعد أي شيء من VIRaTeC مخزّنًا في هذا المتصفح.',
+  },
 });
 
 export function ClearStorageCard() {

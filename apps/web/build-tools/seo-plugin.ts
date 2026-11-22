@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createServer, type Plugin, type ResolvedConfig, type Rollup } from 'vite';
 import type { PublicationDto } from '@viratec/contracts';
-import type { Locale } from '../src/shared/i18n/model/types';
+import { INTL_LOCALE, pickLocalized, type Locale } from '../src/shared/i18n/model/types';
 import type { Publication } from '../src/entities/publication/model/types';
 import type { Project } from '../src/entities/project/model/types';
 import { localizeProject } from '../src/entities/project/lib/localize';
@@ -27,8 +27,7 @@ import { fetchRecords, saveRecords } from './prerender-records';
 
 const HEAD_PLACEHOLDER = '<!--seo-head-->';
 const SEO_LOCALE: Locale = 'uk';
-const SEO_LOCALES: readonly Locale[] = ['uk', 'en'];
-const IN_LANGUAGE: Record<Locale, string> = { uk: 'uk-UA', en: 'en-GB' };
+const SEO_LOCALES = ['uk', 'en'] as const;
 const HTML_LANG = /<html lang="[^"]*"/;
 const SPA_FALLBACK_FILE = 'spa.html';
 const PUBLICATIONS_MODULE = '/src/entities/publication/model/data.ts';
@@ -152,7 +151,7 @@ const webPageJsonLd = (
   url: site.url(path),
   name: title,
   description,
-  inLanguage: IN_LANGUAGE[locale],
+  inLanguage: INTL_LOCALE[locale],
   isPartOf: { '@id': site.websiteId },
   about: { '@id': site.organizationId },
   primaryImageOfPage: site.defaultImage.url,
@@ -175,7 +174,7 @@ const publicationJsonLd = (
   description,
   image,
   datePublished: String(publication.year),
-  inLanguage: IN_LANGUAGE[locale],
+  inLanguage: INTL_LOCALE[locale],
   ...(publication.detail?.authors && {
     author: publication.detail.authors.split(/,\s*/).map((name) => ({ '@type': 'Person', name })),
   }),
@@ -199,7 +198,7 @@ const projectJsonLd = (
   url: site.url(path),
   name: project.title,
   description,
-  inLanguage: IN_LANGUAGE[locale],
+  inLanguage: INTL_LOCALE[locale],
   ...(project.tags.length > 0 && { keywords: project.tags.join(', ') }),
   parentOrganization: { '@id': site.organizationId },
   isPartOf: { '@id': site.websiteId },
@@ -209,7 +208,7 @@ const staticPages = (site: Site, locale: Locale): Page[] =>
   Object.entries(PAGE_SEO).flatMap(([base, seo]) => {
     if (!seo) return [];
     const path = localePath(base, locale);
-    const { title, description } = seo[locale];
+    const { title, description } = pickLocalized(seo, locale);
     const fullTitle = formatTitle(title, locale);
     const metaDescription = toMetaDescription(description);
     return [
@@ -232,7 +231,7 @@ const staticPages = (site: Site, locale: Locale): Page[] =>
 const localizePublications = async (
   config: ResolvedConfig,
   publications: PublicationDto[],
-): Promise<Record<Locale, Publication[]>> => {
+): Promise<Record<(typeof SEO_LOCALES)[number], Publication[]>> => {
   if (publications.length === 0) return { uk: [], en: [] };
   const server = await createServer({
     configFile: false,
@@ -358,7 +357,7 @@ const homeHead = (site: Site): PageHead => ({
   base: ROUTES.HOME,
   locale: SEO_LOCALE,
   title: formatTitle(undefined, SEO_LOCALE),
-  description: toMetaDescription(DEFAULT_SEO[SEO_LOCALE].description),
+  description: toMetaDescription(pickLocalized(DEFAULT_SEO, SEO_LOCALE).description),
   type: 'website',
   image: site.defaultImage,
 });

@@ -1,11 +1,18 @@
 import { useEffect } from 'react';
-import { Outlet, ScrollRestoration, useLocation, useRouteError } from 'react-router-dom';
+import {
+  Outlet,
+  ScrollRestoration,
+  useLocation,
+  useRouteError,
+  type Location,
+} from 'react-router-dom';
 import { useSessionStore } from '@/entities/session';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import { isStaleChunkError, reloadForStaleChunk } from '@/shared/lib';
 import { linkButtonClassName } from '@/shared/ui/link-button';
 import { KeyboardShortcuts } from '@/widgets/keyboard-shortcuts';
 import { SiteEditorMount } from '@/widgets/site-editor';
+import { TermsGate } from './TermsGate';
 
 const ROUTE_ERROR_MESSAGES = defineMessages({
   en: {
@@ -18,7 +25,27 @@ const ROUTE_ERROR_MESSAGES = defineMessages({
     description: 'Не вдалося завантажити сторінку. Можливо, вийшла нова версія сайту.',
     action: 'Оновити сторінку',
   },
+  de: {
+    title: 'Etwas ist schiefgelaufen',
+    description:
+      'Die Seite konnte nicht geladen werden. Möglicherweise wurde eine neue Version der Website veröffentlicht.',
+    action: 'Seite neu laden',
+  },
+  fr: {
+    title: 'Une erreur s’est produite',
+    description:
+      'La page n’a pas pu se charger. Une nouvelle version du site a peut-être été publiée.',
+    action: 'Recharger la page',
+  },
+  ar: {
+    title: 'حدث خطأ ما',
+    description: 'تعذّر تحميل الصفحة. ربما تم إصدار نسخة جديدة من الموقع.',
+    action: 'إعادة تحميل الصفحة',
+  },
 });
+
+const getScrollKey = ({ key, pathname, search }: Location) =>
+  key === 'default' ? `${pathname}${search}` : key;
 
 export function RootLayout() {
   const { pathname } = useLocation();
@@ -31,9 +58,10 @@ export function RootLayout() {
   return (
     <>
       <Outlet />
-      <ScrollRestoration />
+      <ScrollRestoration getKey={getScrollKey} />
       <KeyboardShortcuts />
       <SiteEditorMount />
+      <TermsGate />
     </>
   );
 }

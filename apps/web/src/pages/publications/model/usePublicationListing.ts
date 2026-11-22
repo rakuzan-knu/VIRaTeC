@@ -26,6 +26,30 @@ const LISTING_LABELS = defineMessages<ListingLabels>({
     type: { all: 'Усі', paper: 'Статті', news: 'Новини', event: 'Події', media: 'Медіа' },
     sort: { newest: 'Спочатку нові', oldest: 'Спочатку старі', az: 'А–Я' },
   },
+  de: {
+    type: {
+      all: 'Alle',
+      paper: 'Artikel',
+      news: 'Neuigkeiten',
+      event: 'Veranstaltungen',
+      media: 'Medien',
+    },
+    sort: { newest: 'Neueste zuerst', oldest: 'Älteste zuerst', az: 'A–Z' },
+  },
+  fr: {
+    type: {
+      all: 'Tous',
+      paper: 'Articles',
+      news: 'Actualités',
+      event: 'Événements',
+      media: 'Médias',
+    },
+    sort: { newest: 'Plus récents d’abord', oldest: 'Plus anciens d’abord', az: 'A–Z' },
+  },
+  ar: {
+    type: { all: 'الكل', paper: 'أوراق بحثية', news: 'أخبار', event: 'فعاليات', media: 'وسائط' },
+    sort: { newest: 'الأحدث أولًا', oldest: 'الأقدم أولًا', az: 'أ–ي' },
+  },
 });
 
 const toOptions = <T extends string>(values: readonly T[], labels: Record<T, string>) =>

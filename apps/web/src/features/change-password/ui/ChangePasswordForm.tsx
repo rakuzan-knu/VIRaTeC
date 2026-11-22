@@ -51,6 +51,67 @@ const CHANGE_PASSWORD_MESSAGES = defineMessages({
       sameAsCurrent: 'Новий пароль має відрізнятися від поточного',
     },
   },
+  de: {
+    currentPassword: 'Aktuelles Passwort',
+    newPassword: 'Neues Passwort',
+    confirmPassword: 'Neues Passwort wiederholen',
+    newPasswordHelper: `Mindestens ${PROFILE_LIMITS.passwordMin} Zeichen.`,
+    setPasswordHint:
+      'Ihr Konto verwendet die Google-Anmeldung. Legen Sie ein Passwort fest, um sich auch mit Ihrer E-Mail anzumelden.',
+    submitChange: 'Passwort aktualisieren',
+    submitSet: 'Passwort festlegen',
+    success: 'Passwort aktualisiert. Andere Geräte wurden abgemeldet.',
+    wrongPassword: 'Das aktuelle Passwort ist falsch.',
+    tooMany: 'Zu viele Versuche. Warten Sie 15 Minuten und versuchen Sie es erneut.',
+    unexpectedError:
+      'Das Passwort konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.',
+    validation: {
+      currentRequired: 'Geben Sie Ihr aktuelles Passwort ein',
+      passwordMin: `Das Passwort muss mindestens ${PROFILE_LIMITS.passwordMin} Zeichen lang sein`,
+      passwordsMismatch: 'Die Passwörter stimmen nicht überein',
+      sameAsCurrent: 'Das neue Passwort muss sich vom aktuellen unterscheiden',
+    },
+  },
+  fr: {
+    currentPassword: 'Mot de passe actuel',
+    newPassword: 'Nouveau mot de passe',
+    confirmPassword: 'Répétez le nouveau mot de passe',
+    newPasswordHelper: `Au moins ${PROFILE_LIMITS.passwordMin} caractères.`,
+    setPasswordHint:
+      'Votre compte utilise la connexion Google. Définissez un mot de passe pour pouvoir aussi vous connecter avec votre e-mail.',
+    submitChange: 'Mettre à jour le mot de passe',
+    submitSet: 'Définir le mot de passe',
+    success: 'Mot de passe mis à jour. Les autres appareils ont été déconnectés.',
+    wrongPassword: 'Le mot de passe actuel est incorrect.',
+    tooMany: 'Trop de tentatives. Attendez 15 minutes et réessayez.',
+    unexpectedError: 'Impossible de mettre à jour le mot de passe. Veuillez réessayer.',
+    validation: {
+      currentRequired: 'Saisissez votre mot de passe actuel',
+      passwordMin: `Le mot de passe doit comporter au moins ${PROFILE_LIMITS.passwordMin} caractères`,
+      passwordsMismatch: 'Les mots de passe ne correspondent pas',
+      sameAsCurrent: 'Le nouveau mot de passe doit être différent de l’actuel',
+    },
+  },
+  ar: {
+    currentPassword: 'كلمة المرور الحالية',
+    newPassword: 'كلمة المرور الجديدة',
+    confirmPassword: 'أعد إدخال كلمة المرور الجديدة',
+    newPasswordHelper: `${PROFILE_LIMITS.passwordMin} أحرف على الأقل.`,
+    setPasswordHint:
+      'يستخدم حسابك تسجيل الدخول عبر Google. عيّن كلمة مرور لتتمكن أيضًا من تسجيل الدخول ببريدك الإلكتروني.',
+    submitChange: 'تحديث كلمة المرور',
+    submitSet: 'تعيين كلمة المرور',
+    success: 'تم تحديث كلمة المرور. تم تسجيل الخروج من الأجهزة الأخرى.',
+    wrongPassword: 'كلمة المرور الحالية غير صحيحة.',
+    tooMany: 'محاولات كثيرة جدًا. انتظر 15 دقيقة ثم حاول مرة أخرى.',
+    unexpectedError: 'تعذّر تحديث كلمة المرور. يُرجى المحاولة مرة أخرى.',
+    validation: {
+      currentRequired: 'أدخل كلمة المرور الحالية',
+      passwordMin: `يجب ألا تقل كلمة المرور عن ${PROFILE_LIMITS.passwordMin} أحرف`,
+      passwordsMismatch: 'كلمتا المرور غير متطابقتين',
+      sameAsCurrent: 'يجب أن تختلف كلمة المرور الجديدة عن الحالية',
+    },
+  },
 });
 
 interface ChangePasswordFormProps {

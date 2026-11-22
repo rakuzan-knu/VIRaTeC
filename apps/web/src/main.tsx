@@ -8,7 +8,7 @@ import {
   PRERENDERED_PATH_ATTRIBUTE,
   QUERY_STATE_ELEMENT_ID,
 } from './shared/config/prerender';
-import { beginHydration, loadPlerdy } from './shared/lib';
+import { beginHydration } from './shared/lib';
 import './app/styles/index.css';
 
 const container = document.getElementById('root')!;
@@ -44,4 +44,3 @@ async function start() {
 }
 
 void start();
-loadPlerdy();

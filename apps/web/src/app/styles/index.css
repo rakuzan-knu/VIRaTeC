@@ -10,10 +10,14 @@
 @import '@fontsource/inter/cyrillic-500.css';
 @import '@fontsource/inter/cyrillic-600.css';
 @import '@fontsource/inter/cyrillic-700.css';
+@import '@fontsource/noto-sans-arabic/400.css';
+@import '@fontsource/noto-sans-arabic/500.css';
+@import '@fontsource/noto-sans-arabic/600.css';
+@import '@fontsource/noto-sans-arabic/700.css';
 
 @theme {
   /* Font */
-  --font-sans: 'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'DM Sans', 'Inter', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
   /* Backgrounds */
   --color-bg-page: #03122e;
@@ -81,7 +85,7 @@
 }
 
 @theme {
-  --font-dm-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-dm-sans: 'DM Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
   --color-viratec-bg: #03122e;
   --color-viratec-surface: #061a39;
@@ -112,9 +116,10 @@
   --shadow-menu: 0 24px 60px 0 rgba(0, 5, 26, 0.55);
   --shadow-sticky-bar: 0 20px 50px -20px rgba(0, 5, 26, 0.9);
 
-  --font-display: 'Instrument Sans', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    'Instrument Sans', 'DM Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
-  --font-auth: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-auth: 'Instrument Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
   --color-auth-navy: #082455;
   --color-auth-navy-hover: #0d3170;
   --color-auth-banner: #021329;
@@ -139,6 +144,16 @@
   --animate-hero-drift-reverse: hero-drift 14s ease-in-out -7s infinite alternate-reverse;
   --animate-hero-fade: hero-fade 1.4s var(--ease-apple) both;
   --animate-editor-badge-in: editor-badge-in 180ms var(--ease-apple) both;
+  --animate-partner-marquee: partner-marquee 95s linear infinite;
+
+  @keyframes partner-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
 
   @keyframes editor-badge-in {
     from {
@@ -397,6 +412,71 @@
   }
 }
 
+@supports (background: -webkit-named-image(i)) {
+  @keyframes hero-reveal {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0.35;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hero-scroll-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes word-rise {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  h1:has(.split-word),
+  h2:has(.split-word) {
+    text-wrap: wrap;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal='pending'] .split-word > span {
+      transform: none;
+      opacity: 0;
+    }
+  }
+}
+
 @utility intro-cascade {
   & > :not(h1) {
     animation: var(--animate-hero-reveal);
@@ -455,6 +535,10 @@
 
   p {
     text-wrap: pretty;
+  }
+
+  [dir='rtl'] :is(p, li, dd, h3, h4, blockquote, figcaption) {
+    unicode-bidi: plaintext;
   }
 
   ::selection {
@@ -538,6 +622,32 @@
     var(--color-viratec-bg) 0%,
     #051b40 63%,
     #094285 100%
+  );
+}
+
+@custom-variant desktop-nav {
+  @media (min-width: 1140px) {
+    html:not(:lang(de), :lang(fr)) & {
+      @slot;
+    }
+  }
+  @media (min-width: 1360px) {
+    html:is(:lang(de), :lang(fr)) & {
+      @slot;
+    }
+  }
+}
+
+@utility partner-marquee-fade {
+  mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+
+@utility hero-scrim {
+  background-image: linear-gradient(
+    to top,
+    rgba(3, 18, 46, 0.72) 0,
+    rgba(3, 18, 46, 0.62) 190px,
+    rgba(3, 18, 46, 0) 300px
   );
 }
 
@@ -1192,10 +1302,6 @@
 [data-offscreen],
 [data-offscreen] * {
   animation-play-state: paused;
-}
-
-::highlight(site-editor-inline) {
-  color: transparent;
 }
 
 @keyframes editor-pop-in {

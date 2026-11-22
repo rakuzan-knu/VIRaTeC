@@ -3,7 +3,7 @@ import type { Locale } from '../../../src/shared/i18n/model/types.ts';
 import type { Founder, TeamMember } from '../../../src/pages/about-initiative/model/types.ts';
 import { field, imageField, localizedField, type ContentTypeDefinition } from '../content-types.ts';
 import { assetLinkSchema, createReader, nonEmpty, type RawEntry } from '../entry-reader.ts';
-import { type ContentDomain, type PullContext } from '../domain.ts';
+import { buildLocalized, type ContentDomain, type PullContext } from '../domain.ts';
 
 const TYPE_ID = 'person';
 const PARAGRAPH_SEPARATOR = /\n\s*\n/;
@@ -106,9 +106,8 @@ export const teamDomain: ContentDomain = {
       };
     };
 
-    const founderEn = founderText('en');
-    const founderUk = founderText('uk');
-    if (!founderEn || !founderUk) return [];
+    const founderLocalized = buildLocalized(founderText);
+    if (!founderLocalized) return [];
 
     return [
       {
@@ -121,9 +120,9 @@ export const teamDomain: ContentDomain = {
           {
             name: 'TEAM',
             type: 'Localized<TeamMember[]>',
-            value: { en: team('en'), uk: team('uk') },
+            value: buildLocalized(team),
           },
-          { name: 'FOUNDER', type: 'Localized<Founder>', value: { en: founderEn, uk: founderUk } },
+          { name: 'FOUNDER', type: 'Localized<Founder>', value: founderLocalized },
         ],
       },
     ];

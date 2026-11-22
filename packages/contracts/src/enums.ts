@@ -27,6 +27,23 @@ export enum EventType {
   MEETUP = 'MEETUP',
 }
 
+export enum EventStatus {
+  SCHEDULED = 'SCHEDULED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum EventJoinAccess {
+  EVERYONE = 'EVERYONE',
+  REGISTERED = 'REGISTERED',
+  SUBSCRIBED = 'SUBSCRIBED',
+}
+
+export enum EventNotificationKind {
+  JOIN_OPEN = 'JOIN_OPEN',
+  CANCELLED = 'CANCELLED',
+  RESCHEDULED = 'RESCHEDULED',
+}
+
 export enum StudyLevel {
   BACHELOR = 'BACHELOR',
   MASTER = 'MASTER',
@@ -75,6 +92,7 @@ export enum LanguageLevel {
 export enum EmailTokenPurpose {
   VERIFY_EMAIL = 'VERIFY_EMAIL',
   RESET_PASSWORD = 'RESET_PASSWORD',
+  CHANGE_EMAIL = 'CHANGE_EMAIL',
 }
 
 export enum StaffRole {

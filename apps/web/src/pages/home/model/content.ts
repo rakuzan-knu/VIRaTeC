@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { usePublications } from '@/entities/publication';
-import { useLocale } from '@/shared/i18n';
+import { pickLocalized, useLocale } from '@/shared/i18n';
 import { useLiveContent } from '@/shared/lib';
 import {
   pickHomePublications,
@@ -92,7 +92,7 @@ const NO_SLUGS: string[] = [];
 
 export const useHomeContent = (): HomeContent => {
   const locale = useLocale();
-  const text = useLiveContent('homePage', 'PAGE_TEXT', PAGE_TEXT)[locale];
+  const text = pickLocalized(useLiveContent('homePage', 'PAGE_TEXT', PAGE_TEXT), locale);
   const live = usePublications();
   const slugs = text.publications.slugs ?? NO_SLUGS;
   const isLive = !live.isPending && !live.isError;
@@ -103,7 +103,7 @@ export const useHomeContent = (): HomeContent => {
         ...text.publications,
         items: isLive
           ? pickHomePublications(live.publications, slugs).map(toPublicationCard)
-          : HOME_PUBLICATIONS[locale],
+          : pickLocalized(HOME_PUBLICATIONS, locale),
       },
     }),
     [text, locale, isLive, live.publications, slugs],

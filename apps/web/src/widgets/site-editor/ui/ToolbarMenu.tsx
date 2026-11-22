@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type ComponentType } from 'react';
+import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { cn, useDismiss } from '@/shared/lib';
 
@@ -14,24 +14,34 @@ export interface ToolbarMenuItem {
   onSelect: () => void;
 }
 
-interface ToolbarMenuProps {
+interface ToolbarMenuBaseProps {
   label: string;
   buttonLabel: string;
   icon: Icon;
-  items: readonly ToolbarMenuItem[];
   variant?: 'plain' | 'accent';
   tourAnchor?: string;
+  panelClassName?: string;
 }
 
+type ToolbarMenuProps = ToolbarMenuBaseProps &
+  (
+    | { items: readonly ToolbarMenuItem[]; children?: never }
+    | { items?: never; children: (close: () => void) => ReactNode }
+  );
+
 const ROLE = { action: 'menuitem', check: 'menuitemcheckbox', radio: 'menuitemradio' } as const;
+
+const ITEM_SELECTOR = '[data-menu-item]:not(:disabled)';
 
 export function ToolbarMenu({
   label,
   buttonLabel,
   icon: Icon,
   items,
+  children,
   variant = 'plain',
   tourAnchor,
+  panelClassName,
 }: ToolbarMenuProps) {
   const [isOpen, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -43,8 +53,15 @@ export function ToolbarMenu({
   };
   useDismiss(rootRef, isOpen, () => close(false));
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleBlur = () => setOpen(false);
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, [isOpen]);
+
   const focusItem = (index: number) => {
-    const buttons = rootRef.current?.querySelectorAll<HTMLButtonElement>('[data-menu-item]');
+    const buttons = rootRef.current?.querySelectorAll<HTMLButtonElement>(ITEM_SELECTOR);
     if (!buttons || buttons.length === 0) return;
     buttons[(index + buttons.length) % buttons.length]?.focus();
   };
@@ -94,13 +111,13 @@ export function ToolbarMenu({
           aria-label={label}
           onKeyDown={(event) => {
             const buttons = [
-              ...(rootRef.current?.querySelectorAll<HTMLButtonElement>('[data-menu-item]') ?? []),
+              ...(rootRef.current?.querySelectorAll<HTMLButtonElement>(ITEM_SELECTOR) ?? []),
             ];
             const index = buttons.findIndex((button) => button === document.activeElement);
-            if (event.key === 'ArrowDown') {
+            if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
               event.preventDefault();
               focusItem(index + 1);
-            } else if (event.key === 'ArrowUp') {
+            } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
               event.preventDefault();
               focusItem(index - 1);
             } else if (event.key === 'Home') {
@@ -117,9 +134,13 @@ export function ToolbarMenu({
               close(false);
             }
           }}
-          className="editor-pop-in absolute top-full right-0 z-[2147483005] mt-2 flex w-[min(300px,calc(100vw-24px))] flex-col rounded-2xl border border-white/12 bg-viratec-deep p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+          className={cn(
+            'editor-pop-in absolute top-full right-0 z-[2147483005] mt-2 flex w-[min(300px,calc(100vw-24px))] flex-col rounded-2xl border border-white/12 bg-viratec-deep p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5)]',
+            panelClassName,
+          )}
         >
-          {items.map((item, index) => {
+          {children?.(() => close(true))}
+          {items?.map((item, index) => {
             const kind = item.kind ?? 'action';
             const ItemIcon = item.icon;
             const isNewGroup = index > 0 && item.group !== items[index - 1]?.group;

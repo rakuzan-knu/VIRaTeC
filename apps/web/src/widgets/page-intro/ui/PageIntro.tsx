@@ -27,6 +27,9 @@ interface PageIntroProps {
 const PAGE_INTRO_MESSAGES = defineMessages({
   en: { breadcrumb: 'Breadcrumb' },
   uk: { breadcrumb: 'Навігаційний ланцюжок' },
+  de: { breadcrumb: 'Brotkrümelnavigation' },
+  fr: { breadcrumb: 'Fil d’Ariane' },
+  ar: { breadcrumb: 'مسار التنقل' },
 });
 
 export function PageIntro({
@@ -92,7 +95,10 @@ export function PageIntro({
           </nav>
         )}
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-        <h1 className="max-w-[1080px] font-display text-[44px] leading-[46px] font-medium tracking-[-0.035em] text-white lg:text-[88px] lg:leading-[88px]">
+        <h1
+          dir="auto"
+          className="max-w-[1080px] font-display text-[44px] leading-[46px] font-medium tracking-[-0.035em] text-white lg:text-[88px] lg:leading-[88px]"
+        >
           <SplitWords text={title} />
           {accent && (
             <>

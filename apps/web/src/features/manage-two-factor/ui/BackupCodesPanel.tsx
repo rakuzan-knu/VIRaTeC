@@ -44,6 +44,60 @@ const MESSAGES = defineMessages({
     confirmError: 'Такого коду немає в списку',
     done: 'Готово',
   },
+  de: {
+    title: 'Speichern Sie Ihre Backup-Codes',
+    intro:
+      'Jeder Code funktioniert einmal und ermöglicht die Anmeldung, falls Sie Ihr Smartphone verlieren. Sie werden nur jetzt angezeigt — VIRaTeC speichert nur ihre Fingerabdrücke und kann sie nicht erneut anzeigen.',
+    warning:
+      'Machen Sie keine Screenshots: Fotos werden mit Clouds und Galerien synchronisiert. Laden Sie die Datei an einen sicheren Ort herunter, speichern Sie die Codes in einem Passwortmanager oder schreiben Sie sie auf Papier.',
+    hold: 'Gedrückt halten zum Anzeigen',
+    hidden: 'Codes sind verborgen',
+    download: '.txt herunterladen',
+    copy: 'Kopieren',
+    copied: 'Kopiert',
+    fileHeader: 'VIRaTeC-Backup-Codes — jeder Code kann einmal verwendet werden',
+    generated: 'Erzeugt',
+    acknowledge: 'Ich habe diese Codes an einem sicheren Ort gespeichert',
+    confirmLabel: 'Geben Sie einen der Codes ein, um zu bestätigen, dass Sie sie gespeichert haben',
+    confirmError: 'Dieser Code ist nicht in der Liste',
+    done: 'Fertig',
+  },
+  fr: {
+    title: 'Enregistrez vos codes de secours',
+    intro:
+      'Chaque code fonctionne une fois et vous permet de vous connecter si vous perdez votre téléphone. Ils ne s’affichent que maintenant — VIRaTeC n’en conserve que les empreintes et ne peut pas les réafficher.',
+    warning:
+      'Ne faites pas de captures d’écran : les photos se synchronisent avec le cloud et les galeries. Téléchargez le fichier dans un endroit sûr, conservez les codes dans un gestionnaire de mots de passe ou notez-les sur papier.',
+    hold: 'Maintenir pour afficher',
+    hidden: 'Les codes sont masqués',
+    download: 'Télécharger le .txt',
+    copy: 'Copier',
+    copied: 'Copié',
+    fileHeader: 'Codes de secours VIRaTeC — chaque code ne peut être utilisé qu’une fois',
+    generated: 'Générés',
+    acknowledge: 'J’ai enregistré ces codes dans un endroit sûr',
+    confirmLabel: 'Saisissez l’un des codes pour confirmer que vous les avez enregistrés',
+    confirmError: 'Ce code ne figure pas dans la liste',
+    done: 'Terminé',
+  },
+  ar: {
+    title: 'احفظ رموزك الاحتياطية',
+    intro:
+      'يعمل كل رمز مرة واحدة ويتيح لك تسجيل الدخول إذا فقدت هاتفك. تُعرض الآن فقط — لا تخزّن VIRaTeC سوى بصماتها ولا يمكنها عرضها مرة أخرى.',
+    warning:
+      'لا تلتقط لقطات شاشة: تتزامن الصور مع الخدمات السحابية والمعارض. نزّل الملف إلى مكان آمن، أو احفظ الرموز في مدير كلمات مرور، أو دوّنها على ورق.',
+    hold: 'اضغط مطولًا للإظهار',
+    hidden: 'الرموز مخفية',
+    download: 'تنزيل ملف ‎.txt',
+    copy: 'نسخ',
+    copied: 'تم النسخ',
+    fileHeader: 'رموز VIRaTeC الاحتياطية — يمكن استخدام كل رمز مرة واحدة',
+    generated: 'تاريخ الإنشاء',
+    acknowledge: 'حفظت هذه الرموز في مكان آمن',
+    confirmLabel: 'اكتب أيًّا من الرموز لتأكيد أنك حفظتها',
+    confirmError: 'هذا الرمز غير موجود في القائمة',
+    done: 'تم',
+  },
 });
 
 const normalize = (code: string) => code.replace(/[\s-]/g, '').toUpperCase();

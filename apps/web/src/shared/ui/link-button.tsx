@@ -18,7 +18,7 @@ export function linkButtonClassName({
   className,
 }: LinkButtonStyleOptions) {
   return cn(
-    'group/button inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium leading-normal tracking-[-0.01em]',
+    'group/button inline-flex items-center justify-center whitespace-normal text-center min-[320px]:whitespace-nowrap rounded-full font-medium leading-normal tracking-[-0.01em]',
     'transition-[background-color,border-color,color,transform] duration-200 ease-apple active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime',
     size === 'lg' && 'gap-2.5 px-7 py-4 text-[17px] lg:gap-3 lg:px-[30px] lg:text-lg',

@@ -1,3 +1,3 @@
 import type { PageBlocks } from './pageBlock';
 
-export const PAGE_BLOCKS: PageBlocks = { en: {}, uk: {} };
+export const PAGE_BLOCKS: PageBlocks = { en: {}, uk: {}, de: {}, fr: {}, ar: {} };

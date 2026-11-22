@@ -5,7 +5,7 @@ import type { SiteEditorMessages } from '../model/messages';
 const isEmpty = (value: unknown) => typeof value !== 'string' || value.trim().length === 0;
 
 interface AltHintProps {
-  values: Record<Locale, unknown>;
+  values: Partial<Record<Locale, unknown>>;
   t: SiteEditorMessages;
 }
 

@@ -23,6 +23,7 @@ import {
   verifyTotp,
 } from '../security/crypto';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
+import { SecurityMailService } from './security-mail.service';
 
 const STEP_UP_DURATION_MS = 5 * 60_000;
 
@@ -35,6 +36,7 @@ export class TwoFactorService {
     private config: ConfigService,
     private audit: AuditService,
     private rateLimit: RateLimitService,
+    private securityMail?: SecurityMailService,
   ) {}
 
   private get encryptionKey() {
@@ -181,6 +183,7 @@ export class TwoFactorService {
       this.prisma.backupCode.deleteMany({ where: { userId } }),
     ]);
     await this.audit.record({ action: 'auth.2fa_disabled', actorId: userId, client });
+    await this.securityMail?.twoFactorDisabled(user.email);
     return { success: true };
   }
 

@@ -9,12 +9,22 @@ export type ContentAssetMimeType = (typeof CONTENT_EDITOR_LIMITS.assetMimeTypes)
 
 export type ContentFields = Record<string, Record<string, unknown>>;
 
-export interface ContentLocales {
-  en: string;
-  uk: string;
-}
+export const CONTENT_LOCALE_KEYS = ['en', 'uk', 'de', 'fr', 'ar'] as const;
 
-export type ContentLocaleKey = keyof ContentLocales;
+export type ContentLocaleKey = (typeof CONTENT_LOCALE_KEYS)[number];
+
+export const SOURCE_CONTENT_LOCALE = 'en' satisfies ContentLocaleKey;
+
+export const TRANSLATED_CONTENT_LOCALES = [
+  'uk',
+  'de',
+  'fr',
+  'ar',
+] as const satisfies readonly ContentLocaleKey[];
+
+export type TranslatedContentLocale = (typeof TRANSLATED_CONTENT_LOCALES)[number];
+
+export type ContentLocales = Record<ContentLocaleKey, string>;
 
 export const TRANSLATION_LIMITS = { maxTexts: 20, maxTextLength: 4000 } as const;
 
@@ -127,4 +137,5 @@ export interface PublishContentRequestDto {
 export interface PublishContentResultDto {
   published: string[];
   failed: { changeId: string; label: string | null; reason: string }[];
+  untranslated: string[];
 }

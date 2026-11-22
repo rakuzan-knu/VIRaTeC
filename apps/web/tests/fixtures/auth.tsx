@@ -3,6 +3,9 @@ import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-do
 import { useQuery } from '@tanstack/react-query';
 import { App } from '../../src/app/App';
 import { ProtectedRoute } from '../../src/app/providers/ProtectedRoute';
+import { TermsGate } from '../../src/app/providers/TermsGate';
+import { ChangeEmailForm } from '../../src/features/change-email';
+import { DeleteAccountForm } from '../../src/features/delete-account';
 import { LoginPage } from '../../src/pages/login';
 import { RegisterPage } from '../../src/pages/register';
 import { refreshSession, useSessionStore } from '../../src/entities/session';
@@ -36,6 +39,22 @@ function PrivatePage() {
   );
 }
 
+function AccountControlsPage() {
+  const user = useSessionStore((state) => state.user);
+  if (!user) return null;
+  return (
+    <main>
+      <h1>Account controls</h1>
+      <ChangeEmailForm account={user} />
+      <DeleteAccountForm
+        email={user.email}
+        hasPassword={user.hasPassword}
+        twoFactorEnabled={user.twoFactorEnabled}
+      />
+    </main>
+  );
+}
+
 const router = createMemoryRouter(
   [
     { path: '/login', element: <LoginPage /> },
@@ -49,9 +68,22 @@ const router = createMemoryRouter(
         </ProtectedRoute>
       ),
     },
+    {
+      path: '/account-controls',
+      element: (
+        <ProtectedRoute>
+          <TermsGate />
+          <AccountControlsPage />
+        </ProtectedRoute>
+      ),
+    },
     { path: '/', element: <h1>Home</h1> },
   ],
-  { initialEntries: ['/private?section=security'] },
+  {
+    initialEntries: [
+      new URLSearchParams(window.location.search).get('start') ?? '/private?section=security',
+    ],
+  },
 );
 
 createRoot(document.getElementById('root')!).render(

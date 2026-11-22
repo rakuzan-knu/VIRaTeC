@@ -7,6 +7,7 @@ import {
 import { rememberAccount } from './knownAccounts';
 
 const readStorage = (key: string): string | null => {
+  if (import.meta.env.SSR) return null;
   try {
     return localStorage.getItem(key);
   } catch {
@@ -15,6 +16,7 @@ const readStorage = (key: string): string | null => {
 };
 
 const writeStorage = (key: string, value: string | null) => {
+  if (import.meta.env.SSR) return;
   try {
     if (value === null) localStorage.removeItem(key);
     else localStorage.setItem(key, value);

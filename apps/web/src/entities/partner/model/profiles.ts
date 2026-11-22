@@ -1,0 +1,594 @@
+import type { Localized } from '@/shared/i18n';
+import americanUniversityInTheEmirates from '@/shared/assets/partners/american-university-in-the-emirates.webp';
+import campbellsvilleUniversity from '@/shared/assets/partners/campbellsville-university.webp';
+import coventryUniversity from '@/shared/assets/partners/coventry-university.webp';
+import ecoleNationalePolytechnique from '@/shared/assets/partners/ecole-nationale-polytechnique.webp';
+import floridaInternationalUniversity from '@/shared/assets/partners/florida-international-university.webp';
+import floridaStateUniversity from '@/shared/assets/partners/florida-state-university.webp';
+import georgiaStateUniversity from '@/shared/assets/partners/georgia-state-university.webp';
+import indianaUniversity from '@/shared/assets/partners/indiana-university.webp';
+import johnsHopkinsUniversity from '@/shared/assets/partners/johns-hopkins-university.webp';
+import karunyaInstitute from '@/shared/assets/partners/karunya-institute-of-technology-and-sciences.webp';
+import lancasterUniversity from '@/shared/assets/partners/lancaster-university.webp';
+import lutskNationalTechnicalUniversity from '@/shared/assets/partners/lutsk-national-technical-university.webp';
+import manchesterMetropolitanUniversity from '@/shared/assets/partners/manchester-metropolitan-university.webp';
+import pryazovskyiStateTechnicalUniversity from '@/shared/assets/partners/pryazovskyi-state-technical-university.webp';
+import universidadCatolicaDeColombia from '@/shared/assets/partners/universidad-catolica-de-colombia.webp';
+import universidadSantoTomas from '@/shared/assets/partners/universidad-santo-tomas.webp';
+import universityOfCentralArkansas from '@/shared/assets/partners/university-of-central-arkansas.webp';
+import universityOfFlorida from '@/shared/assets/partners/university-of-florida.webp';
+import universityOfOxford from '@/shared/assets/partners/university-of-oxford.webp';
+import americanUniversityInTheEmiratesMark from '@/shared/assets/partners/mono/american-university-in-the-emirates.webp';
+import campbellsvilleUniversityMark from '@/shared/assets/partners/mono/campbellsville-university.webp';
+import coventryUniversityMark from '@/shared/assets/partners/mono/coventry-university.webp';
+import ecoleNationalePolytechniqueMark from '@/shared/assets/partners/mono/ecole-nationale-polytechnique.webp';
+import floridaInternationalUniversityMark from '@/shared/assets/partners/mono/florida-international-university.webp';
+import floridaStateUniversityMark from '@/shared/assets/partners/mono/florida-state-university.webp';
+import georgiaStateUniversityMark from '@/shared/assets/partners/mono/georgia-state-university.webp';
+import indianaUniversityMark from '@/shared/assets/partners/mono/indiana-university.webp';
+import johnsHopkinsUniversityMark from '@/shared/assets/partners/mono/johns-hopkins-university.webp';
+import karunyaInstituteMark from '@/shared/assets/partners/mono/karunya-institute-of-technology-and-sciences.webp';
+import lancasterUniversityMark from '@/shared/assets/partners/mono/lancaster-university.webp';
+import lutskNationalTechnicalUniversityMark from '@/shared/assets/partners/mono/lutsk-national-technical-university.webp';
+import manchesterMetropolitanUniversityMark from '@/shared/assets/partners/mono/manchester-metropolitan-university.webp';
+import pryazovskyiStateTechnicalUniversityMark from '@/shared/assets/partners/mono/pryazovskyi-state-technical-university.webp';
+import universidadCatolicaDeColombiaMark from '@/shared/assets/partners/mono/universidad-catolica-de-colombia.webp';
+import universidadSantoTomasMark from '@/shared/assets/partners/mono/universidad-santo-tomas.webp';
+import universityOfCentralArkansasMark from '@/shared/assets/partners/mono/university-of-central-arkansas.webp';
+import universityOfFloridaMark from '@/shared/assets/partners/mono/university-of-florida.webp';
+import universityOfOxfordMark from '@/shared/assets/partners/mono/university-of-oxford.webp';
+import type { PartnerProfile } from './types';
+
+const text = (
+  en: string,
+  uk: string,
+  de?: string,
+  fr?: string,
+  ar?: string,
+): Localized<string> => ({
+  en,
+  uk,
+  ...(de && { de }),
+  ...(fr && { fr }),
+  ...(ar && { ar }),
+});
+
+export const PARTNER_PROFILES: PartnerProfile[] = [
+  {
+    aliases: ['University of Oxford', 'Оксфордський університет'],
+    logo: universityOfOxford,
+    mark: universityOfOxfordMark,
+    website: 'https://www.ox.ac.uk/',
+    founded: text('c. 1096', 'бл. 1096', 'ca. 1096', 'v. 1096', 'حوالي 1096'),
+    place: text(
+      'Oxford, England',
+      'Оксфорд, Англія',
+      'Oxford, England',
+      'Oxford, Angleterre',
+      'أكسفورد، إنجلترا',
+    ),
+    kind: text(
+      'Collegiate research university',
+      'Колегіальний дослідницький університет',
+      'Kollegiale Forschungsuniversität',
+      'Université de recherche collégiale',
+      'جامعة بحثية ذات نظام كليات',
+    ),
+    summary: text(
+      'The oldest university in the English-speaking world, with evidence of teaching as early as 1096.',
+      'Найстаріший університет англомовного світу: перші свідчення про викладання тут датовані 1096 роком.',
+      'Die älteste Universität der englischsprachigen Welt; Lehre ist hier bereits für das Jahr 1096 belegt.',
+      'La plus ancienne université du monde anglophone, où l’enseignement est attesté dès 1096.',
+      'أقدم جامعة في العالم الناطق بالإنجليزية، وتعود أولى الشواهد على التدريس فيها إلى عام 1096.',
+    ),
+  },
+  {
+    aliases: ['Lancaster University', 'Ланкастерський університет'],
+    logo: lancasterUniversity,
+    mark: lancasterUniversityMark,
+    website: 'https://www.lancaster.ac.uk/',
+    founded: text('1964', '1964'),
+    place: text(
+      'Lancaster, England',
+      'Ланкастер, Англія',
+      'Lancaster, England',
+      'Lancaster, Angleterre',
+      'لانكستر، إنجلترا',
+    ),
+    kind: text(
+      'Public collegiate research university',
+      'Державний колегіальний дослідницький університет',
+      'Staatliche kollegiale Forschungsuniversität',
+      'Université publique de recherche collégiale',
+      'جامعة بحثية حكومية ذات نظام كليات',
+    ),
+    summary: text(
+      'Established by royal charter in 1964 as one of the new universities of the 1960s.',
+      'Заснований королівською хартією 1964 року як один із нових університетів 1960-х.',
+      'Durch königliche Charta 1964 als eine der neuen Universitäten der 1960er-Jahre gegründet.',
+      'Fondée par charte royale en 1964, parmi les nouvelles universités des années 1960.',
+      'تأسست بميثاق ملكي عام 1964 ضمن الجامعات الجديدة في ستينيات القرن العشرين.',
+    ),
+  },
+  {
+    aliases: ['Coventry University', 'Університет Ковентрі'],
+    logo: coventryUniversity,
+    mark: coventryUniversityMark,
+    website: 'https://www.coventry.ac.uk/',
+    founded: text('1992', '1992'),
+    place: text(
+      'Coventry, England',
+      'Ковентрі, Англія',
+      'Coventry, England',
+      'Coventry, Angleterre',
+      'كوفنتري، إنجلترا',
+    ),
+    kind: text(
+      'Public research university',
+      'Державний дослідницький університет',
+      'Staatliche Forschungsuniversität',
+      'Université publique de recherche',
+      'جامعة بحثية حكومية',
+    ),
+    summary: text(
+      'Traces its origins to the Coventry School of Design of 1843 and gained university status in 1992.',
+      'Веде свою історію від Ковентрійської школи дизайну 1843 року, статус університету отримав 1992 року.',
+      'Geht auf die Coventry School of Design von 1843 zurück und erhielt 1992 den Universitätsstatus.',
+      'Issue de la Coventry School of Design fondée en 1843, elle a obtenu le statut d’université en 1992.',
+      'تعود جذورها إلى مدرسة كوفنتري للتصميم عام 1843، وحصلت على صفة جامعة عام 1992.',
+    ),
+  },
+  {
+    aliases: ['Manchester Metropolitan University', 'Манчестерський столичний університет'],
+    logo: manchesterMetropolitanUniversity,
+    mark: manchesterMetropolitanUniversityMark,
+    website: 'https://www.mmu.ac.uk/',
+    founded: text('1992', '1992'),
+    place: text(
+      'Manchester, England',
+      'Манчестер, Англія',
+      'Manchester, England',
+      'Manchester, Angleterre',
+      'مانشستر، إنجلترا',
+    ),
+    kind: text(
+      'Public university',
+      'Державний університет',
+      'Staatliche Universität',
+      'Université publique',
+      'جامعة حكومية',
+    ),
+    summary: text(
+      'The successor to Manchester Polytechnic, which gained university status in 1992.',
+      'Наступник Манчестерського політехнічного інституту, що отримав статус університету 1992 року.',
+      'Nachfolgerin der Manchester Polytechnic, die 1992 den Universitätsstatus erhielt.',
+      'Héritière de la Manchester Polytechnic, qui a obtenu le statut d’université en 1992.',
+      'خلف معهد مانشستر للفنون التطبيقية الذي حصل على صفة جامعة عام 1992.',
+    ),
+  },
+  {
+    aliases: ['Johns Hopkins University', 'Університет Джонса Гопкінса'],
+    logo: johnsHopkinsUniversity,
+    mark: johnsHopkinsUniversityMark,
+    website: 'https://www.jhu.edu/',
+    founded: text('1876', '1876'),
+    place: text(
+      'Baltimore, Maryland, USA',
+      'Балтимор, Меріленд, США',
+      'Baltimore, Maryland, USA',
+      'Baltimore, Maryland, États-Unis',
+      'بالتيمور، ماريلاند، الولايات المتحدة',
+    ),
+    kind: text(
+      'Private research university',
+      'Приватний дослідницький університет',
+      'Private Forschungsuniversität',
+      'Université privée de recherche',
+      'جامعة بحثية خاصة',
+    ),
+    summary: text(
+      'Opened in 1876 and modelled on the European research institution.',
+      'Відкритий 1876 року за моделлю європейського дослідницького закладу.',
+      '1876 nach dem Vorbild europäischer Forschungseinrichtungen eröffnet.',
+      'Ouverte en 1876 sur le modèle des institutions de recherche européennes.',
+      'افتُتحت عام 1876 على غرار مؤسسات البحث الأوروبية.',
+    ),
+  },
+  {
+    aliases: ['Indiana University', 'Університет Індіани'],
+    logo: indianaUniversity,
+    mark: indianaUniversityMark,
+    website: 'https://www.iu.edu/',
+    founded: text('1820', '1820'),
+    place: text(
+      'Bloomington and Indianapolis, Indiana, USA',
+      'Блумінгтон та Індіанаполіс, Індіана, США',
+      'Bloomington und Indianapolis, Indiana, USA',
+      'Bloomington et Indianapolis, Indiana, États-Unis',
+      'بلومنغتون وإنديانابوليس، إنديانا، الولايات المتحدة',
+    ),
+    kind: text(
+      'Public university system',
+      'Система державних університетів',
+      'Staatliches Universitätssystem',
+      'Système d’universités publiques',
+      'نظام جامعات حكومية',
+    ),
+    summary: text(
+      'A system of public universities with two core campuses and five regional campuses.',
+      'Система державних університетів із двома основними та п’ятьма регіональними кампусами.',
+      'Ein System staatlicher Universitäten mit zwei Hauptcampus und fünf Regionalcampus.',
+      'Un système d’universités publiques comptant deux campus principaux et cinq campus régionaux.',
+      'نظام من الجامعات الحكومية يضم حرمين رئيسيين وخمسة أحرام إقليمية.',
+    ),
+  },
+  {
+    aliases: ['Florida International University', 'Міжнародний університет Флориди'],
+    logo: floridaInternationalUniversity,
+    mark: floridaInternationalUniversityMark,
+    website: 'https://www.fiu.edu/',
+    founded: text('1965', '1965'),
+    place: text(
+      'Westchester, Florida, USA',
+      'Вестчестер, Флорида, США',
+      'Westchester, Florida, USA',
+      'Westchester, Floride, États-Unis',
+      'وستشستر، فلوريدا، الولايات المتحدة',
+    ),
+    kind: text(
+      'Public research university',
+      'Державний дослідницький університет',
+      'Staatliche Forschungsuniversität',
+      'Université publique de recherche',
+      'جامعة بحثية حكومية',
+    ),
+    summary: text(
+      'Founded by the Florida Legislature in 1965, it opened to students in 1972.',
+      'Заснований законодавчими зборами Флориди 1965 року, перших студентів прийняв 1972 року.',
+      '1965 vom Parlament Floridas gegründet, nahm sie 1972 den Lehrbetrieb auf.',
+      'Fondée par la législature de Floride en 1965, elle a accueilli ses premiers étudiants en 1972.',
+      'أسستها الهيئة التشريعية لولاية فلوريدا عام 1965، وفتحت أبوابها للطلاب عام 1972.',
+    ),
+  },
+  {
+    aliases: ['Florida State University', 'Університет штату Флорида'],
+    logo: floridaStateUniversity,
+    mark: floridaStateUniversityMark,
+    website: 'https://www.fsu.edu/',
+    founded: text('1851', '1851'),
+    place: text(
+      'Tallahassee, Florida, USA',
+      'Таллахассі, Флорида, США',
+      'Tallahassee, Florida, USA',
+      'Tallahassee, Floride, États-Unis',
+      'تالاهاسي، فلوريدا، الولايات المتحدة',
+    ),
+    kind: text(
+      'Public research university',
+      'Державний дослідницький університет',
+      'Staatliche Forschungsuniversität',
+      'Université publique de recherche',
+      'جامعة بحثية حكومية',
+    ),
+    summary: text(
+      'Chartered in 1851 and a senior member of the State University System of Florida.',
+      'Отримав статут 1851 року, один із провідних закладів Системи державних університетів Флориди.',
+      '1851 gegründet und eines der führenden Mitglieder des State University System of Florida.',
+      'Créée par charte en 1851, elle est l’un des principaux membres du système universitaire public de Floride.',
+      'حصلت على ميثاقها عام 1851، وهي من الأعضاء البارزين في نظام جامعات ولاية فلوريدا.',
+    ),
+  },
+  {
+    aliases: ['University of Central Arkansas', 'Університет Центрального Арканзасу'],
+    logo: universityOfCentralArkansas,
+    mark: universityOfCentralArkansasMark,
+    website: 'https://uca.edu/',
+    founded: text('1907', '1907'),
+    place: text(
+      'Conway, Arkansas, USA',
+      'Конвей, Арканзас, США',
+      'Conway, Arkansas, USA',
+      'Conway, Arkansas, États-Unis',
+      'كونواي، أركنساس، الولايات المتحدة',
+    ),
+    kind: text(
+      'Public university',
+      'Державний університет',
+      'Staatliche Universität',
+      'Université publique',
+      'جامعة حكومية',
+    ),
+    summary: text(
+      'Founded in 1907 and one of the oldest universities in Arkansas.',
+      'Заснований 1907 року, один із найстаріших університетів Арканзасу.',
+      '1907 gegründet und eine der ältesten Universitäten in Arkansas.',
+      'Fondée en 1907, c’est l’une des plus anciennes universités de l’Arkansas.',
+      'تأسست عام 1907، وهي من أقدم الجامعات في ولاية أركنساس.',
+    ),
+  },
+  {
+    aliases: ['Georgia State University', 'Університет штату Джорджія'],
+    logo: georgiaStateUniversity,
+    mark: georgiaStateUniversityMark,
+    website: 'https://www.gsu.edu/',
+    founded: text('1913', '1913'),
+    place: text(
+      'Atlanta, Georgia, USA',
+      'Атланта, Джорджія, США',
+      'Atlanta, Georgia, USA',
+      'Atlanta, Géorgie, États-Unis',
+      'أتلانتا، جورجيا، الولايات المتحدة',
+    ),
+    kind: text(
+      'Public research university',
+      'Державний дослідницький університет',
+      'Staatliche Forschungsuniversität',
+      'Université publique de recherche',
+      'جامعة بحثية حكومية',
+    ),
+    summary: text(
+      'One of the four research universities of the University System of Georgia. Its Perimeter College serves suburban Atlanta.',
+      'Один із чотирьох дослідницьких університетів Системи університетів Джорджії. Його Perimeter College працює в передмісті Атланти.',
+      'Eine der vier Forschungsuniversitäten des University System of Georgia. Das Perimeter College ist in den Vororten von Atlanta tätig.',
+      'L’une des quatre universités de recherche du système universitaire de Géorgie. Son Perimeter College dessert la banlieue d’Atlanta.',
+      'إحدى الجامعات البحثية الأربع في نظام جامعات جورجيا، وتخدم كلية Perimeter التابعة لها ضواحي أتلانتا.',
+    ),
+  },
+  {
+    aliases: ['Campbellsville University', 'Університет Кемпбеллсвілла'],
+    logo: campbellsvilleUniversity,
+    mark: campbellsvilleUniversityMark,
+    website: 'https://www.campbellsville.edu/',
+    founded: text('1906', '1906'),
+    place: text(
+      'Campbellsville, Kentucky, USA',
+      'Кемпбеллсвілл, Кентуккі, США',
+      'Campbellsville, Kentucky, USA',
+      'Campbellsville, Kentucky, États-Unis',
+      'كامبلسفيل، كنتاكي، الولايات المتحدة',
+    ),
+    kind: text(
+      'Private Christian university',
+      'Приватний християнський університет',
+      'Private christliche Universität',
+      'Université chrétienne privée',
+      'جامعة مسيحية خاصة',
+    ),
+    summary: text(
+      'Founded as Russell Creek Academy, it now offers associate, bachelor’s and master’s degrees.',
+      'Заснований як Академія Рассел-Крік, нині надає ступені асоціата, бакалавра та магістра.',
+      'Als Russell Creek Academy gegründet, vergibt sie heute Associate-, Bachelor- und Master-Abschlüsse.',
+      'Fondée sous le nom de Russell Creek Academy, elle délivre aujourd’hui des diplômes d’associé, de licence et de master.',
+      'تأسست باسم أكاديمية راسل كريك، وتمنح اليوم درجات الدبلوم المشارك والبكالوريوس والماجستير.',
+    ),
+  },
+  {
+    aliases: ['Universidad Católica de Colombia'],
+    logo: universidadCatolicaDeColombia,
+    mark: universidadCatolicaDeColombiaMark,
+    website: 'https://www.ucatolica.edu.co/',
+    founded: text('1970', '1970'),
+    place: text(
+      'Bogotá, Colombia',
+      'Богота, Колумбія',
+      'Bogotá, Kolumbien',
+      'Bogota, Colombie',
+      'بوغوتا، كولومبيا',
+    ),
+    kind: text(
+      'Private university',
+      'Приватний університет',
+      'Private Universität',
+      'Université privée',
+      'جامعة خاصة',
+    ),
+    summary: text(
+      'Founded on 3 March 1970 by a group of professors, with teaching grounded in Catholic principles.',
+      'Заснований групою викладачів 3 березня 1970 року, навчання спирається на засади католицизму.',
+      'Am 3. März 1970 von einer Gruppe von Professoren gegründet; die Lehre beruht auf katholischen Grundsätzen.',
+      'Fondée le 3 mars 1970 par un groupe de professeurs, avec un enseignement fondé sur les principes catholiques.',
+      'أسستها مجموعة من الأساتذة في 3 مارس 1970، ويقوم التعليم فيها على المبادئ الكاثوليكية.',
+    ),
+  },
+  {
+    aliases: ['Universidad Santo Tomás'],
+    logo: universidadSantoTomas,
+    mark: universidadSantoTomasMark,
+    website: 'https://www.ust.cl/',
+    founded: text('1988', '1988'),
+    place: text(
+      'Santiago, Chile',
+      'Сантьяго, Чилі',
+      'Santiago, Chile',
+      'Santiago, Chili',
+      'سانتياغو، تشيلي',
+    ),
+    kind: text(
+      'Private non-profit university',
+      'Приватний некомерційний університет',
+      'Private gemeinnützige Universität',
+      'Université privée à but non lucratif',
+      'جامعة خاصة غير ربحية',
+    ),
+    summary: text(
+      'Inspired by Thomist thought, with its central campus in Santiago and 12 regional campuses from Arica to Puerto Montt.',
+      'Натхненний томістською думкою: головний кампус у Сантьяго та 12 регіональних від Арики до Пуерто-Монта.',
+      'Vom thomistischen Denken geprägt, mit Hauptcampus in Santiago und 12 Regionalcampus von Arica bis Puerto Montt.',
+      'Inspirée de la pensée thomiste, avec un campus central à Santiago et 12 campus régionaux d’Arica à Puerto Montt.',
+      'تستلهم الفكر التومائي، ويقع حرمها الرئيسي في سانتياغو ولها 12 حرمًا إقليميًا من أريكا إلى بويرتو مونت.',
+    ),
+  },
+  {
+    aliases: ['École Nationale Polytechnique'],
+    logo: ecoleNationalePolytechnique,
+    mark: ecoleNationalePolytechniqueMark,
+    website: 'https://www.enp.edu.dz/',
+    founded: text('1925', '1925'),
+    place: text(
+      'El Harrach, Algiers, Algeria',
+      'Ель-Харраш, м. Алжир, Алжир',
+      'El Harrach, Algier, Algerien',
+      'El Harrach, Alger, Algérie',
+      'الحراش، الجزائر العاصمة، الجزائر',
+    ),
+    kind: text(
+      'Engineering school',
+      'Інженерна школа',
+      'Ingenieurschule',
+      'École d’ingénieurs',
+      'مدرسة هندسية',
+    ),
+    summary: text(
+      'An engineering school founded in 1925, teaching in Arabic, French and English.',
+      'Інженерна школа, заснована 1925 року, з викладанням арабською, французькою та англійською.',
+      'Eine 1925 gegründete Ingenieurschule mit Lehre auf Arabisch, Französisch und Englisch.',
+      'Une école d’ingénieurs fondée en 1925, avec un enseignement en arabe, en français et en anglais.',
+      'مدرسة هندسية تأسست عام 1925، ويجري التدريس فيها بالعربية والفرنسية والإنجليزية.',
+    ),
+  },
+  {
+    aliases: ['American University in the Emirates', 'Американський університет в Еміратах'],
+    logo: americanUniversityInTheEmirates,
+    mark: americanUniversityInTheEmiratesMark,
+    website: 'https://www.aue.ae/',
+    founded: text('2006', '2006'),
+    place: text(
+      'Dubai, United Arab Emirates',
+      'Дубай, ОАЕ',
+      'Dubai, Vereinigte Arabische Emirate',
+      'Dubaï, Émirats arabes unis',
+      'دبي، الإمارات العربية المتحدة',
+    ),
+    kind: text(
+      'Private university',
+      'Приватний університет',
+      'Private Universität',
+      'Université privée',
+      'جامعة خاصة',
+    ),
+    summary: text(
+      'A private university in Dubai International Academic City, founded in 2006.',
+      'Приватний університет у Міжнародному академічному місті Дубая, заснований 2006 року.',
+      'Eine 2006 gegründete private Universität in der Dubai International Academic City.',
+      'Une université privée fondée en 2006 dans la Dubai International Academic City.',
+      'جامعة خاصة في مدينة دبي الأكاديمية العالمية، تأسست عام 2006.',
+    ),
+  },
+  {
+    aliases: ['Karunya Institute of Technology and Sciences'],
+    logo: karunyaInstitute,
+    mark: karunyaInstituteMark,
+    showNameBesideMark: true,
+    website: 'https://www.karunya.edu/',
+    founded: text('1986', '1986'),
+    place: text(
+      'Coimbatore, Tamil Nadu, India',
+      'Коїмбатур, Таміл Наду, Індія',
+      'Coimbatore, Tamil Nadu, Indien',
+      'Coimbatore, Tamil Nadu, Inde',
+      'كويمباتور، تاميل نادو، الهند',
+    ),
+    kind: text(
+      'Private deemed university',
+      'Приватний університет зі статусом deemed',
+      'Private Universität mit „Deemed“-Status',
+      'Université privée au statut « deemed »',
+      'جامعة خاصة بصفة «Deemed»',
+    ),
+    summary: text(
+      'Formerly Karunya University, founded by D. G. S. Dhinakaran and his son Paul Dhinakaran.',
+      'Колишній Університет Каруньї, заснований Д. Г. С. Дінакараном та його сином Полом Дінакараном.',
+      'Die frühere Karunya University, gegründet von D. G. S. Dhinakaran und seinem Sohn Paul Dhinakaran.',
+      'Anciennement Karunya University, fondée par D. G. S. Dhinakaran et son fils Paul Dhinakaran.',
+      'جامعة كارونيا سابقًا، أسسها د. ج. س. ديناكاران وابنه بول ديناكاران.',
+    ),
+  },
+  {
+    aliases: ['Lutsk National Technical University', 'Луцький національний технічний університет'],
+    logo: lutskNationalTechnicalUniversity,
+    mark: lutskNationalTechnicalUniversityMark,
+    website: 'https://lntu.edu.ua/',
+    founded: text('1966', '1966'),
+    place: text(
+      'Lutsk, Ukraine',
+      'Луцьк, Україна',
+      'Luzk, Ukraine',
+      'Loutsk, Ukraine',
+      'لوتسك، أوكرانيا',
+    ),
+    kind: text(
+      'State technical university',
+      'Державний технічний університет',
+      'Staatliche Technische Universität',
+      'Université technique d’État',
+      'جامعة تقنية حكومية',
+    ),
+    summary: text(
+      'A state technical university in Lutsk, founded in 1966.',
+      'Державний технічний заклад вищої освіти в Луцьку, заснований 1966 року.',
+      'Eine 1966 gegründete staatliche Technische Universität in Luzk.',
+      'Une université technique d’État à Loutsk, fondée en 1966.',
+      'جامعة تقنية حكومية في لوتسك، تأسست عام 1966.',
+    ),
+  },
+  {
+    aliases: [
+      'Pryazovskyi State Technical University',
+      'Приазовський державний технічний університет',
+    ],
+    logo: pryazovskyiStateTechnicalUniversity,
+    mark: pryazovskyiStateTechnicalUniversityMark,
+    showNameBesideMark: true,
+    website: 'https://pstu.edu/',
+    founded: text('1930', '1930'),
+    place: text(
+      'Dnipro, Ukraine',
+      'Дніпро, Україна',
+      'Dnipro, Ukraine',
+      'Dnipro, Ukraine',
+      'دنيبرو، أوكرانيا',
+    ),
+    kind: text(
+      'State technical university',
+      'Державний технічний університет',
+      'Staatliche Technische Universität',
+      'Université technique d’État',
+      'جامعة تقنية حكومية',
+    ),
+    summary: text(
+      'One of the oldest universities of the Donetsk region, now operating from Dnipro.',
+      'Один із найстаріших університетів Донеччини, нині працює у Дніпрі.',
+      'Eine der ältesten Universitäten der Region Donezk, heute mit Sitz in Dnipro.',
+      'L’une des plus anciennes universités de la région de Donetsk, installée aujourd’hui à Dnipro.',
+      'من أقدم جامعات منطقة دونيتسك، وتعمل حاليًا من مدينة دنيبرو.',
+    ),
+  },
+  {
+    aliases: ['University of Florida'],
+    logo: universityOfFlorida,
+    mark: universityOfFloridaMark,
+    website: 'https://www.ufl.edu/',
+    founded: text('1853', '1853'),
+    place: text(
+      'Gainesville, Florida, USA',
+      'Гейнсвілл, Флорида, США',
+      'Gainesville, Florida, USA',
+      'Gainesville, Floride, États-Unis',
+      'غينزفيل، فلوريدا، الولايات المتحدة',
+    ),
+    kind: text(
+      'Public land-grant research university',
+      'Державний дослідницький університет',
+      'Staatliche Land-Grant-Forschungsuniversität',
+      'Université publique de recherche « land-grant »',
+      'جامعة بحثية حكومية من نوع «Land-grant»',
+    ),
+    summary: text(
+      'A senior member of the State University System of Florida, tracing its origins to 1853.',
+      'Один із провідних закладів Системи державних університетів Флориди, веде історію від 1853 року.',
+      'Ein führendes Mitglied des State University System of Florida, dessen Ursprünge bis 1853 zurückreichen.',
+      'L’un des principaux membres du système universitaire public de Floride, dont les origines remontent à 1853.',
+      'من الأعضاء البارزين في نظام جامعات ولاية فلوريدا، وتعود جذورها إلى عام 1853.',
+    ),
+  },
+];

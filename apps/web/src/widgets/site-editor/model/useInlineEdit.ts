@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { readRecordValue, type RecordData } from '@viratec/contracts';
-import { LOCALES, type Locale } from '@/shared/i18n';
+import { LOCALES, fromLocales, type Locale } from '@/shared/i18n';
 import { entrySaveKey, recordSaveKey } from './autosave';
 import { flushDrafts } from './autosaveRegistry';
 import { findRecordField, localizedPath, writeRecordValue } from './recordModel';
@@ -72,7 +72,7 @@ export function useInlineEdit({ target, resource, localized }: InlineField) {
   };
 
   const [initial, setInitial] = useState<Record<Locale, string> | null>(null);
-  if (isReady && !initial) setInitial({ en: read('en'), uk: read('uk') });
+  if (isReady && !initial) setInitial(fromLocales(read));
 
   return {
     isReady,
@@ -83,7 +83,7 @@ export function useInlineEdit({ target, resource, localized }: InlineField) {
     saveKey,
     value: read(locale),
     otherValue: read(other),
-    values: { en: read('en'), uk: read('uk') } satisfies Record<Locale, string>,
+    values: fromLocales(read),
     write,
     setValue: (value: string) => write(locale, value),
     setOther: (value: string) => write(other, value),

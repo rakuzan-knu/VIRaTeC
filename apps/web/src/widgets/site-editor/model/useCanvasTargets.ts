@@ -172,6 +172,30 @@ export const targetKey = (target: CanvasTarget | null) => {
   return `${target.kind}:${target.address.entryId}:${target.address.fieldId}:${locale}`;
 };
 
+export type FrameTarget =
+  | { kind: 'section'; sectionId: string }
+  | { kind: 'field'; address: ContentFieldAddress }
+  | { kind: 'entry'; address: ContentEntryAddress }
+  | { kind: 'asset'; address: ContentAssetAddress };
+
+export const toFrameTarget = (target: CanvasTarget): FrameTarget =>
+  target.kind === 'section'
+    ? { kind: 'section', sectionId: target.sectionId }
+    : target.kind === 'field'
+      ? { kind: 'field', address: target.address }
+      : target.kind === 'entry'
+        ? { kind: 'entry', address: target.address }
+        : { kind: 'asset', address: target.address };
+
+export const selectionOfTarget = (
+  target: Exclude<FrameTarget | CanvasTarget, { kind: 'section' }>,
+) => ({
+  entryId: target.address.entryId,
+  contentTypeId: target.address.contentTypeId,
+  fieldId: target.kind === 'entry' ? undefined : target.address.fieldId,
+  locale: target.kind === 'field' ? target.address.locale : undefined,
+});
+
 const isVisible = (element: Element) =>
   [...element.getClientRects()].some((rect) => rect.width > 0 && rect.height > 0);
 

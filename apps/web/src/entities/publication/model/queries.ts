@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery, type QueryClient } from '@tanstack/react-query';
 import type { PublicationDto } from '@viratec/contracts';
 import { useLocale } from '@/shared/i18n';
 import { useRecordOverlay } from '@/shared/lib';
@@ -13,6 +13,15 @@ export const publicationKeys = {
 
 const NO_PUBLICATIONS: Publication[] = [];
 
+const publicationListOptions = queryOptions({
+  queryKey: publicationKeys.all,
+  queryFn: fetchPublications,
+  staleTime: 5 * 60_000,
+});
+
+export const prefetchPublications = (queryClient: QueryClient) =>
+  queryClient.prefetchQuery(publicationListOptions);
+
 export function usePublications() {
   const locale = useLocale();
   const overlay = useRecordOverlay(PUBLICATION_PREVIEW);
@@ -21,12 +30,7 @@ export function usePublications() {
       overlay(publications).map((dto) => toPublication(dto, locale)),
     [locale, overlay],
   );
-  const query = useQuery({
-    queryKey: publicationKeys.all,
-    queryFn: fetchPublications,
-    select: localize,
-    staleTime: 5 * 60_000,
-  });
+  const query = useQuery({ ...publicationListOptions, select: localize });
 
   return {
     publications: query.data ?? NO_PUBLICATIONS,

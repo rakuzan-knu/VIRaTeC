@@ -6,6 +6,6 @@ import { CleanupService } from './cleanup.service';
 @Global()
 @Module({
   providers: [AuditService, RateLimitService, CleanupService],
-  exports: [AuditService, RateLimitService],
+  exports: [AuditService, RateLimitService, CleanupService],
 })
 export class SecurityModule {}

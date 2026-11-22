@@ -2,6 +2,7 @@ export { useSessionStore, useIsAuthenticated } from './model/store';
 export { refreshSession } from './model/refresh';
 export { useEndSession, type EndSessionTarget } from './model/useEndSession';
 export { useCompleteSignIn } from './model/useCompleteSignIn';
+export { useStartSession } from './model/useStartSession';
 export {
   useKnownAccounts,
   forgetAccount,

@@ -6,5 +6,10 @@ export const forgotPasswordRequest = (
 ): Promise<{ success: boolean }> =>
   api.post<{ success: boolean }>('/auth/password/forgot', dto, { retryOnUnauthorized: false });
 
+export const verifyResetCodeRequest = (
+  dto: Pick<ResetPasswordRequestDto, 'email' | 'code'>,
+): Promise<{ success: boolean }> =>
+  api.post<{ success: boolean }>('/auth/password/verify-code', dto, { retryOnUnauthorized: false });
+
 export const resetPasswordRequest = (dto: ResetPasswordRequestDto): Promise<{ success: boolean }> =>
   api.post<{ success: boolean }>('/auth/password/reset', dto, { retryOnUnauthorized: false });

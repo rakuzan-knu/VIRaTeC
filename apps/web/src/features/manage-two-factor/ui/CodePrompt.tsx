@@ -19,6 +19,27 @@ const MESSAGES = defineMessages({
     unexpected: 'Щось пішло не так. Спробуйте ще раз.',
     cancel: 'Скасувати',
   },
+  de: {
+    label: 'Code aus Ihrer Authenticator-App oder ein Backup-Code',
+    invalid: 'Der Code ist falsch oder abgelaufen.',
+    tooMany: 'Zu viele Versuche. Warten Sie einige Minuten und versuchen Sie es erneut.',
+    unexpected: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
+    cancel: 'Abbrechen',
+  },
+  fr: {
+    label: 'Code de votre application d’authentification ou code de secours',
+    invalid: 'Le code est incorrect ou a expiré.',
+    tooMany: 'Trop de tentatives. Attendez quelques minutes et réessayez.',
+    unexpected: 'Une erreur s’est produite. Veuillez réessayer.',
+    cancel: 'Annuler',
+  },
+  ar: {
+    label: 'الرمز من تطبيق المصادقة أو رمز احتياطي',
+    invalid: 'الرمز غير صحيح أو انتهت صلاحيته.',
+    tooMany: 'محاولات كثيرة جدًا. انتظر بضع دقائق ثم حاول مرة أخرى.',
+    unexpected: 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
+    cancel: 'إلغاء',
+  },
 });
 
 export function useCodeErrorMessage(error: Error | null) {

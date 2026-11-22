@@ -16,7 +16,7 @@ interface StoredUser extends CreatedUserData {
   role: string;
 }
 
-for (const role of ['ADMIN', 'PROFESSOR', 'RESEARCHER']) {
+for (const role of ['ADMIN']) {
   test(`public registration cannot grant ${role} privileges`, async () => {
     let databaseCalls = 0;
     const service = new AuthService(

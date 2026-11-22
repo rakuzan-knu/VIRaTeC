@@ -7,7 +7,7 @@ import {
   type LayoutPage,
 } from '@/shared/config/pageLayout';
 import { PAGE_LAYOUTS } from '@/shared/config/pageLayouts.generated';
-import { useLocale } from '@/shared/i18n';
+import { pickLocalized, useLocale } from '@/shared/i18n';
 import { useContentPreviewStore, useLiveContent } from '@/shared/lib';
 import { SectionToneProvider } from '@/shared/ui/page-section';
 import { PageBlockView } from './blocks/PageBlockView';
@@ -23,7 +23,10 @@ interface PageSectionsProps<P extends LayoutPage> {
 export function PageSections<P extends LayoutPage>({ page, sections }: PageSectionsProps<P>) {
   const locale = useLocale();
   const layouts = useLiveContent('pageLayout', 'PAGE_LAYOUTS', PAGE_LAYOUTS);
-  const blocks = useLiveContent(PAGE_BLOCK_TYPE_ID, 'PAGE_BLOCKS', PAGE_BLOCKS)[locale];
+  const blocks = pickLocalized(
+    useLiveContent(PAGE_BLOCK_TYPE_ID, 'PAGE_BLOCKS', PAGE_BLOCKS),
+    locale,
+  );
   const isPreview = useContentPreviewStore((state) => state.enabled);
   const override = useContentPreviewStore((state) =>
     state.layoutOverride?.page === page ? state.layoutOverride.sections : undefined,

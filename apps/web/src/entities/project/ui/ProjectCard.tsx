@@ -47,7 +47,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </div>
       <CardLinkLabel
         label={labels.viewProject}
-        className="mt-auto pt-1 pl-2 text-[15px] font-medium text-viratec-cyan"
+        className="mt-auto pt-1 ps-2 text-[15px] font-medium text-viratec-cyan"
       />
     </Link>
   );

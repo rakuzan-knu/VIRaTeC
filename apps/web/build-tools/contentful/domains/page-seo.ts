@@ -2,7 +2,7 @@ import type { Locale } from '../../../src/shared/i18n/model/types.ts';
 import type { PageSeo } from '../../../src/shared/config/seo.ts';
 import { field, localizedField, type ContentTypeDefinition } from '../content-types.ts';
 import { createReader, nonEmpty } from '../entry-reader.ts';
-import { type ContentDomain } from '../domain.ts';
+import { buildLocalized, type ContentDomain } from '../domain.ts';
 import { routeToken } from '../tokens.ts';
 import { LINKABLE_ROUTES } from './blocks.ts';
 
@@ -44,9 +44,8 @@ export const pageSeoDomain: ContentDomain = {
         const title = reader.read('title', nonEmpty, locale);
         return description ? { ...(title && { title }), description } : undefined;
       };
-      const en = seo('en');
-      const uk = seo('uk');
-      return en && uk ? [{ route, seo: { en, uk } }] : [];
+      const localized = buildLocalized(seo);
+      return localized ? [{ route, seo: localized }] : [];
     });
 
     pages.sort((a, b) => LINKABLE_ROUTES.indexOf(a.route) - LINKABLE_ROUTES.indexOf(b.route));

@@ -8,6 +8,8 @@ import {
 import { ContentResourceType, Prisma, type ContentChange } from '@prisma/client';
 import {
   CONTENT_EDITOR_LIMITS,
+  EventJoinAccess,
+  EventStatus,
   EventType,
   FacultyDivision,
   ProjectStatus,
@@ -182,6 +184,12 @@ export class RecordEditorService {
       endDate: event.endDate.toISOString(),
       capacity: event.capacity,
       registrationLink: event.registrationLink,
+      meetingUrl: event.meetingUrl,
+      joinOpensMinutesBefore: event.joinOpensMinutesBefore,
+      joinAccess: EventJoinAccess[event.joinAccess],
+      status: EventStatus[event.status],
+      cancelReason: event.cancelReason,
+      recordingUrl: event.recordingUrl,
       translations: event.translations
         ? EventTranslationsSchema.parse(event.translations)
         : { en: fallback, uk: fallback },
@@ -442,11 +450,15 @@ export class RecordEditorService {
           endDate: new Date(record.endDate),
           capacity: record.capacity,
           registrationLink: record.registrationLink,
+          meetingUrl: record.meetingUrl,
+          joinOpensMinutesBefore: record.joinOpensMinutesBefore,
+          joinAccess: record.joinAccess,
+          status: record.status,
+          cancelReason: record.cancelReason,
+          recordingUrl: record.recordingUrl,
           translations: record.translations,
         };
-        if (change.isDeleted) await tx.event.delete({ where: { id: key } });
-        else if (change.isNew) await tx.event.create({ data: { id: key, ...fields } });
-        else await tx.event.update({ where: { id: key }, data: fields });
+        await this.events.applyPublishedChange(tx, key, change, fields);
       } else {
         const record = data.data as PublicationRecordData;
         const { slug: _slug, content, ...rest } = record;
@@ -460,6 +472,7 @@ export class RecordEditorService {
     });
 
     this.clearCache(resource);
+    if (resource === 'event') await this.events.scheduleAfterPublish(key);
   }
 
   private clearCache(resource: RecordResource) {

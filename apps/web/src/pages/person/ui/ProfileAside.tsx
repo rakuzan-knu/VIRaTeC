@@ -23,7 +23,7 @@ export function ProfileAside({ profile }: { profile: PublicProfileDto }) {
                   className="flex items-center gap-3 rounded-[14px] px-2 py-2.5 text-[15px] text-white transition-colors hover:bg-white/6"
                 >
                   <Mail aria-hidden="true" className="size-4 text-viratec-subtle" />
-                  <span className="min-w-0 truncate">{profile.email}</span>
+                  <span className="min-w-0 break-all">{profile.email}</span>
                 </a>
               </li>
             )}
@@ -37,7 +37,7 @@ export function ProfileAside({ profile }: { profile: PublicProfileDto }) {
                 >
                   <span className="flex min-w-0 flex-col">
                     <span className="font-medium">{labels.links[key]}</span>
-                    <span className="truncate text-xs text-viratec-subtle">
+                    <span className="text-xs break-all text-viratec-subtle">
                       {profile.links[key]}
                     </span>
                   </span>

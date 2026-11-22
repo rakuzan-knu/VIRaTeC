@@ -9,6 +9,7 @@ import { safeEqual, sha256Hex } from '../security/crypto';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
 import { claimUnverifiedAccountWrites, generateResetCode, hashEmailToken } from './email-ownership';
 import { MailClient } from './mail.client';
+import { SecurityMailService } from './security-mail.service';
 
 const RESET_CODE_TTL_MS = EMAIL_TOKEN_LIMITS.resetCodeTtlMinutes * 60_000;
 const RESET_CODE_MAX_ATTEMPTS = 5;
@@ -48,6 +49,7 @@ export class PasswordResetService {
     private mail: MailClient,
     private audit: AuditService,
     private rateLimit: RateLimitService,
+    private securityMail?: SecurityMailService,
   ) {}
 
   private hash(userId: string, code: string) {
@@ -98,43 +100,17 @@ export class PasswordResetService {
     return { success: true };
   }
 
+  async verifyCode(rawEmail: string, code: string) {
+    await this.checkCode(rawEmail.toLowerCase(), code);
+    return { success: true };
+  }
+
   async reset(
     { email: rawEmail, code, newPassword }: ResetPasswordInput,
     client: ClientContext = {},
   ) {
     const email = rawEmail.toLowerCase();
-    await this.rateLimit.consume(
-      `password:reset:email:${sha256Hex(email)}`,
-      RATE_LIMITS.passwordResetPerEmail,
-    );
-
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        emailVerifiedAt: true,
-        emailOwnershipClaimable: true,
-        passwordHash: true,
-      },
-    });
-    const token = user
-      ? await this.prisma.emailToken.findFirst({
-          where: {
-            userId: user.id,
-            purpose: EmailTokenPurpose.RESET_PASSWORD,
-            consumedAt: null,
-            expiresAt: { gt: new Date() },
-          },
-          orderBy: { createdAt: 'desc' },
-        })
-      : null;
-    if (!user || !token || token.attempts >= RESET_CODE_MAX_ATTEMPTS) throw invalidCode();
-
-    await this.prisma.emailToken.update({
-      where: { id: token.id },
-      data: { attempts: { increment: 1 } },
-    });
-    if (!safeEqual(this.hash(user.id, code), token.tokenHash)) throw invalidCode();
+    const { user, token } = await this.checkCode(email, code);
 
     const passwordHash = await argon2.hash(newPassword);
     const claimedUnverified = !user.emailVerifiedAt && user.emailOwnershipClaimable;
@@ -170,6 +146,43 @@ export class PasswordResetService {
       metadata: { method: 'password_reset' },
       client,
     });
+    await this.securityMail?.passwordChanged(email);
     return { success: true };
+  }
+
+  private async checkCode(email: string, code: string) {
+    await this.rateLimit.consume(
+      `password:reset:email:${sha256Hex(email)}`,
+      RATE_LIMITS.passwordResetPerEmail,
+    );
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        emailVerifiedAt: true,
+        emailOwnershipClaimable: true,
+        passwordHash: true,
+      },
+    });
+    const token = user
+      ? await this.prisma.emailToken.findFirst({
+          where: {
+            userId: user.id,
+            purpose: EmailTokenPurpose.RESET_PASSWORD,
+            consumedAt: null,
+            expiresAt: { gt: new Date() },
+          },
+          orderBy: { createdAt: 'desc' },
+        })
+      : null;
+    if (!user || !token || token.attempts >= RESET_CODE_MAX_ATTEMPTS) throw invalidCode();
+
+    await this.prisma.emailToken.update({
+      where: { id: token.id },
+      data: { attempts: { increment: 1 } },
+    });
+    if (!safeEqual(this.hash(user.id, code), token.tokenHash)) throw invalidCode();
+    return { user, token };
   }
 }

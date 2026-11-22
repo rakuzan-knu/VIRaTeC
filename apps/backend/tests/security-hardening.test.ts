@@ -13,6 +13,7 @@ import { ContentService } from '../dist/content/content.service.js';
 import { RecordEditorService } from '../dist/content/record-editor.service.js';
 import { AuthService } from '../dist/auth/auth.service.js';
 import { UsersService } from '../dist/users/users.service.js';
+import { ReauthenticationService } from '../dist/auth/reauthentication.service.js';
 
 interface ConsumedKey {
   key: string;
@@ -188,6 +189,7 @@ test('deleting the account rate limits password guesses', async () => {
   const passwordHash = await argon2.hash('CorrectHorse1!');
   const consumed: ConsumedKey[] = [];
   let deleted = false;
+  const rateLimit = limitedRateLimit(consumed);
   const service = new UsersService(
     {
       user: {
@@ -197,7 +199,8 @@ test('deleting the account rate limits password guesses', async () => {
         },
       },
     },
-    limitedRateLimit(consumed),
+    rateLimit,
+    new ReauthenticationService(rateLimit),
   );
 
   const attempt = () =>

@@ -14,13 +14,16 @@ const ACTION_CLASS =
 export function VerifyEmailStatus() {
   const t = useVerifyEmailMessages();
   const common = useCommonMessages();
-  const { status, error, isSignedIn, retry } = useVerifyEmailToken();
+  const { status, error, isSignedIn, isEmailChange, retry } = useVerifyEmailToken();
 
   const isNetworkError = error instanceof ApiError && error.status === NETWORK_ERROR_STATUS;
   const isLinkRejected = error instanceof ApiError && error.status === 400;
   const content = {
     pending: { title: t.status.pendingTitle, description: t.status.pendingDescription },
-    success: { title: t.status.successTitle, description: t.status.successDescription },
+    success: {
+      title: t.status.successTitle,
+      description: isEmailChange ? t.status.emailChangedDescription : t.status.successDescription,
+    },
     missing: { title: t.status.missingTitle, description: t.status.missingDescription },
     error: isLinkRejected
       ? { title: t.status.invalidTitle, description: t.status.invalidDescription }

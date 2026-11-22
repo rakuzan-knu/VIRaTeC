@@ -1,0 +1,142 @@
+import { defineMessages, useLocalized } from '@/shared/i18n';
+
+const REGISTRATION_MESSAGES = defineMessages({
+  en: {
+    subscribe: 'Subscribe',
+    subscribed: 'Subscribed',
+    unsubscribe: 'Unsubscribe',
+    signIn: 'Sign in to subscribe',
+    helper:
+      'We will email you when the link opens and if the time changes or the event is cancelled.',
+    full: 'No seats left',
+    spotsLeft: (count: number) => `Seats left: ${count}`,
+    verifyEmail: 'Confirm your email to subscribe.',
+    openAccount: 'Open your account',
+    errors: {
+      EVENT_FULL: 'No seats left for this event.',
+      EVENT_CLOSED: 'This event is no longer open for subscriptions.',
+      EMAIL_NOT_VERIFIED: 'Confirm your email to subscribe.',
+      UNKNOWN: 'Could not update your subscription. Try again.',
+    },
+    list: {
+      loading: 'Loading your events…',
+      error: 'Could not load your events.',
+      emptyTitle: 'No events yet',
+      emptyDescription: 'Subscribe to a workshop or a meeting and it will appear here.',
+      browse: 'Browse events',
+      upcoming: 'Upcoming',
+      past: 'Past',
+    },
+  },
+  uk: {
+    subscribe: 'Підписатися',
+    subscribed: 'Ви підписані',
+    unsubscribe: 'Відписатися',
+    signIn: 'Увійдіть, щоб підписатися',
+    helper:
+      'Надішлемо листа, коли відкриється посилання, а також якщо зміниться час або подію скасують.',
+    full: 'Вільних місць немає',
+    spotsLeft: (count: number) => `Вільних місць: ${count}`,
+    verifyEmail: 'Підтвердьте пошту, щоб підписатися.',
+    openAccount: 'Відкрити акаунт',
+    errors: {
+      EVENT_FULL: 'На цю подію вже немає вільних місць.',
+      EVENT_CLOSED: 'Підписка на цю подію вже закрита.',
+      EMAIL_NOT_VERIFIED: 'Підтвердьте пошту, щоб підписатися.',
+      UNKNOWN: 'Не вдалося оновити підписку. Спробуйте ще раз.',
+    },
+    list: {
+      loading: 'Завантажуємо ваші події…',
+      error: 'Не вдалося завантажити ваші події.',
+      emptyTitle: 'Поки немає подій',
+      emptyDescription: 'Підпишіться на воркшоп або зустріч, і вони з’являться тут.',
+      browse: 'Переглянути події',
+      upcoming: 'Майбутні',
+      past: 'Минулі',
+    },
+  },
+  de: {
+    subscribe: 'Abonnieren',
+    subscribed: 'Abonniert',
+    unsubscribe: 'Abmelden',
+    signIn: 'Zum Abonnieren anmelden',
+    helper:
+      'Wir senden Ihnen eine E-Mail, wenn der Link geöffnet wird und wenn sich der Termin ändert oder die Veranstaltung abgesagt wird.',
+    full: 'Keine Plätze mehr frei',
+    spotsLeft: (count: number) => `Freie Plätze: ${count}`,
+    verifyEmail: 'Bestätigen Sie Ihre E-Mail-Adresse, um zu abonnieren.',
+    openAccount: 'Konto öffnen',
+    errors: {
+      EVENT_FULL: 'Für diese Veranstaltung sind keine Plätze mehr frei.',
+      EVENT_CLOSED: 'Diese Veranstaltung kann nicht mehr abonniert werden.',
+      EMAIL_NOT_VERIFIED: 'Bestätigen Sie Ihre E-Mail-Adresse, um zu abonnieren.',
+      UNKNOWN: 'Das Abonnement konnte nicht aktualisiert werden. Versuchen Sie es erneut.',
+    },
+    list: {
+      loading: 'Ihre Veranstaltungen werden geladen…',
+      error: 'Ihre Veranstaltungen konnten nicht geladen werden.',
+      emptyTitle: 'Noch keine Veranstaltungen',
+      emptyDescription: 'Abonnieren Sie einen Workshop oder ein Treffen, dann erscheint es hier.',
+      browse: 'Veranstaltungen ansehen',
+      upcoming: 'Bevorstehend',
+      past: 'Vergangen',
+    },
+  },
+  fr: {
+    subscribe: 'S’abonner',
+    subscribed: 'Abonné',
+    unsubscribe: 'Se désabonner',
+    signIn: 'Connectez-vous pour vous abonner',
+    helper:
+      'Nous vous écrirons à l’ouverture du lien, ainsi qu’en cas de changement d’horaire ou d’annulation.',
+    full: 'Plus de places disponibles',
+    spotsLeft: (count: number) => `Places restantes : ${count}`,
+    verifyEmail: 'Confirmez votre e-mail pour vous abonner.',
+    openAccount: 'Ouvrir votre compte',
+    errors: {
+      EVENT_FULL: 'Plus aucune place pour cet événement.',
+      EVENT_CLOSED: 'Les abonnements à cet événement sont fermés.',
+      EMAIL_NOT_VERIFIED: 'Confirmez votre e-mail pour vous abonner.',
+      UNKNOWN: 'Impossible de mettre à jour votre abonnement. Réessayez.',
+    },
+    list: {
+      loading: 'Chargement de vos événements…',
+      error: 'Impossible de charger vos événements.',
+      emptyTitle: 'Aucun événement pour l’instant',
+      emptyDescription: 'Abonnez-vous à un atelier ou une réunion pour le retrouver ici.',
+      browse: 'Parcourir les événements',
+      upcoming: 'À venir',
+      past: 'Passés',
+    },
+  },
+  ar: {
+    subscribe: 'اشترك',
+    subscribed: 'مشترك',
+    unsubscribe: 'إلغاء الاشتراك',
+    signIn: 'سجّل الدخول للاشتراك',
+    helper: 'سنرسل إليك رسالة عند فتح الرابط وعند تغيّر الموعد أو إلغاء الفعالية.',
+    full: 'لا توجد مقاعد متاحة',
+    spotsLeft: (count: number) => `المقاعد المتبقية: ${count}`,
+    verifyEmail: 'أكّد بريدك الإلكتروني للاشتراك.',
+    openAccount: 'فتح حسابك',
+    errors: {
+      EVENT_FULL: 'لا توجد مقاعد متاحة لهذه الفعالية.',
+      EVENT_CLOSED: 'أُغلق الاشتراك في هذه الفعالية.',
+      EMAIL_NOT_VERIFIED: 'أكّد بريدك الإلكتروني للاشتراك.',
+      UNKNOWN: 'تعذّر تحديث اشتراكك. حاول مرة أخرى.',
+    },
+    list: {
+      loading: 'جارٍ تحميل فعالياتك…',
+      error: 'تعذّر تحميل فعالياتك.',
+      emptyTitle: 'لا توجد فعاليات بعد',
+      emptyDescription: 'اشترك في ورشة عمل أو لقاء ليظهر هنا.',
+      browse: 'تصفّح الفعاليات',
+      upcoming: 'القادمة',
+      past: 'السابقة',
+    },
+  },
+});
+
+export type RegistrationErrorCode = keyof (typeof REGISTRATION_MESSAGES)['en']['errors'];
+
+export const useRegistrationMessages = () => useLocalized(REGISTRATION_MESSAGES);

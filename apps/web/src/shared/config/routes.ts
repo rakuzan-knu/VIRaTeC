@@ -26,6 +26,9 @@ export const ROUTES = {
   PUBLICATIONS: '/publications',
   PUBLICATION_DETAIL: '/publications/:slug',
   OPPORTUNITIES: '/opportunities',
+  EVENTS: '/events',
+  EVENT_UNSUBSCRIBE: '/events/unsubscribe',
+  EVENT_DETAIL: '/events/:eventId',
   CONTACT: '/contact',
 } as const;
 
@@ -76,13 +79,18 @@ export const buildPublicationPath = (slug: string) =>
 export const buildPersonPath = (userId: string) =>
   ROUTES.PERSON.replace(':userId', encodeURIComponent(userId));
 
+export const buildEventPath = (eventId: string) =>
+  ROUTES.EVENT_DETAIL.replace(':eventId', encodeURIComponent(eventId));
+
 export const SITE_EDITOR_PARAM = 'edit';
 
 export const SITE_EDITOR_PATH = `/?${SITE_EDITOR_PARAM}=1`;
 
 export const ACCOUNT_SECTION_PARAM = 'section';
 
+export const ACCOUNT_SECTION_ANCHOR = 'account-section';
+
 export const buildAccountPath = (section?: string) =>
   section
-    ? `${ROUTES.ACCOUNT}?${ACCOUNT_SECTION_PARAM}=${encodeURIComponent(section)}`
+    ? `${ROUTES.ACCOUNT}?${ACCOUNT_SECTION_PARAM}=${encodeURIComponent(section)}#${ACCOUNT_SECTION_ANCHOR}`
     : ROUTES.ACCOUNT;

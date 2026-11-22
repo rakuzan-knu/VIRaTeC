@@ -7,7 +7,8 @@ import {
   StudyLevel,
   type PeopleQuery,
 } from '@viratec/contracts';
-import { usePeople } from '@/entities/person';
+import type { QueryClient } from '@tanstack/react-query';
+import { prefetchPeople, usePeople } from '@/entities/person';
 import { useSessionStore } from '@/entities/session';
 
 export const FILTER_KEYS = ['openTo', 'faculty', 'studyLevel', 'country', 'language'] as const;
@@ -36,6 +37,11 @@ const readFilters = (params: URLSearchParams): Record<FilterKey, string> =>
       return [key, VALIDATORS[key](raw) ? (raw as string) : ''];
     }),
   ) as Record<FilterKey, string>;
+
+const EMPTY_FILTERS = readFilters(new URLSearchParams());
+
+export const prefetchDirectory = (queryClient: QueryClient) =>
+  prefetchPeople(queryClient, EMPTY_FILTERS, useSessionStore.getState().user?.id ?? null);
 
 export function useDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();

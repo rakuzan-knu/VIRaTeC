@@ -16,7 +16,7 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
-const setup = (apiKey: string, reply: { stop_reason: string; text: string }) => {
+const setup = (apiKey: string, reply: { finishReason: string; text: string }) => {
   const sent: SentRequest[] = [];
   const limits: string[] = [];
   globalThis.fetch = async (input: string | URL | Request, init?: RequestInit) => {
@@ -27,8 +27,9 @@ const setup = (apiKey: string, reply: { stop_reason: string; text: string }) => 
     });
     return new Response(
       JSON.stringify({
-        stop_reason: reply.stop_reason,
-        content: [{ type: 'text', text: reply.text }],
+        candidates: [
+          { finishReason: reply.finishReason, content: { parts: [{ text: reply.text }] } },
+        ],
       }),
       { status: 200, headers: { 'content-type': 'application/json' } },
     );
@@ -39,7 +40,7 @@ const setup = (apiKey: string, reply: { stop_reason: string; text: string }) => 
 };
 
 test('translation explains when the API key is not configured', async () => {
-  const { service, sent } = setup('', { stop_reason: 'end_turn', text: '' });
+  const { service, sent } = setup('', { finishReason: 'STOP', text: '' });
   await assert.rejects(
     service.translate(actor, { from: 'uk', to: 'en', texts: ['Привіт'] }),
     hasCode(503, 'TRANSLATION_NOT_CONFIGURED'),
@@ -49,7 +50,7 @@ test('translation explains when the API key is not configured', async () => {
 
 test('translation sends one structured request and returns the texts in order', async () => {
   const { service, sent, limits } = setup('test-key', {
-    stop_reason: 'end_turn',
+    finishReason: 'STOP',
     text: JSON.stringify({ translations: ['Let us research together', '500+ students'] }),
   });
   const result = await service.translate(actor, {
@@ -61,16 +62,17 @@ test('translation sends one structured request and returns the texts in order', 
   assert.deepEqual(result, { translations: ['Let us research together', '500+ students'] });
   assert.deepEqual(limits, ['translate:editor-1']);
   const [request] = sent;
-  assert.equal(request?.url, 'https://api.anthropic.com/v1/messages');
-  assert.equal(request?.headers['x-api-key'], 'test-key');
-  assert.equal(request?.headers['anthropic-version'], '2026-10-21');
-  assert.equal(request?.body.model, 'claude-sonnet-5-5');
-  assert.equal(request?.body.fallbacks, 'default');
-  assert.equal('temperature' in (request?.body ?? {}), false);
+  assert.equal(
+    request?.url,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
+  );
+  assert.equal(request?.headers['x-goog-api-key'], 'test-key');
+  const generationConfig = request?.body.generationConfig as Record<string, unknown> | undefined;
+  assert.equal(generationConfig?.responseMimeType, 'application/json');
 });
 
 test('a refused translation is reported separately from an outage', async () => {
-  const { service } = setup('test-key', { stop_reason: 'refusal', text: '' });
+  const { service } = setup('test-key', { finishReason: 'SAFETY', text: '' });
   await assert.rejects(
     service.translate(actor, { from: 'en', to: 'uk', texts: ['Hello'] }),
     hasCode(422, 'TRANSLATION_REFUSED'),
@@ -79,7 +81,7 @@ test('a refused translation is reported separately from an outage', async () => 
 
 test('a reply with the wrong number of texts is never returned', async () => {
   const { service } = setup('test-key', {
-    stop_reason: 'end_turn',
+    finishReason: 'STOP',
     text: JSON.stringify({ translations: ['One'] }),
   });
   await assert.rejects(

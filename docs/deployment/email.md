@@ -1,7 +1,7 @@
 # Transactional email
 
-The API sends two kinds of email: an email confirmation link after registration
-(`/verify-email?token=…`) and a 6-digit password reset code. They are sent through the
+The API sends an email confirmation link after registration (`/verify-email?token=…`),
+a 6-digit password reset code and event emails (see below). They are sent through the
 **Gmail API** from a regular Gmail account (currently `coil.knu@gmail.com`), so no
 domain or paid mail service is needed. Google signs the messages for `gmail.com`, so
 they pass SPF/DKIM/DMARC checks at the recipient.
@@ -76,6 +76,37 @@ can have untrusted credentials cleared when the email owner recovers the account
 Deploy the migration before the new API. It only adds fields and a token table, so
 the previous API can keep running during the rollout. Keep the added fields and table
 if rolling back the application; do not reverse the migration or remove user data.
+
+## Event emails
+
+Subscribers of an event get two kinds of email: one with the meeting link when the link
+opens, and one when a published change moves or cancels the event. They wait in the
+`event_notifications` table. Nothing polls for them, so a free Neon database can stay
+asleep between events.
+
+Set two variables on the `api` service:
+
+- `CRON_SECRET`: a random value (`openssl rand -hex 32`). Vercel Cron sends it by itself.
+- `QSTASH_TOKEN`: from a free account at <https://console.upstash.com/qstash>.
+
+How the emails are triggered:
+
+- Publishing an event asks QStash to call
+  `GET /api/v1/internal/event-notifications/dispatch` at the moment the link opens.
+  Moves and cancellations are sent right away.
+- The Vercel Cron entry in `vercel.json` calls `.../daily` once a day. It plans every
+  link that opens within the next 26 hours and sends anything left over. QStash delays
+  on the free plan are limited to 7 days, so far-away events are planned by this run.
+- If a run cannot finish, it schedules its own continuation.
+
+Without `QSTASH_TOKEN` emails go out only during the daily run, which is too late for
+the link email. Opening the link on the site does not depend on any of this.
+
+Event mail is capped by `EVENT_MAIL_DAILY_LIMIT` (400 in any 24 hours), so about 100
+stay available for verification and password reset within the Gmail limit. Link emails
+are sent first, and emails for an event that is over are dropped. The event editor warns
+when an event has more subscribers than the limit. A Google Workspace sender has a
+higher limit; raise the variable after switching the sender account.
 
 ## Rotation and moving to a domain
 

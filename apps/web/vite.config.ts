@@ -10,6 +10,7 @@ import { prerenderPlugin } from './build-tools/prerender-plugin';
 import { resolveSiteUrl } from './build-tools/site-url';
 
 const VENDOR_CHUNK = /\/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom)\//;
+const SITE_EDITOR_MODULE = /\/src\/widgets\/site-editor\//;
 const QUERY_CHUNK = /\/node_modules\/(@tanstack\/query-core|@tanstack\/react-query|zustand)\//;
 
 export default defineConfig(({ mode, isSsrBuild }) => {
@@ -51,6 +52,12 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       : {
           target: 'esnext',
           rollupOptions: {
+            treeshake: { moduleSideEffects: (id) => !SITE_EDITOR_MODULE.test(id) },
+            onwarn(warning, warn) {
+              if (warning.code === 'INVALID_ANNOTATION' && warning.id?.includes('/node_modules/'))
+                return;
+              warn(warning);
+            },
             output: {
               manualChunks(id) {
                 if (VENDOR_CHUNK.test(id)) return 'vendor';

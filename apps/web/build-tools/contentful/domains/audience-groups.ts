@@ -9,7 +9,7 @@ import {
   type ContentTypeDefinition,
 } from '../content-types.ts';
 import { createReader, entryLinksSchema, nonEmpty } from '../entry-reader.ts';
-import { type ContentDomain } from '../domain.ts';
+import { buildLocalized, type ContentDomain } from '../domain.ts';
 import { CARD_TYPE_ID, createCardReader, resolveEntry } from './blocks.ts';
 
 const TYPE_ID = 'audienceGroup';
@@ -88,7 +88,7 @@ export const audienceGroupsDomain: ContentDomain = {
           {
             name: 'AUDIENCE_GROUPS',
             type: 'Localized<AudienceGroup[]>',
-            value: { en: build('en'), uk: build('uk') },
+            value: buildLocalized(build),
           },
         ],
       },

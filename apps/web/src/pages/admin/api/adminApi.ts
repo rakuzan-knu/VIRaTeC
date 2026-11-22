@@ -1,5 +1,6 @@
 import { api } from '@/shared/api/apiClient';
 import type {
+  EventAttendeesDto,
   AdminMetricsDto,
   AdminPage,
   AdminPermission,
@@ -71,6 +72,11 @@ const CONTENT_LIST_PATHS: Record<RecordResource, string> = {
   event: '/events?limit=100',
   project: '/projects?limit=100',
 };
+
+export const fetchEventAttendees = (eventId: string) =>
+  api.get<EventAttendeesDto>(`/events/${encodeURIComponent(eventId)}/attendees`, {
+    cache: 'no-store',
+  });
 
 const contentKeyOf = (resource: RecordResource, data: RecordData) =>
   String(resource === 'publication' ? data.slug : data.id);

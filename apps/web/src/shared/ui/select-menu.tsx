@@ -115,7 +115,7 @@ export function SelectMenu<TValue extends string>({
           role="listbox"
           aria-label={label}
           onKeyDown={handleListKeyDown}
-          className="absolute top-full right-0 z-30 mt-2 flex min-w-full flex-col gap-1 rounded-[14px] border border-white/14 bg-viratec-dropdown p-1.5 shadow-menu"
+          className="absolute top-full end-0 z-30 mt-2 flex min-w-full flex-col gap-1 rounded-[14px] border border-white/14 bg-viratec-dropdown p-1.5 shadow-menu"
         >
           {options.map((option, index) => {
             const isSelected = option.value === value;
@@ -131,7 +131,7 @@ export function SelectMenu<TValue extends string>({
                 onClick={() => choose(index)}
                 onMouseEnter={() => setActiveIndex(index)}
                 className={cn(
-                  'w-full cursor-pointer rounded-[10px] px-3 py-2.5 text-left text-[15px] whitespace-nowrap transition-colors hover:bg-white/7 focus-visible:bg-white/7 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime',
+                  'w-full cursor-pointer rounded-[10px] px-3 py-2.5 text-start text-[15px] whitespace-nowrap transition-colors hover:bg-white/7 focus-visible:bg-white/7 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-viratec-lime',
                   isSelected ? 'text-white' : 'text-viratec-muted',
                 )}
               >

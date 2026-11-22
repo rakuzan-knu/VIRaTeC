@@ -28,18 +28,21 @@ export const PAGE_TEXT: Localized<StudentResearchContent> = {
         description:
           'A COIL module with the American University in the Emirates, led by Head Project Lead Anastasiia Loban with Anton Dmytrenko.',
         image: asset_studentresearchpage_projects_1_image,
+        imageAlt: '',
       },
       {
         title: 'Foundations of NLP module',
         description:
           'Led by Master’s student Eduard Parkhomenko: 31 teams, 206 students, 8 universities.',
         image: asset_studentresearchpage_projects_2_image,
+        imageAlt: '',
       },
       {
         title: 'Fundamentals of Cyber Hygiene',
         description:
           'Project Lead Yuliia Novichkova (KNU FIT): 87 students from 3 Ukrainian universities.',
         image: asset_studentresearchpage_projects_3_image,
+        imageAlt: '',
       },
     ],
     startEyebrow: 'Start your own',
@@ -81,18 +84,21 @@ export const PAGE_TEXT: Localized<StudentResearchContent> = {
         description:
           'COIL-модуль з Американським університетом в Еміратах під керівництвом головної керівниці проєктів Анастасії Лобан разом з Антоном Дмитренком.',
         image: asset_studentresearchpage_projects_1_image,
+        imageAlt: '',
       },
       {
         title: 'Модуль Foundations of NLP',
         description:
           'Під керівництвом магістранта Едуарда Пархоменка: 31 команда, 206 студентів, 8 університетів.',
         image: asset_studentresearchpage_projects_2_image,
+        imageAlt: '',
       },
       {
         title: 'Fundamentals of Cyber Hygiene',
         description:
           'Керівниця проєкту Юлія Новічкова (ФІТ КНУ): 87 студентів із 3 українських університетів.',
         image: asset_studentresearchpage_projects_3_image,
+        imageAlt: '',
       },
     ],
     startEyebrow: 'Започаткуйте власний',

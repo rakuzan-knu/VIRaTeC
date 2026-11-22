@@ -1,11 +1,13 @@
 import { useId } from 'react';
-import type { AdminPermission, RecordResource } from '@viratec/contracts';
+import { AdminPermission, type RecordResource } from '@viratec/contracts';
 import { useLocale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Button } from '@/shared/ui/Button';
 import { ConfirmDialog, RecordFieldList } from '@/widgets/site-editor';
 import { useAdminMessages } from '../model/messages';
 import { useContentRecord } from '../model/useContentRecord';
+import { CancelEventDialog } from './CancelEventDialog';
+import { EventAttendeesPanel } from './EventAttendeesPanel';
 
 export function ContentRecordForm({
   resource,
@@ -82,6 +84,11 @@ export function ContentRecordForm({
               {editorT.inspector.readOnly}
             </p>
           )}
+          {resource === 'event' &&
+            !loaded.isNew &&
+            permissions.includes(AdminPermission.EVENTS_MANAGE) && (
+              <EventAttendeesPanel eventId={recordKey} />
+            )}
           <div className="flex flex-col gap-5">
             <RecordFieldList
               resource={resource}
@@ -155,9 +162,19 @@ export function ContentRecordForm({
                   onClick={form.askDiscard}
                 />
               )}
-              {form.canDelete && (
+              {form.canCancelEvent && (
                 <Button
-                  label={editorT.records.delete}
+                  label={t.eventCancel.action}
+                  variant="secondary"
+                  className="hover:border-state-error"
+                  disabled={form.isBusy}
+                  loading={form.isSaving || form.isPublishing}
+                  onClick={form.askCancelEvent}
+                />
+              )}
+              {form.canDelete && !form.canCancelEvent && (
+                <Button
+                  label={form.isEvent ? t.eventCancel.deleteForever : editorT.records.delete}
                   variant="secondary"
                   className="hover:border-state-error"
                   disabled={form.isBusy}
@@ -189,13 +206,30 @@ export function ContentRecordForm({
       <ConfirmDialog
         open={form.confirming === 'delete'}
         title={editorT.records.deleteTitle(form.label)}
-        description={editorT.records.deleteText}
+        description={
+          !form.isEvent
+            ? editorT.records.deleteText
+            : form.canSeeAttendees
+              ? t.eventCancel.deleteText
+              : t.eventCancel.deleteUnknown
+        }
         confirmLabel={editorT.records.deleteConfirm}
         cancelLabel={editorT.keepEditing}
         closeLabel={editorT.close}
         onConfirm={form.deleteRecord}
         onClose={form.cancelConfirm}
       />
+      {form.confirming === 'cancelEvent' && (
+        <CancelEventDialog
+          label={form.label}
+          subscribers={form.subscribers}
+          closeLabel={editorT.close}
+          keepLabel={editorT.keepEditing}
+          isPending={form.isBusy}
+          onConfirm={(reason) => void form.cancelEvent(reason)}
+          onClose={form.cancelConfirm}
+        />
+      )}
     </form>
   );
 }

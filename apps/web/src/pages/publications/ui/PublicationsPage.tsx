@@ -56,6 +56,51 @@ const PUBLICATIONS_MESSAGES = defineMessages({
     empty: 'За вашим запитом поки нічого не знайдено.',
     loadError: 'Не вдалося завантажити публікації.',
   },
+  de: {
+    documentTitle: 'Publikationen',
+    eyebrow: 'Publikationen & Medien',
+    title: 'Forschung, Neuigkeiten',
+    accent: 'und Medien.',
+    description:
+      'Artikel, Konferenzvorträge, Projektneuigkeiten und Medienberichte über VIRaTeC und seine Partner.',
+    sectionLabel: 'Publikationen',
+    typeLabel: 'Publikationstyp',
+    search: 'Publikationen durchsuchen',
+    count: (count: number) => `${count} ${count === 1 ? 'Ergebnis' : 'Ergebnisse'}`,
+    showCount: (count: number) => `${count} ${count === 1 ? 'Ergebnis' : 'Ergebnisse'} anzeigen`,
+    empty: 'Noch nichts entspricht Ihrer Suche.',
+    loadError: 'Publikationen konnten nicht geladen werden.',
+  },
+  fr: {
+    documentTitle: 'Publications',
+    eyebrow: 'Publications & médias',
+    title: 'Recherche, actualités',
+    accent: 'et médias.',
+    description:
+      'Articles, conférences, actualités des projets et couverture médiatique de VIRaTeC et de ses partenaires.',
+    sectionLabel: 'Publications',
+    typeLabel: 'Type de publication',
+    search: 'Rechercher des publications',
+    count: (count: number) => `${count} ${count <= 1 ? 'résultat' : 'résultats'}`,
+    showCount: (count: number) => `Afficher ${count} ${count <= 1 ? 'résultat' : 'résultats'}`,
+    empty: 'Rien ne correspond encore à votre recherche.',
+    loadError: 'Impossible de charger les publications.',
+  },
+  ar: {
+    documentTitle: 'المنشورات',
+    eyebrow: 'المنشورات والإعلام',
+    title: 'أبحاث وأخبار',
+    accent: 'وإعلام.',
+    description:
+      'أوراق بحثية ومحاضرات مؤتمرات وأخبار المشاريع والتغطية الإعلامية لـ VIRaTeC وشركائها.',
+    sectionLabel: 'المنشورات',
+    typeLabel: 'نوع المنشور',
+    search: 'البحث في المنشورات',
+    count: (count: number) => `${count} ${count === 1 ? 'نتيجة' : 'نتائج'}`,
+    showCount: (count: number) => `عرض ${count} ${count === 1 ? 'نتيجة' : 'نتائج'}`,
+    empty: 'لا شيء يطابق بحثك بعد.',
+    loadError: 'تعذّر تحميل المنشورات.',
+  },
 });
 
 export function PublicationsPage() {

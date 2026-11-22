@@ -3,7 +3,7 @@ import type { Locale } from '../../../src/shared/i18n/model/types.ts';
 import type { Milestone } from '../../../src/pages/viratec/model/types.ts';
 import { field, localizedField, type ContentTypeDefinition } from '../content-types.ts';
 import { createReader, nonEmpty } from '../entry-reader.ts';
-import { type ContentDomain } from '../domain.ts';
+import { buildLocalized, type ContentDomain } from '../domain.ts';
 
 const TYPE_ID = 'milestone';
 
@@ -71,7 +71,7 @@ export const milestonesDomain: ContentDomain = {
           {
             name: 'MILESTONES',
             type: 'Localized<Milestone[]>',
-            value: { en: build('en'), uk: build('uk') },
+            value: buildLocalized(build),
           },
         ],
       },

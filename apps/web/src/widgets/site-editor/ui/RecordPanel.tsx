@@ -162,7 +162,7 @@ export function RecordPanel({ t }: { t: SiteEditorMessages }) {
       <ConfirmDialog
         open={isConfirmingDelete}
         title={t.records.deleteTitle(label)}
-        description={t.records.deleteText}
+        description={resource === 'event' ? t.records.deleteEventText : t.records.deleteText}
         confirmLabel={t.records.deleteConfirm}
         cancelLabel={t.keepEditing}
         closeLabel={t.close}

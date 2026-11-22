@@ -9,7 +9,7 @@ import {
 import { useProjectLabels } from '@/entities/project';
 import { useSessionStore } from '@/entities/session';
 import { getPublicationCover } from '@/entities/publication';
-import { LOCALES, type Locale } from '@/shared/i18n';
+import { LOCALES, fromLocales, type Locale } from '@/shared/i18n';
 import { absoluteImageUrl, cn, contentCoverSrc } from '@/shared/lib';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/Input';
@@ -306,10 +306,7 @@ export function RecordFieldEditor({
             </p>
           )}
           <TranslationHint
-            values={{
-              en: readRecordValue(data, localizedPath(field, 'en')),
-              uk: readRecordValue(data, localizedPath(field, 'uk')),
-            }}
+            values={fromLocales((locale) => readRecordValue(data, localizedPath(field, locale)))}
             readOnly={readOnly}
             t={t}
             onCopy={(from, to) =>
@@ -319,10 +316,7 @@ export function RecordFieldEditor({
           />
           {field.path.endsWith(ALT_SUFFIX) && (
             <AltHint
-              values={{
-                en: readRecordValue(data, localizedPath(field, 'en')),
-                uk: readRecordValue(data, localizedPath(field, 'uk')),
-              }}
+              values={fromLocales((locale) => readRecordValue(data, localizedPath(field, locale)))}
               t={t}
             />
           )}

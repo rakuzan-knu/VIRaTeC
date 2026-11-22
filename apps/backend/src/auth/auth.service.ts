@@ -3,6 +3,7 @@ import {
   Injectable,
   ConflictException,
   ForbiddenException,
+  Logger,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,8 +17,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
-import { TERMS_VERSION, UserRole } from '@viratec/contracts';
+import { TERMS_VERSION, isSelfAssignableRole } from '@viratec/contracts';
 import { toAccount } from '../security/account';
+import { buildAvatarUrl } from '../security/avatar-image';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import type { ClientContext } from '../common/decorators/client-context.decorator';
 import { AuditService } from '../security/audit.service';
@@ -27,6 +29,8 @@ import { TwoFactorService } from './two-factor.service';
 import { SessionsService } from './sessions.service';
 import { EmailVerificationService } from './email-verification.service';
 import { claimUnverifiedAccountWrites } from './email-ownership';
+import { downloadGoogleAvatar, isGoogleAvatarUrl } from './google-avatar';
+import { SecurityMailService } from './security-mail.service';
 
 const MFA_CHALLENGE_TTL_MS = 5 * 60_000;
 const MFA_CHALLENGE_MAX_ATTEMPTS = 5;
@@ -65,6 +69,7 @@ function verifyAgainstDummyHash(password: string) {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private googleClient = new OAuth2Client();
 
   constructor(
@@ -76,13 +81,14 @@ export class AuthService {
     private rateLimit?: RateLimitService,
     private twoFactor?: TwoFactorService,
     private emailVerification?: EmailVerificationService,
+    private securityMail?: SecurityMailService,
   ) {}
 
   async register(dto: RegisterDto, client: ClientContext = {}) {
     if (client.ipAddress) {
       await this.rateLimit?.consume(`register:ip:${client.ipAddress}`, RATE_LIMITS.registerPerIp);
     }
-    if (dto.role && dto.role !== UserRole.STUDENT && dto.role !== UserRole.PARTNER) {
+    if (dto.role && !isSelfAssignableRole(dto.role)) {
       throw new ForbiddenException('Privileged roles cannot be selected during registration');
     }
     assertTermsAccepted(dto.acceptTerms);
@@ -169,11 +175,71 @@ export class AuthService {
     }
 
     const tokens = await this.generateTokens(user, client);
+    await this.alertNewDevice(user, client);
     void this.audit?.record({ action: 'auth.login', actorId: user.id, client });
     return {
       user: toAccount(user as unknown as Parameters<typeof toAccount>[0]),
       ...tokens,
     };
+  }
+
+  private async alertNewDevice({ id, email }: Pick<User, 'id' | 'email'>, client: ClientContext) {
+    if (!this.securityMail || !client.userAgent) return;
+    try {
+      const where = { actorId: id, action: 'auth.login' };
+      const [anyLogin, sameDevice] = await Promise.all([
+        this.prisma.auditLog.findFirst({ where, select: { id: true } }),
+        this.prisma.auditLog.findFirst({
+          where: { ...where, userAgent: client.userAgent },
+          select: { id: true },
+        }),
+      ]);
+      if (anyLogin && !sameDevice) await this.securityMail.newDevice(email, client.userAgent);
+    } catch (error) {
+      this.logger.warn(`New device check failed: ${String(error)}`);
+    }
+  }
+
+  private async importGoogleAvatar(user: User, url: string | null | undefined): Promise<User> {
+    try {
+      const image = await downloadGoogleAvatar(url);
+      if (!image) return user;
+      return await this.prisma.$transaction(async (tx) => {
+        const avatar = await tx.userAvatar.upsert({
+          where: { userId: user.id },
+          create: { userId: user.id, ...image },
+          update: image,
+          select: { updatedAt: true },
+        });
+        return tx.user.update({
+          where: { id: user.id },
+          data: { avatarUrl: buildAvatarUrl(user.id, avatar.updatedAt) },
+        });
+      });
+    } catch (error) {
+      this.logger.warn(`Google photo was not imported: ${String(error)}`);
+      return user;
+    }
+  }
+
+  async acceptTerms(userId: string, version: string, client: ClientContext = {}) {
+    if (version !== TERMS_VERSION) {
+      throw new ConflictException({
+        message: 'A newer version of the terms is available',
+        code: 'TERMS_VERSION_OUTDATED',
+      });
+    }
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: termsAcceptance(),
+    });
+    void this.audit?.record({
+      action: 'auth.terms_accepted',
+      actorId: userId,
+      metadata: { version },
+      client,
+    });
+    return toAccount(user);
   }
 
   async verifyMfaChallenge(challengeToken: string, code: string, client: ClientContext = {}) {
@@ -220,6 +286,7 @@ export class AuthService {
       this.rateLimit?.reset(`mfa:login:${user.id}`),
       this.generateTokens(user, client, randomUUID(), { mfaVerifiedAt: new Date() }),
     ]);
+    await this.alertNewDevice(user, client);
     void this.audit?.record({ action: 'auth.mfa_verified', actorId: user.id, client });
     void this.audit?.record({ action: 'auth.login', actorId: user.id, client });
     return { user: toAccount(user), ...tokens };
@@ -245,11 +312,11 @@ export class AuthService {
             email,
             googleId: payload.sub,
             name: payload.name || email.split('@')[0],
-            avatarUrl: payload.picture,
             emailVerifiedAt: new Date(),
             ...termsAcceptance(),
           },
         });
+        user = await this.importGoogleAvatar(user, payload.picture);
       } catch (error) {
         if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
           throw error;
@@ -284,6 +351,10 @@ export class AuthService {
         });
     }
 
+    if (isGoogleAvatarUrl(user.avatarUrl)) {
+      user = await this.importGoogleAvatar(user, payload.picture ?? user.avatarUrl);
+    }
+
     return this.completeSignIn(user, client);
   }
 
@@ -316,9 +387,7 @@ export class AuthService {
     return claimed;
   }
 
-  private async verifyGoogleCredential(
-    credential: string,
-  ): Promise<TokenPayload & { email: string }> {
+  async verifyGoogleCredential(credential: string): Promise<TokenPayload & { email: string }> {
     const clientId = this.configService.get<string>('google.clientId');
     if (!clientId) {
       throw new ServiceUnavailableException('Google sign-in is not configured');
@@ -484,13 +553,14 @@ export class AuthService {
         },
         data: {
           googleId: payload.sub,
-          avatarUrl: user.avatarUrl ?? payload.picture,
           ...(!user.emailVerifiedAt && payload.email.toLowerCase() === user.email
             ? { emailVerifiedAt: new Date() }
             : {}),
         },
       });
-      return toAccount(updated);
+      return toAccount(
+        updated.avatarUrl ? updated : await this.importGoogleAvatar(updated, payload.picture),
+      );
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
         throw new ConflictException('The account changed. Sign in again before connecting Google.');
@@ -567,6 +637,7 @@ export class AuthService {
         throw error;
       });
     await this.sessions.revokeAll(userId);
+    await this.securityMail?.passwordChanged(updated.email);
 
     const tokens = await this.generateTokens(updated, client, sessionId);
     return {

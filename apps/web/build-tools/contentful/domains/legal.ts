@@ -20,7 +20,7 @@ import {
   nonEmpty,
   type EntryReader,
 } from '../entry-reader.ts';
-import { type ContentDomain, type PullContext } from '../domain.ts';
+import { buildLocalized, type ContentDomain, type PullContext } from '../domain.ts';
 import { resolveEntry } from './blocks.ts';
 
 const DOCUMENT_TYPE_ID = 'legalDocument';
@@ -217,10 +217,9 @@ export const legalDomain: ContentDomain = {
         };
       };
 
-      const en = content('en');
-      const uk = content('uk');
-      if (key && version && updatedAt && en && uk) {
-        documents.set(key, { version, updatedAt, content: { en, uk } });
+      const localized = buildLocalized(content);
+      if (key && version && updatedAt && localized) {
+        documents.set(key, { version, updatedAt, content: localized });
       }
     }
 

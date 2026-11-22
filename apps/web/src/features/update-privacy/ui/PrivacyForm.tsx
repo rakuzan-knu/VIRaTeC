@@ -35,6 +35,48 @@ const PRIVACY_MESSAGES = defineMessages({
     saved: 'Налаштування приватності збережено.',
     error: 'Не вдалося зберегти налаштування. Спробуйте ще раз.',
   },
+  de: {
+    visibility: 'Wer Ihr Profil sehen kann',
+    descriptions: {
+      [ProfileVisibility.PUBLIC]: 'Alle mit dem Link, einschließlich Suchmaschinen und Partnern.',
+      [ProfileVisibility.MEMBERS]: 'Nur bei VIRaTeC angemeldete Personen.',
+      [ProfileVisibility.PRIVATE]: 'Für alle verborgen. Nur Sie können es öffnen.',
+    } satisfies Record<ProfileVisibility, string>,
+    showEmail: 'Meine E-Mail im Profil anzeigen',
+    showEmailHint:
+      'Ermöglicht es Kooperationspartnern, Sie direkt zu kontaktieren. Standardmäßig aus.',
+    save: 'Datenschutzeinstellungen speichern',
+    saved: 'Datenschutzeinstellungen gespeichert.',
+    error:
+      'Datenschutzeinstellungen konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.',
+  },
+  fr: {
+    visibility: 'Qui peut voir votre profil',
+    descriptions: {
+      [ProfileVisibility.PUBLIC]:
+        'Toute personne disposant du lien, y compris les moteurs de recherche et les partenaires.',
+      [ProfileVisibility.MEMBERS]: 'Uniquement les personnes connectées à VIRaTeC.',
+      [ProfileVisibility.PRIVATE]: 'Masqué pour tous. Vous seul pouvez l’ouvrir.',
+    } satisfies Record<ProfileVisibility, string>,
+    showEmail: 'Afficher mon e-mail sur le profil',
+    showEmailHint: 'Permet aux collaborateurs de vous contacter directement. Désactivé par défaut.',
+    save: 'Enregistrer les paramètres de confidentialité',
+    saved: 'Paramètres de confidentialité enregistrés.',
+    error: 'Impossible d’enregistrer les paramètres de confidentialité. Veuillez réessayer.',
+  },
+  ar: {
+    visibility: 'من يمكنه رؤية ملفك الشخصي',
+    descriptions: {
+      [ProfileVisibility.PUBLIC]: 'أي شخص لديه الرابط، بما في ذلك محركات البحث والشركاء.',
+      [ProfileVisibility.MEMBERS]: 'الأشخاص المسجّلون في VIRaTeC فقط.',
+      [ProfileVisibility.PRIVATE]: 'مخفي عن الجميع. يمكنك أنت فقط فتحه.',
+    } satisfies Record<ProfileVisibility, string>,
+    showEmail: 'إظهار بريدي الإلكتروني في الملف الشخصي',
+    showEmailHint: 'يتيح للمتعاونين التواصل معك مباشرة. معطّل افتراضيًا.',
+    save: 'حفظ إعدادات الخصوصية',
+    saved: 'تم حفظ إعدادات الخصوصية.',
+    error: 'تعذّر حفظ إعدادات الخصوصية. يُرجى المحاولة مرة أخرى.',
+  },
 });
 
 const OPTIONS = [
@@ -159,8 +201,8 @@ export function PrivacyForm({ account }: PrivacyFormProps) {
         >
           <span
             className={cn(
-              'absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform motion-reduce:transition-none',
-              showEmail && 'translate-x-5 bg-viratec-ink',
+              'absolute top-0.5 start-0.5 size-5 rounded-full bg-white shadow transition-transform motion-reduce:transition-none',
+              showEmail && 'translate-x-5 bg-viratec-ink rtl:-translate-x-5',
             )}
           />
         </span>

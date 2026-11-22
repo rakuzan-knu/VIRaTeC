@@ -7,6 +7,8 @@ import {
   PROFILE_LIMITS,
   PROFILE_LINK_KEYS,
   StudyLevel,
+  UserRole,
+  isSelfAssignableRole,
   normalizeProfileLink,
   type AccountDto,
   type ProfileLinkKey,
@@ -44,6 +46,7 @@ export const createProfileFormSchema = (messages: ProfileSchemaMessages) =>
       .trim()
       .min(PROFILE_LIMITS.nameMin, messages.nameMin)
       .max(PROFILE_LIMITS.nameMax, messages.nameMax),
+    role: z.nativeEnum(UserRole),
     faculty: z.nativeEnum(FacultyDivision),
     department: z.string().trim().max(PROFILE_LIMITS.departmentMax, messages.departmentMax),
     bio: z.string().trim().max(PROFILE_LIMITS.bioMax, messages.bioMax),
@@ -83,6 +86,7 @@ const readLinks = (links: AccountDto['links']): Record<ProfileLinkKey, string> =
 
 export const toProfileFormValues = (account: AccountDto): ProfileFormValues => ({
   name: account.name,
+  role: account.role,
   faculty: account.faculty,
   department: account.department ?? '',
   bio: account.bio ?? '',
@@ -105,6 +109,7 @@ export const toUpdateProfileRequest = (values: ProfileFormValues): UpdateProfile
 
   return {
     name: values.name,
+    ...(isSelfAssignableRole(values.role) ? { role: values.role } : {}),
     faculty: values.faculty,
     department: values.department,
     bio: values.bio,

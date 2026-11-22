@@ -33,6 +33,7 @@ export function SectionHeader({
         <div className="flex max-w-[920px] min-w-0 flex-col gap-5 @4xl:col-start-2 lg:gap-6">
           <h2
             id={id}
+            dir="auto"
             className="font-display text-[36px] leading-[40px] font-medium tracking-[-0.035em] text-white lg:text-[64px] lg:leading-[66px]"
           >
             <SplitWords text={title} />

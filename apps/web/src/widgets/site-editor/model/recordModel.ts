@@ -1,4 +1,7 @@
 import {
+  EVENT_JOIN_LIMITS,
+  EventJoinAccess,
+  EventStatus,
   EventType,
   FacultyDivision,
   LOCALE_PLACEHOLDER,
@@ -105,6 +108,12 @@ export const newRecordData = (resource: RecordResource, slug: string): RecordDat
       endDate: new Date(start.getTime() + 2 * HOUR_MS).toISOString(),
       capacity: null,
       registrationLink: null,
+      meetingUrl: null,
+      joinOpensMinutesBefore: EVENT_JOIN_LIMITS.defaultOpensMinutesBefore,
+      joinAccess: EventJoinAccess.EVERYONE,
+      status: EventStatus.SCHEDULED,
+      cancelReason: null,
+      recordingUrl: null,
       translations: {
         en: { meta: '', title: 'New event', description: '', actionLabel: '' },
         uk: { meta: '', title: 'Нова подія', description: '', actionLabel: '' },

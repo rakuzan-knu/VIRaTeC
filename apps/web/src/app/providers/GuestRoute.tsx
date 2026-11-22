@@ -12,8 +12,10 @@ export function GuestRoute({ children }: GuestRouteProps) {
   const location = useLocation();
   const hasSession = useSessionStore((state) => state.hasSession);
 
-  if (hasSession) {
-    return <Redirect to={readAuthNavigationState(location.state).from ?? ROUTES.HOME} />;
+  const { from, addAccount } = readAuthNavigationState(location.state);
+
+  if (hasSession && !addAccount) {
+    return <Redirect to={from ?? ROUTES.HOME} />;
   }
 
   return <>{children}</>;

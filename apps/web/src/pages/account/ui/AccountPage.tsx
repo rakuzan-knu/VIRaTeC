@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import { forgetAllAccounts, useAccountLabels, useSessionStore } from '@/entities/session';
 import { ProfileForm } from '@/features/update-profile';
@@ -9,8 +9,9 @@ import { useLogout } from '@/features/logout';
 import { PrivacyForm } from '@/features/update-privacy';
 import { ExportDataButton } from '@/features/export-data';
 import { SavedList } from '@/features/save-item';
+import { MyEventsList } from '@/features/register-for-event';
 import { EmailVerificationNotice } from '@/features/verify-email';
-import { ROUTES, buildPersonPath } from '@/shared/config/routes';
+import { ACCOUNT_SECTION_ANCHOR, ROUTES, buildPersonPath } from '@/shared/config/routes';
 import { INTL_LOCALE, useLocale } from '@/shared/i18n';
 import { cn, useSeo } from '@/shared/lib';
 import { PageIntro } from '@/widgets/page-intro';
@@ -34,6 +35,8 @@ export function AccountPage() {
   const account = useSessionStore((state) => state.user);
   const { active, select } = useAccountSection();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const navigate = useNavigate();
+  const location = useLocation();
   useSeo(t.seoTitle, { noindex: true });
 
   if (!account) return null;
@@ -43,7 +46,9 @@ export function AccountPage() {
   );
 
   const switchAccount = (email?: string) =>
-    logout({ to: ROUTES.LOGIN, state: email ? { email } : undefined });
+    navigate(ROUTES.LOGIN, {
+      state: { email, addAccount: true, from: `${location.pathname}${location.search}` },
+    });
 
   return (
     <PageLayout
@@ -70,7 +75,10 @@ export function AccountPage() {
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           {!account.emailVerified && <EmailVerificationNotice email={account.email} />}
-          <header className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-end sm:justify-between">
+          <header
+            id={ACCOUNT_SECTION_ANCHOR}
+            className="flex scroll-mt-20 flex-col gap-4 pb-2 sm:flex-row sm:items-end sm:justify-between lg:scroll-mt-4"
+          >
             <div className="flex flex-col gap-1.5">
               <h2 className="font-display text-[30px] leading-9 font-medium tracking-[-0.025em] text-white lg:text-[40px] lg:leading-[46px]">
                 {t.sections[active]}
@@ -104,6 +112,11 @@ export function AccountPage() {
               <SavedList />
             </section>
           )}
+          {active === 'events' && (
+            <section className={CARD_CLASS}>
+              <MyEventsList />
+            </section>
+          )}
           {active === 'security' && <SecuritySection account={account} />}
           {active === 'privacy' && (
             <div className="flex flex-col gap-4">
@@ -135,7 +148,11 @@ export function AccountPage() {
           )}
           {active === 'danger' && (
             <section className={cn(CARD_CLASS, 'border-state-error/30')}>
-              <DeleteAccountForm email={account.email} hasPassword={account.hasPassword} />
+              <DeleteAccountForm
+                email={account.email}
+                hasPassword={account.hasPassword}
+                twoFactorEnabled={account.twoFactorEnabled}
+              />
             </section>
           )}
         </div>

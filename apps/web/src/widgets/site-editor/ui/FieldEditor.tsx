@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef } from 'react';
 import type { ContentLocales } from '@viratec/contracts';
-import { LOCALES, type Locale } from '@/shared/i18n';
+import { LOCALES, fromLocales, type Locale } from '@/shared/i18n';
 import { cn } from '@/shared/lib';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/Input';
@@ -241,14 +241,14 @@ export function FieldEditor({
           </p>
         )}
         <TranslationHint
-          values={{ en: values?.[locales.en], uk: values?.[locales.uk] }}
+          values={fromLocales((locale) => values?.[locales[locale]])}
           readOnly={readOnly}
           t={t}
           onCopy={(from, to) => onChange(locales[to], values?.[locales[from]])}
           onTranslated={(to, text) => onChange(locales[to], text)}
         />
         {field.id === ALT_FIELD_ID && (
-          <AltHint values={{ en: values?.[locales.en], uk: values?.[locales.uk] }} t={t} />
+          <AltHint values={fromLocales((locale) => values?.[locales[locale]])} t={t} />
         )}
         {LOCALES.map((locale) => (
           <ScalarInput

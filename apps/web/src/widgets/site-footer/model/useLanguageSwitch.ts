@@ -8,7 +8,7 @@ import {
 } from '@/shared/config/routes';
 
 const targetPath = (pathname: string, locale: Locale) => {
-  if (locale === 'uk') return isEnglishPath(pathname) ? stripEnglishPrefix(pathname) : null;
+  if (locale !== 'en') return isEnglishPath(pathname) ? stripEnglishPrefix(pathname) : null;
   return !isEnglishPath(pathname) && hasEnglishPage(pathname) ? toEnglishPath(pathname) : null;
 };
 
@@ -24,7 +24,9 @@ export function useLanguageSwitch() {
       setLocale(next);
       return;
     }
-    void Promise.resolve(navigate({ pathname: target, search, hash })).then(() => setLocale(next));
+    void Promise.resolve(
+      navigate({ pathname: target, search, hash }, { preventScrollReset: true }),
+    ).then(() => setLocale(next));
   };
 
   return { locale, switchLanguage };

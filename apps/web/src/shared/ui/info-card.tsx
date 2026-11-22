@@ -76,7 +76,7 @@ export function InfoCard({
       )}
       <h3
         className={cn(
-          'font-display text-xl leading-[26px] font-medium tracking-[-0.02em] lg:text-2xl lg:leading-[30px]',
+          'font-display text-xl leading-[26px] font-medium tracking-[-0.02em] xl:text-2xl xl:leading-[30px]',
           isMuted ? 'text-white/60' : 'text-white',
         )}
       >

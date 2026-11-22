@@ -178,7 +178,8 @@ test('the directory never lists private profiles of other members', async () => 
     OR: [{ visibility: { in: ['PUBLIC', 'MEMBERS'] } }, { id: 'member' }],
   });
   assert.deepEqual(calls[0].AND[1], { emailVerifiedAt: { not: null } });
-  assert.deepEqual(calls[0].AND[2], { openTo: { has: 'COIL_PROJECT' } });
+  assert.deepEqual(calls[0].AND[2], { isBlocked: false });
+  assert.deepEqual(calls[0].AND[3], { openTo: { has: 'COIL_PROJECT' } });
 });
 
 test('erasing other sessions keeps only the current device', async () => {

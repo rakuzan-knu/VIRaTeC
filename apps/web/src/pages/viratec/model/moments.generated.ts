@@ -91,4 +91,118 @@ export const MOMENTS: Localized<MomentItem[]> = {
     { image: asset_moment_community_photo, caption: 'Спільнота VIRaTeC у КНУ' },
     { image: asset_moment_studentsfaculty_photo, caption: 'Студенти й викладачі в КНУ' },
   ],
+  de: [
+    {
+      image: asset_moment_certificateceremony_photo,
+      caption: 'Certificate ceremony of the 2025 VIRaTeC COIL Series, KNU',
+    },
+    {
+      image: asset_moment_coilseriestalk_photo,
+      caption: 'Implementing COIL modules: a talk at the VIRaTeC COIL Series 2025',
+    },
+    {
+      image: asset_moment_oxford_photo,
+      caption: 'Presenting at the University of Oxford, Saïd Business School',
+    },
+    {
+      image: asset_moment_ivec_photo,
+      caption: 'International Virtual Exchange Conference IVEC 2025, Heraklion',
+    },
+    {
+      image: asset_moment_jhuroleplay_photo,
+      caption: 'Offshore wind farm negotiation with Johns Hopkins University, online',
+    },
+    {
+      image: asset_moment_alliance_photo,
+      caption: 'With the Alliance of Ukrainian Universities at KNU',
+    },
+    { image: asset_moment_studentspeaker_photo, caption: 'A student takes the floor at KNU' },
+    {
+      image: asset_moment_karunya_photo,
+      caption: 'Online session with Karunya Institute of Technology and Sciences',
+    },
+    {
+      image: asset_moment_certificatesparticipants_photo,
+      caption: 'Module participants with their certificates',
+    },
+    { image: asset_moment_intercultural_photo, caption: 'Intercultural exchange at KNU' },
+    { image: asset_moment_community_photo, caption: 'The VIRaTeC community at KNU' },
+    { image: asset_moment_studentsfaculty_photo, caption: 'Students and faculty at KNU' },
+  ],
+  fr: [
+    {
+      image: asset_moment_certificateceremony_photo,
+      caption: 'Certificate ceremony of the 2025 VIRaTeC COIL Series, KNU',
+    },
+    {
+      image: asset_moment_coilseriestalk_photo,
+      caption: 'Implementing COIL modules: a talk at the VIRaTeC COIL Series 2025',
+    },
+    {
+      image: asset_moment_oxford_photo,
+      caption: 'Presenting at the University of Oxford, Saïd Business School',
+    },
+    {
+      image: asset_moment_ivec_photo,
+      caption: 'International Virtual Exchange Conference IVEC 2025, Heraklion',
+    },
+    {
+      image: asset_moment_jhuroleplay_photo,
+      caption: 'Offshore wind farm negotiation with Johns Hopkins University, online',
+    },
+    {
+      image: asset_moment_alliance_photo,
+      caption: 'With the Alliance of Ukrainian Universities at KNU',
+    },
+    { image: asset_moment_studentspeaker_photo, caption: 'A student takes the floor at KNU' },
+    {
+      image: asset_moment_karunya_photo,
+      caption: 'Online session with Karunya Institute of Technology and Sciences',
+    },
+    {
+      image: asset_moment_certificatesparticipants_photo,
+      caption: 'Module participants with their certificates',
+    },
+    { image: asset_moment_intercultural_photo, caption: 'Intercultural exchange at KNU' },
+    { image: asset_moment_community_photo, caption: 'The VIRaTeC community at KNU' },
+    { image: asset_moment_studentsfaculty_photo, caption: 'Students and faculty at KNU' },
+  ],
+  ar: [
+    {
+      image: asset_moment_certificateceremony_photo,
+      caption: 'Certificate ceremony of the 2025 VIRaTeC COIL Series, KNU',
+    },
+    {
+      image: asset_moment_coilseriestalk_photo,
+      caption: 'Implementing COIL modules: a talk at the VIRaTeC COIL Series 2025',
+    },
+    {
+      image: asset_moment_oxford_photo,
+      caption: 'Presenting at the University of Oxford, Saïd Business School',
+    },
+    {
+      image: asset_moment_ivec_photo,
+      caption: 'International Virtual Exchange Conference IVEC 2025, Heraklion',
+    },
+    {
+      image: asset_moment_jhuroleplay_photo,
+      caption: 'Offshore wind farm negotiation with Johns Hopkins University, online',
+    },
+    {
+      image: asset_moment_alliance_photo,
+      caption: 'With the Alliance of Ukrainian Universities at KNU',
+    },
+    { image: asset_moment_studentspeaker_photo, caption: 'A student takes the floor at KNU' },
+    {
+      image: asset_moment_karunya_photo,
+      caption: 'Online session with Karunya Institute of Technology and Sciences',
+    },
+    {
+      image: asset_moment_certificatesparticipants_photo,
+      caption: 'Module participants with their certificates',
+    },
+    { image: asset_moment_intercultural_photo, caption: 'Intercultural exchange at KNU' },
+    { image: asset_moment_community_photo, caption: 'The VIRaTeC community at KNU' },
+    { image: asset_moment_studentsfaculty_photo, caption: 'Students and faculty at KNU' },
+  ],
 };

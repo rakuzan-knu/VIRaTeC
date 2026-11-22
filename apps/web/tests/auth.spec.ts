@@ -64,6 +64,64 @@ test('Google registration and login keep the protected destination across both f
   await expect(page.getByText('/private?section=security', { exact: true })).toBeVisible();
 });
 
+test('a new Google user must tick the terms before an account is created', async ({ page }) => {
+  const bodies: unknown[] = [];
+  await page.route('**/api/v1/auth/google', (route) => {
+    bodies.push(route.request().postDataJSON());
+    return bodies.length === 1
+      ? route.fulfill({ status: 400, json: { message: 'Raw backend terms message' } })
+      : route.fulfill({ json: { user: user('N') } });
+  });
+  await page.goto(fixture);
+  await googleButton(page).click();
+  const createAccount = page.getByRole('button', { name: 'Create account', exact: true });
+  await expect(createAccount).toBeDisabled();
+  await expect(googleButton(page)).toBeHidden();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Terms of Service' }).first()).toHaveAttribute(
+    'target',
+    '_blank',
+  );
+  const consentA11y = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
+    .analyze();
+  expect(consentA11y.violations).toEqual([]);
+  expect(bodies).toEqual([{ credential: 'fixture-only-credential' }]);
+  await page.getByRole('checkbox').check();
+  await createAccount.click();
+  await expect(page.getByRole('heading', { name: 'Private destination' })).toBeVisible();
+  expect(bodies).toEqual([
+    { credential: 'fixture-only-credential' },
+    { credential: 'fixture-only-credential', acceptTerms: true },
+  ]);
+});
+
+test('leaving the Google terms step clears the agreement', async ({ page }) => {
+  await page.route('**/api/v1/auth/google', (route) =>
+    route.fulfill({ status: 400, json: { message: 'Raw backend terms message' } }),
+  );
+  await page.goto(fixture);
+  await googleButton(page).click();
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect(googleButton(page)).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await googleButton(page).click();
+  await expect(page.getByRole('checkbox')).not.toBeChecked();
+});
+
+test('an existing Google user signs in without the terms step', async ({ page }) => {
+  const bodies: unknown[] = [];
+  await page.route('**/api/v1/auth/google', (route) => {
+    bodies.push(route.request().postDataJSON());
+    return route.fulfill({ json: { user: user('E') } });
+  });
+  await page.goto(fixture);
+  await googleButton(page).click();
+  await expect(page.getByRole('heading', { name: 'Private destination' })).toBeVisible();
+  expect(bodies).toEqual([{ credential: 'fixture-only-credential' }]);
+});
+
 for (const failure of ['network', 'missing-api'] as const) {
   test(`Google SDK ${failure} failure can be retried without reloading`, async ({ page }) => {
     let loads = 0;

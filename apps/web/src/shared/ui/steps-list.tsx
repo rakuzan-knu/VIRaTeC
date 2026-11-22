@@ -19,7 +19,7 @@ export function StepsList({ steps, className }: StepsListProps) {
         {steps.map((step, index) => (
           <li
             key={step.title}
-            className="relative flex flex-col gap-3 pl-10 lg:flex-1 lg:pt-12 lg:pl-0"
+            className="relative flex flex-col gap-3 ps-10 lg:flex-1 lg:pt-12 lg:ps-0"
           >
             <span aria-hidden="true" className="atlas-steps-node" />
             <span className="atlas-steps-number font-display text-[44px] leading-[44px] font-medium tracking-[-0.04em] lg:text-[72px] lg:leading-[72px]">

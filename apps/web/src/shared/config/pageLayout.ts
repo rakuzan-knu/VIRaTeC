@@ -9,81 +9,302 @@ interface BuiltinSection {
   label: LabelText;
 }
 
-const builtin = (key: string, en: string, uk: string): BuiltinSection => ({
-  key,
-  label: { en, uk },
-});
+const builtin = (key: string, label: LabelText): BuiltinSection => ({ key, label });
 
 export const PAGE_SECTIONS = {
   HOME: [
-    builtin('about', 'About', 'Про нас'),
-    builtin('research', 'Research', 'Дослідження'),
-    builtin('publications', 'Latest publications', 'Останні публікації'),
-    builtin('getInvolved', 'Get involved', 'Долучитися'),
+    builtin('about', { en: 'About', uk: 'Про нас', de: 'Über uns', fr: 'À propos', ar: 'من نحن' }),
+    builtin('research', {
+      en: 'Research',
+      uk: 'Дослідження',
+      de: 'Forschung',
+      fr: 'Recherche',
+      ar: 'البحث',
+    }),
+    builtin('publications', {
+      en: 'Latest publications',
+      uk: 'Останні публікації',
+      de: 'Neueste Publikationen',
+      fr: 'Dernières publications',
+      ar: 'أحدث المنشورات',
+    }),
+    builtin('getInvolved', {
+      en: 'Get involved',
+      uk: 'Долучитися',
+      de: 'Mitmachen',
+      fr: 'S’impliquer',
+      ar: 'شارك معنا',
+    }),
   ],
   ABOUT_INITIATIVE: [
-    builtin('mission', 'Mission', 'Місія'),
-    builtin('values', 'Values', 'Цінності'),
-    builtin('philosophy', 'Philosophy', 'Філософія'),
-    builtin('founder', 'Founder', 'Засновниця'),
-    builtin('team', 'Team', 'Команда'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('mission', { en: 'Mission', uk: 'Місія', de: 'Mission', fr: 'Mission', ar: 'المهمة' }),
+    builtin('values', { en: 'Values', uk: 'Цінності', de: 'Werte', fr: 'Valeurs', ar: 'القيم' }),
+    builtin('philosophy', {
+      en: 'Philosophy',
+      uk: 'Філософія',
+      de: 'Philosophie',
+      fr: 'Philosophie',
+      ar: 'الفلسفة',
+    }),
+    builtin('founder', {
+      en: 'Founder',
+      uk: 'Засновниця',
+      de: 'Gründerin',
+      fr: 'Fondatrice',
+      ar: 'المؤسِّسة',
+    }),
+    builtin('team', { en: 'Team', uk: 'Команда', de: 'Team', fr: 'Équipe', ar: 'الفريق' }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
   VIRATEC: [
-    builtin('whatIs', 'What is VIRaTeC', 'Що таке VIRaTeC'),
-    builtin('journey', 'Our journey', 'Наш шлях'),
-    builtin('participants', 'Participants', 'Учасники'),
-    builtin('coil', 'COIL', 'COIL'),
-    builtin('join', 'How to join', 'Як долучитися'),
-    builtin('moments', 'Moments', 'Моменти'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('whatIs', {
+      en: 'What is VIRaTeC',
+      uk: 'Що таке VIRaTeC',
+      de: 'Was ist VIRaTeC',
+      fr: 'Qu’est-ce que VIRaTeC',
+      ar: 'ما هي VIRaTeC',
+    }),
+    builtin('journey', {
+      en: 'Our journey',
+      uk: 'Наш шлях',
+      de: 'Unser Weg',
+      fr: 'Notre parcours',
+      ar: 'مسيرتنا',
+    }),
+    builtin('participants', {
+      en: 'Participants',
+      uk: 'Учасники',
+      de: 'Teilnehmende',
+      fr: 'Participants',
+      ar: 'المشاركون',
+    }),
+    builtin('coil', { en: 'COIL', uk: 'COIL', de: 'COIL', fr: 'COIL', ar: 'COIL' }),
+    builtin('join', {
+      en: 'How to join',
+      uk: 'Як долучитися',
+      de: 'Mitmachen',
+      fr: 'Comment nous rejoindre',
+      ar: 'كيفية الانضمام',
+    }),
+    builtin('moments', { en: 'Moments', uk: 'Моменти', de: 'Momente', fr: 'Moments', ar: 'لحظات' }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
   GLOBAL_COLLABORATION: [
-    builtin('partners', 'Partners', 'Партнери'),
-    builtin('highlight', 'Highlight', 'Акцент'),
-    builtin('formats', 'Formats', 'Формати'),
-    builtin('partnership', 'Partnership', 'Партнерство'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('partners', {
+      en: 'Partners',
+      uk: 'Партнери',
+      de: 'Partner',
+      fr: 'Partenaires',
+      ar: 'الشركاء',
+    }),
+    builtin('highlight', {
+      en: 'Highlight',
+      uk: 'Акцент',
+      de: 'Schwerpunkt',
+      fr: 'Temps fort',
+      ar: 'أبرز ما لدينا',
+    }),
+    builtin('formats', { en: 'Formats', uk: 'Формати', de: 'Formate', fr: 'Formats', ar: 'الصيغ' }),
+    builtin('partnership', {
+      en: 'Partnership',
+      uk: 'Партнерство',
+      de: 'Partnerschaft',
+      fr: 'Partenariat',
+      ar: 'الشراكة',
+    }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
   OPPORTUNITIES: [
-    builtin('events', 'Upcoming events', 'Найближчі події'),
-    builtin('audiences', 'Opportunities by role', 'Можливості за ролями'),
-    builtin('howItWorks', 'How it works', 'Як це працює'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('events', {
+      en: 'Upcoming events',
+      uk: 'Найближчі події',
+      de: 'Kommende Veranstaltungen',
+      fr: 'Événements à venir',
+      ar: 'الفعاليات القادمة',
+    }),
+    builtin('audiences', {
+      en: 'Opportunities by role',
+      uk: 'Можливості за ролями',
+      de: 'Möglichkeiten nach Rolle',
+      fr: 'Opportunités par profil',
+      ar: 'الفرص حسب الدور',
+    }),
+    builtin('howItWorks', {
+      en: 'How it works',
+      uk: 'Як це працює',
+      de: 'So funktioniert es',
+      fr: 'Comment ça marche',
+      ar: 'كيف يعمل',
+    }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
   RESEARCH_AREAS: [
-    builtin('areas', 'Research areas', 'Напрями досліджень'),
-    builtin('highlight', 'Highlight', 'Акцент'),
-    builtin('future', 'Future directions', 'Майбутні напрями'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('areas', {
+      en: 'Research areas',
+      uk: 'Напрями досліджень',
+      de: 'Forschungsbereiche',
+      fr: 'Domaines de recherche',
+      ar: 'مجالات البحث',
+    }),
+    builtin('highlight', {
+      en: 'Highlight',
+      uk: 'Акцент',
+      de: 'Schwerpunkt',
+      fr: 'Temps fort',
+      ar: 'أبرز ما لدينا',
+    }),
+    builtin('future', {
+      en: 'Future directions',
+      uk: 'Майбутні напрями',
+      de: 'Künftige Richtungen',
+      fr: 'Orientations futures',
+      ar: 'التوجهات المستقبلية',
+    }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
   STUDENT_RESEARCH: [
-    builtin('intro', 'Overview', 'Огляд'),
-    builtin('projects', 'Student projects', 'Студентські проєкти'),
-    builtin('start', 'How to start', 'Як почати'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('intro', {
+      en: 'Overview',
+      uk: 'Огляд',
+      de: 'Überblick',
+      fr: 'Aperçu',
+      ar: 'نظرة عامة',
+    }),
+    builtin('projects', {
+      en: 'Student projects',
+      uk: 'Студентські проєкти',
+      de: 'Studentische Projekte',
+      fr: 'Projets étudiants',
+      ar: 'مشاريع الطلاب',
+    }),
+    builtin('start', {
+      en: 'How to start',
+      uk: 'Як почати',
+      de: 'Erste Schritte',
+      fr: 'Comment commencer',
+      ar: 'كيف تبدأ',
+    }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
   EXPERIENTIAL_LEARNING: [
-    builtin('formats', 'Formats', 'Формати'),
-    builtin('approach', 'Approach', 'Підхід'),
-    builtin('outcomes', 'Outcomes', 'Результати'),
-    builtin('cta', 'Call to action', 'Заклик до дії'),
+    builtin('formats', { en: 'Formats', uk: 'Формати', de: 'Formate', fr: 'Formats', ar: 'الصيغ' }),
+    builtin('approach', {
+      en: 'Approach',
+      uk: 'Підхід',
+      de: 'Ansatz',
+      fr: 'Approche',
+      ar: 'النهج',
+    }),
+    builtin('outcomes', {
+      en: 'Outcomes',
+      uk: 'Результати',
+      de: 'Ergebnisse',
+      fr: 'Résultats',
+      ar: 'النتائج',
+    }),
+    builtin('cta', {
+      en: 'Call to action',
+      uk: 'Заклик до дії',
+      de: 'Handlungsaufruf',
+      fr: 'Appel à l’action',
+      ar: 'دعوة إلى العمل',
+    }),
   ],
-  CONTACT: [builtin('contact', 'Contact details', 'Контакти')],
+  CONTACT: [
+    builtin('contact', {
+      en: 'Contact details',
+      uk: 'Контакти',
+      de: 'Kontaktdaten',
+      fr: 'Coordonnées',
+      ar: 'بيانات الاتصال',
+    }),
+  ],
 } as const satisfies Partial<Record<keyof typeof ROUTES, readonly BuiltinSection[]>>;
 
 export type LayoutPage = keyof typeof PAGE_SECTIONS;
 
 export const PAGE_LABELS: Record<LayoutPage, LabelText> = {
-  HOME: { en: 'Home', uk: 'Головна' },
-  ABOUT_INITIATIVE: { en: 'About', uk: 'Про ініціативу' },
-  VIRATEC: { en: 'VIRaTeC', uk: 'VIRaTeC' },
-  GLOBAL_COLLABORATION: { en: 'Global collaboration', uk: 'Глобальна співпраця' },
-  OPPORTUNITIES: { en: 'Opportunities', uk: 'Можливості' },
-  RESEARCH_AREAS: { en: 'Research areas', uk: 'Напрями досліджень' },
-  STUDENT_RESEARCH: { en: 'Student research', uk: 'Студентські дослідження' },
-  EXPERIENTIAL_LEARNING: { en: 'Experiential learning', uk: 'Практичне навчання' },
-  CONTACT: { en: 'Contact', uk: 'Контакти' },
+  HOME: { en: 'Home', uk: 'Головна', de: 'Startseite', fr: 'Accueil', ar: 'الرئيسية' },
+  ABOUT_INITIATIVE: {
+    en: 'About',
+    uk: 'Про ініціативу',
+    de: 'Über die Initiative',
+    fr: 'À propos de l’initiative',
+    ar: 'عن المبادرة',
+  },
+  VIRATEC: { en: 'VIRaTeC', uk: 'VIRaTeC', de: 'VIRaTeC', fr: 'VIRaTeC', ar: 'VIRaTeC' },
+  GLOBAL_COLLABORATION: {
+    en: 'Global collaboration',
+    uk: 'Глобальна співпраця',
+    de: 'Globale Zusammenarbeit',
+    fr: 'Collaboration mondiale',
+    ar: 'التعاون العالمي',
+  },
+  OPPORTUNITIES: {
+    en: 'Opportunities',
+    uk: 'Можливості',
+    de: 'Möglichkeiten',
+    fr: 'Opportunités',
+    ar: 'الفرص',
+  },
+  RESEARCH_AREAS: {
+    en: 'Research areas',
+    uk: 'Напрями досліджень',
+    de: 'Forschungsbereiche',
+    fr: 'Domaines de recherche',
+    ar: 'مجالات البحث',
+  },
+  STUDENT_RESEARCH: {
+    en: 'Student research',
+    uk: 'Студентські дослідження',
+    de: 'Studentische Forschung',
+    fr: 'Recherche étudiante',
+    ar: 'البحث الطلابي',
+  },
+  EXPERIENTIAL_LEARNING: {
+    en: 'Experiential learning',
+    uk: 'Практичне навчання',
+    de: 'Erfahrungsbasiertes Lernen',
+    fr: 'Apprentissage expérientiel',
+    ar: 'التعلم التجريبي',
+  },
+  CONTACT: { en: 'Contact', uk: 'Контакти', de: 'Kontakt', fr: 'Contact', ar: 'اتصل بنا' },
 };
 
 export const LAYOUT_PAGES = Object.keys(PAGE_SECTIONS) as LayoutPage[];
@@ -111,7 +332,14 @@ export const SECTION_ROUTE_KEYS = [
 
 export type SectionRouteKey = (typeof SECTION_ROUTE_KEYS)[number];
 
-const text = z.object({ en: z.string().max(4000), uk: z.string().max(4000) });
+const localeText = z.string().max(4000);
+const text = z.object({
+  en: localeText,
+  uk: localeText.optional(),
+  de: localeText.optional(),
+  fr: localeText.optional(),
+  ar: localeText.optional(),
+});
 const routeKey = z.enum(SECTION_ROUTE_KEYS);
 const externalUrl = z
   .string()

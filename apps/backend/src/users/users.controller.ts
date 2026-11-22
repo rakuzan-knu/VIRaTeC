@@ -24,6 +24,7 @@ import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import { UpdatePrivacyDto } from './dto/update-privacy.dto';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { Client, type ClientContext } from '../common/decorators/client-context.decorator';
 import type { AuthenticatedUser } from '../security/authenticated-user';
 
 const memberId = (viewer: AuthenticatedUser | undefined) =>
@@ -80,9 +81,14 @@ export class UsersController {
   @ApiOperation({ summary: 'Permanently delete the current user account' })
   @ApiResponse({ status: 200, description: 'Account deleted' })
   @ApiResponse({ status: 400, description: 'Confirmation does not match the account email' })
-  @ApiResponse({ status: 403, description: 'Password is incorrect' })
-  async deleteAccount(@CurrentUser('id') userId: string, @Body() dto: DeleteAccountDto) {
-    return this.usersService.deleteAccount(userId, dto);
+  @ApiResponse({ status: 403, description: 'Identity confirmation failed' })
+  @ApiResponse({ status: 409, description: 'The last owner must transfer ownership first' })
+  async deleteAccount(
+    @CurrentUser('id') userId: string,
+    @Body() dto: DeleteAccountDto,
+    @Client() client: ClientContext,
+  ) {
+    return this.usersService.deleteAccount(userId, dto, client);
   }
 
   @Put('me/avatar')
@@ -112,10 +118,14 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'Avatar not found or profile hidden' })
   async getAvatar(
     @Param('id', ParseUUIDPipe) id: string,
-    @CurrentUser('id') viewerId: string | undefined,
+    @CurrentUser() viewer: AuthenticatedUser | undefined,
     @Res() reply: FastifyReply,
   ) {
-    const { data, mimeType, isPublic } = await this.usersService.findAvatar(id, viewerId ?? null);
+    const { data, mimeType, isPublic } = await this.usersService.findAvatar(
+      id,
+      memberId(viewer),
+      viewer?.id ?? null,
+    );
     return reply
       .header('Content-Type', mimeType)
       .header('Cache-Control', isPublic ? AVATAR_PUBLIC_CACHE : AVATAR_PRIVATE_CACHE)

@@ -26,7 +26,7 @@ function RoleTabs({ label, groups }: { label: string; groups: AudienceGroup[] })
 
   return (
     <nav aria-label={label} className="w-full pt-3">
-      <ul className="flex flex-wrap gap-2.5">
+      <ul className="flex flex-col items-start gap-2.5 sm:flex-row sm:flex-wrap">
         {groups.map((group) => {
           const isActive = group.id === activeId;
           return (

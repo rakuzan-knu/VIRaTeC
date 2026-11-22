@@ -3,6 +3,7 @@ import {
   ArrayMaxSize,
   IsArray,
   IsEnum,
+  IsIn,
   IsInt,
   IsObject,
   IsOptional,
@@ -19,7 +20,9 @@ import {
   OpenToOption,
   PROFILE_DETAIL_LIMITS,
   PROFILE_LIMITS,
+  SELF_ASSIGNABLE_ROLES,
   StudyLevel,
+  type UserRole,
 } from '@viratec/contracts';
 
 const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
@@ -32,6 +35,11 @@ export class UpdateProfileDto {
   @MinLength(PROFILE_LIMITS.nameMin)
   @MaxLength(PROFILE_LIMITS.nameMax)
   name?: string;
+
+  @ApiProperty({ enum: SELF_ASSIGNABLE_ROLES, required: false })
+  @IsOptional()
+  @IsIn(SELF_ASSIGNABLE_ROLES)
+  role?: UserRole;
 
   @ApiProperty({ enum: FacultyDivision, required: false })
   @IsOptional()

@@ -71,9 +71,19 @@ export const targetRange = (target: InlineField['target']) => {
 };
 
 const HIGHLIGHT_NAME = 'site-editor-inline';
+const HIGHLIGHT_STYLE_ID = 'site-editor-inline-highlight';
+
+const ensureHighlightStyle = () => {
+  if (document.getElementById(HIGHLIGHT_STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = HIGHLIGHT_STYLE_ID;
+  style.textContent = `::highlight(${HIGHLIGHT_NAME}) { color: transparent; }`;
+  document.head.append(style);
+};
 
 export const hideRange = (range: Range, element: Element) => {
   if (typeof CSS !== 'undefined' && 'highlights' in CSS) {
+    ensureHighlightStyle();
     CSS.highlights.set(HIGHLIGHT_NAME, new Highlight(range));
     return () => {
       CSS.highlights.delete(HIGHLIGHT_NAME);

@@ -74,8 +74,8 @@ export default () => {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
     },
-    anthropic: {
-      apiKey: process.env.ANTHROPIC_API_KEY?.trim() || '',
+    gemini: {
+      apiKey: process.env.GEMINI_API_KEY?.trim() || '',
     },
     mail: {
       from: process.env.MAIL_FROM?.trim() || '',
@@ -88,6 +88,15 @@ export default () => {
         clientSecret: process.env.GMAIL_CLIENT_SECRET?.trim() || '',
         refreshToken: process.env.GMAIL_REFRESH_TOKEN?.trim() || '',
       },
+    },
+    cron: {
+      secret: process.env.CRON_SECRET?.trim() || '',
+      qstashToken: process.env.QSTASH_TOKEN?.trim() || '',
+      qstashUrl: (process.env.QSTASH_URL?.trim() || 'https://qstash.upstash.io').replace(
+        /\/+$/,
+        '',
+      ),
+      eventMailDailyLimit: Number(process.env.EVENT_MAIL_DAILY_LIMIT) || 400,
     },
     redis: {
       url: process.env.REDIS_URL || 'redis://localhost:6379',
@@ -102,6 +111,9 @@ export default () => {
       locales: {
         en: process.env.CONTENTFUL_LOCALE_EN?.trim() || 'en',
         uk: process.env.CONTENTFUL_LOCALE_UK?.trim() || 'uk',
+        de: process.env.CONTENTFUL_LOCALE_DE?.trim() || 'de',
+        fr: process.env.CONTENTFUL_LOCALE_FR?.trim() || 'fr',
+        ar: process.env.CONTENTFUL_LOCALE_AR?.trim() || 'ar',
       },
     },
     s3: {

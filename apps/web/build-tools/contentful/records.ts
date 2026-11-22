@@ -65,7 +65,11 @@ export const pullHomePublications = async (
   }
   const cards = (locale: Locale) =>
     picked.map((dto) =>
-      toPublicationCard({ slug: dto.slug, year: dto.year, ...dto.content[locale] }),
+      toPublicationCard({
+        slug: dto.slug,
+        year: dto.year,
+        ...(dto.content[locale] ?? dto.content.en),
+      }),
     );
   return {
     file: HOME_PUBLICATIONS_FILE,

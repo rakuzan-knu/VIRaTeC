@@ -20,6 +20,24 @@ const NOT_FOUND_MESSAGES = defineMessages({
     description: 'Сторінка, яку ви шукаєте, не існує або була переміщена.',
     action: 'На головну',
   },
+  de: {
+    title: 'Seite nicht gefunden',
+    accent: 'Wir bringen Sie zurück.',
+    description: 'Die gesuchte Seite existiert nicht oder wurde verschoben.',
+    action: 'Zur Startseite',
+  },
+  fr: {
+    title: 'Page introuvable',
+    accent: 'Revenons sur nos pas.',
+    description: 'La page que vous cherchez n’existe pas ou a été déplacée.',
+    action: 'Retour à l’accueil',
+  },
+  ar: {
+    title: 'الصفحة غير موجودة',
+    accent: 'لنُعِدك إلى الطريق.',
+    description: 'الصفحة التي تبحث عنها غير موجودة أو تم نقلها.',
+    action: 'العودة إلى الرئيسية',
+  },
 });
 
 export function NotFoundPage() {

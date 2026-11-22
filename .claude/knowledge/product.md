@@ -11,7 +11,7 @@ Two parts:
 - **Public site** — about the initiative, research areas, projects, publications, people, opportunities, contacts, legal pages. Pages are prerendered at build time; marketing page copy comes from Contentful.
 - **Member platform** — registration and sign-in (email + password, Google), 2FA, sessions, profile and privacy, avatar, data export and account deletion, saved publications and projects, community (posts, likes), an admin panel for staff.
 
-The interface is bilingual: `en` (default) and `uk` (`apps/web/src/shared/i18n`). Public pages are prerendered twice: Ukrainian at the plain path and English under `/en` (`ENGLISH_ROUTES` in `shared/config/routes.ts`), linked with `hreflang`. Internal links stay unprefixed; the language from an `/en` URL is kept in the locale store.
+The interface defaults to `uk` until a visitor picks another language or opens an `/en` URL; translations live in `apps/web/src/shared/i18n`. Public pages are prerendered twice: Ukrainian at the plain path and English under `/en` (`ENGLISH_ROUTES` in `shared/config/routes.ts`), linked with `hreflang`. Internal links stay unprefixed; the language from an `/en` URL is kept in the locale store.
 
 ## Pages
 
@@ -25,6 +25,7 @@ Routes — `apps/web/src/shared/config/routes.ts` (`ROUTES`), router config — 
 | `/research/experiential-learning`, `/research/student-research`          | `experiential-learning`, `student-research`                                         |
 | `/publications`, `/publications/:slug`                                   | `publications`, `publication-detail`                                                |
 | `/people`, `/people/:userId`                                             | `people`, `person`                                                                  |
+| `/events`, `/events/:eventId`, `/events/unsubscribe`                     | `events`, `event-detail`, `event-unsubscribe`                                       |
 | `/opportunities`, `/contact`                                             | `opportunities`, `contact`                                                          |
 | `/terms`, `/privacy`, `/cookies`, `/community-guidelines`                | `legal`                                                                             |
 | `/login`, `/register`, `/forgot-password`                                | `login`, `register`, `forgot-password` (guest routes, `GuestRoute`)                 |
@@ -46,6 +47,7 @@ Schema — `apps/backend/prisma/schema.prisma`, migrations — `apps/backend/pri
 | `ResearchPaper`                              | research papers                                                                                                                                                            |
 | `Project`                                    | projects (`ProjectStatus`, faculties, tags, links, `translations` as JSON)                                                                                                 |
 | `Event`                                      | events (`EventType`, dates, venue, online)                                                                                                                                 |
+| `EventRegistration`, `EventNotification`     | event subscriptions and the queue of event emails                                                                                                                          |
 | `Publication`                                | publications and news by `slug`, content as JSON                                                                                                                           |
 | `CommunityPost`, `PostLike`                  | community posts and likes (one like per user)                                                                                                                              |
 

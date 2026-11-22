@@ -71,6 +71,60 @@ const FILTER_LABELS = defineMessages<FilterLabels>({
     },
     sort: { newest: 'Спочатку нові', oldest: 'Спочатку старі', az: 'А–Я' },
   },
+  de: {
+    area: {
+      [ALL]: 'Alle Bereiche',
+      Cybersecurity: 'Cybersicherheit',
+      'AI & NLP': 'KI & NLP',
+      'Data Analytics': 'Datenanalyse',
+      'Education & EdTech': 'Bildung & EdTech',
+      'Cross-cultural': 'Interkulturell',
+      Experiential: 'Erfahrungsbasiert',
+    },
+    status: {
+      [ALL]: 'Alle',
+      [ProjectStatus.IN_PROGRESS]: 'Laufend',
+      [ProjectStatus.COMPLETED]: 'Abgeschlossen',
+      [ProjectStatus.IDEA]: 'Geplant',
+    },
+    sort: { newest: 'Neueste zuerst', oldest: 'Älteste zuerst', az: 'A–Z' },
+  },
+  fr: {
+    area: {
+      [ALL]: 'Tous les domaines',
+      Cybersecurity: 'Cybersécurité',
+      'AI & NLP': 'IA & TAL',
+      'Data Analytics': 'Analyse de données',
+      'Education & EdTech': 'Éducation & EdTech',
+      'Cross-cultural': 'Interculturel',
+      Experiential: 'Expérientiel',
+    },
+    status: {
+      [ALL]: 'Tous',
+      [ProjectStatus.IN_PROGRESS]: 'En cours',
+      [ProjectStatus.COMPLETED]: 'Terminés',
+      [ProjectStatus.IDEA]: 'Prévus',
+    },
+    sort: { newest: 'Plus récents d’abord', oldest: 'Plus anciens d’abord', az: 'A–Z' },
+  },
+  ar: {
+    area: {
+      [ALL]: 'جميع المجالات',
+      Cybersecurity: 'الأمن السيبراني',
+      'AI & NLP': 'الذكاء الاصطناعي ومعالجة اللغة',
+      'Data Analytics': 'تحليل البيانات',
+      'Education & EdTech': 'التعليم وتقنياته',
+      'Cross-cultural': 'بين الثقافات',
+      Experiential: 'تجريبي',
+    },
+    status: {
+      [ALL]: 'الكل',
+      [ProjectStatus.IN_PROGRESS]: 'جارية',
+      [ProjectStatus.COMPLETED]: 'مكتملة',
+      [ProjectStatus.IDEA]: 'مخطط لها',
+    },
+    sort: { newest: 'الأحدث أولًا', oldest: 'الأقدم أولًا', az: 'أ–ي' },
+  },
 });
 
 const toOptions = <T extends string>(values: readonly T[], labels: Record<T, string>) =>

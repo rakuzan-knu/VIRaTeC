@@ -18,6 +18,7 @@ import {
 import {
   CONTENT_EDITOR_LIMITS,
   PRESENCE_LIMITS,
+  CONTENT_LOCALE_KEYS,
   TRANSLATION_LIMITS,
   type ContentFields,
   type ContentLocaleKey,
@@ -100,8 +101,6 @@ export class PublishContentDto {
   @IsUUID('4', { each: true })
   changeIds?: string[];
 }
-
-const CONTENT_LOCALE_KEYS: readonly ContentLocaleKey[] = ['en', 'uk'];
 
 export class UpdatePresenceDto {
   @ApiProperty({ type: [String], example: ['entry:3xYp9', 'record:project:2f1c'] })

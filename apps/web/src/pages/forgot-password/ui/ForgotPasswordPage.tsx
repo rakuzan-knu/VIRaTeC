@@ -22,6 +22,33 @@ const FORGOT_PASSWORD_MESSAGES = defineMessages({
     badgeTitle: 'Захищене відновлення доступу',
     badgeSubtitle: 'VIRATEC · ІДЕНТИФІКАЦІЯ КНУ',
   },
+  de: {
+    documentTitle: 'Passwort zurücksetzen',
+    title: 'Zugang wiederherstellen.',
+    accent: 'Damit Ihre Forschung weiterläuft.',
+    description:
+      'Sichere Kontowiederherstellung für die internationale Forschungs- und Bildungsgemeinschaft der Taras-Schewtschenko-Nationaluniversität Kyjiw.',
+    badgeTitle: 'Geschützte Kontowiederherstellung',
+    badgeSubtitle: 'VIRATEC · KNU IDENTITY',
+  },
+  fr: {
+    documentTitle: 'Réinitialiser le mot de passe',
+    title: 'Récupérez votre accès.',
+    accent: 'Poursuivez vos recherches.',
+    description:
+      'Récupération sécurisée du compte pour la communauté internationale de recherche et d’enseignement de l’Université nationale Taras Chevtchenko de Kyiv.',
+    badgeTitle: 'Récupération de compte protégée',
+    badgeSubtitle: 'VIRATEC · KNU IDENTITY',
+  },
+  ar: {
+    documentTitle: 'إعادة تعيين كلمة المرور',
+    title: 'استعد وصولك.',
+    accent: 'واصل أبحاثك.',
+    description:
+      'استعادة آمنة للحساب لمجتمع البحث والتعليم الدولي في جامعة كييف الوطنية تاراس شيفتشينكو.',
+    badgeTitle: 'استعادة محمية للحساب',
+    badgeSubtitle: 'VIRATEC · KNU IDENTITY',
+  },
 });
 
 export function ForgotPasswordPage() {

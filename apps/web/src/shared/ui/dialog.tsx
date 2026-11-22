@@ -1,6 +1,12 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
-import { cn } from '@/shared/lib';
+import { cn, useBodyScrollLock } from '@/shared/lib';
+
+const restoreFocus = (target: { current: HTMLElement | null }) => {
+  const element = target.current;
+  target.current = null;
+  if (element?.isConnected) element.focus({ preventScroll: true });
+};
 
 interface DialogProps {
   open: boolean;
@@ -22,18 +28,28 @@ export function Dialog({
   className,
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const descriptionId = useId();
+
+  useBodyScrollLock(open);
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     if (open && !dialog.open) {
+      returnFocusRef.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
       dialog.showModal();
       (dialog.querySelector<HTMLElement>('[data-autofocus]') ?? dialog).focus();
     }
-    if (!open && dialog.open) dialog.close();
+    if (!open && dialog.open) {
+      dialog.close();
+      restoreFocus(returnFocusRef);
+    }
   }, [open]);
+
+  useEffect(() => () => restoreFocus(returnFocusRef), []);
 
   return (
     <dialog

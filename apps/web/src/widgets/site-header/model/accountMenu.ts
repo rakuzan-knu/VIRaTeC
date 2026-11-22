@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Bookmark, Eye, LayoutDashboard, LogOut, PencilRuler, UserRound } from 'lucide-react';
 import { AdminPermission, StaffRole } from '@viratec/contracts';
 import { useKnownAccounts, useSessionStore } from '@/entities/session';
@@ -46,6 +47,57 @@ const ACCOUNT_MENU_MESSAGES = defineMessages({
     manageAccounts: 'Керувати обліковими записами',
     signOut: 'Вийти',
   },
+  de: {
+    accountMenu: 'Kontomenü',
+    openAccountMenu: (name: string) => `Kontomenü für ${name}`,
+    myAccount: 'Mein Konto',
+    profile: 'Profil bearbeiten',
+    publicProfile: 'Mein öffentliches Profil',
+    saved: 'Gespeichert',
+    adminPanel: 'Adminbereich',
+    siteEditor: 'Website bearbeiten',
+    switchAccount: 'Konto wechseln',
+    accountsOnDevice: 'Konten auf diesem Gerät',
+    current: 'Aktuell',
+    switchTo: (name: string) => `Zu ${name} wechseln`,
+    addAccount: 'Weiteres Konto hinzufügen',
+    manageAccounts: 'Konten verwalten',
+    signOut: 'Abmelden',
+  },
+  fr: {
+    accountMenu: 'Menu du compte',
+    openAccountMenu: (name: string) => `Menu du compte de ${name}`,
+    myAccount: 'Mon compte',
+    profile: 'Modifier le profil',
+    publicProfile: 'Mon profil public',
+    saved: 'Enregistrés',
+    adminPanel: 'Administration',
+    siteEditor: 'Modifier le site',
+    switchAccount: 'Changer de compte',
+    accountsOnDevice: 'Comptes sur cet appareil',
+    current: 'Actuel',
+    switchTo: (name: string) => `Passer à ${name}`,
+    addAccount: 'Ajouter un autre compte',
+    manageAccounts: 'Gérer les comptes',
+    signOut: 'Se déconnecter',
+  },
+  ar: {
+    accountMenu: 'قائمة الحساب',
+    openAccountMenu: (name: string) => `قائمة حساب ${name}`,
+    myAccount: 'حسابي',
+    profile: 'تعديل الملف الشخصي',
+    publicProfile: 'ملفي الشخصي العام',
+    saved: 'المحفوظات',
+    adminPanel: 'لوحة الإدارة',
+    siteEditor: 'تعديل الموقع',
+    switchAccount: 'تبديل الحساب',
+    accountsOnDevice: 'الحسابات على هذا الجهاز',
+    current: 'الحالي',
+    switchTo: (name: string) => `التبديل إلى ${name}`,
+    addAccount: 'إضافة حساب آخر',
+    manageAccounts: 'إدارة الحسابات',
+    signOut: 'تسجيل الخروج',
+  },
 });
 
 export interface AccountMenuLink {
@@ -62,6 +114,8 @@ export function useAccountMenu() {
   const isStaff = Boolean(user && user.staffRole !== StaffRole.NONE);
   const canEditSite = Boolean(user?.permissions.includes(AdminPermission.CONTENT_VIEW));
   const { mutate: logout, isPending: isSigningOut } = useLogout();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const links = useMemo<AccountMenuLink[]>(
     () => [
@@ -87,7 +141,7 @@ export function useAccountMenu() {
     manageAccountsTo: buildAccountPath('accounts'),
     signOut: () => logout({ to: ROUTES.HOME }),
     switchTo: (email?: string) =>
-      logout({ to: ROUTES.LOGIN, state: email ? { email } : undefined }),
+      navigate(ROUTES.LOGIN, { state: { email, addAccount: true, from: location.pathname } }),
     isSigningOut,
     signOutIcon: LogOut,
   };

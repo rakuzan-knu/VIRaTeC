@@ -13,7 +13,10 @@ export const ProjectTextSchema = z.object({
 
 export const ProjectTranslationsSchema = z.object({
   en: ProjectTextSchema,
-  uk: ProjectTextSchema,
+  uk: ProjectTextSchema.optional(),
+  de: ProjectTextSchema.optional(),
+  fr: ProjectTextSchema.optional(),
+  ar: ProjectTextSchema.optional(),
 });
 
 export type ProjectTranslations = z.infer<typeof ProjectTranslationsSchema>;

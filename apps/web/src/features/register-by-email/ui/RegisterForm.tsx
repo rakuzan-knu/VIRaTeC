@@ -2,7 +2,8 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation } from 'react-router-dom';
-import { readAuthNavigationState } from '@/entities/session';
+import { SELF_ASSIGNABLE_ROLES, UserRole } from '@viratec/contracts';
+import { readAuthNavigationState, useAccountLabels } from '@/entities/session';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { defineMessages, useCommonMessages, useLocalized } from '@/shared/i18n';
@@ -22,7 +23,8 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'Full name',
     fullNamePlaceholder: 'Enter your full name',
     passwordPlaceholder: 'At least 8 characters',
-    agreePrefix: 'I agree to the',
+    role: 'Your role',
+    agreePrefix: 'I am at least 16 or have a guardian’s consent, and I agree to the',
     agreeAnd: 'and',
     termsLink: 'Terms of Service',
     privacyLink: 'Privacy Policy',
@@ -47,7 +49,8 @@ const REGISTER_MESSAGES = defineMessages({
     fullName: 'Повне ім’я',
     fullNamePlaceholder: 'Введіть своє повне ім’я',
     passwordPlaceholder: 'Щонайменше 8 символів',
-    agreePrefix: 'Я погоджуюся з',
+    role: 'Ваша роль',
+    agreePrefix: 'Мені виповнилося 16 років або я маю згоду батьків чи опікуна, і я погоджуюся з',
     agreeAnd: 'та',
     termsLink: 'Умовами використання',
     privacyLink: 'Політикою конфіденційності',
@@ -64,6 +67,87 @@ const REGISTER_MESSAGES = defineMessages({
       invalidEmail: 'Введіть коректну адресу електронної пошти',
       passwordMin: 'Пароль має містити щонайменше 8 символів',
       termsRequired: 'Потрібно погодитися з Умовами використання та Політикою конфіденційності',
+    },
+  },
+  de: {
+    title: 'Los geht’s',
+    subtitle: 'Werden Sie Teil der VIRaTeC-Forschungsgemeinschaft.',
+    fullName: 'Vollständiger Name',
+    fullNamePlaceholder: 'Vollständigen Namen eingeben',
+    passwordPlaceholder: 'Mindestens 8 Zeichen',
+    role: 'Ihre Rolle',
+    agreePrefix:
+      'Ich bin mindestens 16 Jahre alt oder habe die Zustimmung eines Erziehungsberechtigten und akzeptiere die',
+    agreeAnd: 'und die',
+    termsLink: 'Nutzungsbedingungen',
+    privacyLink: 'Datenschutzerklärung',
+    submit: 'Neues Konto erstellen',
+    haveAccount: 'Sie haben bereits ein Konto?',
+    accountExists: 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.',
+    accountExistsSignIn: 'Anmelden',
+    accountExistsReset: 'Passwort zurücksetzen',
+    tooMany: 'Zu viele Registrierungsversuche. Versuchen Sie es in einer Stunde erneut.',
+    invalidData: 'Ungültige Registrierungsdaten. Bitte prüfen Sie Ihre Eingaben.',
+    unexpectedError:
+      'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+    validation: {
+      nameMin: 'Der Name muss mindestens 2 Zeichen lang sein',
+      invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+      passwordMin: 'Das Passwort muss mindestens 8 Zeichen lang sein',
+      termsRequired: 'Sie müssen den Nutzungsbedingungen und der Datenschutzerklärung zustimmen',
+    },
+  },
+  fr: {
+    title: 'Commencer',
+    subtitle: 'Rejoignez la communauté de recherche VIRaTeC.',
+    fullName: 'Nom complet',
+    fullNamePlaceholder: 'Saisissez votre nom complet',
+    passwordPlaceholder: 'Au moins 8 caractères',
+    role: 'Votre rôle',
+    agreePrefix: 'J’ai au moins 16 ans ou l’accord d’un parent ou tuteur, et j’accepte les',
+    agreeAnd: 'et la',
+    termsLink: 'Conditions d’utilisation',
+    privacyLink: 'Politique de confidentialité',
+    submit: 'Créer un nouveau compte',
+    haveAccount: 'Vous avez déjà un compte ?',
+    accountExists: 'Un compte avec cette adresse e-mail existe déjà.',
+    accountExistsSignIn: 'Se connecter',
+    accountExistsReset: 'Réinitialiser le mot de passe',
+    tooMany: 'Trop de tentatives d’inscription. Réessayez dans une heure.',
+    invalidData: 'Données d’inscription invalides. Veuillez vérifier vos saisies.',
+    unexpectedError: 'Une erreur inattendue s’est produite. Veuillez réessayer plus tard.',
+    validation: {
+      nameMin: 'Le nom doit comporter au moins 2 caractères',
+      invalidEmail: 'Veuillez saisir une adresse e-mail valide',
+      passwordMin: 'Le mot de passe doit comporter au moins 8 caractères',
+      termsRequired:
+        'Vous devez accepter les Conditions d’utilisation et la Politique de confidentialité',
+    },
+  },
+  ar: {
+    title: 'ابدأ الآن',
+    subtitle: 'انضم إلى مجتمع VIRaTeC البحثي.',
+    fullName: 'الاسم الكامل',
+    fullNamePlaceholder: 'أدخل اسمك الكامل',
+    passwordPlaceholder: '8 أحرف على الأقل',
+    role: 'دورك',
+    agreePrefix: 'عمري 16 عامًا على الأقل أو لدي موافقة ولي الأمر، وأوافق على',
+    agreeAnd: 'و',
+    termsLink: 'شروط الخدمة',
+    privacyLink: 'سياسة الخصوصية',
+    submit: 'إنشاء حساب جديد',
+    haveAccount: 'لديك حساب بالفعل؟',
+    accountExists: 'يوجد حساب بهذا البريد الإلكتروني بالفعل.',
+    accountExistsSignIn: 'تسجيل الدخول',
+    accountExistsReset: 'إعادة تعيين كلمة المرور',
+    tooMany: 'محاولات تسجيل كثيرة جدًا. حاول مرة أخرى بعد ساعة.',
+    invalidData: 'بيانات التسجيل غير صالحة. يُرجى التحقق من المدخلات.',
+    unexpectedError: 'حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.',
+    validation: {
+      nameMin: 'يجب ألا يقل الاسم عن حرفين',
+      invalidEmail: 'يُرجى إدخال بريد إلكتروني صالح',
+      passwordMin: 'يجب ألا تقل كلمة المرور عن 8 أحرف',
+      termsRequired: 'يجب أن توافق على شروط الخدمة وسياسة الخصوصية',
     },
   },
 });
@@ -84,14 +168,23 @@ const FIELD_ERROR_CLASS = 'text-xs text-auth-error';
 
 interface RegisterFormProps {
   socialAuth?: ReactNode;
+  renderVerification?: (email: string, onContinue: () => void) => ReactNode;
 }
 
-export function RegisterForm({ socialAuth }: RegisterFormProps) {
+export function RegisterForm({ socialAuth, renderVerification }: RegisterFormProps) {
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate: register, isPending, error, variables } = useRegister();
+  const {
+    mutate: register,
+    isPending,
+    error,
+    variables,
+    unverifiedUser,
+    continueAfterVerification,
+  } = useRegister({ holdUnverified: Boolean(renderVerification) });
   const t = useLocalized(REGISTER_MESSAGES);
   const common = useCommonMessages();
+  const labels = useAccountLabels();
   const schema = useMemo(() => createRegisterFormSchema(t.validation), [t]);
 
   const {
@@ -103,6 +196,7 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
     defaultValues: {
       name: '',
       email: '',
+      role: UserRole.STUDENT,
       password: '',
       terms: false,
     },
@@ -110,6 +204,10 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
 
   const serverErrorMessage = getErrorMessage(error, t, common.networkError);
   const isAccountTaken = error instanceof ApiError && error.status === 409;
+
+  if (unverifiedUser && renderVerification) {
+    return renderVerification(unverifiedUser.email, continueAfterVerification);
+  }
 
   return (
     <div className="w-full space-y-5 lg:space-y-[clamp(8px,1.4svh,20px)]">
@@ -205,6 +303,23 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
         </div>
 
         <div className="space-y-1.5">
+          <label htmlFor="register-role" className={LABEL_CLASS}>
+            {t.role}
+          </label>
+          <select
+            id="register-role"
+            {...registerField('role')}
+            className="h-[54px] w-full cursor-pointer rounded-lg border border-auth-border bg-white px-3.5 text-base text-auth-heading outline-hidden transition-[border-color,box-shadow] focus:border-auth-progress focus:ring-1 focus:ring-auth-progress lg:h-[clamp(40px,6svh,54px)]"
+          >
+            {SELF_ASSIGNABLE_ROLES.map((role) => (
+              <option key={role} value={role}>
+                {labels.role[role]}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-1.5">
           <label htmlFor="register-password" className={LABEL_CLASS}>
             {common.password}
           </label>
@@ -217,11 +332,11 @@ export function RegisterForm({ socialAuth }: RegisterFormProps) {
               placeholder={t.passwordPlaceholder}
               error={!!errors.password}
               aria-describedby={errors.password ? 'register-password-error' : undefined}
-              className="h-[54px] lg:h-[clamp(40px,6svh,54px)] pr-14 text-base"
+              className="h-[54px] lg:h-[clamp(40px,6svh,54px)] pe-14 text-base"
             />
             <Tooltip
               text={showPassword ? common.hidePassword : common.showPassword}
-              className="absolute right-2 top-1/2 -translate-y-1/2"
+              className="absolute end-2 top-1/2 -translate-y-1/2"
             >
               <button
                 type="button"

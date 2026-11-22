@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE } from '../../src/shared/i18n/model/types.ts';
+import { DEFAULT_LOCALE, LANGUAGE_NAMES, LOCALES } from '../../src/shared/i18n/model/types.ts';
 import { CONTENT_TYPES } from './domains/index.ts';
 import { readManagementConfig, type ContentfulConfig } from './env.ts';
 import { createManagementClient, type ManagementClient } from './management.ts';
@@ -8,19 +8,30 @@ const checkLocales = async (client: ManagementClient, config: ContentfulConfig) 
   const locales = await client.listLocales();
   const defaultCode = config.locales[DEFAULT_LOCALE];
   const defaultLocale = locales.find((locale) => locale.default);
-  const uk = locales.find((locale) => locale.code === config.locales.uk);
+  const translated = LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
+  for (const locale of translated) {
+    const code = config.locales[locale];
+    if (locales.some((item) => item.code === code)) continue;
+    await client.createLocale(code, LANGUAGE_NAMES[locale], defaultCode);
+    console.log(`Locale ${code} created with fallback to ${defaultCode}`);
+  }
+  const current = await client.listLocales();
   const problems = [
     defaultLocale?.code !== defaultCode &&
       `the default locale must be "${defaultCode}", found "${defaultLocale?.code ?? 'none'}"`,
-    !uk && `locale "${config.locales.uk}" does not exist`,
-    uk &&
-      uk.fallbackCode !== defaultCode &&
-      `locale "${config.locales.uk}" must fall back to "${defaultCode}"`,
+    ...translated.map((locale) => {
+      const code = config.locales[locale];
+      const found = current.find((item) => item.code === code);
+      if (!found) return `locale "${code}" does not exist`;
+      return found.fallbackCode === defaultCode
+        ? false
+        : `locale "${code}" must fall back to "${defaultCode}"`;
+    }),
   ].filter((problem): problem is string => typeof problem === 'string');
 
   if (problems.length > 0) {
     throw new Error(
-      `Contentful locales are not set up: ${problems.join('; ')}. Fix them in Settings → Locales or set CONTENTFUL_LOCALE_EN / CONTENTFUL_LOCALE_UK.`,
+      `Contentful locales are not set up: ${problems.join('; ')}. Fix them in Settings → Locales or set the CONTENTFUL_LOCALE_* variables.`,
     );
   }
 };

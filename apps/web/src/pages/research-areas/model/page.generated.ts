@@ -22,18 +22,21 @@ export const PAGE_TEXT: Localized<ResearchAreasContent> = {
         description:
           'Cyber risks, business intelligence and cyber hygiene, studied by international student teams in certified COIL modules.',
         image: asset_researchareaspage_areas_1_image,
+        imageAlt: '',
       },
       {
         title: 'NLP & AI',
         description:
           'Foundations of NLP: from text preprocessing to sentiment analysis, with 206 students from 8 universities.',
         image: asset_researchareaspage_areas_2_image,
+        imageAlt: '',
       },
       {
         title: 'Education & EdTech',
         description:
           'COIL, virtual exchange and Research-Based Learning that turn students into researchers and global citizens.',
         image: asset_researchareaspage_areas_3_image,
+        imageAlt: '',
       },
     ],
     bannerTitle: 'Every area is explored by mixed international teams.',
@@ -83,18 +86,21 @@ export const PAGE_TEXT: Localized<ResearchAreasContent> = {
         description:
           'Кіберризики, бізнес-аналітика та кібергігієна, які вивчають міжнародні студентські команди в сертифікованих COIL-модулях.',
         image: asset_researchareaspage_areas_1_image,
+        imageAlt: '',
       },
       {
         title: 'NLP та ШІ',
         description:
           'Foundations of NLP: від попередньої обробки тексту до аналізу тональності — 206 студентів із 8 університетів.',
         image: asset_researchareaspage_areas_2_image,
+        imageAlt: '',
       },
       {
         title: 'Освіта та EdTech',
         description:
           'COIL, віртуальний обмін і Research-Based Learning, що перетворюють студентів на дослідників і громадян світу.',
         image: asset_researchareaspage_areas_3_image,
+        imageAlt: '',
       },
     ],
     bannerTitle: 'Кожен напрям досліджують змішані міжнародні команди.',

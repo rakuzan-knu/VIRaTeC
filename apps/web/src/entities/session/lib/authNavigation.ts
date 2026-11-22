@@ -1,6 +1,7 @@
 export interface AuthNavigationState {
   from?: string;
   email?: string;
+  addAccount?: boolean;
 }
 
 export const readAuthNavigationState = (state: unknown): AuthNavigationState => {
@@ -14,5 +15,6 @@ export const readAuthNavigationState = (state: unknown): AuthNavigationState => 
         ? record.from
         : undefined,
     email: typeof record.email === 'string' ? record.email : undefined,
+    addAccount: record.addAccount === true ? true : undefined,
   };
 };

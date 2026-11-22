@@ -6,6 +6,7 @@ import {
   fetchAdminUsers,
   fetchAuditLog,
   fetchContentList,
+  fetchEventAttendees,
   revokeStaffAccess,
   revokeUserSessions,
   setUserBlocked,
@@ -19,6 +20,7 @@ export const adminKeys = {
   metrics: () => [...adminKeys.all, 'metrics'] as const,
   users: (query: AdminUsersQuery) => [...adminKeys.all, 'users', query] as const,
   audit: (page: number, action: string) => [...adminKeys.all, 'audit', page, action] as const,
+  eventAttendees: (eventId: string) => [...adminKeys.all, 'event-attendees', eventId] as const,
   content: (resource?: RecordResource) =>
     resource
       ? ([...adminKeys.all, 'content', resource] as const)
@@ -33,6 +35,14 @@ export const useAdminCapabilities = () =>
   useQuery({
     queryKey: adminKeys.capabilities(),
     queryFn: fetchAdminCapabilities,
+    retry: noRetryOnAuthErrors,
+  });
+
+export const useEventAttendees = (eventId: string, enabled: boolean) =>
+  useQuery({
+    queryKey: adminKeys.eventAttendees(eventId),
+    queryFn: () => fetchEventAttendees(eventId),
+    enabled,
     retry: noRetryOnAuthErrors,
   });
 

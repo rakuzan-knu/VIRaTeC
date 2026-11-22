@@ -9,7 +9,7 @@ import {
   type ContentTypeDefinition,
 } from '../content-types.ts';
 import { createReader, nonEmpty } from '../entry-reader.ts';
-import type { ContentDomain } from '../domain.ts';
+import { buildLocalized, type ContentDomain } from '../domain.ts';
 
 const TYPE_ID = 'siteSettings';
 
@@ -89,9 +89,11 @@ export const siteSettingsDomain: ContentDomain = {
         tagline: reader.require('footerTagline', nonEmpty, locale),
         copyright: reader.require('footerCopyright', nonEmpty, locale),
       });
-    const en = readFooter('en');
-    const uk = readFooter('uk');
-    if (!contactEmail || !en.success || !uk.success) return [];
+    const footer = buildLocalized((locale) => {
+      const parsed = readFooter(locale);
+      return parsed.success ? parsed.data : undefined;
+    });
+    if (!contactEmail || !footer) return [];
 
     const social = (key: SocialLinkKey) => reader.read(SOCIAL_FIELDS[key].id, nonEmpty) ?? null;
     const settings: SiteSettings = {
@@ -104,7 +106,7 @@ export const siteSettingsDomain: ContentDomain = {
         scopus: social('scopus'),
         googleScholar: social('googleScholar'),
       },
-      footer: { en: en.data, uk: uk.data },
+      footer,
     };
 
     return [

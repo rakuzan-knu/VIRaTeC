@@ -5,6 +5,7 @@ import { OAuth2Client } from 'google-auth-library';
 const GMAIL_SEND_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send';
 const REQUEST_TIMEOUT_MS = 10_000;
 const UNSAFE_HEADER_PATTERN = /[\r\n]/;
+const ALTERNATIVE_BOUNDARY = 'viratec_alternative_part';
 
 export interface MailConfig {
   from: string;
@@ -20,24 +21,48 @@ export interface MailMessage {
   to: string;
   subject: string;
   text: string;
+  html?: string;
+  headers?: Record<string, string>;
 }
 
 const encodeHeader = (value: string) =>
   `=?UTF-8?B?${Buffer.from(value, 'utf8').toString('base64')}?=`;
 
-export function buildMimeMessage(from: string, { to, subject, text }: MailMessage) {
-  if ([from, to, subject].some((value) => UNSAFE_HEADER_PATTERN.test(value))) {
+const encodeBody = (value: string) => Buffer.from(value, 'utf8').toString('base64');
+
+const bodyPart = (contentType: string, body: string) => [
+  `Content-Type: ${contentType}; charset=UTF-8`,
+  'Content-Transfer-Encoding: base64',
+  '',
+  encodeBody(body),
+];
+
+export function buildMimeMessage(from: string, message: MailMessage) {
+  const { to, subject, text, html, headers = {} } = message;
+  const extraHeaders = Object.entries(headers);
+  if (
+    [from, to, subject, ...extraHeaders.flat()].some((value) => UNSAFE_HEADER_PATTERN.test(value))
+  ) {
     throw new Error('Mail headers must not contain line breaks');
   }
-  return [
+  const envelope = [
     `From: ${from}`,
     `To: ${to}`,
     `Subject: ${encodeHeader(subject)}`,
+    ...extraHeaders.map(([name, value]) => `${name}: ${value}`),
     'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
+  ];
+  if (html === undefined) return [...envelope, ...bodyPart('text/plain', text)].join('\r\n');
+  return [
+    ...envelope,
+    `Content-Type: multipart/alternative; boundary="${ALTERNATIVE_BOUNDARY}"`,
     '',
-    Buffer.from(text, 'utf8').toString('base64'),
+    `--${ALTERNATIVE_BOUNDARY}`,
+    ...bodyPart('text/plain', text),
+    `--${ALTERNATIVE_BOUNDARY}`,
+    ...bodyPart('text/html', html),
+    `--${ALTERNATIVE_BOUNDARY}--`,
+    '',
   ].join('\r\n');
 }
 

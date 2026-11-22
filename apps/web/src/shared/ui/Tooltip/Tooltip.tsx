@@ -80,7 +80,7 @@ export function Tooltip({
           >
             {text}
             {shortcut && (
-              <kbd className="ml-2 rounded-sm border border-current/25 px-1.5 py-px font-sans text-[11px] leading-4 opacity-70">
+              <kbd className="ms-2 rounded-sm border border-current/25 px-1.5 py-px font-sans text-[11px] leading-4 opacity-70">
                 {shortcut.label}
               </kbd>
             )}

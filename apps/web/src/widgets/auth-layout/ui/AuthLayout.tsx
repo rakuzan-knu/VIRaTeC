@@ -39,6 +39,38 @@ const AUTH_LAYOUT_MESSAGES = defineMessages({
     copyright: '© 2026 VIRaTeC КНУ',
     backToHome: 'На головну',
   },
+  de: {
+    eyebrow: 'VIRaTeC Global Network',
+    title: ['Verbinden Sie Ihre', 'Ideen'],
+    accent: ['mit dem globalen', 'Netzwerk.'],
+    description:
+      'Werden Sie Teil einer internationalen Forschungs- und Bildungsgemeinschaft an der Taras-Schewtschenko-Nationaluniversität Kyjiw.',
+    badgeTitle: 'Sichere akademische Gemeinschaft',
+    badgeSubtitle: 'KNU · KYJIW, UKRAINE',
+    copyright: '© 2026 VIRaTeC KNU',
+    backToHome: 'Zur Startseite',
+  },
+  fr: {
+    eyebrow: 'Réseau mondial VIRaTeC',
+    title: ['Connectez vos', 'idées'],
+    accent: ['au réseau', 'mondial.'],
+    description:
+      'Rejoignez une communauté internationale de recherche et d’enseignement née à l’Université nationale Taras Chevtchenko de Kyiv.',
+    badgeTitle: 'Communauté académique sécurisée',
+    badgeSubtitle: 'KNU · KYIV, UKRAINE',
+    copyright: '© 2026 VIRaTeC KNU',
+    backToHome: 'Retour à l’accueil',
+  },
+  ar: {
+    eyebrow: 'شبكة VIRaTeC العالمية',
+    title: ['اربط', 'أفكارك'],
+    accent: ['بالشبكة', 'العالمية.'],
+    description: 'انضم إلى مجتمع دولي للبحث والتعليم نشأ في جامعة كييف الوطنية تاراس شيفتشينكو.',
+    badgeTitle: 'مجتمع أكاديمي آمن',
+    badgeSubtitle: 'KNU · كييف، أوكرانيا',
+    copyright: '© 2026 VIRaTeC KNU',
+    backToHome: 'العودة إلى الرئيسية',
+  },
 });
 
 function TwoLines({ lines }: { lines: string[] }) {
@@ -92,7 +124,7 @@ export function AuthLayout({
           </div>
 
           {/* Bottom Badge */}
-          <div className="relative z-10 mt-12 lg:mt-6 bg-auth-overlay rounded-[14px] p-[10px] pr-[18px] border border-white/20 flex items-center gap-[14px] w-fit shadow-lg">
+          <div className="relative z-10 mt-12 lg:mt-6 bg-auth-overlay rounded-[14px] p-[10px] pe-[18px] border border-white/20 flex items-center gap-[14px] w-fit shadow-lg">
             <div className="w-12 h-12 rounded-[10px] bg-auth-banner border border-white/10 flex items-center justify-center p-1.5 shrink-0">
               <LogoMark className="size-full" />
             </div>

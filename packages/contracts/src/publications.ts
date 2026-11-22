@@ -46,7 +46,10 @@ export type PublicationText = z.infer<typeof PublicationTextSchema>;
 
 export const PublicationContentSchema = z.object({
   en: PublicationTextSchema,
-  uk: PublicationTextSchema,
+  uk: PublicationTextSchema.optional(),
+  de: PublicationTextSchema.optional(),
+  fr: PublicationTextSchema.optional(),
+  ar: PublicationTextSchema.optional(),
 });
 
 export type PublicationContent = z.infer<typeof PublicationContentSchema>;
