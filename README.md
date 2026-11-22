@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/subvincdebian/subvincdebian/228fedbb64bbc9c14d464b63a747f10ad5449c71/assets/repo-VIRaTeC.svg" alt="VIRaTeC project overview" width="100%" />
+<img src="apps/web/public/social-cover-20261106.jpg" alt="VIRaTeC — research and learning" width="100%" />
 
 # VIRaTeC
 
