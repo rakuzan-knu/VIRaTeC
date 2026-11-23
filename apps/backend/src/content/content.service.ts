@@ -15,6 +15,18 @@ const ENTRY_KEY_PREFIX = 'entry:';
 const JSON_PATH_MARKER = '#';
 const isEmptyValue = (value: unknown) => value === undefined || value === null || value === '';
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const readPath = (value: unknown, path: string): unknown => {
+  let node: unknown = value;
+  for (const key of path.split('.')) {
+    if (!isRecord(node) && !Array.isArray(node)) return undefined;
+    node = (node as Record<string, unknown>)[key];
+  }
+  return node;
+};
+
 interface ContentfulPage {
   total: number;
   items: ContentfulItem[];
@@ -156,14 +168,23 @@ export class ContentService {
     }
 
     for (const row of rows) {
-      if (isEmptyValue(row.value) || row.path.includes(JSON_PATH_MARKER)) continue;
+      if (isEmptyValue(row.value)) continue;
       const code = codes[row.locale];
       if (!code) continue;
       const entry = byId.get(row.resourceKey.slice(ENTRY_KEY_PREFIX.length));
       const fields = entry?.fields as Record<string, Record<string, unknown>> | undefined;
       if (!fields) continue;
-      const field = (fields[row.path] ??= {});
-      if (isEmptyValue(field[code])) field[code] = row.value;
+      const [fieldId, jsonPath] = row.path.split(JSON_PATH_MARKER);
+      if (jsonPath === undefined) {
+        const field = (fields[fieldId] ??= {});
+        if (isEmptyValue(field[code])) field[code] = row.value;
+        continue;
+      }
+      const json = fields[fieldId]?.[codes.en];
+      if (!isRecord(json)) continue;
+      const map = readPath(json, jsonPath);
+      if (!isRecord(map)) continue;
+      if (isEmptyValue(map[code])) map[code] = row.value;
     }
   }
 

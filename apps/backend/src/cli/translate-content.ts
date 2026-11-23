@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { ContentResourceType } from '@prisma/client';
 import { RECORD_RESOURCES, type ContentFields, type RecordResource } from '@viratec/contracts';
 import { AppModule } from '../app.module';
 import { PrismaService } from '../prisma/prisma.service';
@@ -114,7 +113,6 @@ const translateRecords = async (
 };
 
 const translateEntries = async (
-  prisma: PrismaService,
   contentful: ContentfulClient,
   autoTranslate: AutoTranslateService,
   dryRun: boolean,
@@ -122,25 +120,27 @@ const translateEntries = async (
 ) => {
   const locales = await contentful.request<unknown>('management', '/locales');
   const contentTypes = new Map<string, unknown>();
-  const pending = new Set(
-    (
-      await prisma.contentChange.findMany({
-        where: { resourceType: ContentResourceType.ENTRY },
-        select: { resourceId: true },
-      })
-    ).map((change) => change.resourceId),
-  );
+  const published = new Map<string, ContentFields>();
+
+  for (let skip = 0; ; skip += PAGE_SIZE) {
+    const page = await contentful.request<CmaPage>('delivery', '/entries', {
+      query: { limit: String(PAGE_SIZE), skip: String(skip), locale: '*', order: 'sys.createdAt' },
+    });
+    for (const entry of page.items) published.set(entry.sys.id, entry.fields ?? {});
+    if (skip + PAGE_SIZE >= page.total) break;
+  }
 
   for (let skip = 0; ; skip += PAGE_SIZE) {
     const page = await contentful.request<CmaPage>('management', '/entries', {
       query: { limit: String(PAGE_SIZE), skip: String(skip), order: 'sys.createdAt' },
     });
     for (const entry of page.items) {
-      const { id, version, publishedVersion } = entry.sys;
+      const { id } = entry.sys;
       const typeId = entry.sys.contentType.sys.id;
       const label = `${typeId} ${id}`;
-      if (!publishedVersion || version !== publishedVersion + 1 || pending.has(id)) {
-        console.log(`skip ${label}: not published or has unpublished changes`);
+      const fields = published.get(id);
+      if (!fields) {
+        console.log(`skip ${label}: it is not published, only the live version is translated`);
         totals.skipped += 1;
         continue;
       }
@@ -160,7 +160,7 @@ const translateEntries = async (
           contentTypes.get(typeId),
           locales,
           contentful.config.locales,
-          entry.fields ?? {},
+          fields,
           ACTOR_ID,
         );
         if (result.failed) totals.failed += 1;
@@ -168,15 +168,6 @@ const translateEntries = async (
           totals.unchanged += 1;
           continue;
         }
-        const saved = await contentful.request<CmaEntry>('management', `/entries/${id}`, {
-          method: 'PUT',
-          version,
-          body: { fields: result.value },
-        });
-        await contentful.request('management', `/entries/${id}/published`, {
-          method: 'PUT',
-          version: saved.sys.version,
-        });
         console.log(`translated ${label}${result.failed ? ' (some languages failed)' : ''}`);
         totals.translated += 1;
       } catch (error) {
@@ -210,8 +201,10 @@ async function main() {
     if (options.entries) {
       if (!contentful.isConfigured('management')) {
         console.warn('Contentful management token is not set, entries are skipped.');
+      } else if (!contentful.isConfigured('delivery')) {
+        console.warn('Contentful delivery token is not set, entries are skipped.');
       } else {
-        await translateEntries(prisma, contentful, autoTranslate, options.dryRun, totals);
+        await translateEntries(contentful, autoTranslate, options.dryRun, totals);
         if (!options.dryRun && totals.translated > 0) {
           await app.get(ContentService, { strict: false }).invalidate();
         }

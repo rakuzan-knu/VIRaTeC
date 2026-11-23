@@ -53,3 +53,16 @@ test('JSON-path translations are not injected as top-level fields', async () => 
   const result = await service.getEntries(['homePage']);
   assert.equal(result.items[0]?.fields?.sections, undefined);
 });
+
+test('JSON-path translations fill the localized map inside an object field', async () => {
+  const service = setup({ sections: { en: { items: [{ title: { en: 'A', uk: 'А' } }] } } }, [
+    { resourceKey: 'entry:e1', locale: 'de', path: 'sections#items.0.title', value: 'A-de' },
+    { resourceKey: 'entry:e1', locale: 'uk', path: 'sections#items.0.title', value: 'wrong' },
+  ]);
+  const result = await service.getEntries(['homePage']);
+  const sections = result.items[0]?.fields?.sections as {
+    en: { items: { title: Record<string, unknown> }[] };
+  };
+  assert.equal(sections.en.items[0]?.title.de, 'A-de');
+  assert.equal(sections.en.items[0]?.title.uk, 'А');
+});
