@@ -108,6 +108,8 @@
   --color-viratec-graphite: #475467;
   --color-viratec-globe-core: #0f3f7d;
   --color-viratec-globe-mid: #06204a;
+  --color-viratec-globe-land: #1a558d;
+  --color-viratec-globe-coast: #3f9fc6;
   --color-viratec-comet: #e9ffd0;
   --color-viratec-sheet: #0b1d3d;
   --color-viratec-backdrop: rgba(1, 6, 18, 0.72);
@@ -743,21 +745,132 @@
   }
 }
 
+.intro-globe-frame {
+  --globe-top: 24px;
+  --globe-right: -190px;
+  --globe-size: 460px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.intro-globe,
+.intro-globe-stage {
+  position: absolute;
+  top: var(--globe-top);
+  right: var(--globe-right);
+  width: var(--globe-size);
+  aspect-ratio: 1;
+}
+
 .intro-globe {
   --globe-glow: #03c5ea;
-  position: absolute;
   z-index: 0;
-  top: 24px;
-  right: -190px;
-  width: 460px;
-  aspect-ratio: 1;
-  pointer-events: none;
   opacity: 0.4;
   mask-image: linear-gradient(180deg, #000 52%, transparent 88%);
   animation: globe-in 1.8s var(--ease-apple) both;
 }
 
-[data-tone='teal'] > .intro-globe {
+.intro-globe-land {
+  opacity: 0.8;
+}
+
+.intro-globe-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.intro-globe-overlay {
+  z-index: 20;
+}
+
+.intro-globe-surface {
+  position: absolute;
+  inset: 12.96%;
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.intro-globe-surface:focus-visible {
+  outline: 2px solid var(--color-viratec-lime);
+  outline-offset: -2px;
+}
+
+.intro-globe-label {
+  position: absolute;
+  translate: -50% calc(-100% - 14px);
+}
+
+.intro-globe-card {
+  position: absolute;
+  top: 50%;
+  right: calc(50% + 32px);
+  translate: 0 -50%;
+  pointer-events: auto;
+}
+
+.intro-globe-controls {
+  position: absolute;
+  z-index: 11;
+  right: calc(var(--globe-right) + var(--globe-size) / 2);
+  bottom: 24px;
+  translate: 50% 0;
+  pointer-events: auto;
+}
+
+.intro-globe-ring {
+  fill: none;
+  stroke: var(--color-viratec-lime);
+  stroke-width: 0.6;
+  opacity: 0;
+}
+
+.intro-globe-badge {
+  display: none;
+  scale: var(--globe-unit, 0.35);
+}
+
+.intro-globe-badge text {
+  fill: var(--color-viratec-ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.intro-globe-point[data-cluster] .intro-globe-badge {
+  display: inline;
+}
+
+.intro-globe-point[data-cluster] :is(.intro-globe-dot, .intro-globe-ring) {
+  display: none;
+}
+
+.intro-globe-panel {
+  max-height: 100%;
+}
+
+.intro-globe-leader {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 28px;
+  height: 1px;
+  background: var(--color-viratec-lime);
+  transform-origin: left;
+}
+
+.intro-globe-point[data-active='true'] {
+  fill: var(--color-viratec-lime);
+}
+
+.intro-globe-point[data-active='true'] .intro-globe-ring {
+  opacity: 1;
+}
+
+[data-tone='teal'] .intro-globe {
   --globe-glow: #26d6c4;
 }
 
@@ -771,11 +884,49 @@
   stroke-opacity: 0.85;
 }
 
+.intro-globe-arc[data-active='true'],
+.intro-globe-link[data-active='true'] {
+  stroke: var(--color-viratec-comet);
+  stroke-opacity: 1;
+  stroke-width: 1;
+}
+
+@media (max-width: 63.99rem) {
+  .intro-globe-frame:not([data-featured])
+    :is(.intro-globe-clip, .intro-globe-overlay, .intro-globe-controls) {
+    display: none;
+  }
+
+  .intro-globe-frame[data-featured] {
+    --globe-top: 0px;
+    --globe-right: 0px;
+    --globe-size: 100%;
+    position: relative;
+    width: min(100%, 520px);
+    margin: -32px auto 32px;
+    padding-bottom: 64px;
+  }
+
+  .intro-globe-frame[data-featured] > .intro-globe {
+    position: relative;
+    opacity: 1;
+    mask-image: none;
+  }
+
+  .intro-globe-frame[data-featured] > .intro-globe-controls {
+    right: 50%;
+    bottom: 0;
+  }
+}
+
 @media (min-width: 64rem) {
+  .intro-globe-frame {
+    --globe-top: 10px;
+    --globe-right: max(-90px, calc((100vw - 1440px) / 2 - 40px));
+    --globe-size: min(54vw, 820px);
+  }
+
   .intro-globe {
-    top: 10px;
-    right: max(-90px, calc((100vw - 1440px) / 2 - 40px));
-    width: min(54vw, 820px);
     opacity: 1;
   }
 }
@@ -786,6 +937,26 @@
   }
   to {
     stroke-dashoffset: -1;
+  }
+}
+
+@keyframes globe-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes globe-leader-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
   }
 }
 
@@ -819,6 +990,15 @@
 @media (prefers-reduced-motion: no-preference) {
   .intro-globe-arc {
     animation: globe-arc-draw 1.6s var(--ease-apple) both;
+  }
+
+  .intro-globe-panel,
+  .intro-globe-card-content {
+    animation: globe-panel-in 0.35s var(--ease-apple) both;
+  }
+
+  .intro-globe-leader {
+    animation: globe-leader-in 0.5s var(--ease-apple) 0.35s both;
   }
 
   .intro-globe-comets {
@@ -1293,7 +1473,7 @@
 @media (forced-colors: active) {
   .page-ambient,
   .page-sky,
-  .intro-globe,
+  .intro-globe-frame,
   .field-grain {
     display: none;
   }

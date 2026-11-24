@@ -1,6 +1,6 @@
 import { ARC_TARGETS, HUB, LINKS, PARTNERS, type City } from './partners';
 
-interface Vector {
+export interface Vector {
   x: number;
   y: number;
   z: number;
@@ -16,6 +16,7 @@ export interface ProjectedPoint {
 export interface View {
   centerLon: number;
   tilt: number;
+  zoom: number;
 }
 
 export interface GlobeFrame {
@@ -29,9 +30,13 @@ export interface GlobeFrame {
 }
 
 export const RADIUS = 100;
+export const VIEW_SIZE = 270;
 export const DEG = Math.PI / 180;
-export const BASE_VIEW: View = { centerLon: 2, tilt: 24 * DEG };
+export const BASE_VIEW: View = { centerLon: 2, tilt: 24 * DEG, zoom: 1 };
 
+const FOCUS_SPACING = 9;
+const MIN_FOCUS_ZOOM = 1.8;
+const MAX_FOCUS_ZOOM = 7;
 const DEPTH_FADE_START = -0.02;
 const DEPTH_FADE_RANGE = 0.14;
 
@@ -49,11 +54,12 @@ const PARALLEL_LATS = range(-60, 75, 15);
 const PARALLEL_LONS = range(-180, 180, 3);
 const ARC_STEPS = range(0, 1, 1 / 64);
 
-interface Camera {
+export interface Camera {
   cosLon: number;
   sinLon: number;
   cosTilt: number;
   sinTilt: number;
+  zoom: number;
 }
 
 interface LiftedVector {
@@ -61,7 +67,7 @@ interface LiftedVector {
   lift: number;
 }
 
-function toVector({ lat, lon }: City): Vector {
+export function toVector({ lat, lon }: City): Vector {
   const phi = lat * DEG;
   const lambda = lon * DEG;
   return {
@@ -71,13 +77,14 @@ function toVector({ lat, lon }: City): Vector {
   };
 }
 
-function toCamera(view: View): Camera {
+export function toCamera(view: View): Camera {
   const lon = view.centerLon * DEG;
   return {
     cosLon: Math.cos(lon),
     sinLon: Math.sin(lon),
     cosTilt: Math.cos(view.tilt),
     sinTilt: Math.sin(view.tilt),
+    zoom: view.zoom,
   };
 }
 
@@ -86,13 +93,13 @@ function project(vector: Vector, camera: Camera, lift = 1): ProjectedPoint {
   const rotatedZ = vector.z * camera.cosLon + vector.x * camera.sinLon;
   const y = vector.y * camera.cosTilt - rotatedZ * camera.sinTilt;
   const z = vector.y * camera.sinTilt + rotatedZ * camera.cosTilt;
-  const x = rotatedX * RADIUS * lift;
-  const screenY = -y * RADIUS * lift;
+  const x = rotatedX * RADIUS * lift * camera.zoom;
+  const screenY = -y * RADIUS * lift * camera.zoom;
   return {
     x,
     y: screenY,
     depth: z,
-    visible: z >= 0 || x * x + screenY * screenY > RADIUS * RADIUS,
+    visible: z >= 0 || x * x + screenY * screenY > (RADIUS * camera.zoom) ** 2,
   };
 }
 
@@ -156,6 +163,15 @@ export function renderGlobe(view: View): GlobeFrame {
     hub: project(HUB_VECTOR, camera),
     partners: PARTNER_VECTORS.map((vector) => project(vector, camera)),
   };
+}
+
+export function focusZoom(city: City): number {
+  const vector = toVector(city);
+  const distances = PARTNER_VECTORS.map((other) =>
+    Math.hypot(other.x - vector.x, other.y - vector.y, other.z - vector.z),
+  ).filter((distance) => distance > 0);
+  const zoom = FOCUS_SPACING / (RADIUS * Math.min(...distances));
+  return Math.min(MAX_FOCUS_ZOOM, Math.max(MIN_FOCUS_ZOOM, zoom));
 }
 
 export function toTranslate(point: ProjectedPoint): string {

@@ -50,6 +50,7 @@ export function NotFoundPage() {
       footer={<SiteFooter />}
       intro={
         <PageIntro
+          globe="backdrop"
           eyebrow="404"
           title={t.title}
           accent={t.accent}

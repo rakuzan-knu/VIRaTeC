@@ -1,4 +1,4 @@
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Globe } from 'lucide-react';
 import { pickLocalized, useLocale } from '@/shared/i18n';
 import { usePartnerMessages } from '../model/messages';
 import type { NetworkPartner, PartnerProfile } from '../model/types';
@@ -7,9 +7,10 @@ import { PartnerLogoPlate } from './PartnerLogoPlate';
 interface PartnerProfileCardProps {
   partner: NetworkPartner;
   profile: PartnerProfile;
+  onShowOnGlobe?: () => void;
 }
 
-export function PartnerProfileCard({ partner, profile }: PartnerProfileCardProps) {
+export function PartnerProfileCard({ partner, profile, onShowOnGlobe }: PartnerProfileCardProps) {
   const t = usePartnerMessages();
   const locale = useLocale();
 
@@ -31,16 +32,29 @@ export function PartnerProfileCard({ partner, profile }: PartnerProfileCardProps
         <dt className="text-viratec-subtle">{t.type}:</dt>
         <dd className="text-white">{pickLocalized(profile.kind, locale)}</dd>
       </dl>
-      <a
-        href={profile.website}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex min-h-6 items-center gap-1.5 self-end justify-self-start rounded pt-2 text-[15px] font-medium text-viratec-cyan underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
-      >
-        {t.website}
-        <span className="sr-only"> ({t.opensInNewTab})</span>
-        <ArrowUpRight aria-hidden="true" className="size-4 shrink-0" />
-      </a>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 self-end pt-2">
+        <a
+          href={profile.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-6 items-center gap-1.5 rounded text-[15px] font-medium text-viratec-cyan underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
+        >
+          {t.website}
+          <span className="sr-only"> ({t.opensInNewTab})</span>
+          <ArrowUpRight aria-hidden="true" className="size-4 shrink-0" />
+        </a>
+        {onShowOnGlobe && (
+          <button
+            type="button"
+            onClick={onShowOnGlobe}
+            className="inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded text-[15px] font-medium text-viratec-cyan underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
+          >
+            {t.showOnGlobe}
+            <span className="sr-only">: {partner.name}</span>
+            <Globe aria-hidden="true" className="size-4 shrink-0" />
+          </button>
+        )}
+      </div>
     </article>
   );
 }

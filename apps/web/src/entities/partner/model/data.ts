@@ -2,6 +2,7 @@ import { useLocalized } from '@/shared/i18n';
 import { useLiveContent } from '@/shared/lib';
 import { HOME_PARTNERS, NETWORK_PARTNERS } from './data.generated';
 import { PARTNER_PROFILES } from './profiles';
+import { toPartnerSlug } from './slug';
 import type { PartnerLogo, PartnerProfile } from './types';
 
 const INVISIBLE_MARKERS = /[​-‍⁠-⁤﻿]/g;
@@ -16,6 +17,22 @@ export const useHomePartners = () =>
 
 export const useNetworkPartners = () =>
   useLocalized(useLiveContent('partner', 'NETWORK_PARTNERS', NETWORK_PARTNERS));
+
+export const getPartnerSlug = (name: string): string | undefined => {
+  const canonicalName = findPartnerProfile(name)?.aliases[0];
+  return canonicalName === undefined ? undefined : toPartnerSlug(canonicalName);
+};
+
+export const usePartnerNames = () => {
+  const partners = useNetworkPartners();
+  return (name: string): string => {
+    const profile = findPartnerProfile(name);
+    const match = partners.find(
+      (partner) => profile !== undefined && findPartnerProfile(partner.name) === profile,
+    );
+    return match?.name ?? name;
+  };
+};
 
 export const usePartnerLogos = (): PartnerLogo[] => {
   const networkPartners = useNetworkPartners();

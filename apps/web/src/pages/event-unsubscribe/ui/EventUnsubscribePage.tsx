@@ -101,7 +101,14 @@ export function EventUnsubscribePage() {
     <PageLayout
       header={<SiteHeader />}
       footer={<SiteFooter />}
-      intro={<PageIntro title={t.title} description={t.description} className="lg:pb-16" />}
+      intro={
+        <PageIntro
+          globe="backdrop"
+          title={t.title}
+          description={t.description}
+          className="lg:pb-16"
+        />
+      }
     >
       <PageSection containerClassName="items-start lg:pt-0">
         {preview.isLoading && (

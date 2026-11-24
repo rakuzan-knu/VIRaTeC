@@ -6,7 +6,7 @@ import { HeaderSpacer } from '@/shared/ui/header-spacer';
 import { SplitWords, countWords } from '@/shared/ui/split-words';
 import { defineMessages, useLocalized } from '@/shared/i18n';
 import contactGlow from '@/shared/assets/icons/contact-glow.svg';
-import { IntroGlobe } from './IntroGlobe';
+import { IntroGlobe, type GlobeMode } from './IntroGlobe';
 
 export type PageIntroTone = 'blue' | 'teal' | 'glow';
 
@@ -21,6 +21,10 @@ interface PageIntroProps {
   tone?: PageIntroTone;
   descriptionClassName?: string;
   className?: string;
+  globe?: GlobeMode;
+  globePartner?: string | null;
+  onGlobePartnerChange?: (slug: string | null) => void;
+  onShowPartnerDetails?: (slug: string) => void;
   children?: ReactNode;
 }
 
@@ -41,13 +45,16 @@ export function PageIntro({
   tone = 'blue',
   descriptionClassName,
   className,
+  globe = 'interactive',
+  globePartner,
+  onGlobePartnerChange,
+  onShowPartnerDetails,
   children,
 }: PageIntroProps) {
   const t = useLocalized(PAGE_INTRO_MESSAGES);
 
   return (
     <div data-tone={tone} className="relative">
-      {tone !== 'glow' && <IntroGlobe />}
       {tone === 'glow' && (
         <div
           aria-hidden="true"
@@ -63,7 +70,7 @@ export function PageIntro({
 
       <div
         className={cn(
-          'intro-cascade relative z-10 mx-auto flex max-w-[1440px] flex-col items-start gap-5 px-5 pt-12 pb-14 lg:gap-7 lg:px-[85px] lg:pt-[120px] lg:pb-[112px]',
+          'intro-cascade pointer-events-none relative z-10 mx-auto flex max-w-[1440px] flex-col items-start gap-5 px-5 pt-12 pb-14 lg:gap-7 lg:px-[85px] lg:pt-[120px] lg:pb-[112px] [&>*:not(h1)]:pointer-events-auto [&>h1_span]:pointer-events-auto',
           className,
         )}
       >
@@ -120,6 +127,15 @@ export function PageIntro({
         </p>
         {children}
       </div>
+
+      {tone !== 'glow' && (
+        <IntroGlobe
+          mode={globe}
+          partner={globePartner}
+          onPartnerChange={onGlobePartnerChange}
+          onShowDetails={onShowPartnerDetails}
+        />
+      )}
     </div>
   );
 }

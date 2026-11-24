@@ -1,4 +1,4 @@
-import { PartnerCard, useNetworkPartners } from '@/entities/partner';
+import { getPartnerSlug, PartnerCard, useNetworkPartners } from '@/entities/partner';
 import { ROUTES } from '@/shared/config/routes';
 import { useCommonMessages } from '@/shared/i18n';
 import { PageSection } from '@/shared/ui/page-section';
@@ -7,18 +7,20 @@ import { InfoCard } from '@/shared/ui/info-card';
 import { StepsList } from '@/shared/ui/steps-list';
 import { HighlightBanner } from '@/shared/ui/highlight-banner';
 import { CtaSection } from '@/shared/ui/cta-section';
-import { PageIntro } from '@/widgets/page-intro';
+import { GLOBE_ID, isOnGlobe, PageIntro } from '@/widgets/page-intro';
 import { SiteHeader } from '@/widgets/site-header';
 import { PageLayout } from '@/widgets/page-layout';
 import { PageSections } from '@/widgets/page-sections';
 import { SiteFooter } from '@/widgets/site-footer';
 import { useGlobalCollaborationContent } from '../model/content';
+import { partnerAnchor, useGlobePartner } from '../model/useGlobePartner';
 import { useSeo } from '@/shared/lib';
 
 export function GlobalCollaborationPage() {
   const content = useGlobalCollaborationContent();
   const partners = useNetworkPartners();
   const common = useCommonMessages();
+  const globe = useGlobePartner();
   useSeo(content.documentTitle);
 
   return (
@@ -31,6 +33,10 @@ export function GlobalCollaborationPage() {
           title={content.title}
           accent={content.accent}
           description={content.description}
+          globe="featured"
+          globePartner={globe.partner}
+          onGlobePartnerChange={globe.select}
+          onShowPartnerDetails={globe.showDetails}
         />
       }
     >
@@ -45,11 +51,26 @@ export function GlobalCollaborationPage() {
                 title={content.partnersTitle}
               />
               <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-                {partners.map((partner) => (
-                  <li key={partner.name} className="row-span-6 grid grid-rows-subgrid">
-                    <PartnerCard partner={partner} />
-                  </li>
-                ))}
+                {partners.map((partner) => {
+                  const slug = getPartnerSlug(partner.name);
+                  return (
+                    <li
+                      key={partner.name}
+                      id={slug && partnerAnchor(slug)}
+                      tabIndex={-1}
+                      className="row-span-6 grid grid-rows-subgrid rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-viratec-lime"
+                    >
+                      <PartnerCard
+                        partner={partner}
+                        onShowOnGlobe={
+                          slug !== undefined && isOnGlobe(slug)
+                            ? () => globe.showOnGlobe(slug, GLOBE_ID)
+                            : undefined
+                        }
+                      />
+                    </li>
+                  );
+                })}
                 <li className="row-span-6 grid grid-rows-subgrid">
                   <InfoCard
                     index="+"

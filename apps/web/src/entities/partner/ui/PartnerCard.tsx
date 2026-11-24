@@ -5,12 +5,14 @@ import { PartnerProfileCard } from './PartnerProfileCard';
 
 interface PartnerCardProps {
   partner: NetworkPartner;
+  onShowOnGlobe?: () => void;
 }
 
-export function PartnerCard({ partner }: PartnerCardProps) {
+export function PartnerCard({ partner, onShowOnGlobe }: PartnerCardProps) {
   const profile = findPartnerProfile(partner.name);
 
-  if (profile) return <PartnerProfileCard partner={partner} profile={profile} />;
+  if (profile)
+    return <PartnerProfileCard partner={partner} profile={profile} onShowOnGlobe={onShowOnGlobe} />;
 
   return (
     <InfoCard

@@ -21,6 +21,8 @@ colors:
   graphite: '#475467'
   globeCore: '#0f3f7d'
   globeMid: '#06204a'
+  globeLand: '#1a558d'
+  globeCoast: '#3f9fc6'
   comet: '#e9ffd0'
   sheet: '#0b1d3d'
   backdrop: 'rgba(1, 6, 18, 0.72)'
@@ -155,7 +157,8 @@ and similar); the six kit components above keep their Figma values and tests.
 - **Header.** Fixed; transparent at the top of the page, blurred navy with a hairline once the
   page scrolls, and compacts on desktop. The current route is marked with `aria-current`.
 - **Motion.** One orchestrated hero entrance (text reveal plus the KNU-to-partner arcs drawing in)
-  and responses to user action. No per-section entrance animations; all motion respects
+  and responses to user action. The page-intro globe rotates slowly and can be paused, dragged and
+  zoomed; selecting a university flies to it. No per-section entrance animations; all motion respects
   `prefers-reduced-motion`.
 
 ## Do's and Don'ts

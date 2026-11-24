@@ -177,6 +177,7 @@ export function AdminLayout() {
       footer={<SiteFooter />}
       intro={
         <PageIntro
+          globe="backdrop"
           breadcrumb={[{ label: 'VIRaTeC', to: ROUTES.HOME }, t.panel]}
           title={t.panel}
           description={t.description}
