@@ -10,6 +10,7 @@ import { PageLayout } from '@/widgets/page-layout';
 import { SiteFooter } from '@/widgets/site-footer';
 import { SiteHeader } from '@/widgets/site-header';
 
+const UPCOMING_PAGE_SIZE = 6;
 const PAST_PAGE_SIZE = 6;
 
 const SKELETON_KEYS = ['first', 'second', 'third'];
@@ -72,9 +73,11 @@ export function EventsPage() {
   const common = useCommonMessages();
   const upcoming = useEvents('upcoming');
   const past = useEvents('past');
+  const [visibleUpcoming, setVisibleUpcoming] = useState(UPCOMING_PAGE_SIZE);
   const [visiblePast, setVisiblePast] = useState(PAST_PAGE_SIZE);
   useSeo(`${t.title} ${t.accent}`, { description: t.description });
 
+  const upcomingEvents = upcoming.data ?? [];
   const pastEvents = past.data ?? [];
 
   return (
@@ -115,14 +118,21 @@ export function EventsPage() {
             {t.emptyUpcoming}
           </p>
         )}
-        {upcoming.data && upcoming.data.length > 0 && (
-          <ul className="grid gap-6 lg:grid-cols-3">
-            {upcoming.data.map((event) => (
-              <li key={event.id}>
-                <EventCard event={event} />
-              </li>
-            ))}
-          </ul>
+        {upcomingEvents.length > 0 && (
+          <>
+            <ul className="grid gap-6 lg:grid-cols-3">
+              {upcomingEvents.slice(0, visibleUpcoming).map((event) => (
+                <li key={event.id}>
+                  <EventCard event={event} />
+                </li>
+              ))}
+            </ul>
+            {visibleUpcoming < upcomingEvents.length && (
+              <LoadMoreButton
+                onClick={() => setVisibleUpcoming((count) => count + UPCOMING_PAGE_SIZE)}
+              />
+            )}
+          </>
         )}
       </PageSection>
 

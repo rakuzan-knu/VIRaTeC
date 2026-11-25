@@ -175,17 +175,18 @@ export function GoogleAuthButton({ text, className }: GoogleAuthButtonProps) {
 
   if (!isConfigured) {
     return (
-      <Button
-        variant="outline"
-        type="button"
-        disabled
-        title={common.unavailable(common.googleSignIn)}
-        className={cn('font-medium text-auth-navy', className)}
-      >
-        <GoogleIcon className="me-1" />
-        {common.continueWithGoogle}
-        <span className="text-xs font-normal text-auth-muted">· {common.notAvailableYet}</span>
-      </Button>
+      <div className="space-y-2">
+        <Button
+          variant="outline"
+          type="button"
+          disabled
+          className={cn('font-medium text-auth-navy', className)}
+        >
+          <GoogleIcon className="me-1" />
+          {common.continueWithGoogle}
+        </Button>
+        <p className="text-center text-xs text-auth-muted">{common.notAvailableYet}</p>
+      </div>
     );
   }
 
